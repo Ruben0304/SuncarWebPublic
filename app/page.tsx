@@ -81,7 +81,7 @@ export default function HomePage() {
               <div className="relative aspect-[3/4] lg:aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
                 <Image
-                  src="/images/hero-suncar.png"
+                  src="/images/hero-suncar.jpg"
                   alt="Logo futurista Suncar - Energía Solar"
                   fill
                   className="object-cover"
