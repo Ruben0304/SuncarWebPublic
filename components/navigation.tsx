@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
+import Image from "next/image"
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -35,9 +36,9 @@ export default function Navigation() {
           <div className="px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 lg:w-8 lg:h-8 bg-secondary-gradient rounded-lg flex items-center justify-center">
-                  <div className="w-3 h-3 lg:w-4 lg:h-4 bg-white rounded-sm"></div>
+              <div className="flex items-center space-x-3">
+                <div className="relative w-8 h-8 lg:w-10 lg:h-10">
+                  <Image src="/images/suncar-logo.jpeg" alt="Suncar Logo" fill className="object-contain" />
                 </div>
                 <span className="text-lg lg:text-xl font-bold text-primary">SUNCAR</span>
               </div>

@@ -33,23 +33,25 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Navigation />
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center px-4 py-20 md:px-6 lg:px-8 lg:py-0">
+      <section className="relative min-h-screen flex items-center px-4 py-20 md:px-6 lg:px-8 lg:py-0 overflow-hidden">
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Hero Text */}
             <div className="space-y-6 lg:space-y-8">
               <div className="space-y-3 lg:space-y-4">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight">
-                  Energía Solar
-                  <span className="block bg-secondary-gradient bg-clip-text text-transparent">Para Tu Hogar</span>
+                  <span className="inline-block animate-fade-in-up animation-delay-200">Energía Solar</span>
+                  <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-400">
+                    Para Tu Hogar
+                  </span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg">
+                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg animate-fade-in-up animation-delay-600">
                   Transforma tu hogar con energía limpia y renovable. Reduce tus costos eléctricos hasta un 90% con
                   nuestros sistemas de paneles solares y baterías de última generación.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 animate-fade-in-up animation-delay-800">
                 <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
                   Cotizar Ahora
                 </button>
@@ -58,7 +60,7 @@ export default function HomePage() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-start sm:gap-6 lg:gap-8 pt-3 lg:pt-4">
+              <div className="flex items-center justify-between sm:justify-start sm:gap-6 lg:gap-8 pt-3 lg:pt-4 animate-fade-in-up animation-delay-1000">
                 <div className="text-center">
                   <div className="text-xl lg:text-2xl font-bold text-primary">500+</div>
                   <div className="text-xs lg:text-sm text-gray-600">Hogares Transformados</div>
@@ -75,7 +77,7 @@ export default function HomePage() {
             </div>
 
             {/* Hero Image */}
-            <div className="relative">
+            <div className="relative animate-fade-in-right animation-delay-400">
               <div className="relative aspect-[3/4] lg:aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
                 <Image
@@ -87,11 +89,16 @@ export default function HomePage() {
                 />
               </div>
               {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary-gradient rounded-full opacity-20 blur-xl"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary-gradient rounded-full opacity-20 blur-xl animate-pulse"></div>
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse animation-delay-500"></div>
             </div>
           </div>
         </div>
+
+        {/* Background decorative elements */}
+        <div className="absolute top-20 left-10 w-2 h-2 bg-secondary-gradient rounded-full animate-bounce animation-delay-1000"></div>
+        <div className="absolute top-40 right-20 w-3 h-3 bg-primary/30 rounded-full animate-bounce animation-delay-1200"></div>
+        <div className="absolute bottom-40 left-20 w-1 h-1 bg-secondary-gradient rounded-full animate-bounce animation-delay-800"></div>
       </section>
 
       {/* About Section */}
