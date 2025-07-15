@@ -45,10 +45,6 @@ export default function HomePage() {
                     Para Tu Hogar
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg animate-fade-in-up animation-delay-600">
-                  Transforma tu hogar con energía limpia y renovable. Reduce tus costos eléctricos hasta un 90% con
-                  nuestros sistemas de paneles solares y baterías de última generación.
-                </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 animate-fade-in-up animation-delay-800">
@@ -91,8 +87,8 @@ export default function HomePage() {
               </div>
 
               {/* Desktop version - large with fade effect */}
-              <div className="hidden lg:block relative w-full h-[600px] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-l from-white via-transparent to-transparent z-10"></div>
+              <div className="hidden lg:block relative w-full aspect-[3/2] overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent z-10"></div>
                 <Image
                   src="/images/hero-suncar.png"
                   alt="Logo futurista Suncar - Energía Solar"
