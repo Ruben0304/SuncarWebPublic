@@ -78,7 +78,8 @@ export default function HomePage() {
 
             {/* Hero Image */}
             <div className="relative animate-fade-in-right animation-delay-400">
-              <div className="relative aspect-[3/4] lg:aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
+              {/* Mobile version - rounded */}
+              <div className="lg:hidden relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
                 <Image
                   src="/images/hero-suncar.png"
@@ -88,6 +89,19 @@ export default function HomePage() {
                   priority
                 />
               </div>
+
+              {/* Desktop version - large with fade effect */}
+              <div className="hidden lg:block relative w-full h-[600px] overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-l from-white via-transparent to-transparent z-10"></div>
+                <Image
+                  src="/images/hero-suncar.png"
+                  alt="Logo futurista Suncar - Energía Solar"
+                  fill
+                  className="object-cover object-center"
+                  priority
+                />
+              </div>
+
               {/* Decorative elements */}
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary-gradient rounded-full opacity-20 blur-xl animate-pulse"></div>
               <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse animation-delay-500"></div>
