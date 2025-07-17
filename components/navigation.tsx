@@ -16,11 +16,11 @@ export default function Navigation() {
   }, [])
 
   const navItems = [
-    { name: "Inicio", href: "#" },
+    { name: "Inicio", href: "/" },
     { name: "Servicios", href: "#servicios" },
-    { name: "Proyectos", href: "#proyectos" },
+    { name: "Proyectos", href: "/projectos" },
     { name: "Testimonios", href: "#testimonios" },
-    { name: "Contacto", href: "#contacto" },
+    { name: "Contacto", href: "/contacto" },
   ]
 
   return (

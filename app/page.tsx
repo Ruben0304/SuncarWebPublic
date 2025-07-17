@@ -1,6 +1,6 @@
 import Image from "next/image"
 import LottieAnimation from "@/components/lottie-animation"
-import { Star } from "lucide-react"
+import { Star, Zap, Battery, Wrench } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 
@@ -8,26 +8,27 @@ export default function HomePage() {
   const testimonials = [
     {
       name: "María González",
-      location: "Lima, Perú",
+      location: "La Habana, Cuba",
       comment:
         "Excelente servicio. Los paneles solares han reducido mi factura eléctrica en un 80%. El equipo de Suncar fue muy profesional.",
       rating: 5,
     },
     {
       name: "Carlos Mendoza",
-      location: "Arequipa, Perú",
+      location: "Santiago de Cuba, Cuba",
       comment:
         "La instalación fue rápida y eficiente. Ya llevo 6 meses ahorrando significativamente en electricidad. Muy recomendado.",
       rating: 5,
     },
     {
       name: "Ana Rodríguez",
-      location: "Trujillo, Perú",
+      location: "Camagüey, Cuba",
       comment:
         "Suncar cumplió todas sus promesas. El sistema de baterías funciona perfectamente y el soporte técnico es excepcional.",
       rating: 5,
     },
   ]
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -39,13 +40,13 @@ export default function HomePage() {
             {/* Hero Text */}
             <div className="space-y-6 lg:space-y-8">
               <div className="space-y-3 lg:space-y-4">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-loose">
                   <span className="inline-block animate-fade-in-up animation-delay-200">Energía Solar</span>
-                  <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-400">
+                  <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-400 pb-2" >
                     Para Tu Hogar
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg animate-fade-in-up animation-delay-600">
+                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg animate-fade-in-up animation-delay-600" >
                   Transforma tu hogar con energía limpia y renovable. Reduce tus costos eléctricos hasta un 90% con
                   nuestros sistemas de paneles solares y baterías de última generación.
                 </p>
@@ -120,14 +121,14 @@ export default function HomePage() {
                   Especialistas en Energía Solar
                 </h2>
                 <p className="text-sm lg:text-base text-gray-600 leading-relaxed">
-                  Transformamos hogares peruanos con tecnología solar de vanguardia.
+                  Transformamos hogares cubanos con tecnología solar de vanguardia.
                 </p>
               </div>
 
               <div className="space-y-3 lg:space-y-4">
                 <div className="flex items-start gap-2 lg:gap-3">
                   <div className="w-6 h-6 lg:w-8 lg:h-8 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <div className="w-3 h-3 lg:w-4 lg:h-4 bg-white rounded-sm"></div>
+                    <Zap className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-primary text-xs lg:text-sm mb-1">Paneles Premium</h3>
@@ -137,7 +138,7 @@ export default function HomePage() {
 
                 <div className="flex items-start gap-2 lg:gap-3">
                   <div className="w-6 h-6 lg:w-8 lg:h-8 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <div className="w-3 h-3 lg:w-4 lg:h-4 bg-white rounded-sm"></div>
+                    <Battery className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-primary text-xs lg:text-sm mb-1">Baterías Inteligentes</h3>
@@ -147,7 +148,7 @@ export default function HomePage() {
 
                 <div className="flex items-start gap-2 lg:gap-3">
                   <div className="w-6 h-6 lg:w-8 lg:h-8 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <div className="w-3 h-3 lg:w-4 lg:h-4 bg-white rounded-sm"></div>
+                    <Wrench className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-primary text-xs lg:text-sm mb-1">Soporte Técnico</h3>
@@ -170,8 +171,8 @@ export default function HomePage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 lg:mb-4">
               Lo Que Dicen Nuestros Clientes
             </h2>
-            <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
-              Miles de familias peruanas ya disfrutan de los beneficios de la energía solar con Suncar
+                            <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
+              Miles de familias cubanas ya disfrutan de los beneficios de la energía solar con Suncar
             </p>
           </div>
 

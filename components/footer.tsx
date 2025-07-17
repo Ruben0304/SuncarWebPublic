@@ -15,7 +15,7 @@ export default function Footer() {
               <span className="text-lg lg:text-xl font-bold">SUNCAR</span>
             </div>
             <p className="text-blue-100 leading-relaxed text-sm lg:text-base">
-              Transformamos hogares peruanos con energía solar limpia y renovable. Tu futuro energético comienza aquí.
+              Transformamos hogares cubanos con energía solar limpia y renovable. Tu futuro energético comienza aquí.
             </p>
             <div className="flex space-x-3 lg:space-x-4">
               <a
@@ -109,18 +109,18 @@ export default function Footer() {
             <div className="space-y-3 text-blue-100">
               <div className="flex items-center space-x-3">
                 <Phone size={18} className="text-secondary-start" />
-                <span>+51 999 888 777</span>
+                <span>+53 7 123 4567</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-secondary-start" />
-                <span>info@suncar.pe</span>
+                <span>info@suncar.cu</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-secondary-start mt-1" />
                 <span>
-                  Av. Solar 123, San Isidro
+                  Calle 23 #456, Vedado
                   <br />
-                  Lima, Perú
+                  La Habana, Cuba
                 </span>
               </div>
             </div>
