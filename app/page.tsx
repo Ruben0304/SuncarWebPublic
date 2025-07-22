@@ -1,8 +1,11 @@
+"use client"
+
 import Image from "next/image"
 import LottieAnimation from "@/components/lottie-animation"
 import { Star, Zap, Battery, Wrench } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
+import React, { useEffect, useState } from "react"
 
 export default function HomePage() {
   const testimonials = [
@@ -28,6 +31,24 @@ export default function HomePage() {
       rating: 5,
     },
   ]
+
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const end = 1200;
+    if (start === end) return;
+    let incrementTime = 10; // ms
+    let step = Math.ceil(end / 100); // velocidad
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= end) {
+        start = end;
+        clearInterval(timer);
+      }
+      setCount(start);
+    }, incrementTime);
+    return () => clearInterval(timer);
+  }, []);
 
 
   return (
@@ -62,17 +83,12 @@ export default function HomePage() {
               </div>
 
               <div className="flex items-center justify-between sm:justify-start sm:gap-6 lg:gap-8 pt-3 lg:pt-4 animate-fade-in-up animation-delay-1000">
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-primary">500+</div>
-                  <div className="text-xs lg:text-sm text-gray-600">Hogares Transformados</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-primary">90%</div>
-                  <div className="text-xs lg:text-sm text-gray-600">Ahorro Promedio</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-primary">5★</div>
-                  <div className="text-xs lg:text-sm text-gray-600">Satisfacción</div>
+                {/* Contador animado de kW instalados */}
+                <div className="text-left w-full">
+                  <div className="text-3xl lg:text-4xl font-bold text-primary">
+                    {count} kW
+                  </div>
+                  <div className="text-xs lg:text-sm text-gray-600">Instalados hasta el momento</div>
                 </div>
               </div>
             </div>
