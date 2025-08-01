@@ -1,9 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Calculator, Zap, Home, DollarSign, CheckCircle, ArrowRight, Sun, Battery, Shield } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
+import dynamic from "next/dynamic"
+
+// Dynamic import for the map component to avoid SSR issues
+const LocationMapPicker = dynamic(() => import("@/components/LocationMapPicker"), {
+  ssr: false,
+  loading: () => <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">Cargando mapa...</div>
+})
 
 export default function QuotationPage() {
   const [step, setStep] = useState(1)
@@ -17,7 +24,9 @@ export default function QuotationPage() {
     name: '',
     email: '',
     phone: '',
-    address: ''
+    address: '',
+    latitude: 23.1136, // Havana, Cuba default coordinates
+    longitude: -82.3666
   })
   const [quote, setQuote] = useState(null)
 
@@ -92,6 +101,15 @@ export default function QuotationPage() {
     }
   }
 
+  const handleLocationChange = useCallback((lat, lng, address) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+      address: address
+    }))
+  }, [])
+
   const resetQuote = () => {
     setStep(1)
     setQuote(null)
@@ -105,7 +123,9 @@ export default function QuotationPage() {
       name: '',
       email: '',
       phone: '',
-      address: ''
+      address: '',
+      latitude: 23.1136,
+      longitude: -82.3666
     })
   }
 
@@ -375,10 +395,10 @@ export default function QuotationPage() {
                 <div className="text-center mb-8">
                   <Calculator className="w-16 h-16 text-primary mx-auto mb-4" />
                   <h2 className="text-2xl lg:text-3xl font-bold text-primary mb-4">
-                    Información de Contacto
+                    Información de Contacto y Ubicación
                   </h2>
                   <p className="text-gray-600">
-                    Para enviarte tu cotización personalizada
+                    Para enviarte tu cotización personalizada y calcular la mejor instalación
                   </p>
                 </div>
 
@@ -429,19 +449,35 @@ export default function QuotationPage() {
                     />
                   </div>
 
+                  {/* Location Section with Map */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-4">
+                      Ubicación de Instalación *
+                    </label>
+                    <LocationMapPicker
+                      onLocationChange={handleLocationChange}
+                      initialLat={formData.latitude}
+                      initialLng={formData.longitude}
+                      height="450px"
+                    />
+                  </div>
+
+                  {/* Address text field (now read-only, filled by map) */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Dirección *
+                      Dirección Detectada
                     </label>
                     <input
                       type="text"
                       name="address"
                       value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-                      placeholder="Dirección completa de instalación"
+                      readOnly
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed"
+                      placeholder="La dirección se detectará automáticamente al seleccionar en el mapa"
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Si la dirección no es correcta, puedes mover el marcador en el mapa para ajustarla.
+                    </p>
                   </div>
 
                   <div className="flex justify-between">
