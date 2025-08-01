@@ -13,6 +13,7 @@ export default function QuotationPage() {
     monthlyBill: '',
     familySize: '',
     appliances: [],
+    applianceQuantities: {},
     name: '',
     email: '',
     phone: '',
@@ -33,7 +34,20 @@ export default function QuotationPage() {
       ...prev,
       appliances: prev.appliances.includes(appliance)
         ? prev.appliances.filter(a => a !== appliance)
-        : [...prev.appliances, appliance]
+        : [...prev.appliances, appliance],
+      applianceQuantities: prev.appliances.includes(appliance)
+        ? { ...prev.applianceQuantities, [appliance]: undefined }
+        : { ...prev.applianceQuantities, [appliance]: 1 }
+    }))
+  }
+
+  const handleQuantityChange = (appliance, quantity) => {
+    setFormData(prev => ({
+      ...prev,
+      applianceQuantities: {
+        ...prev.applianceQuantities,
+        [appliance]: parseInt(quantity) || 1
+      }
     }))
   }
 
@@ -41,7 +55,12 @@ export default function QuotationPage() {
     const basePrice = 8000
     const billMultiplier = parseInt(formData.monthlyBill) || 100
     const familyMultiplier = parseInt(formData.familySize) || 4
-    const applianceMultiplier = formData.appliances.length * 500
+    
+    // Calculate appliance multiplier based on quantities
+    const applianceMultiplier = formData.appliances.reduce((total, appliance) => {
+      const quantity = formData.applianceQuantities[appliance] || 1
+      return total + (quantity * 500)
+    }, 0)
     
     const systemPrice = basePrice + (billMultiplier * 80) + (familyMultiplier * 1200) + applianceMultiplier
     const monthlySavings = billMultiplier * 0.8
@@ -82,6 +101,7 @@ export default function QuotationPage() {
       monthlyBill: '',
       familySize: '',
       appliances: [],
+      applianceQuantities: {},
       name: '',
       email: '',
       phone: '',
@@ -298,19 +318,34 @@ export default function QuotationPage() {
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       {appliances.map((appliance) => (
-                        <button
-                          key={appliance.name}
-                          type="button"
-                          onClick={() => handleApplianceChange(appliance.name)}
-                          className={`p-4 rounded-lg border-2 transition-all duration-300 text-center ${
-                            formData.appliances.includes(appliance.name)
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-gray-300 hover:border-primary/50'
-                          }`}
-                        >
-                          <div className="text-2xl mb-2">{appliance.icon}</div>
-                          <div className="text-xs font-medium">{appliance.name}</div>
-                        </button>
+                        <div key={appliance.name} className="space-y-2">
+                          <button
+                            type="button"
+                            onClick={() => handleApplianceChange(appliance.name)}
+                            className={`w-full p-4 rounded-lg border-2 transition-all duration-300 text-center ${
+                              formData.appliances.includes(appliance.name)
+                                ? 'border-primary bg-primary/5 text-primary'
+                                : 'border-gray-300 hover:border-primary/50'
+                            }`}
+                          >
+                            <div className="text-2xl mb-2">{appliance.icon}</div>
+                            <div className="text-xs font-medium">{appliance.name}</div>
+                          </button>
+                          {formData.appliances.includes(appliance.name) && (
+                            <div className="flex items-center gap-2 px-2">
+                              <label className="text-xs text-gray-600 font-medium">Cantidad:</label>
+                              <select
+                                value={formData.applianceQuantities[appliance.name] || 1}
+                                onChange={(e) => handleQuantityChange(appliance.name, e.target.value)}
+                                className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-transparent"
+                              >
+                                {[1, 2, 3, 4, 5].map((num) => (
+                                  <option key={num} value={num}>{num}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
