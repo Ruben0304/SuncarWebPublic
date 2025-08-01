@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -58,9 +59,9 @@ export default function Navigation() {
 
               {/* CTA Button */}
               <div className="hidden md:block">
-                <button className="px-4 py-2 lg:px-6 lg:py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
+                <Link href="/cotizacion" className="px-4 py-2 lg:px-6 lg:py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
                   Cotizar
-                </button>
+                </Link>
               </div>
 
               {/* Mobile Menu Button */}
@@ -86,9 +87,9 @@ export default function Navigation() {
                       {item.name}
                     </a>
                   ))}
-                  <button className="mt-3 px-4 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm">
+                  <Link href="/cotizacion" className="mt-3 px-4 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm text-center block" onClick={() => setIsOpen(false)}>
                     Cotizar
-                  </button>
+                  </Link>
                 </div>
               </div>
             )}
