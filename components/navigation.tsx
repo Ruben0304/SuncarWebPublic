@@ -18,9 +18,9 @@ export default function Navigation() {
 
   const navItems = [
     { name: "Inicio", href: "/" },
-    { name: "Servicios", href: "#servicios" },
+    { name: "Servicios", href: "/servicios" },
     { name: "Proyectos", href: "/projectos" },
-    { name: "Testimonios", href: "#testimonios" },
+    { name: "Testimonios", href: "/testimonios" },
     { name: "Contacto", href: "/contacto" },
   ]
 
@@ -47,13 +47,13 @@ export default function Navigation() {
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
                 {navItems.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
                     href={item.href}
                     className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium"
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
 
@@ -78,14 +78,14 @@ export default function Navigation() {
               <div className="md:hidden mt-3 pt-3 border-t border-gray-200/50">
                 <div className="flex flex-col space-y-2">
                   {navItems.map((item) => (
-                    <a
+                    <Link
                       key={item.name}
                       href={item.href}
                       className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium py-2 text-sm"
                       onClick={() => setIsOpen(false)}
                     >
                       {item.name}
-                    </a>
+                    </Link>
                   ))}
                   <Link href="/cotizacion" className="mt-3 px-4 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm text-center block" onClick={() => setIsOpen(false)}>
                     Cotizar
