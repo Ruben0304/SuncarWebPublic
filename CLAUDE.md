@@ -26,6 +26,7 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 - `components/` - Reusable UI components
   - `ui/` - Shadcn/ui component library
   - `feats/` - Feature-specific components (chat assistant)
+- `hooks/` - Custom React hooks
 - `lib/` - Utility functions and configurations
 - `public/` - Static assets including project images
 - `styles/` - Global CSS files
@@ -40,6 +41,9 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 - **Homepage** (`app/page.tsx`): Main landing page with hero, about, testimonials, and CTA sections
 - **Projects** (`app/projectos/page.tsx`): Project showcase page
 - **Contact** (`app/contacto/page.tsx`): Contact information page
+- **Quotation** (`app/cotizacion/page.tsx`): Solar installation quotation page with appliance selection
+- **Services** (`app/servicios/page.tsx`): Services information page
+- **Testimonials** (`app/testimonios/page.tsx`): Customer testimonials page
 - **Layout** (`app/layout.tsx`): Root layout with global ChatAssistant component
 
 ### Key Features
@@ -56,13 +60,18 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 
 3. **Animation System**:
    - Custom Tailwind animations and keyframes
-   - Lottie animations integration
+   - Lottie animations integration (`components/lottie-animation.tsx`)
    - Smooth transitions and hover effects
+
+4. **Location Services** (`components/LocationMapPicker.tsx`):
+   - Interactive map component for location selection
+   - Leaflet and React Leaflet integration
+   - Geographic data handling for service areas
 
 ### Package Management
 - Uses **npm** (package-lock.json present)
 - Also has **pnpm-lock.yaml** (pnpm compatible)
-- Key dependencies: Next.js, React, Radix UI, Tailwind CSS, Lucide icons, React Markdown
+- Key dependencies: Next.js, React, Radix UI, Tailwind CSS, Lucide icons, React Markdown, Leaflet, React Hook Form, Zod
 
 ## Development Notes
 
@@ -71,4 +80,7 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 - **Responsive design** prioritized throughout components
 - **Spanish language** content for Cuban solar energy market
 - **Mock data** used for testimonials and chat responses
+- **Form handling** with React Hook Form and Zod validation
+- **Map integration** with Leaflet for location-based services
+- **Comprehensive UI library** with extensive Radix UI components
 - **v0.dev integration** - changes sync automatically from v0.dev deployments

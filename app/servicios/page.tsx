@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
+import SolarCellAnimation from "@/components/SolarCellAnimation"
 
 export default function ServicesPage() {
   const services = [
@@ -124,18 +125,30 @@ export default function ServicesPage() {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="text-center text-white space-y-6" style={{ marginTop: '100px' }}>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="block animate-fade-in-up">Nuestros</span>
-              <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-200">
-                Servicios Solares
-              </span>
-            </h1>
-            <p className="text-lg lg:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-400">
-              Soluciones integrales de energía solar diseñadas para transformar tu hogar en una fuente de energía limpia, eficiente y sostenible
-            </p>
+      <section className="relative py-24 lg:py-32 bg-gradient-to-br from-primary to-blue-800 overflow-hidden min-h-[80vh] lg:min-h-[85vh]">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 h-full">
+          <div className="grid lg:grid-cols-2 gap-16 items-center h-full" style={{ marginTop: '100px' }}>
+            {/* Text Content */}
+            <div className="text-center lg:text-left text-white space-y-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                <span className="block animate-fade-in-up">Nuestros</span>
+                <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-200">
+                  Servicios Solares
+                </span>
+              </h1>
+              <p className="text-lg lg:text-xl text-blue-100 max-w-3xl lg:max-w-none leading-relaxed animate-fade-in-up animation-delay-400">
+                Soluciones integrales de energía solar diseñadas para transformar tu hogar en una fuente de energía limpia, eficiente y sostenible
+              </p>
+            </div>
+            
+            {/* Lottie Animation */}
+            <div className="flex justify-center lg:justify-end animate-fade-in-up animation-delay-600">
+              <div className="relative w-full max-w-2xl">
+                <SolarCellAnimation />
+                {/* Glow effect behind animation */}
+                <div className="absolute inset-0 bg-secondary-gradient rounded-full blur-3xl opacity-30 scale-125 -z-10"></div>
+              </div>
+            </div>
           </div>
         </div>
         

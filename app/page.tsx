@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import LottieAnimation from "@/components/lottie-animation"
+import SuncarInteractiveGame from "@/components/SuncarInteractiveGame"
 import { Star, Zap, Battery, Wrench } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
@@ -33,21 +34,28 @@ export default function HomePage() {
   ]
 
   const [count, setCount] = useState(0);
+
   useEffect(() => {
-    let start = 0;
-    const end = 1200;
-    if (start === end) return;
-    let incrementTime = 10; // ms
-    let step = Math.ceil(end / 100); // velocidad
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= end) {
-        start = end;
-        clearInterval(timer);
-      }
-      setCount(start);
-    }, incrementTime);
-    return () => clearInterval(timer);
+    // Delay para empezar el contador después de la animación de entrada
+    const startDelay = setTimeout(() => {
+      let start = 0;
+      const end = 1200;
+      const incrementTime = 20; // ms
+      const step = Math.ceil(end / 100); // velocidad
+      
+      const timer = setInterval(() => {
+        start += step;
+        if (start >= end) {
+          start = end;
+          clearInterval(timer);
+        }
+        setCount(start);
+      }, incrementTime);
+      
+      return () => clearInterval(timer);
+    }, 1200); // Empezar después de 1.2 segundos
+    
+    return () => clearTimeout(startDelay);
   }, []);
 
 
@@ -59,30 +67,30 @@ export default function HomePage() {
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Hero Text */}
-            <div className="space-y-6 lg:space-y-8">
-              <div className="space-y-3 lg:space-y-4">
+                          <div className="space-y-6 lg:space-y-8 relative">
+              <div className="space-y-3 lg:space-y-4 relative">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-loose">
-                  <span className="inline-block animate-fade-in-up animation-delay-200">Energía Solar</span>
-                  <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-400 pb-2" >
-                    Para Tu Hogar
+                  <span className="inline-block opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.3s forwards, gentle-float 8s ease-in-out 1.5s infinite'}}>Energía Solar</span>
+                  <span className="block bg-secondary-gradient bg-clip-text text-transparent opacity-0 pb-2" style={{animation: 'subtle-fade-in 0.8s ease-out 0.5s forwards, gentle-float 8s ease-in-out 1.7s infinite'}}>
+                    Para Tu Futuro
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg animate-fade-in-up animation-delay-600" >
-                  Transforma tu hogar con energía limpia y renovable. Reduce tus costos eléctricos hasta un 90% con
+                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards, gentle-float 8s ease-in-out 1.9s infinite'}}>
+                  Transforma tu hogar o negocio con energía limpia y renovable. Reduce tus costos eléctricos hasta un 90% con
                   nuestros sistemas de paneles solares y baterías de última generación.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 animate-fade-in-up animation-delay-800">
-                <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
+              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards, gentle-float 8s ease-in-out 2.1s infinite'}}>
+                <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">
                   Cotizar Ahora
                 </button>
-                <button className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300 text-sm lg:text-base">
+                <button className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300 text-sm lg:text-base hover-magnetic">
                   Ver Proyectos
                 </button>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-start sm:gap-6 lg:gap-8 pt-3 lg:pt-4 animate-fade-in-up animation-delay-1000">
+              <div className="flex items-center justify-between sm:justify-start sm:gap-6 lg:gap-8 pt-3 lg:pt-4 opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 1.1s forwards, gentle-float 8s ease-in-out 2.3s infinite'}}>
                 {/* Contador animado de kW instalados */}
                 <div className="text-left w-full">
                   <div className="text-3xl lg:text-4xl font-bold text-primary">
@@ -94,16 +102,26 @@ export default function HomePage() {
             </div>
 
             {/* Hero Image */}
-            <div className="relative animate-fade-in-right animation-delay-400">
+            <div className="relative opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.4s forwards, gentle-float-image 10s ease-in-out 1.8s infinite'}}>
               <div className="relative aspect-[3/4] lg:aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
                 <Image
-                  src="/images/hero-suncar.jpg"
+                  src="/images/suncar hero.jpg"
                   alt="Logo futurista Suncar - Energía Solar"
                   fill
                   className="object-cover"
                   priority
                 />
+                
+                {/* Magic stars rotating around image */}
+                
+                {/* Floating particles around image */}
+                <div className="floating-particle particle-1" style={{ top: '10%', left: '20%' }}></div>
+                <div className="floating-particle particle-2" style={{ top: '30%', right: '15%' }}></div>
+                <div className="floating-particle particle-3" style={{ bottom: '20%', left: '10%' }}></div>
+                <div className="floating-particle particle-4" style={{ bottom: '40%', right: '20%' }}></div>
+                <div className="floating-particle particle-5" style={{ top: '60%', left: '5%' }}></div>
+                <div className="floating-particle particle-6" style={{ top: '20%', right: '5%' }}></div>
               </div>
               {/* Decorative elements */}
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary-gradient rounded-full opacity-20 blur-xl animate-pulse"></div>
@@ -116,6 +134,7 @@ export default function HomePage() {
         <div className="absolute top-20 left-10 w-2 h-2 bg-secondary-gradient rounded-full animate-bounce animation-delay-1000"></div>
         <div className="absolute top-40 right-20 w-3 h-3 bg-primary/30 rounded-full animate-bounce animation-delay-1200"></div>
         <div className="absolute bottom-40 left-20 w-1 h-1 bg-secondary-gradient rounded-full animate-bounce animation-delay-800"></div>
+        
       </section>
 
       {/* About Section */}
@@ -137,7 +156,7 @@ export default function HomePage() {
                   Especialistas en Energía Solar
                 </h2>
                 <p className="text-sm lg:text-base text-gray-600 leading-relaxed">
-                  Transformamos hogares cubanos con tecnología solar de vanguardia.
+                  Transformamos hogares y negocios cubanos con tecnología solar de vanguardia.
                 </p>
               </div>
 
@@ -177,6 +196,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Interactive Suncar Game Section */}
+      <SuncarInteractiveGame />
+
       {/* Testimonials Section */}
       <section className="py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
@@ -188,7 +210,7 @@ export default function HomePage() {
               Lo Que Dicen Nuestros Clientes
             </h2>
                             <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
-              Miles de familias cubanas ya disfrutan de los beneficios de la energía solar con Suncar
+              Miles de familias y empresas cubanas ya disfrutan de los beneficios de la energía solar con Suncar
             </p>
           </div>
 
@@ -196,19 +218,19 @@ export default function HomePage() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-gray-50 rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                className={`bg-gray-50 rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 hover-magnetic animate-scale-in animation-delay-${600 + index * 200}`}
               >
-                <div className="flex items-center gap-1 mb-3 lg:mb-4">
+                <div className={`flex items-center gap-1 mb-3 lg:mb-4 animate-fade-in-up animation-delay-${800 + index * 200}`}>
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 lg:w-5 lg:h-5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className={`w-4 h-4 lg:w-5 lg:h-5 fill-yellow-400 text-yellow-400 animate-bounce-slow animation-delay-${1000 + index * 200 + i * 100}`} />
                   ))}
                 </div>
 
-                <p className="text-gray-700 mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base">
+                <p className={`text-gray-700 mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base animate-fade-in-up animation-delay-${1200 + index * 200}`}>
                   "{testimonial.comment}"
                 </p>
 
-                <div className="border-t pt-3 lg:pt-4">
+                <div className={`border-t pt-3 lg:pt-4 animate-fade-in-up animation-delay-${1400 + index * 200}`}>
                   <div className="font-semibold text-primary text-sm lg:text-base">{testimonial.name}</div>
                   <div className="text-xs lg:text-sm text-gray-500">{testimonial.location}</div>
                 </div>
@@ -229,16 +251,16 @@ export default function HomePage() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto space-y-6 lg:space-y-8">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-              ¿Listo Para Ahorrar en Tu Factura Eléctrica?
+              ¿Listo Para Tu Independencia Energética?
             </h2>
             <p className="text-lg lg:text-xl text-blue-100">
-              Obtén una cotización gratuita y descubre cuánto puedes ahorrar con energía solar
+              Obtén una cotización gratuita y descubre cuánto pueden ahorrar tu hogar o empresa con energía solar
             </p>
             <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center">
-              <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
+              <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">
                 Cotización Gratuita
               </button>
-              <button className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300 text-sm lg:text-base">
+              <button className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300 text-sm lg:text-base hover-magnetic">
                 Llamar Ahora
               </button>
             </div>
