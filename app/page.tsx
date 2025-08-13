@@ -7,6 +7,8 @@ import { Star, Zap, Battery, Wrench } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 import React, { useEffect, useState } from "react"
+import { useTypewriter } from "@/hooks/useTypewriter"
+import { useLoadingContext } from "@/hooks/useLoadingContext"
 
 export default function HomePage() {
   const testimonials = [
@@ -34,9 +36,29 @@ export default function HomePage() {
   ]
 
   const [count, setCount] = useState(0);
+  const { isLoadingComplete } = useLoadingContext();
+
+  // Typewriter effects sincronizados con el loader
+  const blueText = useTypewriter({ 
+    text: "Energía Solar", 
+    speed: 120, 
+    delay: 300, // Inicia casi inmediatamente después del loader
+    waitForLoading: true,
+    isLoadingComplete
+  });
+  
+  const orangeText = useTypewriter({ 
+    text: "Para Tu Futuro", 
+    speed: 120, 
+    delay: blueText.isComplete ? 200 : 999999,
+    waitForLoading: false, // No necesita esperar al loader ya que depende del blueText
+    isLoadingComplete: true
+  });
 
   useEffect(() => {
-    // Delay para empezar el contador después de la animación de entrada
+    // Solo iniciar el contador cuando el loading haya terminado y el typewriter esté completo
+    if (!isLoadingComplete || !orangeText.isComplete) return;
+
     const startDelay = setTimeout(() => {
       let start = 0;
       const end = 1200;
@@ -53,14 +75,14 @@ export default function HomePage() {
       }, incrementTime);
       
       return () => clearInterval(timer);
-    }, 1200); // Empezar después de 1.2 segundos
+    }, 500); // Pequeño delay después de que termine el typewriter
     
     return () => clearTimeout(startDelay);
-  }, []);
+  }, [isLoadingComplete, orangeText.isComplete]);
 
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navigation />
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center px-4 py-24 md:px-6 lg:px-8 lg:py-0 overflow-hidden">
@@ -70,9 +92,13 @@ export default function HomePage() {
                           <div className="space-y-6 lg:space-y-8 relative">
               <div className="space-y-3 lg:space-y-4 relative">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold text-primary leading-loose">
-                  <span className="inline-block opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.3s forwards, gentle-float 8s ease-in-out 1.5s infinite'}}>Energía Solar</span>
-                  <span className="block bg-secondary-gradient bg-clip-text text-transparent opacity-0 pb-2" style={{animation: 'subtle-fade-in 0.8s ease-out 0.5s forwards, gentle-float 8s ease-in-out 1.7s infinite'}}>
-                    Para Tu Futuro
+                  <span className="inline-block min-h-[1.2em]">
+                    {blueText.displayText}
+                    {!blueText.isComplete && <span className="animate-pulse">|</span>}
+                  </span>
+                  <span className="block bg-secondary-gradient bg-clip-text text-transparent pb-2 min-h-[1.2em]">
+                    {orangeText.displayText}
+                    {!orangeText.isComplete && <span className="animate-pulse text-orange-500">|</span>}
                   </span>
                 </h1>
                 <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards, gentle-float 8s ease-in-out 1.9s infinite'}}>

@@ -2,19 +2,21 @@
 
 import { useState } from "react"
 import LoadingScreen from "./LoadingScreen"
+import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext"
 
 interface ClientWrapperProps {
   children: React.ReactNode
 }
 
-export default function ClientWrapper({ children }: ClientWrapperProps) {
+function ClientWrapperContent({ children }: ClientWrapperProps) {
   const [isLoading, setIsLoading] = useState(true)
-  const [showContent, setShowContent] = useState(false)
+  const { setLoadingComplete } = useLoadingContext()
 
   const handleLoadingComplete = () => {
     setIsLoading(false)
+    setLoadingComplete(true)
     setTimeout(() => {
-      setShowContent(true)
+      // Delay adicional para suavizar la transición
     }, 200)
   }
 
@@ -29,5 +31,13 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
         {children}
       </div>
     </>
+  )
+}
+
+export default function ClientWrapper({ children }: ClientWrapperProps) {
+  return (
+    <LoadingProvider>
+      <ClientWrapperContent>{children}</ClientWrapperContent>
+    </LoadingProvider>
   )
 }

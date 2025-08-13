@@ -158,7 +158,7 @@ export default function RootLayout({
         <meta name="geo.placename" content="La Habana" />
         <meta name="ICBM" content="23.1136,-82.3666" />
       </head>
-      <body>
+      <body className="overflow-x-hidden">
         <ClientWrapper>
           {children}
           <ChatAssistant />

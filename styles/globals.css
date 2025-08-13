@@ -4,6 +4,7 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 @layer utilities {
@@ -122,7 +123,7 @@ body {
 /* Magic Stars Around Image */
 @keyframes rotate-around-image {
   0% {
-    transform: rotate(0deg) translateX(200px) rotate(0deg);
+    transform: rotate(0deg) translateX(150px) rotate(0deg);
     opacity: 0;
   }
   5% {
@@ -132,7 +133,7 @@ body {
     opacity: 1;
   }
   100% {
-    transform: rotate(360deg) translateX(200px) rotate(-360deg);
+    transform: rotate(360deg) translateX(150px) rotate(-360deg);
     opacity: 0.8;
   }
 }

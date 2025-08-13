@@ -121,29 +121,29 @@ export default function ServicesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative py-24 lg:py-32 bg-gradient-to-br from-primary to-blue-800 overflow-hidden min-h-[80vh] lg:min-h-[85vh]">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 h-full">
-          <div className="grid lg:grid-cols-2 gap-16 items-center h-full" style={{ marginTop: '100px' }}>
+      <section className="relative pt-20 pb-8 sm:pt-24 sm:pb-12 lg:py-32 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-16 items-center min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-96px)] lg:min-h-[85vh]">
             {/* Text Content */}
-            <div className="text-center lg:text-left text-white space-y-8">
+            <div className="text-center lg:text-left text-white space-y-4 sm:space-y-6 lg:space-y-8 order-1 lg:order-1">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 <span className="block animate-fade-in-up">Nuestros</span>
                 <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-200">
                   Servicios Solares
                 </span>
               </h1>
-              <p className="text-lg lg:text-xl text-blue-100 max-w-3xl lg:max-w-none leading-relaxed animate-fade-in-up animation-delay-400">
+              <p className="text-base sm:text-lg lg:text-xl text-blue-100 max-w-2xl mx-auto lg:mx-0 lg:max-w-none leading-relaxed animate-fade-in-up animation-delay-400">
                 Soluciones integrales de energía solar diseñadas para transformar tu hogar en una fuente de energía limpia, eficiente y sostenible
               </p>
             </div>
             
             {/* Lottie Animation */}
-            <div className="flex justify-center lg:justify-end animate-fade-in-up animation-delay-600">
-              <div className="relative w-full max-w-2xl">
+            <div className="flex justify-center lg:justify-end animate-fade-in-up animation-delay-600 order-2 lg:order-2 w-full">
+              <div className="relative w-full max-w-lg sm:max-w-xl lg:max-w-2xl xl:max-w-3xl">
                 <SolarCellAnimation />
                 {/* Glow effect behind animation */}
                 <div className="absolute inset-0 bg-secondary-gradient rounded-full blur-3xl opacity-30 scale-125 -z-10"></div>
@@ -159,7 +159,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Grid */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-8 sm:py-12 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">
