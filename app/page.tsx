@@ -63,13 +63,13 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Navigation />
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center px-4 py-20 md:px-6 lg:px-8 lg:py-0 overflow-hidden">
+      <section className="relative min-h-screen flex items-center px-4 py-24 md:px-6 lg:px-8 lg:py-0 overflow-hidden">
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Hero Text */}
                           <div className="space-y-6 lg:space-y-8 relative">
               <div className="space-y-3 lg:space-y-4 relative">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-loose">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold text-primary leading-loose">
                   <span className="inline-block opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.3s forwards, gentle-float 8s ease-in-out 1.5s infinite'}}>Energía Solar</span>
                   <span className="block bg-secondary-gradient bg-clip-text text-transparent opacity-0 pb-2" style={{animation: 'subtle-fade-in 0.8s ease-out 0.5s forwards, gentle-float 8s ease-in-out 1.7s infinite'}}>
                     Para Tu Futuro
@@ -103,13 +103,14 @@ export default function HomePage() {
 
             {/* Hero Image */}
             <div className="relative opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.4s forwards, gentle-float-image 10s ease-in-out 1.8s infinite'}}>
-              <div className="relative aspect-[3/4] lg:aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
                 <Image
                   src="/images/suncar hero.jpg"
                   alt="Logo futurista Suncar - Energía Solar"
-                  fill
-                  className="object-cover"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-contain"
                   priority
                 />
                 
@@ -138,56 +139,56 @@ export default function HomePage() {
       </section>
 
       {/* About Section */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-12 sm:py-16 lg:py-28 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-20 items-center">
             {/* Lottie Animation - Now takes more space */}
             <div className="order-2 lg:order-1 lg:col-span-3">
               <LottieAnimation />
             </div>
 
             {/* Content - Now takes less space */}
-            <div className="order-1 lg:order-2 lg:col-span-2 space-y-4 lg:space-y-6">
-              <div className="space-y-3 lg:space-y-4">
-                <div className="inline-block px-3 py-1 lg:px-4 lg:py-2 bg-secondary-gradient text-white text-xs lg:text-sm font-semibold rounded-full">
+            <div className="order-1 lg:order-2 lg:col-span-2 space-y-6 lg:space-y-8">
+              <div className="space-y-4 lg:space-y-6">
+                <div className="inline-block px-4 py-2 lg:px-6 lg:py-3 bg-secondary-gradient text-white text-sm lg:text-base font-semibold rounded-full">
                   Sobre Suncar
                 </div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary leading-tight">
                   Especialistas en Energía Solar
                 </h2>
-                <p className="text-sm lg:text-base text-gray-600 leading-relaxed">
+                <p className="text-base lg:text-lg xl:text-xl text-gray-600 leading-relaxed">
                   Transformamos hogares y negocios cubanos con tecnología solar de vanguardia.
                 </p>
               </div>
 
-              <div className="space-y-3 lg:space-y-4">
-                <div className="flex items-start gap-2 lg:gap-3">
-                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+              <div className="space-y-4 lg:space-y-6">
+                <div className="flex items-start gap-3 lg:gap-4">
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-primary text-xs lg:text-sm mb-1">Paneles Premium</h3>
-                    <p className="text-gray-600 text-xs lg:text-sm">Máxima eficiencia energética</p>
+                    <h3 className="font-semibold text-primary text-sm lg:text-base xl:text-lg mb-1">Paneles Premium</h3>
+                    <p className="text-gray-600 text-sm lg:text-base xl:text-lg">Máxima eficiencia energética</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2 lg:gap-3">
-                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Battery className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+                <div className="flex items-start gap-3 lg:gap-4">
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Battery className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-primary text-xs lg:text-sm mb-1">Baterías Inteligentes</h3>
-                    <p className="text-gray-600 text-xs lg:text-sm">Energía 24/7 disponible</p>
+                    <h3 className="font-semibold text-primary text-sm lg:text-base xl:text-lg mb-1">Baterías Inteligentes</h3>
+                    <p className="text-gray-600 text-sm lg:text-base xl:text-lg">Energía 24/7 disponible</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2 lg:gap-3">
-                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Wrench className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+                <div className="flex items-start gap-3 lg:gap-4">
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Wrench className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-primary text-xs lg:text-sm mb-1">Soporte Técnico</h3>
-                    <p className="text-gray-600 text-xs lg:text-sm">Mantenimiento especializado</p>
+                    <h3 className="font-semibold text-primary text-sm lg:text-base xl:text-lg mb-1">Soporte Técnico</h3>
+                    <p className="text-gray-600 text-sm lg:text-base xl:text-lg">Mantenimiento especializado</p>
                   </div>
                 </div>
               </div>
