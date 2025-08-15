@@ -5,7 +5,7 @@ import { Calculator, Zap, Home, DollarSign, CheckCircle, ArrowRight, Sun, Batter
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 import dynamic from "next/dynamic"
-import { cotizacionService } from "@/services/api/cotizacionApiService"
+import { clientCotizacionService } from "@/services/api/clientCotizacionService"
 import { CotizacionData } from "@/services/domain/interfaces/cotizacionInterfaces"
 
 // Dynamic import for the map component to avoid SSR issues
@@ -196,7 +196,7 @@ export default function QuotationPage() {
         fechaSolicitud: new Date().toISOString()
       }
       
-      const response = await cotizacionService.enviarCotizacion(cotizacionData)
+      const response = await clientCotizacionService.enviarCotizacion(cotizacionData)
       
       if (response.success) {
         setSubmitStatus({ type: 'success', message: 'Cotización enviada exitosamente. Te contactaremos pronto.' })
