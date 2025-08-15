@@ -1,5 +1,6 @@
 // Exportar servicios de API
 export { cotizacionService } from './api/cotizacionApiService';
+export { clientCotizacionService } from './api/clientCotizacionService';
 export { BaseApiService, ApiError } from './api/baseApiService';
 
 // Exportar interfaces del dominio
