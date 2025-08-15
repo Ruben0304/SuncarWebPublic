@@ -73,6 +73,12 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 - Also has **pnpm-lock.yaml** (pnpm compatible)
 - Key dependencies: Next.js, React, Radix UI, Tailwind CSS, Lucide icons, React Markdown, Leaflet, React Hook Form, Zod
 
+### Environment Configuration
+- **Environment variables**: Configured via `.env` file (not committed to repository)
+- **Backend URL**: `BACKEND_URL` - Server-side API endpoint for backend services
+- **Security**: Backend URL is kept server-side only (no `NEXT_PUBLIC_` prefix)
+- **Deployment**: Configured in Railway environment variables for production
+
 ## Development Notes
 
 - This is a **client-side focused** application with "use client" directives

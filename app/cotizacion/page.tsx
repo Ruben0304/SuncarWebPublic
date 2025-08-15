@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { Calculator, Zap, Home, DollarSign, CheckCircle, ArrowRight, Sun, Battery, Shield } from "lucide-react"
+import { Calculator, Zap, Home, DollarSign, CheckCircle, ArrowRight, Sun, Battery, Shield, Loader2 } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 import dynamic from "next/dynamic"
+import { cotizacionService } from "@/services/api/cotizacionApiService"
+import { CotizacionData } from "@/services/domain/interfaces/cotizacionInterfaces"
 
 // Dynamic import for the map component to avoid SSR issues
 const LocationMapPicker = dynamic(() => import("@/components/LocationMapPicker"), {
@@ -25,10 +27,13 @@ export default function QuotationPage() {
     email: '',
     phone: '',
     address: '',
+    description: '',
     latitude: 23.1136, // Havana, Cuba default coordinates
     longitude: -82.3666
   })
   const [quote, setQuote] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState(null)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -124,21 +129,90 @@ export default function QuotationPage() {
       email: '',
       phone: '',
       address: '',
+      description: '',
       latitude: 23.1136,
       longitude: -82.3666
     })
   }
 
   const appliances = [
-    { name: 'Aire Acondicionado', icon: '❄️' },
-    { name: 'Refrigerador', icon: '🧊' },
-    { name: 'Lavadora', icon: '👕' },
-    { name: 'Televisor', icon: '📺' },
-    { name: 'Computadora', icon: '💻' },
-    { name: 'Microondas', icon: '🍽️' },
-    { name: 'Plancha', icon: '👔' },
-    { name: 'Bomba de Agua', icon: '💧' }
+    { name: 'Aire Acondicionado', icon: '❄️', potencia: 2500, horasUso: 8 },
+    { name: 'Refrigerador', icon: '🧊', potencia: 150, horasUso: 24 },
+    { name: 'Lavadora', icon: '👕', potencia: 500, horasUso: 2 },
+    { name: 'Televisor', icon: '📺', potencia: 100, horasUso: 6 },
+    { name: 'Computadora', icon: '💻', potencia: 300, horasUso: 8 },
+    { name: 'Microondas', icon: '🍽️', potencia: 1200, horasUso: 1 },
+    { name: 'Plancha', icon: '👔', potencia: 1500, horasUso: 1 },
+    { name: 'Bomba de Agua', icon: '💧', potencia: 750, horasUso: 2 }
   ]
+
+  const enviarCotizacion = async () => {
+    setIsSubmitting(true)
+    setSubmitStatus(null)
+    
+    try {
+      // Transformar datos del formulario al formato esperado
+      const electrodomesticosSeleccionados = formData.appliances.map(applianceName => {
+        const appliance = appliances.find(a => a.name === applianceName)
+        const cantidad = formData.applianceQuantities[applianceName] || 1
+        const potencia = appliance?.potencia || 0
+        const horasUso = appliance?.horasUso || 0
+        const consumoDiario = (potencia * horasUso * cantidad) / 1000 // kWh
+        
+        return {
+          nombre: applianceName,
+          cantidad,
+          potencia,
+          horasUso,
+          consumoDiario
+        }
+      })
+
+      const consumoTotalDiario = electrodomesticosSeleccionados.reduce(
+        (total, electro) => total + electro.consumoDiario, 0
+      )
+      
+      const potenciaRequerida = quote?.systemSize || 0
+
+      // Separar dirección en municipio/provincia (simplificado)
+      const direccionParts = formData.address.split(', ')
+      const municipio = direccionParts.length > 1 ? direccionParts[direccionParts.length - 2] : 'No especificado'
+      const provincia = direccionParts.length > 0 ? direccionParts[direccionParts.length - 1] : 'No especificado'
+
+      const cotizacionData: CotizacionData = {
+        nombre: formData.name,
+        telefono: formData.phone,
+        email: formData.email,
+        direccion: formData.address,
+        municipio,
+        provincia,
+        consumoMensual: parseInt(formData.monthlyBill) * 30 || 0, // Estimación kWh mensual
+        tipoInstalacion: formData.homeType === 'Casa' ? 'residencial' : 
+                        formData.homeType === 'Local Comercial' ? 'comercial' : 'residencial',
+        electrodomesticos: electrodomesticosSeleccionados,
+        consumoTotalDiario,
+        potenciaRequerida,
+        comentarios: formData.description || '',
+        fechaSolicitud: new Date().toISOString()
+      }
+      
+      const response = await cotizacionService.enviarCotizacion(cotizacionData)
+      
+      if (response.success) {
+        setSubmitStatus({ type: 'success', message: 'Cotización enviada exitosamente. Te contactaremos pronto.' })
+      } else {
+        setSubmitStatus({ type: 'error', message: response.message || 'Error al enviar la cotización' })
+      }
+    } catch (error) {
+      console.error('Error enviando cotización:', error)
+      setSubmitStatus({ 
+        type: 'error', 
+        message: 'Error de conexión. Por favor, intenta nuevamente.' 
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -336,6 +410,11 @@ export default function QuotationPage() {
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       Electrodomésticos Principales (selecciona los que tienes)
                     </label>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-blue-700">
+                        <span className="font-semibold">💡 Información importante:</span> La selección de electrodomésticos es <strong>opcional</strong> y solo sirve para tener un <strong>aproximado</strong> de equipos. Puedes omitir esta sección si lo deseas.
+                      </p>
+                    </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       {appliances.map((appliance) => (
                         <div key={appliance.name} className="space-y-2">
@@ -480,6 +559,24 @@ export default function QuotationPage() {
                     </p>
                   </div>
 
+                  {/* Optional description field */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Información Adicional (Opcional)
+                    </label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      rows={4}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 resize-vertical"
+                      placeholder="Puedes agregar cualquier detalle que consideres importante: tipo de instalación deseada, necesidades específicas, horarios de uso de electrodomésticos, restricciones del techo, presupuesto aproximado, dudas particulares, etc. Esta información nos ayudará a personalizar mejor tu cotización."
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Este campo es completamente opcional. Puedes escribir cualquier cosa que consideres relevante para tu proyecto solar.
+                    </p>
+                  </div>
+
                   <div className="flex justify-between">
                     <button
                       onClick={prevStep}
@@ -564,9 +661,36 @@ export default function QuotationPage() {
                     <p className="text-gray-600 mb-6">
                       Esta cotización es aproximada. Un especialista se contactará contigo para una evaluación detallada.
                     </p>
+                    
+                    {submitStatus && (
+                      <div className={`p-4 rounded-lg mb-6 ${
+                        submitStatus.type === 'success' 
+                          ? 'bg-green-50 border border-green-200 text-green-700' 
+                          : 'bg-red-50 border border-red-200 text-red-700'
+                      }`}>
+                        <p className="font-medium">{submitStatus.message}</p>
+                      </div>
+                    )}
+                    
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                        Confirmar Interés
+                      <button 
+                        onClick={enviarCotizacion}
+                        disabled={isSubmitting || submitStatus?.type === 'success'}
+                        className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Enviando...
+                          </>
+                        ) : submitStatus?.type === 'success' ? (
+                          <>
+                            <CheckCircle className="w-5 h-5" />
+                            Enviado
+                          </>
+                        ) : (
+                          'Enviar Cotización'
+                        )}
                       </button>
                       <button 
                         onClick={resetQuote}
