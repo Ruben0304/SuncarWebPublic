@@ -1,4 +1,4 @@
-import { CotizacionData, CotizacionResponse } from '../domain/interfaces/cotizacionInterfaces';
+import { CotizacionData, CotizacionResponse } from '@/services';
 
 export class ClientCotizacionService {
   

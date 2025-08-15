@@ -32,5 +32,5 @@ export interface CotizacionData {
 export interface CotizacionResponse {
   success: boolean;
   message: string;
-  id?: string;
+  mensaje_recibido: string;
 }
