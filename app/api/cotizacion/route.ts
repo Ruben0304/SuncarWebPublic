@@ -28,16 +28,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Asegurar que la URL tenga protocolo
-    const fullBackendUrl = backendUrl.startsWith('http') ? backendUrl : `http://${backendUrl}`;
-
     // Enviar al backend real
-    console.log(`Enviando solicitud a: ${fullBackendUrl}/api/cotizacion`);
+    const targetUrl = `${backendUrl}/api/cotizacion`;
+    console.log(`=== DEBUG BACKEND CALL ===`);
+    console.log(`BACKEND_URL env var: ${backendUrl}`);
+    console.log(`Target URL: ${targetUrl}`);
     console.log('Datos a enviar:', { mensaje: textoFormateado });
+    console.log(`=== END DEBUG ===`);
     
-    const backendResponse = await fetch(`${fullBackendUrl}/api/cotizacion`, {
+    const backendResponse = await fetch(targetUrl, {
       method: 'POST',
       headers: {
+        'accept': 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
