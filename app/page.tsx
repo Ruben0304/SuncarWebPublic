@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import LottieAnimation from "@/components/lottie-animation"
 import SuncarInteractiveGame from "@/components/SuncarInteractiveGame"
 import { Star, Zap, Battery, Wrench } from "lucide-react"
@@ -108,9 +109,9 @@ export default function HomePage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards, gentle-float 8s ease-in-out 2.1s infinite'}}>
-                <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">
+                <Link href="/cotizacion" className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">
                   Cotizar Ahora
-                </button>
+                </Link>
                 <button className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300 text-sm lg:text-base hover-magnetic">
                   Ver Proyectos
                 </button>
