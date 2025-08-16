@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_CU',
-    url: 'https://suncar-cuba.com',
+    url: 'https://suncarsrl.com',
     siteName: 'SunCar Cuba',
     title: 'SunCar Cuba - Energía Solar para Tu Hogar',
     description: 'Reduce tu factura eléctrica hasta 90% con nuestros sistemas de paneles solares y baterías de última generación. Instalación profesional en Cuba.',
@@ -52,13 +52,13 @@ export const metadata: Metadata = {
     description: 'Reduce tu factura eléctrica hasta 90% con nuestros sistemas de paneles solares y baterías de última generación.',
     images: ['/images/hero-suncar.jpg'],
   },
-  alternates: {
-    canonical: 'https://suncar-cuba.com',
-    languages: {
-      'es-CU': 'https://suncar-cuba.com',
-      'es': 'https://suncar-cuba.com',
-    },
-  },
+  // alternates: {
+  //   canonical: 'https://suncar-cuba.com',
+  //   languages: {
+  //     'es-CU': 'https://suncar-cuba.com',
+  //     'es': 'https://suncar-cuba.com',
+  //   },
+  // },
   verification: {
     google: 'your-google-verification-code',
     yandex: 'your-yandex-verification-code',
@@ -92,8 +92,8 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "SunCar Cuba",
               "alternateName": "Suncar",
-              "url": "https://suncar-cuba.com",
-              "logo": "https://suncar-cuba.com/images/logo.png",
+              "url": "https://suncarsrl.com",
+              "logo": "https://suncarsrl.com/images/logo.png",
               "contactPoint": {
                 "@type": "ContactPoint",
                 "telephone": "+53-XXXXXXXXX",
@@ -152,7 +152,7 @@ export default function RootLayout({
             })
           }}
         />
-        <link rel="canonical" href="https://suncar-cuba.com" />
+        <link rel="canonical" href="https://suncarsrl.com" />
         <meta name="geo.region" content="CU" />
         <meta name="geo.country" content="Cuba" />
         <meta name="geo.placename" content="La Habana" />
