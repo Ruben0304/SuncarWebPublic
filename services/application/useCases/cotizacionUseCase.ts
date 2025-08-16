@@ -18,20 +18,17 @@ export class CotizacionFormatter {
       fechaSolicitud
     } = data;
 
-    // Formatear electrodomésticos
+    // Formatear electrodomésticos de forma simple
     const electrodomesticosTexto = electrodomesticos
       .map(electro => 
-        `• ${electro.nombre} (${electro.cantidad} unidad${electro.cantidad > 1 ? 'es' : ''}): ${electro.potencia}W, ${electro.horasUso}h/día, ${electro.consumoDiario.toFixed(2)}kWh/día`
+        `${electro.nombre} (${electro.cantidad} unidad${electro.cantidad > 1 ? 'es' : ''}): ${electro.potencia}W, ${electro.horasUso}h diarias, consumo ${electro.consumoDiario.toFixed(2)}kWh por día`
       )
       .join('\n');
 
-    // Crear texto formateado para email
-    const textoCompleto = `
-═══════════════════════════════════════════════════════════════
-                    SOLICITUD DE COTIZACIÓN SOLAR
-═══════════════════════════════════════════════════════════════
+    // Crear texto profesional y legible
+    const textoCompleto = `🌞 SOLICITUD DE COTIZACIÓN SOLAR - SUNCAR
 
-📅 FECHA DE SOLICITUD: ${new Date(fechaSolicitud).toLocaleDateString('es-CU', {
+📅 Fecha de solicitud: ${new Date(fechaSolicitud).toLocaleDateString('es-CU', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -40,56 +37,47 @@ export class CotizacionFormatter {
       minute: '2-digit'
     })}
 
-👤 INFORMACIÓN DEL CLIENTE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Nombre completo: ${nombre}
+👤 Datos del cliente:
+Nombre: ${nombre}
 Teléfono: ${telefono}
-Correo electrónico: ${email}
+Email: ${email}
 Dirección: ${direccion}
 Municipio: ${municipio}
 Provincia: ${provincia}
 
-🏢 TIPO DE INSTALACIÓN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Categoría: ${tipoInstalacion.charAt(0).toUpperCase() + tipoInstalacion.slice(1)}
+🏠 Tipo de instalación: ${tipoInstalacion.charAt(0).toUpperCase() + tipoInstalacion.slice(1)}
 
-⚡ INFORMACIÓN DE CONSUMO ENERGÉTICO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚡ Información energética:
 Consumo mensual actual: ${consumoMensual} kWh
 Consumo diario estimado: ${consumoTotalDiario.toFixed(2)} kWh
 Potencia requerida del sistema: ${potenciaRequerida.toFixed(2)} kW
 
-🔌 ELECTRODOMÉSTICOS Y EQUIPOS SELECCIONADOS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔌 Electrodomésticos principales:
 ${electrodomesticosTexto}
 
-📊 RESUMEN TÉCNICO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Total de equipos configurados: ${electrodomesticos.length} tipos diferentes
-Consumo diario total calculado: ${consumoTotalDiario.toFixed(2)} kWh
-Potencia total requerida: ${potenciaRequerida.toFixed(2)} kW
-Estimación de paneles solares necesarios: ${Math.ceil(potenciaRequerida / 0.4)} paneles de 400W aproximadamente
+📊 Resumen técnico:
+Total de equipos: ${electrodomesticos.length} tipos diferentes
+Consumo diario total: ${consumoTotalDiario.toFixed(2)} kWh
+Potencia requerida: ${potenciaRequerida.toFixed(2)} kW
+Paneles estimados: ${Math.ceil(potenciaRequerida / 0.4)} paneles de 400W aproximadamente
 
-${comentarios ? `💬 COMENTARIOS ADICIONALES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${comentarios ? `💬 Comentarios adicionales del cliente:
 ${comentarios}
 
-` : ''}📋 PRÓXIMOS PASOS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+` : ''}🚀 Próximos pasos:
 1. Revisión técnica de los requerimientos
 2. Evaluación del sitio de instalación
-3. Cálculo detallado del sistema solar
-4. Elaboración de propuesta económica personalizada
-5. Contacto directo con el cliente para coordinación
+3. Cálculo detallado del sistema solar personalizado
+4. Elaboración de propuesta económica
+5. Contacto directo para coordinación de la instalación
 
-═══════════════════════════════════════════════════════════════
-                    SUNCAR - Energía Solar para Cuba
-                      Soluciones energéticas sostenibles
-═══════════════════════════════════════════════════════════════
+📞 Esta cotización será procesada por nuestro equipo técnico especializado en sistemas solares. Nos pondremos en contacto contigo a la brevedad para brindarte una propuesta personalizada.
 
-Esta solicitud fue generada automáticamente desde el sistema de cotización web de Suncar.
-Para más información, visite: www.suncar.cu
-    `.trim();
+SUNCAR - Energía Solar para Cuba 🇨🇺
+Soluciones energéticas sostenibles y eficientes
+www.suncar.cu
+
+Solicitud generada automáticamente desde nuestro sistema web.`;
 
     return textoCompleto;
   }

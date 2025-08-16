@@ -31,9 +31,9 @@ export default function QuotationPage() {
     latitude: 23.1136, // Havana, Cuba default coordinates
     longitude: -82.3666
   })
-  const [quote, setQuote] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState(null)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -65,38 +65,80 @@ export default function QuotationPage() {
     }))
   }
 
-  const calculateQuote = () => {
-    const basePrice = 8000
-    const billMultiplier = parseInt(formData.monthlyBill) || 100
-    const familyMultiplier = parseInt(formData.familySize) || 4
+  const submitQuotation = async () => {
+    setIsSubmitting(true)
+    setSubmitStatus(null)
     
-    // Calculate appliance multiplier based on quantities
-    const applianceMultiplier = formData.appliances.reduce((total, appliance) => {
-      const quantity = formData.applianceQuantities[appliance] || 1
-      return total + (quantity * 500)
-    }, 0)
-    
-    const systemPrice = basePrice + (billMultiplier * 80) + (familyMultiplier * 1200) + applianceMultiplier
-    const monthlySavings = billMultiplier * 0.8
-    const yearlySavings = monthlySavings * 12
-    const paybackYears = Math.round(systemPrice / yearlySavings)
+    try {
+      // Transformar datos del formulario al formato esperado
+      const electrodomesticosSeleccionados = formData.appliances.map(applianceName => {
+        const appliance = appliances.find(a => a.name === applianceName)
+        const cantidad = formData.applianceQuantities[applianceName] || 1
+        const potencia = appliance?.potencia || 0
+        const horasUso = appliance?.horasUso || 0
+        const consumoDiario = (potencia * horasUso * cantidad) / 1000 // kWh
+        
+        return {
+          nombre: applianceName,
+          cantidad,
+          potencia,
+          horasUso,
+          consumoDiario
+        }
+      })
 
-    setQuote({
-      systemPrice,
-      monthlySavings: Math.round(monthlySavings),
-      yearlySavings: Math.round(yearlySavings),
-      paybackYears,
-      systemSize: Math.round((systemPrice / 2000) * 100) / 100,
-      panels: Math.ceil(systemPrice / 400)
-    })
-    setStep(4)
+      const consumoTotalDiario = electrodomesticosSeleccionados.reduce(
+        (total, electro) => total + electro.consumoDiario, 0
+      )
+      
+      const potenciaRequerida = consumoTotalDiario * 1.3 // Factor de seguridad
+
+      // Separar dirección en municipio/provincia (simplificado)
+      const direccionParts = formData.address.split(', ')
+      const municipio = direccionParts.length > 1 ? direccionParts[direccionParts.length - 2] : 'No especificado'
+      const provincia = direccionParts.length > 0 ? direccionParts[direccionParts.length - 1] : 'No especificado'
+
+      const cotizacionData: CotizacionData = {
+        nombre: formData.name,
+        telefono: formData.phone,
+        email: formData.email,
+        direccion: formData.address,
+        municipio,
+        provincia,
+        consumoMensual: parseInt(formData.monthlyBill) * 30 || 0, // Estimación kWh mensual
+        tipoInstalacion: formData.homeType === 'Casa' ? 'residencial' : 
+                        formData.homeType === 'Local Comercial' ? 'comercial' : 'residencial',
+        electrodomesticos: electrodomesticosSeleccionados,
+        consumoTotalDiario,
+        potenciaRequerida,
+        comentarios: formData.description || '',
+        fechaSolicitud: new Date().toISOString()
+      }
+      
+      const response = await clientCotizacionService.enviarCotizacion(cotizacionData)
+      
+      if (response.success) {
+        setIsSubmitted(true)
+        setStep(4)
+      } else {
+        setSubmitStatus({ type: 'error', message: response.message || 'Error al enviar la cotización' })
+      }
+    } catch (error) {
+      console.error('Error enviando cotización:', error)
+      setSubmitStatus({ 
+        type: 'error', 
+        message: 'Error de conexión. Por favor, intenta nuevamente.' 
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const nextStep = () => {
     if (step < 3) {
       setStep(step + 1)
     } else {
-      calculateQuote()
+      submitQuotation()
     }
   }
 
@@ -117,7 +159,8 @@ export default function QuotationPage() {
 
   const resetQuote = () => {
     setStep(1)
-    setQuote(null)
+    setIsSubmitted(false)
+    setSubmitStatus(null)
     setFormData({
       homeType: '',
       roofType: '',
@@ -146,73 +189,6 @@ export default function QuotationPage() {
     { name: 'Bomba de Agua', icon: '💧', potencia: 750, horasUso: 2 }
   ]
 
-  const enviarCotizacion = async () => {
-    setIsSubmitting(true)
-    setSubmitStatus(null)
-    
-    try {
-      // Transformar datos del formulario al formato esperado
-      const electrodomesticosSeleccionados = formData.appliances.map(applianceName => {
-        const appliance = appliances.find(a => a.name === applianceName)
-        const cantidad = formData.applianceQuantities[applianceName] || 1
-        const potencia = appliance?.potencia || 0
-        const horasUso = appliance?.horasUso || 0
-        const consumoDiario = (potencia * horasUso * cantidad) / 1000 // kWh
-        
-        return {
-          nombre: applianceName,
-          cantidad,
-          potencia,
-          horasUso,
-          consumoDiario
-        }
-      })
-
-      const consumoTotalDiario = electrodomesticosSeleccionados.reduce(
-        (total, electro) => total + electro.consumoDiario, 0
-      )
-      
-      const potenciaRequerida = quote?.systemSize || 0
-
-      // Separar dirección en municipio/provincia (simplificado)
-      const direccionParts = formData.address.split(', ')
-      const municipio = direccionParts.length > 1 ? direccionParts[direccionParts.length - 2] : 'No especificado'
-      const provincia = direccionParts.length > 0 ? direccionParts[direccionParts.length - 1] : 'No especificado'
-
-      const cotizacionData: CotizacionData = {
-        nombre: formData.name,
-        telefono: formData.phone,
-        email: formData.email,
-        direccion: formData.address,
-        municipio,
-        provincia,
-        consumoMensual: parseInt(formData.monthlyBill) * 30 || 0, // Estimación kWh mensual
-        tipoInstalacion: formData.homeType === 'Casa' ? 'residencial' : 
-                        formData.homeType === 'Local Comercial' ? 'comercial' : 'residencial',
-        electrodomesticos: electrodomesticosSeleccionados,
-        consumoTotalDiario,
-        potenciaRequerida,
-        comentarios: formData.description || '',
-        fechaSolicitud: new Date().toISOString()
-      }
-      
-      const response = await clientCotizacionService.enviarCotizacion(cotizacionData)
-      
-      if (response.success) {
-        setSubmitStatus({ type: 'success', message: 'Cotización enviada exitosamente. Te contactaremos pronto.' })
-      } else {
-        setSubmitStatus({ type: 'error', message: response.message || 'Error al enviar la cotización' })
-      }
-    } catch (error) {
-      console.error('Error enviando cotización:', error)
-      setSubmitStatus({ 
-        type: 'error', 
-        message: 'Error de conexión. Por favor, intenta nuevamente.' 
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -252,7 +228,7 @@ export default function QuotationPage() {
                       ? 'bg-secondary-gradient text-white' 
                       : 'bg-gray-300 text-gray-600'
                   }`}>
-                    {stepNumber === 4 && quote ? <CheckCircle className="w-5 h-5" /> : stepNumber}
+                    {stepNumber === 4 && isSubmitted ? <CheckCircle className="w-5 h-5" /> : stepNumber}
                   </div>
                   {stepNumber < 4 && (
                     <div className={`w-16 sm:w-24 h-1 mx-2 ${
@@ -266,7 +242,7 @@ export default function QuotationPage() {
               <span>Hogar</span>
               <span>Consumo</span>
               <span>Contacto</span>
-              <span>Cotización</span>
+              <span>Enviado</span>
             </div>
           </div>
         </div>
@@ -412,7 +388,7 @@ export default function QuotationPage() {
                     </label>
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                       <p className="text-sm text-blue-700">
-                        <span className="font-semibold">💡 Información importante:</span> La selección de electrodomésticos es <strong>opcional</strong> y solo sirve para tener un <strong>aproximado</strong> de equipos. Puedes omitir esta sección si lo deseas.
+                        <span className="font-semibold">💡 Información importante:</span> La selección de electrodomésticos es <strong>opcional</strong> y nos ayuda a entender mejor tus necesidades energéticas para diseñar un sistema personalizado.
                       </p>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -477,7 +453,7 @@ export default function QuotationPage() {
                     Información de Contacto y Ubicación
                   </h2>
                   <p className="text-gray-600">
-                    Para enviarte tu cotización personalizada y calcular la mejor instalación
+                    Para que nuestro equipo técnico pueda contactarte y diseñar tu sistema solar personalizado
                   </p>
                 </div>
 
@@ -586,119 +562,150 @@ export default function QuotationPage() {
                     </button>
                     <button
                       onClick={nextStep}
-                      disabled={!formData.name || !formData.email || !formData.phone || !formData.address}
+                      disabled={!formData.name || !formData.email || !formData.phone || !formData.address || isSubmitting}
                       className="px-8 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
                     >
-                      Calcular Cotización <Calculator className="w-5 h-5" />
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Enviando...
+                        </>
+                      ) : (
+                        <>
+                          Enviar Cotización <ArrowRight className="w-5 h-5" />
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Step 4: Quote Results */}
-            {step === 4 && quote && (
+            {/* Step 4: Success Message */}
+            {step === 4 && isSubmitted && (
               <div className="space-y-8">
                 <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">
                   <div className="text-center mb-8">
-                    <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                    <h2 className="text-2xl lg:text-3xl font-bold text-primary mb-4">
-                      ¡Tu Cotización Está Lista!
+                    <div className="bg-gradient-to-br from-green-400 to-green-600 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle className="w-12 h-12 text-white" />
+                    </div>
+                    <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
+                      ¡Cotización Enviada Exitosamente! 🎉
                     </h2>
-                    <p className="text-gray-600">
-                      Basado en tu información, este es tu sistema solar personalizado
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                      Hemos recibido tu solicitud de cotización solar. Nuestro equipo técnico especializado la revisará y se pondrá en contacto contigo pronto.
                     </p>
                   </div>
 
-                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white text-center">
-                      <Sun className="w-8 h-8 mx-auto mb-3" />
-                      <div className="text-2xl font-bold mb-1">{quote.systemSize} kW</div>
-                      <div className="text-sm opacity-90">Capacidad del Sistema</div>
-                    </div>
-                    <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white text-center">
-                      <DollarSign className="w-8 h-8 mx-auto mb-3" />
-                      <div className="text-2xl font-bold mb-1">${quote.monthlySavings}</div>
-                      <div className="text-sm opacity-90">Ahorro Mensual</div>
-                    </div>
-                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white text-center">
-                      <Battery className="w-8 h-8 mx-auto mb-3" />
-                      <div className="text-2xl font-bold mb-1">{quote.panels}</div>
-                      <div className="text-sm opacity-90">Paneles Solares</div>
-                    </div>
-                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white text-center">
-                      <Shield className="w-8 h-8 mx-auto mb-3" />
-                      <div className="text-2xl font-bold mb-1">{quote.paybackYears} años</div>
-                      <div className="text-sm opacity-90">Período de Retorno</div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-2xl p-8 mb-8">
-                    <h3 className="text-xl font-bold text-primary mb-6">Resumen de Inversión</h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Costo del Sistema:</span>
-                        <span className="text-2xl font-bold text-primary">${quote.systemPrice.toLocaleString()}</span>
+                  <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl p-8 mb-8">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">1</span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-primary">Revisión Técnica</h3>
+                            <p className="text-sm text-gray-600">Analizaremos tus requerimientos energéticos</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">2</span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-primary">Evaluación del Sitio</h3>
+                            <p className="text-sm text-gray-600">Visitaremos tu ubicación para evaluar las condiciones</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Ahorro Mensual:</span>
-                        <span className="text-xl font-semibold text-green-600">${quote.monthlySavings}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Ahorro Anual:</span>
-                        <span className="text-xl font-semibold text-green-600">${quote.yearlySavings.toLocaleString()}</span>
-                      </div>
-                      <div className="border-t pt-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Ahorro en 25 años:</span>
-                          <span className="text-2xl font-bold text-green-600">${(quote.yearlySavings * 25).toLocaleString()}</span>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">3</span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-primary">Propuesta Personalizada</h3>
+                            <p className="text-sm text-gray-600">Diseñaremos el sistema solar perfecto para ti</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">4</span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-primary">Contacto Directo</h3>
+                            <p className="text-sm text-gray-600">Te contactaremos para coordinar los próximos pasos</p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-center space-y-4">
-                    <p className="text-gray-600 mb-6">
-                      Esta cotización es aproximada. Un especialista se contactará contigo para una evaluación detallada.
-                    </p>
-                    
-                    {submitStatus && (
-                      <div className={`p-4 rounded-lg mb-6 ${
-                        submitStatus.type === 'success' 
-                          ? 'bg-green-50 border border-green-200 text-green-700' 
-                          : 'bg-red-50 border border-red-200 text-red-700'
-                      }`}>
-                        <p className="font-medium">{submitStatus.message}</p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-8">
+                    <div className="flex items-start gap-3">
+                      <Sun className="w-6 h-6 text-yellow-600 mt-1 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-semibold text-yellow-800 mb-2">¿Qué puedes esperar?</h3>
+                        <ul className="text-sm text-yellow-700 space-y-1">
+                          <li>• Contacto de nuestro equipo en las próximas 24-48 horas</li>
+                          <li>• Propuesta técnica y económica detallada</li>
+                          <li>• Asesoramiento personalizado sin compromiso</li>
+                          <li>• Respuesta a todas tus dudas sobre energía solar</li>
+                        </ul>
                       </div>
-                    )}
-                    
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <button 
-                        onClick={enviarCotizacion}
-                        disabled={isSubmitting || submitStatus?.type === 'success'}
-                        className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Enviando...
-                          </>
-                        ) : submitStatus?.type === 'success' ? (
-                          <>
-                            <CheckCircle className="w-5 h-5" />
-                            Enviado
-                          </>
-                        ) : (
-                          'Enviar Cotización'
-                        )}
-                      </button>
-                      <button 
-                        onClick={resetQuote}
-                        className="px-8 py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
-                      >
-                        Nueva Cotización
-                      </button>
                     </div>
+                  </div>
+
+                  <div className="text-center space-y-6">
+                    <div className="bg-gray-50 rounded-xl p-6">
+                      <h3 className="text-lg font-semibold text-primary mb-3">Información de Contacto</h3>
+                      <div className="grid sm:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                          <strong>Cliente:</strong> {formData.name}
+                        </div>
+                        <div>
+                          <strong>Email:</strong> {formData.email}
+                        </div>
+                        <div>
+                          <strong>Teléfono:</strong> {formData.phone}
+                        </div>
+                        <div>
+                          <strong>Ubicación:</strong> {formData.address.split(',')[0]}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={resetQuote}
+                      className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 mx-auto"
+                    >
+                      Hacer Nueva Cotización
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error State */}
+            {step === 3 && submitStatus?.type === 'error' && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mt-6">
+                <div className="flex items-start gap-3">
+                  <div className="bg-red-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-red-600 font-bold text-sm">!</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-red-800 mb-2">Error al enviar la cotización</h3>
+                    <p className="text-sm text-red-700">{submitStatus.message}</p>
+                    <button 
+                      onClick={() => setSubmitStatus(null)}
+                      className="mt-3 px-4 py-2 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors"
+                    >
+                      Intentar nuevamente
+                    </button>
                   </div>
                 </div>
               </div>

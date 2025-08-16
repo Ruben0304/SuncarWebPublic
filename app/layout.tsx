@@ -5,7 +5,7 @@ import ClientWrapper from "@/components/ClientWrapper";
 
 export const metadata: Metadata = {
   title: {
-    default: 'SunCar Cuba - Energía Solar para Tu Hogar | Paneles Solares Residenciales',
+    default: 'SunCar Cuba - Paneles Solares y Baterías en Cuba',
     template: '%s | SunCar Cuba'
   },
   description: 'Transforma tu hogar con energía solar limpia y renovable. SunCar Cuba ofrece sistemas de paneles solares y baterías que reducen tu factura eléctrica hasta 90%. Instalación profesional en Cuba.',
@@ -157,6 +157,7 @@ export default function RootLayout({
         <meta name="geo.country" content="Cuba" />
         <meta name="geo.placename" content="La Habana" />
         <meta name="ICBM" content="23.1136,-82.3666" />
+        <meta name="apple-mobile-web-app-title" content="Suncar" />
       </head>
       <body className="overflow-x-hidden">
         <ClientWrapper>
