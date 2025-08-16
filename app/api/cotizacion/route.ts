@@ -33,7 +33,11 @@ export async function POST(request: NextRequest) {
     console.log(`=== DEBUG BACKEND CALL ===`);
     console.log(`BACKEND_URL env var: ${backendUrl}`);
     console.log(`Target URL: ${targetUrl}`);
-    console.log('Datos a enviar:', { mensaje: textoFormateado });
+    console.log('Datos a enviar:', { 
+      mensaje: textoFormateado,
+      latitud: cotizacionData.latitude,
+      longitud: cotizacionData.longitude
+    });
     console.log(`=== END DEBUG ===`);
     
     const backendResponse = await fetch(targetUrl, {
@@ -43,7 +47,9 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        mensaje: textoFormateado
+        mensaje: textoFormateado,
+        latitud: cotizacionData.latitude,
+        longitud: cotizacionData.longitude
       }),
     });
 
