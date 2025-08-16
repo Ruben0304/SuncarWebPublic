@@ -29,7 +29,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Enviar al backend real
-    const backendResponse = await fetch(`${backendUrl}/cotizacion`, {
+    console.log(`Enviando solicitud a: ${backendUrl}/api/cotizacion`);
+    console.log('Datos a enviar:', { mensaje: textoFormateado });
+    
+    const backendResponse = await fetch(`${backendUrl}/api/cotizacion`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,26 +42,49 @@ export async function POST(request: NextRequest) {
       }),
     });
 
+    console.log(`Backend response status: ${backendResponse.status}`);
+    console.log(`Backend response statusText: ${backendResponse.statusText}`);
+
     if (!backendResponse.ok) {
-      throw new Error(`Backend responded with status: ${backendResponse.status}`);
+      const errorText = await backendResponse.text();
+      console.error('Backend error response:', errorText);
+      
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: `Error del backend: ${backendResponse.status} - ${errorText || backendResponse.statusText}`,
+          details: {
+            status: backendResponse.status,
+            statusText: backendResponse.statusText,
+            body: errorText
+          }
+        },
+        { status: 500 }
+      );
     }
 
     const backendResult = await backendResponse.json();
+    console.log('Backend success response:', backendResult);
     
     return NextResponse.json({
       success: true,
       message: 'Cotización enviada exitosamente',
-      id: backendResult.id || Date.now().toString()
+      data: backendResult
     });
 
   } catch (error) {
-    console.error('Error procesando cotización:', error);
+    console.error('Error completo procesando cotización:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack available');
     
-    // En caso de error del backend, aún podemos indicar que se recibió la solicitud
+    // Mensaje de error más específico
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+    
     return NextResponse.json(
       { 
         success: false, 
-        message: 'Error al procesar la cotización. Por favor, intenta nuevamente o contacta directamente.' 
+        message: `Error al procesar la cotización: ${errorMessage}`,
+        error: errorMessage,
+        timestamp: new Date().toISOString()
       },
       { status: 500 }
     );
