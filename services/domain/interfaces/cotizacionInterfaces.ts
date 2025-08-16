@@ -27,6 +27,10 @@ export interface CotizacionData {
   // Información adicional
   comentarios?: string;
   fechaSolicitud: string;
+  
+  // Coordenadas del mapa (opcionales)
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface CotizacionResponse {

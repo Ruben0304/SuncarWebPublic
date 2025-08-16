@@ -112,7 +112,9 @@ export default function QuotationPage() {
         consumoTotalDiario,
         potenciaRequerida,
         comentarios: formData.description || '',
-        fechaSolicitud: new Date().toISOString()
+        fechaSolicitud: new Date().toISOString(),
+        latitude: formData.latitude,
+        longitude: formData.longitude
       }
       
       const response = await clientCotizacionService.enviarCotizacion(cotizacionData)
