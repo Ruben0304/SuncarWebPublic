@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: 'SunCar Cuba - Paneles Solares y Baterías en Cuba',
     template: '%s | SunCar Cuba'
   },
-  description: 'Transforma tu hogar con energía solar limpia y renovable. SunCar Cuba ofrece sistemas de paneles solares y baterías que reducen tu factura eléctrica hasta 90%. Instalación profesional en Cuba.',
+  description: 'Soluciona los problemas eléctricos de tu hogar con energía solar confiable. SunCar Cuba ofrece sistemas de paneles solares y baterías que garantizan electricidad 24/7, incluso durante apagones. Instalación profesional en Cuba.',
   keywords: 'energia solar Cuba, paneles solares hogar, SunCar Cuba, energia renovable Cuba, sistemas solares residenciales, baterias solares, instalacion paneles solares La Habana',
   authors: [{ name: 'SunCar Cuba' }],
   creator: 'SunCar Cuba',
@@ -33,8 +33,8 @@ export const metadata: Metadata = {
     locale: 'es_CU',
     url: 'https://suncarsrl.com',
     siteName: 'SunCar Cuba',
-    title: 'SunCar Cuba - Energía Solar para Tu Hogar',
-    description: 'Reduce tu factura eléctrica hasta 90% con nuestros sistemas de paneles solares y baterías de última generación. Instalación profesional en Cuba.',
+    title: 'SunCar Cuba - Solución al Déficit Energético en Cuba',
+    description: 'Elimina los problemas de electricidad con nuestros sistemas de paneles solares y baterías. Garantizamos energía 24/7 incluso durante apagones. Instalación profesional en Cuba.',
     images: [
       {
         url: '/images/hero-suncar.jpg',
@@ -48,8 +48,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@SunCarCuba',
     creator: '@SunCarCuba',
-    title: 'SunCar Cuba - Energía Solar para Tu Hogar',
-    description: 'Reduce tu factura eléctrica hasta 90% con nuestros sistemas de paneles solares y baterías de última generación.',
+    title: 'SunCar Cuba - Solución al Déficit Energético en Cuba',
+    description: 'Elimina los problemas de electricidad con nuestros sistemas de paneles solares y baterías. Garantizamos energía 24/7 incluso durante apagones.',
     images: ['/images/hero-suncar.jpg'],
   },
   // alternates: {
@@ -112,7 +112,7 @@ export default function RootLayout({
                 "https://instagram.com/SunCarCuba",
                 "https://linkedin.com/company/suncar-cuba"
               ],
-              "description": "SunCar Cuba es líder en soluciones de energía solar fotovoltaica para hogares y empresas en Cuba. Ofrecemos instalación de paneles solares, sistemas autónomos y consultoría energética.",
+              "description": "SunCar Cuba es líder en soluciones al déficit energético con sistemas solares que garantizan electricidad 24/7. Eliminamos los problemas de apagones con paneles solares, baterías y sistemas autónomos para hogares y empresas en Cuba.",
               "foundingDate": "2020",
               "industry": "Renewable Energy",
               "areaServed": {
