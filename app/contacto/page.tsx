@@ -1,5 +1,7 @@
 "use client"
 
+export { metadata } from './metadata'
+
 import { useState } from "react"
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from "lucide-react"
 import Navigation from "@/components/navigation"

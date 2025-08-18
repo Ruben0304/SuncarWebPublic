@@ -1,4 +1,7 @@
 "use client"
+
+export { metadata } from './metadata'
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Star, MapPin, Zap, Battery, Calendar, ArrowRight, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from "next/image";
