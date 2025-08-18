@@ -119,12 +119,12 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-secondary-start" />
-                <span>info@suncarsrl.com</span>
+                <span>enelido.calero@suncarsrl.com</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-secondary-start mt-1" />
                 <span>
-                  Calle 24 e/ 1ra y 3ra, Playa
+                  Calle 24 #109 e/ 1ra y 3ra, Playa
                   <br />
                   La Habana, Cuba
                 </span>
