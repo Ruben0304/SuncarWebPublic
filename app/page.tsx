@@ -114,8 +114,10 @@ export default function HomePage() {
                 </Link>
                 <button 
                   onClick={() => {
-                    const gameSection = document.querySelector('section:has(div:contains("La Solución de Suncar"))');
-                    gameSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const gameUrl = process.env.NEXT_PUBLIC_GAME_URL;
+                    if (gameUrl) {
+                      window.open(gameUrl, '_blank');
+                    }
                   }}
                   className="group relative px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 text-sm lg:text-base overflow-hidden transform hover:scale-105 hover:-translate-y-1"
                 >
@@ -292,29 +294,29 @@ export default function HomePage() {
       {/*</section>*/}
 
       {/* CTA Section */}
-      <section className="py-16 lg:py-20 bg-primary">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 text-center">
-          <div className="max-w-3xl mx-auto space-y-6 lg:space-y-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-              ¿Listo Para Tu Independencia Energética?
-            </h2>
-            <p className="text-lg lg:text-xl text-blue-100">
-              Obtén una cotización gratuita y descubre cuánto pueden ahorrar tu hogar o empresa con energía solar
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center">
-              <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">
-                Cotización Gratuita
-              </button>
-              <a 
-                href="tel:+5363962417" 
-                className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300 text-sm lg:text-base hover-magnetic inline-block text-center"
-              >
-                Llamar Ahora
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/*<section className="py-16 lg:py-20 bg-primary">*/}
+      {/*  <div className="container mx-auto px-4 md:px-6 lg:px-8 text-center">*/}
+      {/*    <div className="max-w-3xl mx-auto space-y-6 lg:space-y-8">*/}
+      {/*      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">*/}
+      {/*        ¿Listo Para Tu Independencia Energética?*/}
+      {/*      </h2>*/}
+      {/*      <p className="text-lg lg:text-xl text-blue-100">*/}
+      {/*        Obtén una cotización gratuita y descubre cuánto pueden ahorrar tu hogar o empresa con energía solar*/}
+      {/*      </p>*/}
+      {/*      <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center">*/}
+      {/*        <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">*/}
+      {/*          Cotización Gratuita*/}
+      {/*        </button>*/}
+      {/*        <a */}
+      {/*          href="tel:+5363962417" */}
+      {/*          className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300 text-sm lg:text-base hover-magnetic inline-block text-center"*/}
+      {/*        >*/}
+      {/*          Llamar Ahora*/}
+      {/*        </a>*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</section>*/}
       <Footer />
     </div>
   )

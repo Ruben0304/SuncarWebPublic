@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { 
   Lightbulb, 
   Battery, 
@@ -444,21 +445,17 @@ export default function SuncarInteractiveGame() {
         </div>
       )}
 
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl animate-pulse animation-delay-500"></div>
-        
+      {/* Subtle background elements */}
+      <div className="absolute inset-0 opacity-40">
         {/* Floating icons */}
         <div className="absolute top-32 right-20 animate-bounce animation-delay-1000">
-          <Sun className="w-6 h-6 text-yellow-400/60" />
+          <Sun className="w-6 h-6 text-yellow-400/40" />
         </div>
         <div className="absolute bottom-32 left-20 animate-bounce animation-delay-1500">
-          <Battery className="w-6 h-6 text-green-400/60" />
+          <Battery className="w-6 h-6 text-green-400/40" />
         </div>
         <div className="absolute top-1/2 right-1/4 animate-bounce animation-delay-500">
-          <Zap className="w-6 h-6 text-blue-400/60" />
+          <Zap className="w-6 h-6 text-blue-400/40" />
         </div>
       </div>
 
@@ -505,36 +502,77 @@ export default function SuncarInteractiveGame() {
           )}
 
           {gameState === 'intro' && (
-            <div className="text-center mb-12">
-              <div className="mb-6">
-                <div className="inline-block p-8 bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-4">🎮 ¡Descubre Cómo VENCER los Apagones!</h3>
-                  <p className="text-blue-100 mb-6">Toma decisiones inteligentes y descubre cómo Suncar puede darte independencia energética total contra los cortes eléctricos.</p>
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div className="p-3">
-                      <Target className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                      <div className="text-sm text-white font-semibold">3 Desafíos</div>
+            <div className="mb-16 lg:mb-20">
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                {/* Content Section */}
+                <div className="text-center lg:text-left order-2 lg:order-1 space-y-8">
+                  <div>
+                    <h3 className="text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-6 leading-tight">
+                      🎮 ¡Descubre Cómo 
+                      <span className="block bg-gradient-to-r from-[#FDB813] to-[#F26729] bg-clip-text text-transparent">
+                        VENCER los Apagones!
+                      </span>
+                    </h3>
+                    <p className="text-blue-100/90 mb-8 text-lg lg:text-xl leading-relaxed">
+                      Toma decisiones inteligentes y descubre cómo Suncar puede darte independencia energética total contra los cortes eléctricos.
+                    </p>
+                    
+                    <div className="grid grid-cols-3 gap-6 max-w-md mx-auto lg:mx-0">
+                      <div className="text-center">
+                        <Target className="w-10 h-10 text-blue-400 mx-auto mb-3" />
+                        <div className="text-sm text-white font-semibold">3 Desafíos</div>
+                      </div>
+                      <div className="text-center">
+                        <Trophy className="w-10 h-10 text-[#FDB813] mx-auto mb-3" />
+                        <div className="text-sm text-white font-semibold">Logros</div>
+                      </div>
+                      <div className="text-center">
+                        <Star className="w-10 h-10 text-green-400 mx-auto mb-3" />
+                        <div className="text-sm text-white font-semibold">Puntos</div>
+                      </div>
                     </div>
-                    <div className="p-3">
-                      <Trophy className="w-8 h-8 text-[#FDB813] mx-auto mb-2" />
-                      <div className="text-sm text-white font-semibold">Logros</div>
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      const gameUrl = process.env.NEXT_PUBLIC_GAME_URL;
+                      if (gameUrl) {
+                        window.open(gameUrl, '_blank');
+                      }
+                    }}
+                    className="group px-10 py-5 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 text-xl flex items-center gap-4 mx-auto lg:mx-0"
+                  >
+                    <PlayCircle className="w-7 h-7 group-hover:animate-spin" />
+                    ¡Empezar el Juego!
+                    <ChevronRight className="w-7 h-7 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+
+                {/* Game Logo Section */}
+                <div className="flex justify-center lg:justify-end order-1 lg:order-2">
+                  <div className="relative">
+                    {/* Floating animation container */}
+                    <div className="relative w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] xl:w-[32rem] xl:h-[32rem]">
+                      <Image 
+                        src="/images/logo-juego.png" 
+                        alt="Logo del Juego Suncar" 
+                        fill
+                        className="object-contain animate-float drop-shadow-2xl"
+                        priority
+                      />
                     </div>
-                    <div className="p-3">
-                      <Star className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                      <div className="text-sm text-white font-semibold">Puntos</div>
-                    </div>
+                    
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#F26729]/20 to-[#FDB813]/20 rounded-full blur-3xl scale-75 animate-pulse"></div>
+                    
+                    {/* Floating particles */}
+                    <div className="absolute top-1/4 -right-8 w-3 h-3 bg-[#FDB813] rounded-full animate-bounce opacity-70"></div>
+                    <div className="absolute bottom-1/4 -left-8 w-2 h-2 bg-[#F26729] rounded-full animate-bounce animation-delay-1000 opacity-60"></div>
+                    <div className="absolute top-1/2 -right-4 w-2 h-2 bg-blue-400 rounded-full animate-pulse animation-delay-500 opacity-50"></div>
+                    <div className="absolute bottom-1/3 left-4 w-1.5 h-1.5 bg-white rounded-full animate-pulse animation-delay-1500 opacity-60"></div>
                   </div>
                 </div>
               </div>
-              
-              <button
-                onClick={startGame}
-                className="group px-8 py-4 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-3 mx-auto"
-              >
-                <PlayCircle className="w-6 h-6 group-hover:animate-spin" />
-                ¡Empezar el Juego!
-                <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-              </button>
             </div>
           )}
 
@@ -865,11 +903,16 @@ export default function SuncarInteractiveGame() {
                     
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <button
-                        onClick={resetGame}
+                        onClick={() => {
+                          const gameUrl = process.env.NEXT_PUBLIC_GAME_URL;
+                          if (gameUrl) {
+                            window.open(gameUrl, '_blank');
+                          }
+                        }}
                         className="px-8 py-4 bg-white/20 text-white font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2 justify-center transform hover:scale-105"
                       >
                         <RotateCcw className="w-5 h-5" />
-                        Jugar de Nuevo
+                        Jugar el Juego Completo
                       </button>
                       <button className="px-8 py-4 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
                         <Zap className="w-5 h-5" />

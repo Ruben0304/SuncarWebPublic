@@ -679,6 +679,26 @@ body {
   animation: float-particle 4s ease-in-out infinite;
 }
 
+/* Floating animation for game logo */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotateZ(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-15px) rotateZ(1deg) scale(1.02);
+  }
+  50% {
+    transform: translateY(-20px) rotateZ(0deg) scale(1.01);
+  }
+  75% {
+    transform: translateY(-8px) rotateZ(-1deg) scale(1.02);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
 .slider::-moz-range-thumb {
   width: 24px;
   height: 24px;
