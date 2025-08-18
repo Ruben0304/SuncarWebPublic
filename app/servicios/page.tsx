@@ -22,41 +22,45 @@ export default function ServicesPage() {
   const services = [
     {
       icon: <Sun className="w-8 h-8" />,
-      title: "Instalación de Paneles Solares",
-      description: "Instalamos sistemas completos de paneles solares de alta eficiencia para maximizar la generación de energía en tu hogar.",
+      title: "Instalación de Sistemas Fotovoltaicos",
+      description: "Instalamos sistemas completos de paneles solares con inversores y baterías de almacenamiento de alta eficiencia.",
       features: [
-        "Paneles monocristalinos de última generación",
-        "Garantía de 25 años en paneles",
+        "Paneles monocristalinos y policristalinos de última generación",
+        "Garantía en paneles de fabricantes",
+        "Dos años de garantía sobre la instalación",
         "Eficiencia superior al 20%",
-        "Instalación profesional certificada"
+        "Instalación profesional certificada",
+        "Tenemos equipos de 3kW, 5kW, 10kW, 25kW, 50kW",
+        "Comercializamos marcas líderes como Huawei, Greenheiss, JSMCH2, Sungrow"
       ],
-      price: "Desde $8,000 USD",
       color: "from-blue-500 to-blue-600"
     },
     {
       icon: <Battery className="w-8 h-8" />,
-      title: "Sistemas de Baterías",
+      title: "Sistemas de Baterías Completas",
       description: "Almacena la energía solar para tener electricidad disponible las 24 horas, incluso durante cortes de luz.",
       features: [
-        "Baterías de litio de larga duración",
+        "Baterías de larga duración con tecnología LiFePO4 (Litio Hierro Fosfato)",
         "Sistema de gestión inteligente",
         "Respaldo automático durante apagones",
-        "Monitoreo en tiempo real"
+        "Monitoreo en tiempo real",
+        "Ampliable modularmente: comienza con 5kWh y escala según tus necesidades",
+        "Diseñadas para operar en climas extremos (-20°C a 60°C)",
+        "Incluyen software de gestión para optimizar autoconsumo y ahorro"
       ],
-      price: "Desde $3,500 USD",
       color: "from-green-500 to-green-600"
     },
     {
       icon: <Wrench className="w-8 h-8" />,
-      title: "Mantenimiento y Soporte",
-      description: "Servicio técnico especializado para mantener tu sistema solar funcionando a máxima capacidad.",
+      title: "Mantenimiento y Soporte Preventivo",
+      description: "Prestamos asistencia técnica para mantener tu sistema solar funcionando a máxima capacidad.",
       features: [
         "Mantenimiento preventivo programado",
         "Limpieza profesional de paneles",
         "Diagnóstico y reparaciones",
-        "Soporte técnico 24/7"
+        "Soporte técnico 24/7",
+        "Atención a quejas y solicitudes"
       ],
-      price: "Desde $150 USD/visita",
       color: "from-orange-500 to-orange-600"
     },
     {
@@ -83,12 +87,12 @@ export default function ServicesPage() {
     {
       step: "02", 
       title: "Diseño del Sistema",
-      description: "Creamos un diseño personalizado con la cantidad óptima de paneles y baterías para tu caso específico."
+      description: "Creamos un diseño personalizado con la cantidad óptima de paneles y baterías dependiendo de las capacidades financieras y capacidades reales"
     },
     {
       step: "03",
       title: "Instalación Profesional", 
-      description: "Nuestro equipo certificado realiza la instalación completa en 1-3 días, cumpliendo todos los estándares de seguridad."
+      description: "Nuestro equipo certificado realiza la instalación completa en dependencia de la magnitud de la instalación, cumpliendo todos los estándares de seguridad."
     },
     {
       step: "04",
@@ -101,7 +105,7 @@ export default function ServicesPage() {
     {
       icon: <Shield className="w-6 h-6" />,
       title: "Garantía Extendida",
-      description: "25 años en paneles, 10 años en inversores"
+      description: "Respaldamos tu inversión con garantías de fabricante: 25 años en paneles (JSMCH2/Greenheiss) y 10-12 años en inversores (Huawei/Sungrow)."
     },
     {
       icon: <Users className="w-6 h-6" />,
@@ -137,8 +141,7 @@ export default function ServicesPage() {
                 </span>
               </h1>
               <p className="text-base sm:text-lg lg:text-xl text-blue-100 max-w-2xl mx-auto lg:mx-0 lg:max-w-none leading-relaxed animate-fade-in-up animation-delay-400">
-                Soluciones integrales de energía solar diseñadas para transformar tu hogar en una fuente de energía limpia, eficiente y sostenible
-              </p>
+                Energía solar integral: sistemas eficientes y sostenibles para hogares, negocios y espacios que buscan autonomía y ahorro con energía limpia, eficiente y sostenible. Maximiza el ahorro con sistemas personalizados para cada necesidad.              </p>
             </div>
             
             {/* Lottie Animation */}
