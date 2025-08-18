@@ -119,7 +119,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-secondary-start" />
-                <span>info@suncar.cu</span>
+                <span>info@suncarsrl.com</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-secondary-start mt-1" />
