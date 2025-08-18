@@ -15,7 +15,7 @@ export default function Footer() {
               <span className="text-lg lg:text-xl font-bold">SUNCAR</span>
             </div>
             <p className="text-blue-100 leading-relaxed text-sm lg:text-base">
-              Transformamos hogares cubanos con energía solar limpia y renovable. Tu futuro energético comienza aquí.
+              Transformamos hogares, negocios y espacios cubanos con energía solar limpia y renovable. Tu futuro energético comienza aquí.
             </p>
             <div className="flex space-x-3 lg:space-x-4">
               <a
@@ -45,6 +45,11 @@ export default function Footer() {
             <ul className="space-y-2 text-blue-100">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
+                  Instalación Completa
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white transition-colors">
                   Paneles Solares
                 </a>
               </li>
@@ -65,9 +70,10 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Financiamiento
+                  Financiamiento del exterior
                 </a>
               </li>
+
             </ul>
           </div>
 
@@ -109,7 +115,7 @@ export default function Footer() {
             <div className="space-y-3 text-blue-100">
               <div className="flex items-center space-x-3">
                 <Phone size={18} className="text-secondary-start" />
-                <span>+53 7 123 4567</span>
+                <span>+53 6 396 2417</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-secondary-start" />
@@ -118,7 +124,7 @@ export default function Footer() {
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-secondary-start mt-1" />
                 <span>
-                  Calle 23 #456, Vedado
+                  Calle 24 e/ 1ra y 3ra, Playa
                   <br />
                   La Habana, Cuba
                 </span>
