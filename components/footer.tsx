@@ -15,7 +15,7 @@ export default function Footer() {
               <span className="text-lg lg:text-xl font-bold">SUNCAR</span>
             </div>
             <p className="text-blue-100 leading-relaxed text-sm lg:text-base">
-              Transformamos hogares cubanos con energía solar limpia y renovable. Tu futuro energético comienza aquí.
+              Transformamos hogares, negocios y espacios cubanos con energía solar limpia y renovable. Tu futuro energético comienza aquí.
             </p>
             <div className="flex space-x-3 lg:space-x-4">
               <a
@@ -45,6 +45,11 @@ export default function Footer() {
             <ul className="space-y-2 text-blue-100">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
+                  Instalación Completa
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white transition-colors">
                   Paneles Solares
                 </a>
               </li>
@@ -65,9 +70,10 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Financiamiento
+                  Financiamiento del exterior
                 </a>
               </li>
+
             </ul>
           </div>
 
@@ -109,16 +115,16 @@ export default function Footer() {
             <div className="space-y-3 text-blue-100">
               <div className="flex items-center space-x-3">
                 <Phone size={18} className="text-secondary-start" />
-                <a href="tel:+5363962417" className="hover:text-white transition-colors">+5363962417</a>
+                <span>+53 6 396 2417</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-secondary-start" />
-                <a href="mailto:info@suncarsrl.com" className="hover:text-white transition-colors">info@suncarsrl.com</a>
+                <span>info@suncar.cu</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-secondary-start mt-1" />
                 <span>
-                  Calle 24 entre 1ra y 3ra, Playa
+                  Calle 24 e/ 1ra y 3ra, Playa
                   <br />
                   La Habana, Cuba
                 </span>
@@ -133,30 +139,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-white/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-center md:text-left">
-              <p className="text-blue-100 text-sm">© 2024 Suncar. Todos los derechos reservados.</p>
-              <p className="text-blue-200 text-xs mt-1">
-                Desarrollado por{" "}
-                <a 
-                  href="https://github.com/Ruben0304" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors underline"
-                >
-                  Rubén Hernández Acevedo
-                </a>
-                {" "}(Frontend) &{" "}
-                <a 
-                  href="https://github.com/Fabian1820" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors underline"
-                >
-                  Fabián Fernández Galves
-                </a>
-                {" "}(Backend)
-              </p>
-            </div>
+            <p className="text-blue-100 text-sm">© 2024 Suncar. Todos los derechos reservados.</p>
             <div className="flex space-x-6 text-sm text-blue-100">
               <a href="#" className="hover:text-white transition-colors">
                 Política de Privacidad
