@@ -103,7 +103,7 @@ export default function HomePage() {
                   </span>
                 </h1>
                 <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards, gentle-float 8s ease-in-out 1.9s infinite'}}>
-                  Transforma tu hogar o negocio con energía limpia y renovable. Reduce tus costos eléctricos hasta un 90% con
+                  Transforma tu hogar o negocio con energía limpia y renovable con
                   nuestros sistemas de paneles solares y baterías de última generación.
                 </p>
               </div>
@@ -245,51 +245,51 @@ export default function HomePage() {
       <SuncarInteractiveGame />
 
       {/* Testimonials Section */}
-      <section className="py-16 lg:py-20 bg-white">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="text-center mb-12 lg:mb-16">
-            <div className="inline-block px-3 py-1 lg:px-4 lg:py-2 bg-secondary-gradient text-white text-xs lg:text-sm font-semibold rounded-full mb-3 lg:mb-4">
-              Testimonios
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 lg:mb-4">
-              Lo Que Dicen Nuestros Clientes
-            </h2>
-                            <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
-              Miles de familias y empresas cubanas ya disfrutan de los beneficios de la energía solar con Suncar
-            </p>
-          </div>
+      {/*<section className="py-16 lg:py-20 bg-white">*/}
+      {/*  <div className="container mx-auto px-4 md:px-6 lg:px-8">*/}
+      {/*    <div className="text-center mb-12 lg:mb-16">*/}
+      {/*      <div className="inline-block px-3 py-1 lg:px-4 lg:py-2 bg-secondary-gradient text-white text-xs lg:text-sm font-semibold rounded-full mb-3 lg:mb-4">*/}
+      {/*        Testimonios*/}
+      {/*      </div>*/}
+      {/*      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 lg:mb-4">*/}
+      {/*        Lo Que Dicen Nuestros Clientes*/}
+      {/*      </h2>*/}
+      {/*                      <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">*/}
+      {/*        Miles de familias y empresas cubanas ya disfrutan de los beneficios de la energía solar con Suncar*/}
+      {/*      </p>*/}
+      {/*    </div>*/}
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className={`bg-gray-50 rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 hover-magnetic animate-scale-in animation-delay-${600 + index * 200}`}
-              >
-                <div className={`flex items-center gap-1 mb-3 lg:mb-4 animate-fade-in-up animation-delay-${800 + index * 200}`}>
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className={`w-4 h-4 lg:w-5 lg:h-5 fill-yellow-400 text-yellow-400 animate-bounce-slow animation-delay-${1000 + index * 200 + i * 100}`} />
-                  ))}
-                </div>
+      {/*    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">*/}
+      {/*      {testimonials.map((testimonial, index) => (*/}
+      {/*        <div*/}
+      {/*          key={index}*/}
+      {/*          className={`bg-gray-50 rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 hover-magnetic animate-scale-in animation-delay-${600 + index * 200}`}*/}
+      {/*        >*/}
+      {/*          <div className={`flex items-center gap-1 mb-3 lg:mb-4 animate-fade-in-up animation-delay-${800 + index * 200}`}>*/}
+      {/*            {[...Array(testimonial.rating)].map((_, i) => (*/}
+      {/*              <Star key={i} className={`w-4 h-4 lg:w-5 lg:h-5 fill-yellow-400 text-yellow-400 animate-bounce-slow animation-delay-${1000 + index * 200 + i * 100}`} />*/}
+      {/*            ))}*/}
+      {/*          </div>*/}
 
-                <p className={`text-gray-700 mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base animate-fade-in-up animation-delay-${1200 + index * 200}`}>
-                  "{testimonial.comment}"
-                </p>
+      {/*          <p className={`text-gray-700 mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base animate-fade-in-up animation-delay-${1200 + index * 200}`}>*/}
+      {/*            "{testimonial.comment}"*/}
+      {/*          </p>*/}
 
-                <div className={`border-t pt-3 lg:pt-4 animate-fade-in-up animation-delay-${1400 + index * 200}`}>
-                  <div className="font-semibold text-primary text-sm lg:text-base">{testimonial.name}</div>
-                  <div className="text-xs lg:text-sm text-gray-500">{testimonial.location}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/*          <div className={`border-t pt-3 lg:pt-4 animate-fade-in-up animation-delay-${1400 + index * 200}`}>*/}
+      {/*            <div className="font-semibold text-primary text-sm lg:text-base">{testimonial.name}</div>*/}
+      {/*            <div className="text-xs lg:text-sm text-gray-500">{testimonial.location}</div>*/}
+      {/*          </div>*/}
+      {/*        </div>*/}
+      {/*      ))}*/}
+      {/*    </div>*/}
 
-          <div className="text-center mt-12">
-            <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              Ver Más Testimonios
-            </button>
-          </div>
-        </div>
-      </section>
+      {/*    <div className="text-center mt-12">*/}
+      {/*      <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">*/}
+      {/*        Ver Más Testimonios*/}
+      {/*      </button>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</section>*/}
 
       {/* CTA Section */}
       <section className="py-16 lg:py-20 bg-primary">
@@ -305,9 +305,12 @@ export default function HomePage() {
               <button className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">
                 Cotización Gratuita
               </button>
-              <button className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300 text-sm lg:text-base hover-magnetic">
+              <a 
+                href="tel:+5363962417" 
+                className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300 text-sm lg:text-base hover-magnetic inline-block text-center"
+              >
                 Llamar Ahora
-              </button>
+              </a>
             </div>
           </div>
         </div>

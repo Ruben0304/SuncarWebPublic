@@ -97,38 +97,38 @@ export default function SuncarInteractiveGame() {
     {
       id: 'study',
       title: 'Estudio GRATUITO',
-      description: '¡Un experto de Suncar visita tu hogar SIN COSTO para calcular tus ahorros exactos!',
+      description: '¡Un experto de Suncar visita tu hogar SIN COSTO para diseñar tu sistema anti-apagones!',
       icon: <Search className="w-8 h-8" />,
       color: 'from-blue-500 to-blue-600',
-      question: '¿Cuánto AHORRARÍAS mensualmente con un sistema solar de 5kW en tu hogar cubano?',
+      question: '¿Cuántas horas al día tendrás electricidad GARANTIZADA con un sistema solar Suncar de 5kW + baterías?',
       choices: [
         {
-          id: 'save1500',
-          text: '💰 $1,500+ CUP al mes (eliminando casi toda la factura eléctrica)',
+          id: 'fullday',
+          text: '⚡ 24 horas completas (energía independiente total)',
           points: 100,
-          consequence: '¡Exacto! Un sistema de 5kW puede generar hasta 750kWh mensuales, eliminando prácticamente tu factura de electricidad. ¡Imagina ese dinero en tu bolsillo!',
+          consequence: '¡Correcto! Con paneles solares + baterías inteligentes, tu hogar funciona las 24 horas sin depender de la red eléctrica. ¡Olvídate para siempre de los apagones!',
           isCorrect: true
         },
         {
-          id: 'save500',
-          text: '💰 $500 CUP al mes (ahorro parcial)',
+          id: 'partial',
+          text: '⚡ Solo cuando hay sol (8-12 horas diarias)',
           points: 60,
-          consequence: 'Subestimas el poder del sol cubano. Con 5kW puedes ahorrar mucho más. ¡Un sistema bien dimensionado paga toda tu electricidad!',
+          consequence: 'Los paneles solos solo funcionan de día, pero con nuestras baterías almacenas energía para toda la noche. ¡Tendrás electricidad 24/7!',
           isCorrect: false
         },
         {
-          id: 'save100',
-          text: '💰 $100 CUP al mes (ahorro mínimo)',
+          id: 'minimal',
+          text: '⚡ Solo algunas horas (energía limitada)',
           points: 20,
-          consequence: '¡El sol cubano es mucho más generoso! Con la orientación correcta, tus ahorros serán espectaculares.',
+          consequence: '¡Nuestros sistemas están diseñados para darte libertad total! Con el dimensionamiento correcto, nunca te quedarás sin electricidad.',
           isCorrect: false
         }
       ],
-      successMessage: '¡Perfecto! Ya sabes cuánto puedes AHORRAR. Un estudio gratuito de Suncar te mostrará el sistema exacto para tu hogar.',
+      successMessage: '¡Perfecto! Entiendes que con Suncar tendrás energía INDEPENDIENTE las 24 horas. Un estudio gratuito calculará el sistema exacto para tu hogar.',
       tips: [
         '¡Evaluación 100% GRATUITA de tu hogar!',
-        'Cálculo exacto de TUS ahorros mensuales',
-        'Sistema diseñado para TU consumo específico',
+        'Sistema anti-apagones personalizado para TU hogar',
+        'Cálculo de horas de autonomía durante cortes eléctricos',
         'Plan de financiamiento personalizado disponible'
       ]
     },
@@ -463,16 +463,8 @@ export default function SuncarInteractiveGame() {
       </div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
-        {/* Header with blackout counter */}
+        {/* Header */}
         <div className="text-center mb-12">
-          <div className="mb-6">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-red-500/10 backdrop-blur-sm border border-red-400/20 text-red-300 rounded-full mb-4 animate-pulse">
-              <Lightbulb className="w-5 h-5" />
-              <span className="font-semibold">Tiempo sin electricidad en Cuba:</span>
-              <span className="font-mono text-lg text-red-300">{formatTime(blackoutTimer)}</span>
-            </div>
-          </div>
-          
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             La Solución de Suncar
             <span className="block bg-gradient-to-r from-[#FDB813] to-[#F26729] bg-clip-text text-transparent">
@@ -480,8 +472,9 @@ export default function SuncarInteractiveGame() {
             </span>
           </h2>
           <p className="text-lg text-blue-100/90 max-w-3xl mx-auto mb-8">
-            Descubre cómo Suncar te ayuda a tener energía independiente las 24 horas del día. 
-            ¡Experimenta nuestro proceso completo de forma interactiva!
+            ¡Nunca más sufras por los apagones! Con Suncar mantienes tu hogar funcionando 
+            las 24 horas del día con energía solar independiente. ¡Descubre cómo combatir 
+            definitivamente los cortes de electricidad!
           </p>
         </div>
 
@@ -515,8 +508,8 @@ export default function SuncarInteractiveGame() {
             <div className="text-center mb-12">
               <div className="mb-6">
                 <div className="inline-block p-8 bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-4">🎮 ¡Descubre Cuánto Puedes AHORRAR!</h3>
-                  <p className="text-blue-100 mb-6">Toma decisiones inteligentes y descubre cómo Suncar puede darte independencia energética total.</p>
+                  <h3 className="text-2xl font-bold text-white mb-4">🎮 ¡Descubre Cómo VENCER los Apagones!</h3>
+                  <p className="text-blue-100 mb-6">Toma decisiones inteligentes y descubre cómo Suncar puede darte independencia energética total contra los cortes eléctricos.</p>
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="p-3">
                       <Target className="w-8 h-8 text-blue-400 mx-auto mb-2" />

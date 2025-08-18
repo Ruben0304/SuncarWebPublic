@@ -109,16 +109,16 @@ export default function Footer() {
             <div className="space-y-3 text-blue-100">
               <div className="flex items-center space-x-3">
                 <Phone size={18} className="text-secondary-start" />
-                <span>+53 7 123 4567</span>
+                <a href="tel:+5363962417" className="hover:text-white transition-colors">+5363962417</a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-secondary-start" />
-                <span>info@suncar.cu</span>
+                <a href="mailto:info@suncarsrl.com" className="hover:text-white transition-colors">info@suncarsrl.com</a>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-secondary-start mt-1" />
                 <span>
-                  Calle 23 #456, Vedado
+                  Calle 24 entre 1ra y 3ra, Playa
                   <br />
                   La Habana, Cuba
                 </span>
@@ -133,7 +133,30 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-white/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-blue-100 text-sm">© 2024 Suncar. Todos los derechos reservados.</p>
+            <div className="text-center md:text-left">
+              <p className="text-blue-100 text-sm">© 2024 Suncar. Todos los derechos reservados.</p>
+              <p className="text-blue-200 text-xs mt-1">
+                Desarrollado por{" "}
+                <a 
+                  href="https://github.com/Ruben0304" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors underline"
+                >
+                  Rubén Hernández Acevedo
+                </a>
+                {" "}(Frontend) &{" "}
+                <a 
+                  href="https://github.com/Fabian1820" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors underline"
+                >
+                  Fabián Fernández Galves
+                </a>
+                {" "}(Backend)
+              </p>
+            </div>
             <div className="flex space-x-6 text-sm text-blue-100">
               <a href="#" className="hover:text-white transition-colors">
                 Política de Privacidad

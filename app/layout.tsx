@@ -96,14 +96,14 @@ export default function RootLayout({
               "logo": "https://suncarsrl.com/images/logo.png",
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+53-XXXXXXXXX",
+                "telephone": "+5363962417",
                 "contactType": "customer service",
                 "areaServed": "CU",
                 "availableLanguage": "Spanish"
               },
               "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "Dirección de la empresa",
+                "streetAddress": "Calle 24 entre 1ra y 3ra, Playa",
                 "addressLocality": "La Habana",
                 "addressCountry": "CU"
               },

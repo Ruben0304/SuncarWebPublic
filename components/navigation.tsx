@@ -20,8 +20,8 @@ export default function Navigation() {
     { name: "Inicio", href: "/" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Servicios", href: "/servicios" },
-    { name: "Proyectos", href: "/projectos" },
-    { name: "Testimonios", href: "/testimonios" },
+    // { name: "Proyectos", href: "/projectos" },
+    // { name: "Testimonios", href: "/testimonios" },
     { name: "Contacto", href: "/contacto" },
   ]
 
