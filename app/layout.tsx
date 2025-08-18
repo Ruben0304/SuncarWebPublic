@@ -162,7 +162,7 @@ export default function RootLayout({
       <body className="overflow-x-hidden">
         <ClientWrapper>
           {children}
-          <ChatAssistant />
+          {/*<ChatAssistant />*/}
         </ClientWrapper>
       </body>
     </html>

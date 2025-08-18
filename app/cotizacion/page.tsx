@@ -342,10 +342,10 @@ export default function QuotationPage() {
                 <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Factura Eléctrica Mensual (USD)
+                      Factura Eléctrica Mensual (CUP)
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {['50-100', '100-200', '200-300', '300+'].map((range) => (
+                      {['Menos de 1000', '1000-3000', '3000-6000', '6000-12000','Más de 12000'].map((range) => (
                         <button
                           key={range}
                           type="button"
@@ -356,7 +356,7 @@ export default function QuotationPage() {
                               : 'border-gray-300 hover:border-primary/50'
                           }`}
                         >
-                          ${range}
+                          {range}
                         </button>
                       ))}
                     </div>

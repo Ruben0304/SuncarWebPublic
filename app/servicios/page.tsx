@@ -195,12 +195,9 @@ export default function ServicesPage() {
                   ))}
                 </div>
                 
-                <div className="flex items-center justify-between">
+                {service.price && (
                   <div className="text-2xl font-bold text-primary">{service.price}</div>
-                  <button className="px-6 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
-                    Solicitar <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
+                )}
               </div>
             ))}
           </div>
@@ -277,14 +274,6 @@ export default function ServicesPage() {
             <p className="text-lg text-gray-600">
               Obtén una consulta gratuita y descubre cómo la energía solar puede transformar tu hogar
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                Consulta Gratuita
-              </button>
-              <button className="px-8 py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300">
-                Ver Proyectos
-              </button>
-            </div>
           </div>
         </div>
       </section>
