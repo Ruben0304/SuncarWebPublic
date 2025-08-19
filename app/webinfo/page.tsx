@@ -49,36 +49,8 @@ export default function WebInfoPage() {
       <section className="py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              {/* Información Técnica */}
-              <div className="space-y-6 animate-fade-in-left animation-delay-400">
-                <div className="bg-gray-50 rounded-2xl p-6 hover-magnetic transition-all duration-300 hover:bg-gray-100 shadow-lg">
-                  <h3 className="text-xl font-semibold text-primary mb-4 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-secondary-gradient rounded-lg flex items-center justify-center">
-                      <span className="text-sm font-bold">⚡</span>
-                    </div>
-                    Tecnologías Modernas
-                  </h3>
-                  <ul className="space-y-2 text-gray-700">
-                    <li className="flex items-center gap-2 animate-fade-in-right animation-delay-600">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Next.js 15 con App Router
-                    </li>
-                    <li className="flex items-center gap-2 animate-fade-in-right animation-delay-700">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      React 19 con TypeScript
-                    </li>
-                    <li className="flex items-center gap-2 animate-fade-in-right animation-delay-800">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Tailwind CSS con animaciones personalizadas
-                    </li>
-                    <li className="flex items-center gap-2 animate-fade-in-right animation-delay-900">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Optimización SEO y rendimiento
-                    </li>
-                  </ul>
-                </div>
-              </div>
+            <div className="items-center">
+
 
               {/* Desarrolladores */}
               <div className="space-y-6 animate-fade-in-right animation-delay-600">

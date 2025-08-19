@@ -99,16 +99,16 @@ export default function Footer() {
                   Sobre Nosotros
                 </Link>
               </li>
-              <li>
-                <Link href="/projectos" className="hover:text-white transition-colors">
-                  Proyectos
-                </Link>
-              </li>
-              <li>
-                <Link href="/testimonios" className="hover:text-white transition-colors">
-                  Testimonios
-                </Link>
-              </li>
+              {/*<li>*/}
+              {/*  <Link href="/projectos" className="hover:text-white transition-colors">*/}
+              {/*    Proyectos*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
+              {/*<li>*/}
+              {/*  <Link href="/testimonios" className="hover:text-white transition-colors">*/}
+              {/*    Testimonios*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
               <li>
                 <Link href="/webinfo" className="hover:text-white transition-colors">
                   Información del Sitio Web
