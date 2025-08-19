@@ -4,7 +4,7 @@ import '../styles/nprogress.css'
 import ChatAssistant from "@/components/feats/chat/ChatAssistant";
 import ClientWrapper from "@/components/ClientWrapper";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
-import ProgressBar from "@/components/ProgressBar";
+import ProgressBarSuspense from "@/components/ProgressBarSuspense";
 
 export const metadata: Metadata = {
   title: {
@@ -163,7 +163,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Suncar" />
       </head>
       <body className="overflow-x-hidden">
-        <ProgressBar />
+        <ProgressBarSuspense />
         <ClientWrapper>
           {children}
           {/*<ChatAssistant />*/}
