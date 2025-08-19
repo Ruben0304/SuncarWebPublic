@@ -1,7 +1,5 @@
 "use client"
 
-export { metadata } from './metadata'
-
 import { useState } from "react"
 import { Star, Quote, Users, Award, TrendingUp, Heart, Filter, Search } from "lucide-react"
 import Navigation from "@/components/navigation"

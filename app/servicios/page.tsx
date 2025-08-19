@@ -1,7 +1,5 @@
 "use client"
 
-export { metadata } from './metadata'
-
 import { 
   Sun, 
   Battery, 

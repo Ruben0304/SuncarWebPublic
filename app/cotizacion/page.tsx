@@ -1,7 +1,5 @@
 "use client"
 
-export { metadata } from './metadata'
-
 import { useState, useCallback } from "react"
 import { Calculator, Zap, Home, DollarSign, CheckCircle, ArrowRight, Sun, Battery, Shield, Loader2 } from "lucide-react"
 import Navigation from "@/components/navigation"
