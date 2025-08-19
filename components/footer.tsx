@@ -91,36 +91,31 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          {/*<div className="space-y-4">*/}
-          {/*  <h3 className="text-lg font-semibold">Enlaces Rápidos</h3>*/}
-          {/*  <ul className="space-y-2 text-blue-100">*/}
-          {/*    <li>*/}
-          {/*      <a href="#" className="hover:text-white transition-colors">*/}
-          {/*        Sobre Nosotros*/}
-          {/*      </a>*/}
-          {/*    </li>*/}
-          {/*    <li>*/}
-          {/*      <a href="#" className="hover:text-white transition-colors">*/}
-          {/*        Proyectos*/}
-          {/*      </a>*/}
-          {/*    </li>*/}
-          {/*    <li>*/}
-          {/*      <a href="#" className="hover:text-white transition-colors">*/}
-          {/*        Testimonios*/}
-          {/*      </a>*/}
-          {/*    </li>*/}
-          {/*    /!*<li>*!/*/}
-          {/*    /!*  <a href="#" className="hover:text-white transition-colors">*!/*/}
-          {/*    /!*    Blog*!/*/}
-          {/*    /!*  </a>*!/*/}
-          {/*    /!*</li>*!/*/}
-          {/*    /!*<li>*!/*/}
-          {/*    /!*  <a href="#" className="hover:text-white transition-colors">*!/*/}
-          {/*    /!*    Preguntas Frecuentes*!/*/}
-          {/*    /!*  </a>*!/*/}
-          {/*    /!*</li>*!/*/}
-          {/*  </ul>*/}
-          {/*</div>*/}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Enlaces Rápidos</h3>
+            <ul className="space-y-2 text-blue-100">
+              <li>
+                <Link href="/sobre-nosotros" className="hover:text-white transition-colors">
+                  Sobre Nosotros
+                </Link>
+              </li>
+              <li>
+                <Link href="/projectos" className="hover:text-white transition-colors">
+                  Proyectos
+                </Link>
+              </li>
+              <li>
+                <Link href="/testimonios" className="hover:text-white transition-colors">
+                  Testimonios
+                </Link>
+              </li>
+              <li>
+                <Link href="/webinfo" className="hover:text-white transition-colors">
+                  Información del Sitio Web
+                </Link>
+              </li>
+            </ul>
+          </div>
 
           {/* Contact Info */}
           <div className="space-y-4">
