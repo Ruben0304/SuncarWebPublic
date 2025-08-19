@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/private/',
     },
-    sitemap: 'https://suncar-cuba.com/sitemap.xml',
+    sitemap: 'https://suncarsrl.com/sitemap.xml',
   }
 }

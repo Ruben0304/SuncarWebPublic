@@ -11,6 +11,17 @@ export const metadata: Metadata = {
     default: 'SunCar Cuba - Paneles Solares y Baterías en Cuba',
     template: '%s | SunCar Cuba'
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+  },
   description: 'Soluciona los problemas eléctricos de tu hogar con energía solar confiable. SunCar Cuba ofrece sistemas de paneles solares y baterías que garantizan electricidad 24/7, incluso durante apagones. Instalación profesional en Cuba.',
   keywords: 'energia solar Cuba, paneles solares hogar, SunCar Cuba, energia renovable Cuba, sistemas solares residenciales, baterias solares, instalacion paneles solares La Habana',
   authors: [{ name: 'SunCar Cuba' }],
@@ -62,11 +73,11 @@ export const metadata: Metadata = {
   //     'es': 'https://suncar-cuba.com',
   //   },
   // },
-  verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
-    yahoo: 'your-yahoo-verification-code'
-  },
+  // verification: {
+  //   google: 'your-google-verification-code',
+  //   yandex: 'your-yandex-verification-code',
+  //   yahoo: 'your-yahoo-verification-code'
+  // },
   other: {
     'geo.region': 'CU',
     'geo.country': 'Cuba',
@@ -156,6 +167,7 @@ export default function RootLayout({
           }}
         />
         <link rel="canonical" href="https://suncarsrl.com" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <meta name="geo.region" content="CU" />
         <meta name="geo.country" content="Cuba" />
         <meta name="geo.placename" content="La Habana" />
