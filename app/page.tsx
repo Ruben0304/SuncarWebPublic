@@ -136,15 +136,15 @@ export default function HomePage() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-start sm:gap-6 lg:gap-8 pt-3 lg:pt-4 opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 1.1s forwards, gentle-float 8s ease-in-out 2.3s infinite'}}>
-                {/* Contador animado de kW instalados */}
-                <div className="text-left w-full">
-                  <div className="text-3xl lg:text-4xl font-bold text-primary">
-                    {count} kW
-                  </div>
-                  <div className="text-xs lg:text-sm text-gray-600">Instalados hasta el momento</div>
-                </div>
-              </div>
+              {/*<div className="flex items-center justify-between sm:justify-start sm:gap-6 lg:gap-8 pt-3 lg:pt-4 opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 1.1s forwards, gentle-float 8s ease-in-out 2.3s infinite'}}>*/}
+              {/*  /!* Contador animado de kW instalados *!/*/}
+              {/*  <div className="text-left w-full">*/}
+              {/*    <div className="text-3xl lg:text-4xl font-bold text-primary">*/}
+              {/*      {count} kW*/}
+              {/*    </div>*/}
+              {/*    <div className="text-xs lg:text-sm text-gray-600">Instalados hasta el momento</div>*/}
+              {/*  </div>*/}
+              {/*</div>*/}
             </div>
 
             {/* Hero Image */}

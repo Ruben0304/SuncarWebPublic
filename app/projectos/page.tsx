@@ -5,6 +5,7 @@ import { Star, MapPin, Zap, Battery, Calendar, ArrowRight, Play, Pause, ChevronL
 import Image from "next/image";
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
+import Link from "next/link"
 
 interface Project {
   id: number;
@@ -509,12 +510,16 @@ const ProjectsPage = () => {
             Únete a las más de 500 familias que ya disfrutan de energía solar limpia y económica
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              Solicitar Cotización
-            </button>
-            <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300">
-              Ver Más Proyectos
-            </button>
+            <Link href="/cotizacion">
+              <button className="px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                Solicitar Cotización
+              </button>
+            </Link>
+            <Link href="/contacto">
+              <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300">
+                Ver Más Proyectos
+              </button>
+            </Link>
           </div>
         </div>
       </section>

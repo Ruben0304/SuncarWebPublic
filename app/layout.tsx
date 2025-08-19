@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
+import '../styles/nprogress.css'
 import ChatAssistant from "@/components/feats/chat/ChatAssistant";
 import ClientWrapper from "@/components/ClientWrapper";
+import WhatsAppFAB from "@/components/WhatsAppFAB";
+import ProgressBar from "@/components/ProgressBar";
 
 export const metadata: Metadata = {
   title: {
@@ -160,9 +163,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Suncar" />
       </head>
       <body className="overflow-x-hidden">
+        <ProgressBar />
         <ClientWrapper>
           {children}
           {/*<ChatAssistant />*/}
+          <WhatsAppFAB />
         </ClientWrapper>
       </body>
     </html>

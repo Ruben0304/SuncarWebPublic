@@ -242,6 +242,24 @@ const config: Config = {
             transform: "translateY(-8px) rotateZ(-1deg) scale(1.02)",
           },
         },
+        "pulse-soft": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 20px rgba(64, 138, 126, 0.3)",
+          },
+          "50%": {
+            transform: "scale(1.05)",
+            boxShadow: "0 0 30px rgba(64, 138, 126, 0.5)",
+          },
+        },
+        "bounce-soft": {
+          "0%, 100%": {
+            transform: "translateY(0)",
+          },
+          "50%": {
+            transform: "translateY(-10px)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -260,6 +278,8 @@ const config: Config = {
         "elegant-scale-in": "elegant-scale-in 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards",
         "gentle-float": "gentle-float 6s ease-in-out infinite",
         "gentle-float-image": "gentle-float-image 8s ease-in-out infinite",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+        "bounce-soft": "bounce-soft 3s ease-in-out infinite",
       },
       animationDelay: {
         "200": "200ms",

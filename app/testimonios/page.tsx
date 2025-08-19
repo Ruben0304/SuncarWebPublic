@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Star, Quote, Users, Award, TrendingUp, Heart, Filter, Search } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
+import Link from "next/link"
 
 export default function TestimonialsPage() {
   const [selectedCategory, setSelectedCategory] = useState("todos")
@@ -338,12 +339,16 @@ export default function TestimonialsPage() {
               Únete a cientos de familias cubanas que ya disfrutan de los beneficios de la energía solar
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                Solicitar Cotización
-              </button>
-              <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300">
-                Ver Servicios
-              </button>
+              <Link href="/cotizacion">
+                <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                  Solicitar Cotización
+                </button>
+              </Link>
+              <Link href="/servicios">
+                <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300">
+                  Ver Servicios
+                </button>
+              </Link>
             </div>
           </div>
         </div>

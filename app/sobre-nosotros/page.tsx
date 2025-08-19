@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
+import Link from "next/link"
 
 export default function SobreNosotrosPage() {
   const targetAudiences = [
@@ -256,12 +257,16 @@ export default function SobreNosotrosPage() {
               Únete a las familias y empresas que ya confían en SUNCAR para su independencia energética
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover attention-grabber">
-                Solicitar Cotización <ArrowRight className="w-4 h-4 animate-bounce-slow" />
-              </button>
-              <button className="px-8 py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300 hover-magnetic">
-                Contactar Ahora
-              </button>
+              <Link href="/cotizacion">
+                <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover attention-grabber">
+                  Solicitar Cotización <ArrowRight className="w-4 h-4 animate-bounce-slow" />
+                </button>
+              </Link>
+              <Link href="/contacto">
+                <button className="px-8 py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300 hover-magnetic">
+                  Contactar Ahora
+                </button>
+              </Link>
             </div>
           </div>
         </div>
