@@ -1,6 +1,7 @@
 import { Mail, Phone, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import ContactInfo from "./ContactInfo"
 
 const FacebookIcon = ({ size = 16, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -119,25 +120,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Contacto</h3>
-            <div className="space-y-3 text-blue-100">
-              <div className="flex items-center space-x-3">
-                <Phone size={18} className="text-secondary-start" />
-                <span>+53 6 396 2417</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Mail size={18} className="text-secondary-start" />
-                <span>enelido.calero@suncarsrl.com</span>
-              </div>
-              <div className="flex items-start space-x-3">
-                <MapPin size={18} className="text-secondary-start mt-1" />
-                <span>
-                  Calle 24 #109 e/ 1ra y 3ra, Playa
-                  <br />
-                  La Habana, Cuba
-                </span>
-              </div>
-            </div>
+            <ContactInfo />
             <Link href="/cotizacion">
               <button className="w-full px-3 py-2 lg:px-4 lg:py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
                 Solicitar Cotización
