@@ -12,6 +12,7 @@ interface LoginCredentials {
 class AuthService {
   private baseUrl: string;
   private tokenKey = 'suncar-token';
+  private staticToken = 'suncar-token-2025';
 
   constructor() {
     // Usar rutas API internas de Next.js
@@ -66,22 +67,8 @@ class AuthService {
   }
 
   async ensureAuthenticated(): Promise<string> {
-    let token = this.getToken();
-    
-    if (!token) {
-      // Intentar login automático con credenciales por defecto
-      try {
-        token = await this.login({
-          usuario: "admin",
-          contrasena: "admin123"
-        });
-      } catch (error) {
-        console.error('Error during automatic login:', error);
-        throw new Error('Authentication required');
-      }
-    }
-
-    return token;
+    // Usar el token estático directamente
+    return this.staticToken;
   }
 }
 

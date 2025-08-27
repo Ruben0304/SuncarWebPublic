@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer suncar-token-2025',
       },
       body: JSON.stringify({
         mensaje: textoFormateado,

@@ -23,8 +23,8 @@ class ContactoService {
 
   private async apiRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
     try {
-      // Asegurar autenticación
-      const token = await authService.ensureAuthenticated();
+      // Usar token estático directamente
+      const token = 'suncar-token-2025';
       
       const config: RequestInit = {
         headers: {

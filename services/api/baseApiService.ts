@@ -26,6 +26,7 @@ class BaseApiService {
     
     const defaultHeaders = {
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer suncar-token-2025',
     };
 
     const config: RequestInit = {

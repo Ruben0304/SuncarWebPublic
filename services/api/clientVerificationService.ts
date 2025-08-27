@@ -24,6 +24,7 @@ export class ClientVerificationService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer suncar-token-2025',
         },
         body: JSON.stringify({ identifier }),
       });
