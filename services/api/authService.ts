@@ -14,7 +14,8 @@ class AuthService {
   private tokenKey = 'suncar-token';
 
   constructor() {
-    this.baseUrl = process.env.BACKEND_URL || 'http://127.0.0.1:8000/api';
+    // Usar rutas API internas de Next.js
+    this.baseUrl = '/api';
   }
 
   async login(credentials: LoginCredentials): Promise<string> {

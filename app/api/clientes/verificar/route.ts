@@ -23,10 +23,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Llamar al endpoint del backend
-    console.log(`Verificando cliente con identificador: ${identifier}`);
+    const targetUrl = `${backendUrl}/api/clientes/verificar`;
+    console.log(`=== DEBUG BACKEND CALL ===`);
     console.log(`BACKEND_URL env var: ${backendUrl}`);
+    console.log(`Target URL: ${targetUrl}`);
+    console.log(`Verificando cliente con identificador: ${identifier}`);
+    console.log(`=== END DEBUG ===`);
 
-    const backendResponse = await fetch(`${backendUrl}/clientes/verificar`, {
+    const backendResponse = await fetch(targetUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

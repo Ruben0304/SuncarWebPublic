@@ -17,7 +17,8 @@ class ContactoService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.BACKEND_URL || 'http://127.0.0.1:8000/api';
+    // Usar rutas API internas de Next.js
+    this.baseUrl = '/api';
   }
 
   private async apiRequest(endpoint: string, options: RequestInit = {}): Promise<any> {

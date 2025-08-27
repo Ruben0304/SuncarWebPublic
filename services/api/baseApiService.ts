@@ -13,11 +13,9 @@ class BaseApiService {
   private readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.BACKEND_URL || '';
-    
-    if (!this.baseUrl) {
-      throw new Error('BACKEND_URL environment variable is not defined');
-    }
+    // Los servicios cliente deben usar rutas API internas de Next.js
+    // que se ejecutan en el servidor y pueden acceder a BACKEND_URL
+    this.baseUrl = '/api';
   }
 
   protected async request<T>(
