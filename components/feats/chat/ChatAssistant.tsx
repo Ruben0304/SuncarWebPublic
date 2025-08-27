@@ -158,10 +158,38 @@ Suncar es una empresa cubana especializada en energía solar con más de 5 años
 - Monitoreo en tiempo real de todos los sistemas
 `;
 
-// Mock de backend para chat
-async function mockSendMessage(mensaje: string) {
-  return new Promise<{ response: string; timestamp: string; message_id: string }>((resolve) => {
-    setTimeout(() => {
+// Función para simular streaming de respuestas
+function simulateStreamingResponse(response: string, onChunk: (chunk: string) => void): Promise<void> {
+  return new Promise((resolve) => {
+    const words = response.split(' ');
+    let currentText = '';
+    let wordIndex = 0;
+    
+    const streamInterval = setInterval(() => {
+      if (wordIndex < words.length) {
+        currentText += (wordIndex === 0 ? '' : ' ') + words[wordIndex];
+        onChunk(currentText);
+        wordIndex++;
+      } else {
+        clearInterval(streamInterval);
+        resolve();
+      }
+    }, 80); // 80ms entre palabras para simular streaming natural
+  });
+}
+
+// Mock de backend para chat con streaming
+async function mockSendMessageWithStreaming(
+  mensaje: string, 
+  onStream: (chunk: string) => void,
+  onThinking: () => void
+): Promise<{ timestamp: string; message_id: string }> {
+  return new Promise((resolve) => {
+    // Primero mostrar "pensando"
+    onThinking();
+    
+    // Simular tiempo de "pensamiento" del LLM
+    setTimeout(async () => {
       // Enhanced chatbot prompt with context
       const prompt = `Eres el Asistente Virtual de Suncar, una empresa cubana líder en energía solar. 
 
@@ -221,13 +249,15 @@ Responde como el experto asistente de Suncar basándote en toda la información 
       else {
         response += `Gracias por tu consulta: "${mensaje}". Como especialistas en energía solar, puedo ayudarte con información sobre: 🏠 **Cotización gratuita** (/cotizacion) - Calcula tu sistema ideal 🔧 **Servicios completos** (/servicios) - Instalación y mantenimiento 📞 **Contacto directo** (/contacto) - Habla con nuestros expertos 🏗️ **Proyectos reales** (/projectos) - Ve nuestro trabajo ⭐ **Testimonios** (/testimonios) - Experiencias de clientes. ¿En qué área específica te puedo ayudar?`;
       }
-
+      
+      // Iniciar el streaming
+      await simulateStreamingResponse(response, onStream);
+      
       resolve({
-        response,
         timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
         message_id: Math.random().toString(36).substring(2, 10),
       });
-    }, 1200);
+    }, 1500); // 1.5 segundos de "pensamiento"
   });
 }
 
@@ -244,6 +274,8 @@ interface Mensaje {
   feedback?: "positive" | "negative" | null;
   feedbackDetails?: string | null;
   message_id?: string | null;
+  isThinking?: boolean;
+  isStreaming?: boolean;
 }
 
 const ChatAssistant: React.FC = () => {
@@ -261,6 +293,8 @@ const ChatAssistant: React.FC = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
+  const [streamingMessageIndex, setStreamingMessageIndex] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [displayedSuggestions, setDisplayedSuggestions] = useState<string[]>([]);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -304,42 +338,124 @@ const ChatAssistant: React.FC = () => {
     if (!input.trim() || isLoading) return;
     setShowSuggestions(false);
     const timestamp = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+    
+    // Agregar mensaje del usuario
     setMessages((prev) => [
       ...prev,
       { role: "user", content: input, timestamp, isNew: true },
     ]);
+    
     const userMessage = input;
     setInput("");
     setIsLoading(true);
+    
     try {
-      const data = await mockSendMessage(userMessage);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "agent",
-          content: data.response,
-          timestamp: data.timestamp || timestamp,
-          isNew: true,
-          feedback: null,
-          feedbackDetails: null,
-          message_id: data.message_id,
+      await mockSendMessageWithStreaming(
+        userMessage,
+        // Callback para streaming de texto
+        (streamedText: string) => {
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            
+            // Buscar si ya existe un mensaje de streaming
+            let streamingIndex = newMessages.findIndex(msg => msg.isStreaming);
+            
+            // Si no hay mensaje de streaming, buscar el mensaje de "pensando" para reemplazarlo
+            if (streamingIndex === -1) {
+              const thinkingIndex = newMessages.findIndex(msg => msg.isThinking);
+              if (thinkingIndex !== -1) {
+                // Reemplazar mensaje de "pensando" con streaming
+                newMessages[thinkingIndex] = {
+                  role: "agent",
+                  content: streamedText,
+                  timestamp: newMessages[thinkingIndex].timestamp,
+                  isNew: true,
+                  isStreaming: true,
+                  isThinking: false,
+                  feedback: null,
+                  feedbackDetails: null,
+                  message_id: Math.random().toString(36).substring(2, 10),
+                };
+                return newMessages;
+              }
+            } else {
+              // Actualizar mensaje existente de streaming
+              newMessages[streamingIndex] = {
+                ...newMessages[streamingIndex],
+                content: streamedText,
+              };
+              return newMessages;
+            }
+            
+            // Si no hay mensaje de pensando ni streaming, crear uno nuevo (caso de respaldo)
+            newMessages.push({
+              role: "agent",
+              content: streamedText,
+              timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+              isNew: true,
+              isStreaming: true,
+              isThinking: false,
+              feedback: null,
+              feedbackDetails: null,
+              message_id: Math.random().toString(36).substring(2, 10),
+            });
+            
+            return newMessages;
+          });
         },
-      ]);
+        // Callback para estado de "pensando"
+        () => {
+          setIsThinking(true);
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "agent",
+              content: "Pensando...",
+              timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+              isNew: true,
+              isThinking: true,
+              isStreaming: false,
+              feedback: null,
+              feedbackDetails: null,
+              message_id: null,
+            },
+          ]);
+        }
+      );
+      
+      // Limpiar estados al finalizar
+      setIsThinking(false);
+      setMessages((prev) => prev.map(msg => ({ 
+        ...msg, 
+        isThinking: false, 
+        isStreaming: false,
+        isNew: false 
+      })));
+      
     } catch (e) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "agent",
-          content: "Lo siento, ha ocurrido un error al procesar tu mensaje.",
-          timestamp,
-          isNew: true,
-          feedback: null,
-          feedbackDetails: null,
-          message_id: null,
-        },
-      ]);
+      setMessages((prev) => {
+        // Remover mensaje de "pensando" si existe
+        const filteredMessages = prev.filter(msg => !msg.isThinking);
+        
+        return [
+          ...filteredMessages,
+          {
+            role: "agent",
+            content: "Lo siento, ha ocurrido un error al procesar tu mensaje.",
+            timestamp,
+            isNew: true,
+            isThinking: false,
+            isStreaming: false,
+            feedback: null,
+            feedbackDetails: null,
+            message_id: null,
+          },
+        ];
+      });
     } finally {
       setIsLoading(false);
+      setIsThinking(false);
+      setStreamingMessageIndex(null);
       setTimeout(() => {
         setMessages((prev) => prev.map((msg) => ({ ...msg, isNew: false })));
       }, 500);
@@ -481,9 +597,21 @@ const ChatAssistant: React.FC = () => {
                     >
                       {message.role === "user" ? (
                         <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                      ) : message.isThinking ? (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0s" }} />
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0.2s" }} />
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0.4s" }} />
+                          </div>
+                          <span className="italic">Pensando...</span>
+                        </div>
                       ) : (
                         <div className="text-sm leading-relaxed markdown-body">
                           <ReactMarkdown>{message.content}</ReactMarkdown>
+                          {message.isStreaming && (
+                            <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" />
+                          )}
                         </div>
                       )}
                     </div>
