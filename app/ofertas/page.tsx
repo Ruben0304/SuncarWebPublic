@@ -5,11 +5,23 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
-import { Star, Zap, Shield, Clock, Gift, Phone } from 'lucide-react';
+import { Star, Phone } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export default function OfertasPage() {
   const { clientData, isClient } = useClient();
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-out-cubic'
+    });
+  }, []);
 
   if (!isClient) {
     return (
@@ -36,36 +48,40 @@ export default function OfertasPage() {
 
   const offers = [
     {
-      title: "Descuento VIP en Mantenimiento",
+      title: "Mantenimiento Premium",
       discount: "20%",
-      description: "Servicio técnico especializado con descuento exclusivo para clientes.",
-      icon: Shield,
-      color: "from-blue-500 to-blue-600",
-      features: ["Revisión completa del sistema", "Limpieza de paneles", "Optimización de rendimiento"]
+      description: "Servicio técnico especializado",
+      image: "/images/projects/1.jpg"
+    },
+    {
+      title: "Instalación Residencial",
+      discount: "15%",
+      description: "Sistemas solares para el hogar",
+      image: "/images/projects/2.jpg"
     },
     {
       title: "Expansión de Sistema",
-      discount: "15%",
-      description: "Amplía tu instalación solar con descuentos preferenciales.",
-      icon: Zap,
-      color: "from-green-500 to-green-600",
-      features: ["Paneles adicionales", "Más capacidad de batería", "Instalación incluida"]
+      discount: "10%",
+      description: "Ampliación de instalaciones existentes",
+      image: "/images/projects/3.png"
     },
     {
-      title: "Consultoría Energética Gratuita",
-      discount: "100%",
-      description: "Evaluación completa de eficiencia energética sin costo.",
-      icon: Clock,
-      color: "from-purple-500 to-purple-600",
-      features: ["Análisis de consumo", "Recomendaciones personalizadas", "Plan de optimización"]
-    },
-    {
-      title: "Kit de Emergencia Solar",
+      title: "Sistemas Comerciales",
       discount: "25%",
-      description: "Sistema de respaldo portátil para situaciones especiales.",
-      icon: Gift,
-      color: "from-orange-500 to-orange-600",
-      features: ["Panel portátil 100W", "Batería de respaldo", "Conexiones múltiples"]
+      description: "Soluciones para empresas",
+      image: "/images/projects/4.jpg"
+    },
+    {
+      title: "Consultoría Energética",
+      discount: "50%",
+      description: "Evaluación y optimización",
+      image: "/images/projects/5.jpg"
+    },
+    {
+      title: "Reparación Express",
+      discount: "30%",
+      description: "Solución rápida de averías",
+      image: "/images/projects/6.jpg"
     }
   ];
 
@@ -75,7 +91,7 @@ export default function OfertasPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-12" data-aos="fade-up">
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center">
                 <Star className="w-6 h-6 text-white" />
@@ -94,47 +110,44 @@ export default function OfertasPage() {
           </div>
 
           {/* Offers Grid */}
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {offers.map((offer, index) => {
-              const IconComponent = offer.icon;
-              return (
-                <Card key={index} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-400">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 bg-gradient-to-r ${offer.color} rounded-lg flex items-center justify-center`}>
-                          <IconComponent className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-xl text-gray-900">{offer.title}</CardTitle>
-                          <CardDescription>{offer.description}</CardDescription>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-lg font-bold text-green-700 bg-green-100">
-                        -{offer.discount}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      {offer.features.map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full" />
-                          <span className="text-gray-700 text-sm">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <Button className="w-full bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white">
-                      Solicitar Oferta
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {offers.map((offer, index) => (
+              <Card 
+                key={index} 
+                className="overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+              >
+                <div className="relative overflow-hidden">
+                  <Image
+                    src={offer.image}
+                    alt={offer.title}
+                    width={400}
+                    height={250}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-red-500 text-white font-bold text-lg px-3 py-1">
+                      -{offer.discount}
+                    </Badge>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{offer.title}</h3>
+                  <p className="text-gray-600 mb-4">{offer.description}</p>
+                  <Button className="w-full bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white">
+                    Solicitar
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           {/* Contact CTA */}
-          <Card className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-center">
+          <Card 
+            className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-center"
+            data-aos="fade-up"
+          >
             <CardContent className="py-8">
               <Phone className="w-12 h-12 mx-auto mb-4" />
               <h3 className="text-2xl font-bold mb-2">¿Interesado en Alguna Oferta?</h3>
