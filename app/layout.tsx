@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
 import '../styles/nprogress.css'
-import ChatAssistant from "@/components/feats/chat/ChatAssistant";
+import UnifiedChatAssistant from "@/components/UnifiedChatAssistant";
 import ClientWrapper from "@/components/ClientWrapper";
-import WhatsAppFAB from "@/components/WhatsAppFAB";
 import ProgressBarSuspense from "@/components/ProgressBarSuspense";
 
 export const metadata: Metadata = {
@@ -178,8 +177,7 @@ export default function RootLayout({
         <ProgressBarSuspense />
         <ClientWrapper>
           {children}
-          {/*<ChatAssistant />*/}
-          <WhatsAppFAB />
+          <UnifiedChatAssistant />
         </ClientWrapper>
       </body>
     </html>
