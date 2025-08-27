@@ -36,11 +36,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer suncar-token-2025',
       },
-      body: JSON.stringify({ 
-        identifier,
-        latitud: 23.1136, // Coordenadas por defecto de La Habana
-        longitud: -82.3666
-      }),
+      body: JSON.stringify({ identifier }),
     });
 
     if (!backendResponse.ok) {
@@ -56,6 +52,21 @@ export async function POST(request: NextRequest) {
     const backendData = await backendResponse.json();
     
     console.log('Respuesta del backend:', backendData);
+
+    // Transformar la respuesta para que coincida con nuestro modelo de frontend
+    if (backendData.success && backendData.data) {
+      const transformedData = {
+        success: backendData.success,
+        message: backendData.message,
+        data: {
+          numero: backendData.data.numero || backendData.data._id,
+          nombre: backendData.data.nombre,
+          telefono: backendData.data.telefono,
+          email: backendData.data.email
+        }
+      };
+      return NextResponse.json(transformedData);
+    }
 
     return NextResponse.json(backendData);
 
