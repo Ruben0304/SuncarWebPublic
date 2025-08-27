@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import LoadingScreen from "./LoadingScreen"
 import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext"
+import { ClientProvider } from "@/hooks/useClient"
+import ClientVerificationManager from "./ClientVerificationManager"
 
 interface ClientWrapperProps {
   children: React.ReactNode
@@ -37,7 +39,11 @@ function ClientWrapperContent({ children }: ClientWrapperProps) {
 export default function ClientWrapper({ children }: ClientWrapperProps) {
   return (
     <LoadingProvider>
-      <ClientWrapperContent>{children}</ClientWrapperContent>
+      <ClientProvider>
+        <ClientVerificationManager>
+          <ClientWrapperContent>{children}</ClientWrapperContent>
+        </ClientVerificationManager>
+      </ClientProvider>
     </LoadingProvider>
   )
 }

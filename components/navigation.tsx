@@ -3,10 +3,13 @@ import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
+import { useClient } from "@/hooks/useClient"
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { isClient, isLoading } = useClient()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,7 +19,7 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const navItems = [
+  const baseNavItems = [
     { name: "Inicio", href: "/" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Servicios", href: "/servicios" },
@@ -24,6 +27,15 @@ export default function Navigation() {
     // { name: "Testimonios", href: "/testimonios" },
     { name: "Contacto", href: "/contacto" },
   ]
+
+  // Add Ofertas tab for verified clients
+  const navItems = !isLoading && isClient 
+    ? [
+        ...baseNavItems.slice(0, 3), // Inicio, Sobre Nosotros, Servicios
+        { name: "Ofertas", href: "/ofertas", isClient: true },
+        ...baseNavItems.slice(3) // Contacto
+      ]
+    : baseNavItems
 
   return (
     <nav className="fixed top-2 lg:top-4 left-2 lg:left-4 right-2 lg:right-4 z-50">
@@ -48,13 +60,19 @@ export default function Navigation() {
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
                 {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium"
-                  >
-                    {item.name}
-                  </Link>
+                  <div key={item.name} className="relative">
+                    <Link
+                      href={item.href}
+                      className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium flex items-center gap-2"
+                    >
+                      {item.name}
+                      {(item as any).isClient && (
+                        <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-xs px-2 py-1 rounded-full">
+                          Cliente
+                        </Badge>
+                      )}
+                    </Link>
+                  </div>
                 ))}
               </div>
 
@@ -82,10 +100,15 @@ export default function Navigation() {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium py-2 text-sm"
+                      className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium py-2 text-sm flex items-center gap-2"
                       onClick={() => setIsOpen(false)}
                     >
                       {item.name}
+                      {(item as any).isClient && (
+                        <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-xs px-2 py-1 rounded-full">
+                          Cliente
+                        </Badge>
+                      )}
                     </Link>
                   ))}
                   <Link href="/cotizacion" className="mt-3 px-4 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm text-center block" onClick={() => setIsOpen(false)}>

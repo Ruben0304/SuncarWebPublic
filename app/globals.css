@@ -153,3 +153,228 @@ body {
 .animation-delay-1200 {
   animation-delay: 1.2s;
 }
+
+/* Scrollytelling specific animations */
+@keyframes solar-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(253, 184, 19, 0.3), 0 0 40px rgba(253, 184, 19, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(253, 184, 19, 0.6), 0 0 60px rgba(253, 184, 19, 0.3), 0 0 80px rgba(242, 103, 41, 0.2);
+  }
+}
+
+@keyframes energy-pulse {
+  0%, 100% {
+    background-size: 100% 100%;
+    filter: brightness(1);
+  }
+  50% {
+    background-size: 110% 110%;
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes text-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) rotateX(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+  }
+}
+
+@keyframes parallax-float {
+  0%, 100% {
+    transform: translateY(0px) rotateZ(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotateZ(1deg);
+  }
+  66% {
+    transform: translateY(-5px) rotateZ(-0.5deg);
+  }
+}
+
+.solar-glow {
+  animation: solar-glow 3s ease-in-out infinite;
+}
+
+.energy-pulse {
+  animation: energy-pulse 4s ease-in-out infinite;
+}
+
+.text-reveal {
+  animation: text-reveal 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.parallax-float {
+  animation: parallax-float 6s ease-in-out infinite;
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Performance optimization for transforms */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* GPU acceleration for scroll animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Advanced scrollytelling animations */
+@keyframes slide-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-60px) rotateY(-15deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(60px) rotateY(15deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes scale-in-bounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(50px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes timeline-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(253, 184, 19, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(253, 184, 19, 0.8), 0 0 60px rgba(242, 103, 41, 0.4);
+    transform: scale(1.1);
+  }
+}
+
+@keyframes floating-glow {
+  0%, 100% {
+    transform: translateY(0px) rotateZ(0deg);
+    filter: drop-shadow(0 0 20px rgba(253, 184, 19, 0.3));
+  }
+  33% {
+    transform: translateY(-15px) rotateZ(2deg);
+    filter: drop-shadow(0 0 30px rgba(253, 184, 19, 0.5));
+  }
+  66% {
+    transform: translateY(-8px) rotateZ(-1deg);
+    filter: drop-shadow(0 0 25px rgba(242, 103, 41, 0.4));
+  }
+}
+
+@keyframes story-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(80px) rotateX(45deg) scale(0.8);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(-5px) rotateX(-5deg) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes progress-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(242, 103, 41, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(242, 103, 41, 0.8), 0 0 30px rgba(253, 184, 19, 0.3);
+  }
+}
+
+/* Animation classes */
+.slide-in-left {
+  animation: slide-in-left 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.slide-in-right {
+  animation: slide-in-right 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.scale-in-bounce {
+  animation: scale-in-bounce 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.timeline-pulse {
+  animation: timeline-pulse 2s ease-in-out infinite;
+}
+
+.floating-glow {
+  animation: floating-glow 4s ease-in-out infinite;
+}
+
+.story-entrance {
+  animation: story-entrance 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.progress-glow {
+  animation: progress-glow 2s ease-in-out infinite;
+}
+
+/* Scrollytelling section transitions */
+.section-transition {
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Enhanced performance for mobile */
+@media (prefers-reduced-motion: reduce) {
+  .solar-glow,
+  .energy-pulse,
+  .text-reveal,
+  .parallax-float,
+  .timeline-pulse,
+  .floating-glow,
+  .progress-glow {
+    animation: none;
+  }
+  
+  .scale-in-bounce,
+  .slide-in-left,
+  .slide-in-right,
+  .story-entrance {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
