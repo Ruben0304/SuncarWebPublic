@@ -36,7 +36,11 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer suncar-token-2025',
       },
-      body: JSON.stringify({ identifier }),
+      body: JSON.stringify({ 
+        identifier,
+        latitud: 23.1136, // Coordenadas por defecto de La Habana
+        longitud: -82.3666
+      }),
     });
 
     if (!backendResponse.ok) {
