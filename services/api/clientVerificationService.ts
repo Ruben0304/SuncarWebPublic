@@ -19,6 +19,7 @@ export class ClientVerificationService {
   
   async verificarCliente(identifier: string): Promise<ClientVerificationResponse> {
     try {
+      // Usar la ruta API interna de Next.js
       const response = await fetch('/api/clientes/verificar', {
         method: 'POST',
         headers: {
