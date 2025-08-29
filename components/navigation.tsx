@@ -25,6 +25,7 @@ export default function Navigation() {
     { name: "Servicios", href: "/servicios" },
     // { name: "Proyectos", href: "/projectos" },
     // { name: "Testimonios", href: "/testimonios" },
+    { name: "Galería", href: "/galeria" },
     { name: "Contacto", href: "/contacto" },
   ]
 
