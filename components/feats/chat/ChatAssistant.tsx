@@ -35,16 +35,229 @@ const OPCIONES_FEEDBACK = [
   "Otro",
 ];
 
-// Mock de backend para chat
-async function mockSendMessage(mensaje: string) {
-  return new Promise<{ response: string; timestamp: string; message_id: string }>((resolve) => {
-    setTimeout(() => {
+// Context information about Suncar
+const SUNCAR_CONTEXT = `
+INFORMACIÓN DETALLADA SOBRE SUNCAR Y EL SITIO WEB:
+
+## SOBRE SUNCAR
+Suncar es una empresa cubana especializada en energía solar con más de 5 años de experiencia transformando hogares y negocios con tecnología solar de vanguardia. Ofrecemos soluciones completas de energía renovable para lograr independencia energética.
+
+## SERVICIOS PRINCIPALES:
+
+### 1. INSTALACIÓN DE SISTEMAS FOTOVOLTAICOS
+- Paneles monocristalinos y policristalinos de última generación
+- Garantía en paneles de fabricantes: 25 años (JSMCH2/Greenheiss)
+- Dos años de garantía sobre la instalación
+- Eficiencia superior al 20%
+- Instalación profesional certificada
+- Equipos disponibles: 3kW, 5kW, 10kW, 25kW, 50kW
+- Marcas líderes: Huawei, Greenheiss, JSMCH2, Sungrow
+
+### 2. SISTEMAS DE BATERÍAS COMPLETAS
+- Baterías LiFePO4 (Litio Hierro Fosfato) de larga duración
+- Sistema de gestión inteligente
+- Respaldo automático durante apagones
+- Monitoreo en tiempo real
+- Ampliable modularmente: desde 5kWh escalable según necesidades
+- Operan en climas extremos (-20°C a 60°C)
+- Software de gestión para optimizar autoconsumo y ahorro
+
+### 3. MANTENIMIENTO Y SOPORTE PREVENTIVO
+- Mantenimiento preventivo programado
+- Limpieza profesional de paneles
+- Diagnóstico y reparaciones
+- Soporte técnico 24/7
+- Atención a quejas y solicitudes
+
+### 4. CONSULTORÍA ENERGÉTICA
+- Evaluación energética personalizada
+- Diseño de sistema optimizado
+- Análisis de retorno de inversión
+- Asesoría en financiamiento
+- Consulta gratuita
+
+## PROCESO DE INSTALACIÓN:
+1. **Consulta Inicial**: Evaluación del consumo energético y condiciones del hogar
+2. **Diseño del Sistema**: Diseño personalizado con cantidad óptima de paneles y baterías según capacidades financieras y reales
+3. **Instalación Profesional**: Equipo certificado realiza instalación completa cumpliendo estándares de seguridad
+4. **Puesta en Marcha**: Configuración, pruebas, capacitación y activación de garantías
+
+## GARANTÍAS Y BENEFICIOS:
+- **Garantía Extendida**: 25 años en paneles, 10-12 años en inversores
+- **Equipo Certificado**: Técnicos especializados y certificados
+- **Calidad Premium**: Equipos de marcas reconocidas mundialmente
+- **Soporte 24/7**: Asistencia técnica disponible siempre
+
+## CONTACTO:
+- **Oficina Principal**: Calle 24 entre 1ra y 3ra, Playa, La Habana, Cuba
+- **Teléfono**: +5363962417
+- **Email**: info@suncarsrl.com
+- **Horarios**: Lun-Vie 8:00-18:00, Sáb 9:00-14:00
+
+## PÁGINAS DEL SITIO WEB:
+
+### PÁGINA PRINCIPAL (/)
+- Hero con información sobre energía solar para el futuro
+- Sección "Sobre Suncar" con especialidades en energía solar
+- Características principales: Paneles Premium, Baterías Inteligentes, Soporte Técnico
+- Juego interactivo de simulador solar
+- Sección especial para clientes existentes con descuentos:
+  * Hasta 40% OFF en mantenimiento
+  * Descuentos especiales en expansiones
+  * Precios preferenciales en productos
+
+### SERVICIOS (/servicios)
+- Información detallada de todos los servicios
+- Especificaciones técnicas completas
+- Proceso de instalación paso a paso
+- Beneficios de elegir Suncar
+- Por qué elegir energía solar
+
+### CONTACTO (/contacto)
+- Formulario de contacto que envía mensaje por WhatsApp
+- Información completa de contacto y ubicación
+- Mapa interactivo de la oficina
+- Horarios de atención
+- Diferentes tipos de consultas: cotización, instalación, mantenimiento, financiamiento
+
+### COTIZACIÓN (/cotizacion)
+- Sistema de cotización en 3 pasos:
+  1. **Información del Hogar**: Tipo de vivienda, tipo de techo
+  2. **Consumo Energético**: Factura mensual, personas en hogar, electrodomésticos
+  3. **Contacto y Ubicación**: Datos personales y mapa interactivo para seleccionar ubicación
+- Cálculo automático de potencia requerida
+- Electrodomésticos incluidos: Aire Acondicionado, Refrigerador, Lavadora, TV, Computadora, Microondas, Plancha, Bomba de Agua
+- Beneficios: Ahorro hasta 90%, Energía 24/7, Energía limpia
+
+### PROYECTOS (/projectos)
+- Galería de proyectos completados
+- Estadísticas: 500+ proyectos, 50MW+ instalados, 85% ahorro promedio, 98% satisfacción
+- Proyectos destacados con detalles técnicos
+- Testimonios de clientes reales
+- Capacidades desde 4.2kW hasta 15kW
+- Ahorros del 78% al 92%
+
+### TESTIMONIOS (/testimonios)
+- Testimonios reales de clientes satisfechos
+- Filtros por tipo: residencial y comercial
+- Estadísticas de satisfacción
+- Calificación promedio 4.9/5
+- 500+ clientes satisfechos
+- 98% de recomendación
+- Testimonios incluyen ubicación, ahorro y tamaño del sistema
+
+## DATOS IMPORTANTES:
+- Más de 500 proyectos completados
+- 85% de ahorro promedio en factura eléctrica
+- Sistemas disponibles desde 3kW hasta 50kW
+- Tecnología LiFePO4 para baterías
+- Garantías de hasta 25 años en paneles
+- Cobertura en toda Cuba
+- Descuentos especiales para clientes existentes
+- Respaldo durante apagones con sistemas de baterías
+- Monitoreo en tiempo real de todos los sistemas
+`;
+
+// Función para simular streaming de respuestas
+function simulateStreamingResponse(response: string, onChunk: (chunk: string) => void): Promise<void> {
+  return new Promise((resolve) => {
+    const words = response.split(' ');
+    let currentText = '';
+    let wordIndex = 0;
+    
+    const streamInterval = setInterval(() => {
+      if (wordIndex < words.length) {
+        currentText += (wordIndex === 0 ? '' : ' ') + words[wordIndex];
+        onChunk(currentText);
+        wordIndex++;
+      } else {
+        clearInterval(streamInterval);
+        resolve();
+      }
+    }, 80); // 80ms entre palabras para simular streaming natural
+  });
+}
+
+// Mock de backend para chat con streaming
+async function mockSendMessageWithStreaming(
+  mensaje: string, 
+  onStream: (chunk: string) => void,
+  onThinking: () => void
+): Promise<{ timestamp: string; message_id: string }> {
+  return new Promise((resolve) => {
+    // Primero mostrar "pensando"
+    onThinking();
+    
+    // Simular tiempo de "pensamiento" del LLM
+    setTimeout(async () => {
+      // Enhanced chatbot prompt with context
+      const prompt = `Eres el Asistente Virtual de Suncar, una empresa cubana líder en energía solar. 
+
+CONTEXTO COMPLETO: ${SUNCAR_CONTEXT}
+
+INSTRUCCIONES:
+- Responde SIEMPRE en español de manera amigable y profesional
+- Usa toda la información del contexto para dar respuestas detalladas y precisas
+- Si preguntan sobre precios, di que ofrecemos consulta gratuita y que pueden cotizar en /cotizacion
+- Si preguntan dónde hacer algo específico, guíalos a la página correcta:
+  * Cotizar: /cotizacion
+  * Contactar: /contacto  
+  * Ver servicios: /servicios
+  * Ver proyectos: /projectos
+  * Ver testimonios: /testimonios
+- Incluye datos específicos como garantías, capacidades, ahorros típicos
+- Destaca nuestras marcas: Huawei, Greenheiss, JSMCH2, Sungrow
+- Menciona beneficios clave: hasta 90% ahorro, energía 24/7, tecnología LiFePO4
+- Si preguntan sobre mantenimiento o problemas técnicos, menciona nuestro soporte 24/7
+
+Mensaje del usuario: "${mensaje}"
+
+Responde como el experto asistente de Suncar basándote en toda la información proporcionada:`;
+      
+      // Mock response logic (in real implementation, this would call an AI service)
+      let response = "Hola! Soy el Asistente Virtual de Suncar, tu empresa cubana líder en energía solar. ";
+      
+      const mensajeLower = mensaje.toLowerCase();
+      
+      if (mensajeLower.includes('cotiz') || mensajeLower.includes('precio') || mensajeLower.includes('costo')) {
+        response += "¡Perfecto! Puedes obtener tu cotización personalizada completamente gratis en nuestra página de cotización (/cotizacion). Nuestro sistema te guía en 3 pasos simples para calcular el sistema solar ideal para tu hogar. Trabajamos con equipos desde 3kW hasta 50kW de marcas líderes como Huawei, Greenheiss y Sungrow. ¡La mayoría de nuestros clientes ahorran entre 78% y 92% en su factura eléctrica!";
+      }
+      else if (mensajeLower.includes('servicio') || mensajeLower.includes('instalaci') || mensajeLower.includes('panel')) {
+        response += "¡Excelente pregunta! Ofrecemos servicios completos de energía solar: 🔸 **Instalación de Sistemas Fotovoltaicos**: Paneles monocristalinos/policristalinos con 25 años de garantía 🔸 **Sistemas de Baterías LiFePO4**: Respaldo 24/7 incluso durante apagones 🔸 **Mantenimiento Preventivo**: Soporte técnico 24/7 🔸 **Consultoría Gratuita**: Evaluación personalizada. Puedes ver todos los detalles en /servicios. ¿Te interesa algún servicio en particular?";
+      }
+      else if (mensajeLower.includes('contact') || mensajeLower.includes('teléfono') || mensajeLower.includes('hablar')) {
+        response += "¡Por supuesto! Puedes contactarnos de varias formas: 📞 **Teléfono**: +5363962417 📧 **Email**: info@suncarsrl.com 📍 **Oficina**: Calle 24 entre 1ra y 3ra, Playa, La Habana 🕒 **Horarios**: Lun-Vie 8:00-18:00, Sáb 9:00-14:00. También tienes nuestro formulario de contacto en /contacto donde puedes escribirnos directamente. ¿En qué podemos ayudarte específicamente?";
+      }
+      else if (mensajeLower.includes('proyecto') || mensajeLower.includes('ejemplo') || mensajeLower.includes('trabajo')) {
+        response += "¡Tenemos más de 500 proyectos completados en toda Cuba! Puedes ver nuestros proyectos destacados en /projectos, donde encontrarás casos reales desde 4.2kW hasta 15kW con ahorros del 78% al 92%. También tenemos testimonios de clientes reales en /testimonios con calificación promedio de 4.9/5. ¿Te gustaría saber sobre algún tipo específico de instalación?";
+      }
+      else if (mensajeLower.includes('batería') || mensajeLower.includes('almacen') || mensajeLower.includes('apagón')) {
+        response += "¡Excelente! Nuestros sistemas de baterías LiFePO4 (Litio Hierro Fosfato) te dan energía 24/7: ⚡ **Respaldo automático** durante apagones 🔋 **Ampliable modularmente**: desde 5kWh 🌡️ **Resistentes**: operan de -20°C a 60°C 📱 **Monitoreo inteligente** en tiempo real 🔧 **Larga duración** con mínimo mantenimiento. ¿Quieres saber más sobre las capacidades disponibles?";
+      }
+      else if (mensajeLower.includes('ahorro') || mensajeLower.includes('benefit') || mensajeLower.includes('ventaja')) {
+        response += "¡Los beneficios son increíbles! Nuestros clientes logran: 💰 **85% ahorro promedio** en factura eléctrica ⚡ **Energía 24/7** con sistemas de respaldo 🌱 **100% energía limpia** y renovable 🏠 **Independencia energética** total 📈 **ROI típico**: 2.8 a 3.8 años 🛡️ **Garantías extendidas**: hasta 25 años. ¿Te interesa calcular tu ahorro potencial con una cotización personalizada?";
+      }
+      else if (mensajeLower.includes('mantenim') || mensajeLower.includes('soporte') || mensajeLower.includes('ayuda técnica')) {
+        response += "¡Nuestro soporte técnico es excepcional! Ofrecemos: 🔧 **Soporte 24/7** siempre disponible 📅 **Mantenimiento preventivo** programado 🧽 **Limpieza profesional** de paneles 🔍 **Diagnóstico y reparaciones** especializadas 👥 **Técnicos certificados** y experimentados. Para clientes existentes tenemos hasta 40% de descuento en servicios de mantenimiento. ¿Necesitas algún tipo de asistencia técnica específica?";
+      }
+      else if (mensajeLower.includes('garantía') || mensajeLower.includes('warranty')) {
+        response += "¡Nuestras garantías son las mejores del mercado! 🛡️ **Paneles**: 25 años (JSMCH2/Greenheiss) ⚙️ **Inversores**: 10-12 años (Huawei/Sungrow) 🔋 **Baterías**: Larga duración con tecnología LiFePO4 🔨 **Instalación**: 2 años de garantía completa 👨‍🔧 **Soporte técnico**: 24/7 de por vida. ¡Respaldamos completamente tu inversión en energía solar!";
+      }
+      else if (mensajeLower.includes('hola') || mensajeLower.includes('buenos días') || mensajeLower.includes('buenas')) {
+        response += "¡Es un placer ayudarte! Soy tu asistente para todo lo relacionado con energía solar en Cuba. Con más de 5 años de experiencia, hemos ayudado a más de 500 familias a lograr independencia energética con ahorros de hasta 90%. ¿Te interesa saber sobre nuestros servicios, obtener una cotización gratuita, o tienes alguna pregunta específica sobre energía solar?";
+      }
+      else {
+        response += `Gracias por tu consulta: "${mensaje}". Como especialistas en energía solar, puedo ayudarte con información sobre: 🏠 **Cotización gratuita** (/cotizacion) - Calcula tu sistema ideal 🔧 **Servicios completos** (/servicios) - Instalación y mantenimiento 📞 **Contacto directo** (/contacto) - Habla con nuestros expertos 🏗️ **Proyectos reales** (/projectos) - Ve nuestro trabajo ⭐ **Testimonios** (/testimonios) - Experiencias de clientes. ¿En qué área específica te puedo ayudar?`;
+      }
+      
+      // Iniciar el streaming
+      await simulateStreamingResponse(response, onStream);
+      
       resolve({
-        response: `Soy el Asistente Virtual de Suncar. Recibí: "${mensaje}". ¿En qué más puedo ayudarte?`,
         timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
         message_id: Math.random().toString(36).substring(2, 10),
       });
-    }, 1200);
+    }, 1500); // 1.5 segundos de "pensamiento"
   });
 }
 
@@ -61,6 +274,8 @@ interface Mensaje {
   feedback?: "positive" | "negative" | null;
   feedbackDetails?: string | null;
   message_id?: string | null;
+  isThinking?: boolean;
+  isStreaming?: boolean;
 }
 
 const ChatAssistant: React.FC = () => {
@@ -78,6 +293,8 @@ const ChatAssistant: React.FC = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
+  const [streamingMessageIndex, setStreamingMessageIndex] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [displayedSuggestions, setDisplayedSuggestions] = useState<string[]>([]);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -121,42 +338,124 @@ const ChatAssistant: React.FC = () => {
     if (!input.trim() || isLoading) return;
     setShowSuggestions(false);
     const timestamp = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+    
+    // Agregar mensaje del usuario
     setMessages((prev) => [
       ...prev,
       { role: "user", content: input, timestamp, isNew: true },
     ]);
+    
     const userMessage = input;
     setInput("");
     setIsLoading(true);
+    
     try {
-      const data = await mockSendMessage(userMessage);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "agent",
-          content: data.response,
-          timestamp: data.timestamp || timestamp,
-          isNew: true,
-          feedback: null,
-          feedbackDetails: null,
-          message_id: data.message_id,
+      await mockSendMessageWithStreaming(
+        userMessage,
+        // Callback para streaming de texto
+        (streamedText: string) => {
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            
+            // Buscar si ya existe un mensaje de streaming
+            let streamingIndex = newMessages.findIndex(msg => msg.isStreaming);
+            
+            // Si no hay mensaje de streaming, buscar el mensaje de "pensando" para reemplazarlo
+            if (streamingIndex === -1) {
+              const thinkingIndex = newMessages.findIndex(msg => msg.isThinking);
+              if (thinkingIndex !== -1) {
+                // Reemplazar mensaje de "pensando" con streaming
+                newMessages[thinkingIndex] = {
+                  role: "agent",
+                  content: streamedText,
+                  timestamp: newMessages[thinkingIndex].timestamp,
+                  isNew: true,
+                  isStreaming: true,
+                  isThinking: false,
+                  feedback: null,
+                  feedbackDetails: null,
+                  message_id: Math.random().toString(36).substring(2, 10),
+                };
+                return newMessages;
+              }
+            } else {
+              // Actualizar mensaje existente de streaming
+              newMessages[streamingIndex] = {
+                ...newMessages[streamingIndex],
+                content: streamedText,
+              };
+              return newMessages;
+            }
+            
+            // Si no hay mensaje de pensando ni streaming, crear uno nuevo (caso de respaldo)
+            newMessages.push({
+              role: "agent",
+              content: streamedText,
+              timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+              isNew: true,
+              isStreaming: true,
+              isThinking: false,
+              feedback: null,
+              feedbackDetails: null,
+              message_id: Math.random().toString(36).substring(2, 10),
+            });
+            
+            return newMessages;
+          });
         },
-      ]);
+        // Callback para estado de "pensando"
+        () => {
+          setIsThinking(true);
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "agent",
+              content: "Pensando...",
+              timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+              isNew: true,
+              isThinking: true,
+              isStreaming: false,
+              feedback: null,
+              feedbackDetails: null,
+              message_id: null,
+            },
+          ]);
+        }
+      );
+      
+      // Limpiar estados al finalizar
+      setIsThinking(false);
+      setMessages((prev) => prev.map(msg => ({ 
+        ...msg, 
+        isThinking: false, 
+        isStreaming: false,
+        isNew: false 
+      })));
+      
     } catch (e) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "agent",
-          content: "Lo siento, ha ocurrido un error al procesar tu mensaje.",
-          timestamp,
-          isNew: true,
-          feedback: null,
-          feedbackDetails: null,
-          message_id: null,
-        },
-      ]);
+      setMessages((prev) => {
+        // Remover mensaje de "pensando" si existe
+        const filteredMessages = prev.filter(msg => !msg.isThinking);
+        
+        return [
+          ...filteredMessages,
+          {
+            role: "agent",
+            content: "Lo siento, ha ocurrido un error al procesar tu mensaje.",
+            timestamp,
+            isNew: true,
+            isThinking: false,
+            isStreaming: false,
+            feedback: null,
+            feedbackDetails: null,
+            message_id: null,
+          },
+        ];
+      });
     } finally {
       setIsLoading(false);
+      setIsThinking(false);
+      setStreamingMessageIndex(null);
       setTimeout(() => {
         setMessages((prev) => prev.map((msg) => ({ ...msg, isNew: false })));
       }, 500);
@@ -298,9 +597,21 @@ const ChatAssistant: React.FC = () => {
                     >
                       {message.role === "user" ? (
                         <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                      ) : message.isThinking ? (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0s" }} />
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0.2s" }} />
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0.4s" }} />
+                          </div>
+                          <span className="italic">Pensando...</span>
+                        </div>
                       ) : (
                         <div className="text-sm leading-relaxed markdown-body">
                           <ReactMarkdown>{message.content}</ReactMarkdown>
+                          {message.isStreaming && (
+                            <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" />
+                          )}
                         </div>
                       )}
                     </div>
