@@ -378,3 +378,98 @@ html {
     transform: none;
   }
 }
+
+/* Custom video slider styles */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  background: rgba(255, 255, 255, 0.3);
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(135deg, #F26729, #FDB813);
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.slider::-moz-range-track {
+  background: rgba(255, 255, 255, 0.3);
+  height: 8px;
+  border-radius: 4px;
+  border: none;
+}
+
+.slider::-moz-range-thumb {
+  background: linear-gradient(135deg, #F26729, #FDB813);
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Video controls hover effects */
+.video-controls button {
+  transition: all 0.2s ease;
+}
+
+.video-controls button:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Video container hover effects */
+.video-container:hover .video-overlay {
+  opacity: 1;
+}
+
+.video-overlay {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Responsive video controls */
+@media (max-width: 768px) {
+  .video-controls {
+    padding: 0.5rem;
+  }
+  
+  .video-controls button {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .video-controls .slider {
+    height: 6px;
+  }
+  
+  .video-controls .slider::-webkit-slider-thumb {
+    height: 16px;
+    width: 16px;
+  }
+}

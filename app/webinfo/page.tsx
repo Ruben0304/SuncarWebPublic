@@ -95,7 +95,7 @@ export default function WebInfoPage() {
                       <div className="w-12 h-12 rounded-full overflow-hidden">
                         <Image 
                           src="https://github.com/Fabian1820.png" 
-                          alt="Fabián Fernández Galves"
+                          alt="Fabián Fernández Galvez"
                           width={48}
                           height={48}
                           className="w-full h-full object-cover"
