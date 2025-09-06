@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import LottieAnimation from "@/components/lottie-animation"
-import SuncarInteractiveGame from "@/components/SuncarInteractiveGame"
+// import SuncarInteractiveGame from "@/components/SuncarInteractiveGame"
 import { Star, Zap, Battery, Wrench } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react"
 import { useTypewriter } from "@/hooks/useTypewriter"
 import { useLoadingContext } from "@/hooks/useLoadingContext"
 import { useClient } from "@/hooks/useClient"
+import SuncarInteractiveGame from "@/components/SuncarInteractiveGame";
 
 export default function HomePage() {
 
@@ -223,7 +224,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Interactive Suncar Game Section */}
+       {/*Interactive Suncar Game Section */}
       <SuncarInteractiveGame />
 
       {/* Client Offers Marketing Section */}
