@@ -13,29 +13,6 @@ import { useLoadingContext } from "@/hooks/useLoadingContext"
 import { useClient } from "@/hooks/useClient"
 
 export default function HomePage() {
-  const testimonials = [
-    {
-      name: "María González",
-      location: "La Habana, Cuba",
-      comment:
-        "Excelente servicio. Los paneles solares han reducido mi factura eléctrica en un 80%. El equipo de Suncar fue muy profesional.",
-      rating: 5,
-    },
-    {
-      name: "Carlos Mendoza",
-      location: "Santiago de Cuba, Cuba",
-      comment:
-        "La instalación fue rápida y eficiente. Ya llevo 6 meses ahorrando significativamente en electricidad. Muy recomendado.",
-      rating: 5,
-    },
-    {
-      name: "Ana Rodríguez",
-      location: "Camagüey, Cuba",
-      comment:
-        "Suncar cumplió todas sus promesas. El sistema de baterías funciona perfectamente y el soporte técnico es excepcional.",
-      rating: 5,
-    },
-  ]
 
   const [count, setCount] = useState(0);
   const [showOfferDialog, setShowOfferDialog] = useState(false);

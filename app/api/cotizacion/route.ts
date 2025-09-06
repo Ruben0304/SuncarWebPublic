@@ -18,10 +18,10 @@ export async function POST(request: NextRequest) {
     const textoFormateado = CotizacionFormatter.formatCotizacionText(cotizacionData);
     
     // Obtener URL del backend desde variables de entorno
-    const backendUrl = process.env.BACKEND_URL;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     
     if (!backendUrl) {
-      console.error('BACKEND_URL no está definida en variables de entorno');
+      console.error('NEXT_PUBLIC_BACKEND_URL no está definida en variables de entorno');
       return NextResponse.json(
         { success: false, message: 'Error de configuración del servidor' },
         { status: 500 }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     // Enviar al backend real
     const targetUrl = `${backendUrl}/api/cotizacion`;
     console.log(`=== DEBUG BACKEND CALL ===`);
-    console.log(`BACKEND_URL env var: ${backendUrl}`);
+    console.log(`NEXT_PUBLIC_BACKEND_URL env var: ${backendUrl}`);
     console.log(`Target URL: ${targetUrl}`);
     console.log('Datos a enviar:', { 
       mensaje: textoFormateado,

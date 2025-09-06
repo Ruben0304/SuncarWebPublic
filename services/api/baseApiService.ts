@@ -14,7 +14,7 @@ class BaseApiService {
 
   constructor() {
     // Los servicios cliente deben usar rutas API internas de Next.js
-    // que se ejecutan en el servidor y pueden acceder a BACKEND_URL
+    // que se ejecutan en el servidor y pueden acceder a NEXT_PUBLIC_BACKEND_URL
     this.baseUrl = '/api';
   }
 

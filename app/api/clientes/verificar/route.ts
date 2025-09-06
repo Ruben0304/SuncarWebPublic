@@ -11,11 +11,11 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Verificar que BACKEND_URL esté definida
-    const backendUrl = process.env.BACKEND_URL;
+    // Verificar que NEXT_PUBLIC_BACKEND_URL esté definida
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     
     if (!backendUrl) {
-      console.error('BACKEND_URL no está definida en variables de entorno');
+      console.error('NEXT_PUBLIC_BACKEND_URL no está definida en variables de entorno');
       return NextResponse.json({
         success: false,
         message: 'Error de configuración del servidor'
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     // Llamar al endpoint del backend
     const targetUrl = `${backendUrl}/api/clientes/verificar`;
     console.log(`=== DEBUG BACKEND CALL ===`);
-    console.log(`BACKEND_URL env var: ${backendUrl}`);
+    console.log(`NEXT_PUBLIC_BACKEND_URL env var: ${backendUrl}`);
     console.log(`Target URL: ${targetUrl}`);
     console.log(`Verificando cliente con identificador: ${identifier}`);
     console.log(`=== END DEBUG ===`);

@@ -75,8 +75,8 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 
 ### Environment Configuration
 - **Environment variables**: Configured via `.env` file (not committed to repository)
-- **Backend URL**: `BACKEND_URL` - Server-side API endpoint for backend services
-- **Security**: Backend URL is kept server-side only (no `NEXT_PUBLIC_` prefix)
+- **Backend URL**: `NEXT_PUBLIC_BACKEND_URL` - API endpoint for backend services (client and server accessible)
+- **Security**: Backend URL is now client-accessible using `NEXT_PUBLIC_` prefix (similar to GAME_URL pattern)
 - **Deployment**: Configured in Railway environment variables for production
 
 ## Development Notes
