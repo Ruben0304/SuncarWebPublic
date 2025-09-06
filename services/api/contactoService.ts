@@ -68,7 +68,8 @@ class ContactoService {
 
   async getContactos(): Promise<Contacto[]> {
     try {
-      const response: ContactoResponse = await this.apiRequest('/contactos/');
+      const response: ContactoResponse = await this.apiRequest('/contactos');
+      // El endpoint /first devuelve un solo contacto, lo convertimos a array
       return Array.isArray(response.data) ? response.data : [response.data];
     } catch (error) {
       console.error('Error fetching contactos:', error);
