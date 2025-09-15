@@ -305,8 +305,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Offer Dialog for Non-Clients */}
-      {showOfferDialog && (
+      {/* Offer Dialog for Non-Clients - TEMPORARILY DISABLED FOR DEVELOPMENT */}
+      {/* {showOfferDialog && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl transform animate-scale-in">
             <div className="text-center">
@@ -315,10 +315,10 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">🔒 Descuentos para Clientes</h3>
               <p className="text-gray-600 mb-6">
-                Para acceder a estos descuentos especiales necesitas haber contratado al menos un servicio con Suncar. 
+                Para acceder a estos descuentos especiales necesitas haber contratado al menos un servicio con Suncar.
                 ¡Solicita tu primera cotización y únete a nuestra familia solar!
               </p>
-              
+
               <div className="flex flex-col gap-3">
                 <Link
                   href="/cotizacion"
@@ -336,7 +336,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      )}
+      )} */
 
       {/* Testimonials Section */}
       {/*<section className="py-16 lg:py-20 bg-white">*/}
