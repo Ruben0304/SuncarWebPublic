@@ -1,250 +1,292 @@
 'use client';
 
-import { useClient } from '@/hooks/useClient';
+import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
-import { Star, Phone, Check } from 'lucide-react';
+import Footer from '@/components/footer';
+import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { OfertaSimplificada, OfertasResponse } from '@/types/ofertas';
 
 export default function OfertasPage() {
-  const { clientData, isClient } = useClient();
+  const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
+  const [filteredOfertas, setFilteredOfertas] = useState<OfertaSimplificada[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'precio-asc' | 'precio-desc' | 'nombre'>('precio-asc');
+  const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
 
   useEffect(() => {
     AOS.init({
-      duration: 800,
+      duration: 600,
       once: true,
-      easing: 'ease-out-cubic'
+      easing: 'ease-out'
     });
   }, []);
 
-  if (!isClient) {
-    return (
-      <>
-        <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
-          <Card className="max-w-md w-full text-center">
-            <CardHeader>
-              <CardTitle className="text-2xl text-gray-900">Acceso Restringido</CardTitle>
-              <CardDescription>
-                Esta sección está disponible únicamente para clientes verificados de Suncar.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild className="bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white">
-                <Link href="/">Volver al Inicio</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </>
-    );
-  }
+  useEffect(() => {
+    fetchOfertas();
+  }, []);
 
-  const offers = [
-    {
-      title: "Mantenimiento Premium",
-      discount: "20%",
-      description: "Servicio técnico especializado con garantía extendida",
-      originalPrice: 5000,
-      offerPrice: 4000,
-      currency: "CUP",
-      image: "/images/projects/1.jpg",
-      features: ["Revisión completa", "Limpieza de paneles", "Informe detallado", "Garantía 2 años"]
-    },
-    {
-      title: "Instalación Residencial",
-      discount: "15%",
-      description: "Sistema solar completo para hogares",
-      originalPrice: 25000,
-      offerPrice: 21250,
-      currency: "CUP",
-      image: "/images/projects/2.jpg",
-      features: ["6 paneles solares", "Inversor incluido", "Instalación gratis", "Garantía 5 años"]
-    },
-    {
-      title: "Expansión de Sistema",
-      discount: "10%",
-      description: "Ampliación de instalaciones existentes",
-      originalPrice: 12000,
-      offerPrice: 10800,
-      currency: "CUP",
-      image: "/images/projects/3.png",
-      features: ["Paneles adicionales", "Optimización", "Conexión segura", "Análisis previo"]
-    },
-    {
-      title: "Sistemas Comerciales",
-      discount: "25%",
-      description: "Soluciones industriales de gran escala",
-      originalPrice: 80000,
-      offerPrice: 60000,
-      currency: "CUP",
-      image: "/images/projects/4.jpg",
-      features: ["20+ paneles", "Sistema trifásico", "Monitoreo 24/7", "Mantenimiento incluido"]
-    },
-    {
-      title: "Consultoría Energética",
-      discount: "50%",
-      description: "Evaluación profesional y optimización",
-      originalPrice: 2000,
-      offerPrice: 1000,
-      currency: "CUP",
-      image: "/images/projects/5.jpg",
-      features: ["Análisis completo", "Reporte técnico", "Plan de ahorro", "Seguimiento mensual"]
-    },
-    {
-      title: "Reparación Express",
-      discount: "30%",
-      description: "Solución inmediata de averías",
-      originalPrice: 3500,
-      offerPrice: 2450,
-      currency: "CUP",
-      image: "/images/projects/6.jpg",
-      features: ["Diagnóstico gratis", "Reparación 24hrs", "Piezas originales", "Garantía 1 año"]
+  useEffect(() => {
+    let filtered = [...ofertas];
+
+    // Aplicar filtro de precio
+    if (priceFilter !== 'all') {
+      filtered = filtered.filter(oferta => {
+        const precio = oferta.precio;
+        switch (priceFilter) {
+          case 'low': return precio < 10000;
+          case 'mid': return precio >= 10000 && precio < 50000;
+          case 'high': return precio >= 50000;
+          default: return true;
+        }
+      });
     }
-  ];
+
+    // Aplicar ordenamiento
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'precio-asc': return a.precio - b.precio;
+        case 'precio-desc': return b.precio - a.precio;
+        case 'nombre': return a.descripcion.localeCompare(b.descripcion);
+        default: return 0;
+      }
+    });
+
+    setFilteredOfertas(filtered);
+  }, [ofertas, sortBy, priceFilter]);
+
+  const fetchOfertas = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/ofertas/simplified');
+      const data: OfertasResponse = await response.json();
+
+      if (data.success) {
+        setOfertas(data.data);
+      } else {
+        setError(data.message || 'Error al cargar ofertas');
+      }
+    } catch (err) {
+      console.error('Error fetching ofertas:', err);
+      setError('Error de conexión al cargar ofertas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-12" data-aos="fade-up">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center shadow-lg">
-                <Star className="w-8 h-8 text-white" />
-              </div>
-              <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-6 py-3 text-base font-bold animate-bounce">
-                ⭐ Cliente VIP ⭐
-              </Badge>
-            </div>
-            
-            <div className="relative">
-              <h1 className="text-5xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-gray-900 via-[#F26729] to-gray-900 bg-clip-text text-transparent">
-                🔥 Ofertas Exclusivas para Clientes 🔥
-              </h1>
-              <div className="absolute -top-2 -right-8 w-24 h-24 bg-yellow-200 rounded-full opacity-20 animate-pulse"></div>
-              <div className="absolute -bottom-2 -left-8 w-16 h-16 bg-orange-200 rounded-full opacity-20 animate-pulse"></div>
-            </div>
-            
-            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-6 max-w-4xl mx-auto border-2 border-[#F26729]/10 shadow-lg mb-6">
-              <p className="text-xl text-gray-700 mb-2">
-                ¡Bienvenido de vuelta, <span className="font-bold text-[#F26729] text-2xl">{clientData?.nombre}</span>! 
-              </p>
-              <p className="text-lg text-gray-600">
-                Descubre las <span className="font-semibold text-[#F26729]">ofertas especiales</span> que tenemos preparadas exclusivamente para ti.
-              </p>
-              <div className="flex items-center justify-center gap-4 mt-4">
-                <Badge className="bg-red-500 text-white px-3 py-1 animate-pulse">⚡ OFERTAS LIMITADAS</Badge>
-                <Badge className="bg-green-500 text-white px-3 py-1">💰 PRECIOS ESPECIALES</Badge>
-                <Badge className="bg-blue-500 text-white px-3 py-1">⭐ SOLO PARA VIP</Badge>
-              </div>
-            </div>
+          <div className="text-center mb-16" data-aos="fade-up">
+            <h1 className="text-4xl md:text-5xl font-bold text-[#0F2B66] mb-4">
+              Nuestras Ofertas
+            </h1>
+
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Descubre las mejores opciones en sistemas solares con precios especiales para ti
+            </p>
           </div>
 
-          {/* Offers Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {offers.map((offer, index) => (
-              <Card 
-                key={index} 
-                className="overflow-hidden hover:shadow-2xl transition-all duration-500 group relative border-2 hover:border-[#F26729]/20 bg-white hover:bg-gradient-to-br hover:from-white hover:to-orange-50/30"
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-              >
-                <div className="relative overflow-hidden">
-                  <Image
-                    src={offer.image}
-                    alt={offer.title}
-                    width={400}
-                    height={250}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-red-500 text-white font-bold text-lg px-3 py-1 animate-pulse shadow-lg">
-                      -{offer.discount}
-                    </Badge>
-                  </div>
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-yellow-400 text-black font-bold text-xs px-2 py-1">
-                      OFERTA LIMITADA
-                    </Badge>
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{offer.title}</h3>
-                  <p className="text-gray-600 mb-4">{offer.description}</p>
-                  
-                  {/* Pricing Section */}
-                  <div className="mb-4">
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-2xl font-bold text-gray-400 line-through">
-                        {offer.originalPrice.toLocaleString()} {offer.currency}
-                      </span>
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold text-[#F26729]">
-                        {offer.offerPrice.toLocaleString()} {offer.currency}
-                      </span>
-                      <Badge className="bg-green-500 text-white text-xs px-2 py-1">
-                        Precio Cliente VIP
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-green-600 font-medium mt-1">
-                      ¡Ahorras {(offer.originalPrice - offer.offerPrice).toLocaleString()} {offer.currency}!
-                    </p>
-                  </div>
-
-                  {/* Features List */}
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">Incluye:</h4>
-                    <ul className="space-y-1">
-                      {offer.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-center text-sm text-gray-600">
-                          <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                          {feature}
-                        </li>
+          {/* Floating Filters */}
+          {!loading && !error && ofertas.length > 0 && (
+            <div className="mb-8" data-aos="fade-up" data-aos-delay="200">
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 border border-gray-200 shadow-xl">
+                <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                  {/* Filtro por precio */}
+                  <div className="flex items-center gap-3">
+                    <Filter className="w-5 h-5 text-gray-700" />
+                    <span className="text-gray-700 font-medium">Filtrar por precio:</span>
+                    <div className="flex gap-2">
+                      {[
+                        { key: 'all', label: 'Todos' },
+                        { key: 'low', label: '< $10k' },
+                        { key: 'mid', label: '$10k - $50k' },
+                        { key: 'high', label: '> $50k' }
+                      ].map((filter) => (
+                        <button
+                          key={filter.key}
+                          onClick={() => setPriceFilter(filter.key as typeof priceFilter)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                            priceFilter === filter.key
+                              ? 'bg-secondary-gradient text-white shadow-lg'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          {filter.label}
+                        </button>
                       ))}
-                    </ul>
+                    </div>
                   </div>
 
-                  <Button className="w-full bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-300">
-                    🔥 Solicitar Oferta
+                  {/* Ordenamiento */}
+                  <div className="flex items-center gap-3">
+                    <ArrowUpDown className="w-5 h-5 text-gray-700" />
+                    <span className="text-gray-700 font-medium">Ordenar por:</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                      className="bg-gray-100 text-gray-700 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#F26729]/50"
+                    >
+                      <option value="precio-asc">Precio: Menor a Mayor</option>
+                      <option value="precio-desc">Precio: Mayor a Menor</option>
+                      <option value="nombre">Nombre A-Z</option>
+                    </select>
+                  </div>
+
+                  {/* Contador de resultados */}
+                  <div className="text-gray-600 text-sm">
+                    {filteredOfertas.length} de {ofertas.length} ofertas
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-16" data-aos="fade-up">
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-[#0F2B66] mx-auto mb-4" />
+                <p className="text-gray-600">Cargando ofertas...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-16" data-aos="fade-up">
+              <Card className="max-w-md mx-auto shadow-lg">
+                <CardContent className="p-8">
+                  <div className="text-red-500 mb-4">
+                    <Star className="w-12 h-12 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-[#0F2B66] mb-2">Error al cargar ofertas</h3>
+                  <p className="text-gray-600 mb-6">{error}</p>
+                  <Button
+                    onClick={fetchOfertas}
+                    className="bg-secondary-gradient hover:opacity-90 text-white"
+                  >
+                    Intentar de nuevo
                   </Button>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            </div>
+          )}
+
+          {/* Offers Grid */}
+          {!loading && !error && filteredOfertas.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+              {filteredOfertas.map((oferta, index) => (
+                <Card
+                  key={oferta.id || index}
+                  className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                  data-aos="fade-up"
+                  data-aos-delay={index * 100}
+                >
+                  <div className="relative overflow-hidden">
+                    <Image
+                      src={oferta.imagen || "/images/oferta_generica.jpg"}
+                      alt={oferta.descripcion}
+                      width={400}
+                      height={250}
+                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
+                        Oferta
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                      {oferta.descripcion}
+                    </h3>
+
+                    <div className="mb-6">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-[#F26729]">
+                          ${oferta.precio.toLocaleString()}
+                        </span>
+                        <span className="text-gray-500 text-sm">CUP</span>
+                      </div>
+                    </div>
+
+                    <Button
+                      asChild
+                      className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
+                    >
+                      <Link href={`/ofertas/${oferta.id}`}>
+                        <Eye className="w-4 h-4 mr-2" />
+                        Ver Detalles
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && !error && ofertas.length === 0 && (
+            <div className="text-center py-16" data-aos="fade-up">
+              <Card className="max-w-md mx-auto shadow-lg">
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 text-gray-400 mx-auto mb-4 flex items-center justify-center">
+                    <Eye className="w-16 h-16" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-[#0F2B66] mb-2">No hay ofertas disponibles</h3>
+                  <p className="text-gray-600 mb-6">
+                    En este momento no tenemos ofertas disponibles. Vuelve pronto para ver nuestras nuevas opciones.
+                  </p>
+                  <Button asChild className="bg-secondary-gradient hover:opacity-90 text-white">
+                    <Link href="/servicios">
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                      Ver Servicios
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {/* Contact CTA */}
-          <Card 
-            className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-center"
-            data-aos="fade-up"
-          >
-            <CardContent className="py-8">
-              <Phone className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold mb-2">¿Interesado en Alguna Oferta?</h3>
-              <p className="text-white/90 mb-6">
-                Contacta a nuestro equipo especializado para clientes VIP
+          <Card className="bg-secondary-gradient text-white text-center shadow-xl" data-aos="fade-up">
+            <CardContent className="py-12">
+              <Phone className="w-12 h-12 mx-auto mb-6" />
+              <h3 className="text-2xl font-bold mb-3">¿Interesado en alguna oferta?</h3>
+              <p className="text-white/90 mb-8 max-w-lg mx-auto">
+                Contacta a nuestro equipo de especialistas para obtener más información y asesoramiento personalizado
               </p>
-              <Button 
-                variant="secondary" 
-                size="lg" 
-                className="bg-white text-[#F26729] hover:bg-gray-100 font-semibold"
+              <Button
+                asChild
+                variant="secondary"
+                size="lg"
+                className="bg-white text-[#F26729] hover:bg-gray-100 font-semibold px-8 py-3"
               >
-                <Phone className="w-4 h-4 mr-2" />
-                Contactar Ahora
+                <Link href="/contacto">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Contactar Ahora
+                </Link>
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

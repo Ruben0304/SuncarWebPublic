@@ -5,9 +5,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { useClient } from "@/hooks/useClient"
-import GlassSurface from "@/components/GlassSurface";
 
-export default function Navigation() {
+export default function GlassNavigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { isClient, isLoading } = useClient()
@@ -24,35 +23,23 @@ export default function Navigation() {
     { name: "Inicio", href: "/" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Servicios", href: "/servicios" },
-    // { name: "Proyectos", href: "/projectos" },
     { name: "Testimonios", href: "/testimonios" },
     { name: "Galería", href: "/galeria" },
     { name: "Contacto", href: "/contacto" },
     { name: "Ofertas", href: "/ofertas", isClient: true },
   ]
 
-
-
   return (
     <nav className="fixed top-2 lg:top-4 left-2 lg:left-4 right-2 lg:right-4 z-50">
       <div className="max-w-6xl mx-auto">
-        <GlassSurface
-          width="100%"
-          height={isOpen ? "auto" : 64}
-          borderRadius={16}
-          brightness={100}
-          blur={80}
-          className="transition-all duration-300"
+        <div
+          className={`
+            bg-white/85 backdrop-blur-sm border border-white/30
+            rounded-2xl shadow-lg transition-all duration-300
+            ${scrolled ? "bg-white/90 shadow-xl" : ""}
+          `}
         >
-          <div
-            className={`
-              absolute inset-0 rounded-[16px] bg-white/60 backdrop-blur-md border border-white/250
-              transition-all duration-300
-              ${scrolled ? "bg-white/90" : ""}
-            `}
-          />
-          <div className="relative z-10 w-full h-full flex items-center">
-            <div className="w-full px-4 lg:px-6 py-3 lg:py-4">
+          <div className="px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-center justify-between">
               {/* Logo */}
               <div className="flex items-center space-x-3">
@@ -122,11 +109,9 @@ export default function Navigation() {
                 </div>
               </div>
             )}
-            </div>
           </div>
-        </GlassSurface>
+        </div>
       </div>
     </nav>
-
   )
 }
