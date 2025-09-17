@@ -92,7 +92,12 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const blueChannelRef = useRef<SVGFEDisplacementMapElement>(null);
   const gaussianBlurRef = useRef<SVGFEGaussianBlurElement>(null);
 
+  const [isMounted, setIsMounted] = useState(false);
   const isDarkMode = useDarkMode();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const generateDisplacementMap = () => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -192,6 +197,10 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   }, [width, height]);
 
   const supportsSVGFilters = () => {
+    if (typeof window === 'undefined' || typeof document === 'undefined' || typeof navigator === 'undefined') {
+      return false;
+    }
+
     const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     const isFirefox = /Firefox/.test(navigator.userAgent);
 
@@ -218,6 +227,17 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
       '--glass-frost': backgroundOpacity,
       '--glass-saturation': saturation
     } as React.CSSProperties;
+
+    // Use fallback styles during SSR and initial render to prevent hydration mismatch
+    if (!isMounted) {
+      return {
+        ...baseStyles,
+        background: 'rgba(255, 255, 255, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
+        boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+                    inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`
+      };
+    }
 
     const svgSupported = supportsSVGFilters();
     const backdropFilterSupported = supportsBackdropFilter();

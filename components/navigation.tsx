@@ -22,13 +22,14 @@ export default function Navigation() {
 
   const navItems = [
     { name: "Inicio", href: "/" },
-    { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Servicios", href: "/servicios" },
+    { name: "Ofertas", href: "/ofertas" },
     // { name: "Proyectos", href: "/projectos" },
     { name: "Testimonios", href: "/testimonios" },
+    { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Galería", href: "/galeria" },
     { name: "Contacto", href: "/contacto" },
-    { name: "Ofertas", href: "/ofertas", isClient: true },
+
   ]
 
 
@@ -36,14 +37,14 @@ export default function Navigation() {
   return (
     <nav className="fixed top-2 lg:top-4 left-2 lg:left-4 right-2 lg:right-4 z-50">
       <div className="max-w-6xl mx-auto">
-        <GlassSurface
-          width="100%"
-          height={isOpen ? "auto" : 64}
-          borderRadius={16}
-          brightness={100}
-          blur={80}
-          className="transition-all duration-300"
-        >
+        {/*<GlassSurface*/}
+        {/*  width="100%"*/}
+        {/*  height={isOpen ? "auto" : 64}*/}
+        {/*  borderRadius={16}*/}
+        {/*  brightness={100}*/}
+        {/*  blur={80}*/}
+        {/*  className="transition-all duration-300"*/}
+        {/*>*/}
           <div
             className={`
               absolute inset-0 rounded-[16px] bg-white/60 backdrop-blur-md border border-white/250
@@ -124,7 +125,7 @@ export default function Navigation() {
             )}
             </div>
           </div>
-        </GlassSurface>
+        {/*</GlassSurface>*/}
       </div>
     </nav>
 

@@ -11,7 +11,7 @@ import { useTypewriter } from "@/hooks/useTypewriter"
 import { useLoadingContext } from "@/hooks/useLoadingContext"
 import { useClient } from "@/hooks/useClient"
 import SuncarInteractiveGame from "@/components/SuncarInteractiveGame"
-import SplashCursor from "@/components/SplashCursor";
+import SplashCursor from "@/components/SplashCursor"
 
 export default function HomePage() {
   const [count, setCount] = useState(0)
@@ -66,7 +66,6 @@ export default function HomePage() {
       <Navigation />
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center px-4 py-24 md:px-6 lg:px-8 lg:py-0 overflow-hidden">
-        <SplashCursor />
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Hero Text */}
