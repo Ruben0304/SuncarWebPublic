@@ -2,6 +2,7 @@ export interface OfertaSimplificada {
   id?: string | null;
   descripcion: string;
   precio: number;
+  precio_cliente?: number | null;
   imagen?: string | null;
 }
 
@@ -16,6 +17,7 @@ export interface Oferta {
   id?: string | null;
   descripcion: string;
   precio: number;
+  precio_cliente?: number | null;
   imagen?: string | null;
   garantias: string[];
   elementos: OfertaElemento[];

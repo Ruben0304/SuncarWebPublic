@@ -12,6 +12,7 @@ import Image from 'next/image';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { OfertaSimplificada, OfertasResponse } from '@/types/ofertas';
+import { useClient } from '@/hooks/useClient';
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
@@ -20,6 +21,7 @@ export default function OfertasPage() {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'precio-asc' | 'precio-desc' | 'nombre'>('precio-asc');
   const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
+  const { isClient } = useClient();
 
   useEffect(() => {
     AOS.init({
@@ -217,11 +219,25 @@ export default function OfertasPage() {
                     </h3>
 
                     <div className="mb-6">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-[#F26729]">
-                          ${oferta.precio.toLocaleString()}
-                        </span>
-                        <span className="text-gray-500 text-sm">CUP</span>
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        {isClient && oferta.precio_cliente ? (
+                          <>
+                            <span className="text-2xl font-bold text-[#F26729]">
+                              ${oferta.precio_cliente.toLocaleString()}
+                            </span>
+                            <span className="text-sm text-gray-500 line-through">
+                              ${oferta.precio.toLocaleString()}
+                            </span>
+                            <span className="text-gray-500 text-sm">CUP</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-2xl font-bold text-[#F26729]">
+                              ${oferta.precio.toLocaleString()}
+                            </span>
+                            <span className="text-gray-500 text-sm">CUP</span>
+                          </>
+                        )}
                       </div>
                     </div>
 

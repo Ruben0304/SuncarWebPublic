@@ -30,6 +30,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 's3.suncarsrl.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

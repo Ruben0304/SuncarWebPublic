@@ -25,6 +25,7 @@ import Image from 'next/image';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Oferta, OfertaResponse } from '@/types/ofertas';
+import { useClient } from '@/hooks/useClient';
 
 export default function OfertaDetailPage() {
   const params = useParams();
@@ -32,6 +33,7 @@ export default function OfertaDetailPage() {
   const [oferta, setOferta] = useState<Oferta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isClient } = useClient();
 
   const ofertaId = params.id as string;
 
@@ -150,8 +152,21 @@ export default function OfertaDetailPage() {
                       <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         {oferta.descripcion}
                       </h1>
-                      <div className="text-4xl md:text-5xl font-bold">
-                        ${oferta.precio.toLocaleString()} CUP
+                      <div className="flex items-baseline gap-4 flex-wrap">
+                        {isClient && oferta.precio_cliente ? (
+                          <>
+                            <div className="text-4xl md:text-5xl font-bold">
+                              ${oferta.precio_cliente.toLocaleString()} CUP
+                            </div>
+                            <div className="text-2xl md:text-3xl text-white/70 line-through">
+                              ${oferta.precio.toLocaleString()}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-4xl md:text-5xl font-bold">
+                            ${oferta.precio.toLocaleString()} CUP
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -274,7 +289,7 @@ export default function OfertaDetailPage() {
                         <div className="flex-1">
                           <p className="text-sm text-gray-600 mb-2 font-medium">Vista previa del mensaje:</p>
                           <div className="bg-[#DCF8C6] rounded-lg rounded-bl-none p-4 text-sm text-gray-800 shadow-sm border-l-4 border-[#25D366]">
-                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">${oferta.precio.toLocaleString()} CUP</span>. ¿Podrían darme más información?
+                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} CUP</span>. ¿Podrían darme más información?
                           </div>
                         </div>
                       </div>
@@ -291,7 +306,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por $${oferta.precio.toLocaleString()} CUP. ¿Podrían darme más información?`)}`}
+                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por $${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} CUP. ¿Podrían darme más información?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"
