@@ -289,7 +289,7 @@ export default function OfertaDetailPage() {
                         <div className="flex-1">
                           <p className="text-sm text-gray-600 mb-2 font-medium">Vista previa del mensaje:</p>
                           <div className="bg-[#DCF8C6] rounded-lg rounded-bl-none p-4 text-sm text-gray-800 shadow-sm border-l-4 border-[#25D366]">
-                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} CUP</span>. ¿Podrían darme más información?
+                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} </span>. ¿Podrían darme más información?
                           </div>
                         </div>
                       </div>
@@ -306,7 +306,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por $${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} CUP. ¿Podrían darme más información?`)}`}
+                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por $${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ¿Podrían darme más información?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"
