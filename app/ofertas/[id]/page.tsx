@@ -156,16 +156,14 @@ export default function OfertaDetailPage() {
                         {isClient && oferta.precio_cliente ? (
                           <>
                             <div className="text-4xl md:text-5xl font-bold">
-                              ${oferta.precio_cliente.toLocaleString()} CUP
-                            </div>
+                              ${oferta.precio_cliente.toLocaleString()}                            </div>
                             <div className="text-2xl md:text-3xl text-white/70 line-through">
                               ${oferta.precio.toLocaleString()}
                             </div>
                           </>
                         ) : (
                           <div className="text-4xl md:text-5xl font-bold">
-                            ${oferta.precio.toLocaleString()} CUP
-                          </div>
+                            ${oferta.precio.toLocaleString()}                          </div>
                         )}
                       </div>
                     </div>
@@ -289,7 +287,7 @@ export default function OfertaDetailPage() {
                         <div className="flex-1">
                           <p className="text-sm text-gray-600 mb-2 font-medium">Vista previa del mensaje:</p>
                           <div className="bg-[#DCF8C6] rounded-lg rounded-bl-none p-4 text-sm text-gray-800 shadow-sm border-l-4 border-[#25D366]">
-                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} </span>. ¿Podrían darme más información?
+                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()}</span>. ¿Podrían darme más información?
                           </div>
                         </div>
                       </div>
