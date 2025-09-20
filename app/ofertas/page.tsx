@@ -228,14 +228,12 @@ export default function OfertasPage() {
                             <span className="text-sm text-gray-500 line-through">
                               ${oferta.precio.toLocaleString()}
                             </span>
-                            <span className="text-gray-500 text-sm">CUP</span>
                           </>
                         ) : (
                           <>
                             <span className="text-2xl font-bold text-[#F26729]">
                               ${oferta.precio.toLocaleString()}
                             </span>
-                            <span className="text-gray-500 text-sm">CUP</span>
                           </>
                         )}
                       </div>
