@@ -203,7 +203,7 @@ export default function OfertasPage() {
                       alt={oferta.descripcion}
                       width={400}
                       height={400}
-                      className="w-full h-48 object- transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-48 object-fill transition-transform duration-300 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute top-4 right-4">
