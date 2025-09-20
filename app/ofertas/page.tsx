@@ -187,72 +187,72 @@ export default function OfertasPage() {
             </div>
           )}
 
-          {/* Offers Grid */}
-          {!loading && !error && filteredOfertas.length > 0 && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-              {filteredOfertas.map((oferta, index) => (
-                <Card
-                  key={oferta.id || index}
-                  className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
-                  data-aos="fade-up"
-                  data-aos-delay={index * 100}
-                >
-                  <div className="relative overflow-hidden">
-                    <Image
-                      src={oferta.imagen || "/images/oferta_generica.jpg"}
-                      alt={oferta.descripcion}
-                      width={400}
-                      height={400}
-                      className="w-full h-48 object-fill transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
-                        Oferta
-                      </Badge>
-                    </div>
-                  </div>
+            {/* Offers Grid */}
+            {!loading && !error && filteredOfertas.length > 0 && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                    {filteredOfertas.map((oferta, index) => (
+                        <Card
+                            key={oferta.id || index}
+                            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                            data-aos="fade-up"
+                            data-aos-delay={index * 100}
+                        >
+                            <div className="relative overflow-hidden aspect-square">
+                                <Image
+                                    src={oferta.imagen || "/images/oferta_generica.jpg"}
+                                    alt={oferta.descripcion}
+                                    width={400}
+                                    height={400}
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div className="absolute top-4 right-4">
+                                    <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
+                                        Oferta
+                                    </Badge>
+                                </div>
+                            </div>
 
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
-                      {oferta.descripcion}
-                    </h3>
+                            <CardContent className="p-6">
+                                <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                                    {oferta.descripcion}
+                                </h3>
 
-                    <div className="mb-6">
-                      <div className="flex items-baseline gap-2 flex-wrap">
-                        {isClient && oferta.precio_cliente ? (
-                          <>
-                            <span className="text-2xl font-bold text-[#F26729]">
-                              ${oferta.precio_cliente.toLocaleString()}
-                            </span>
-                            <span className="text-sm text-gray-500 line-through">
-                              ${oferta.precio.toLocaleString()}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text-2xl font-bold text-[#F26729]">
-                              ${oferta.precio.toLocaleString()}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
+                                <div className="mb-6">
+                                    <div className="flex items-baseline gap-2 flex-wrap">
+                                        {isClient && oferta.precio_cliente ? (
+                                            <>
+                  <span className="text-2xl font-bold text-[#F26729]">
+                    ${oferta.precio_cliente.toLocaleString()}
+                  </span>
+                                                <span className="text-sm text-gray-500 line-through">
+                    ${oferta.precio.toLocaleString()}
+                  </span>
+                                            </>
+                                        ) : (
+                                            <>
+                  <span className="text-2xl font-bold text-[#F26729]">
+                    ${oferta.precio.toLocaleString()}
+                  </span>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
 
-                    <Button
-                      asChild
-                      className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
-                    >
-                      <Link href={`/ofertas/${oferta.id}`}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Ver Detalles
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                                <Button
+                                    asChild
+                                    className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
+                                >
+                                    <Link href={`/ofertas/${oferta.id}`}>
+                                        <Eye className="w-4 h-4 mr-2" />
+                                        Ver Detalles
+                                    </Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
 
           {/* Empty State */}
           {!loading && !error && ofertas.length === 0 && (
