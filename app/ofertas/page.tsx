@@ -107,6 +107,32 @@ export default function OfertasPage() {
             </p>
           </div>
 
+          {/* Financing Marketing Banner */}
+          <div className="mb-12" data-aos="fade-up" data-aos-delay="100">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 max-w-4xl mx-auto">
+              <div className="flex items-center gap-4 text-center sm:text-left">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Star className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-700 text-lg">
+                    <span className="font-semibold text-blue-700">¿Sabías que</span> algunas ofertas puedes optarlas por
+                    <span className="font-semibold text-blue-700"> pago a plazo</span> a través de un familiar en España?
+                    <span className="text-gray-600 text-base">Consulta disponibilidad en cada oferta.</span>
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <div className="flex items-center gap-2 text-sm bg-blue-100 px-3 py-1.5 rounded-full">
+                    <MapPin className="w-3 h-3 text-blue-600" />
+                    <span className="text-blue-700 font-medium">desde España</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Floating Filters */}
           {!loading && !error && ofertas.length > 0 && (
             <div className="mb-8" data-aos="fade-up" data-aos-delay="200">
