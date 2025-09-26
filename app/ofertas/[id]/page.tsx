@@ -166,33 +166,11 @@ export default function OfertaDetailPage() {
                         {oferta.descripcion}
                       </h1>
                       <div className="space-y-4">
-                        {/* Currency Selector */}
-                        <div className="flex items-center gap-4">
-                          <span className="text-lg text-white/80">Moneda:</span>
-                          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                            <CurrencySelector
-                              baseCurrency={oferta.moneda.toUpperCase() as Currency}
-                              selectedCurrency={selectedCurrency}
-                              onCurrencyChange={setSelectedCurrency}
-                              basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
-                              size="lg"
-                              showConvertedPrice={false}
-                              className="[&_button]:bg-white/20 [&_button]:text-white [&_button]:border-white/30"
-                            />
-                          </div>
-                        </div>
-
                         {/* Price Display */}
                         <div className="flex items-baseline gap-4 flex-wrap">
-                          <CurrencySelector
-                            baseCurrency={oferta.moneda.toUpperCase() as Currency}
-                            selectedCurrency={selectedCurrency}
-                            onCurrencyChange={() => {}} // No change handler here, only display
-                            basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
-                            size="lg"
-                            showConvertedPrice={true}
-                            className="[&>div:first-child]:hidden [&>div:nth-child(2)>div:first-child]:text-4xl [&>div:nth-child(2)>div:first-child]:md:text-5xl [&>div:nth-child(2)>div:first-child]:text-white [&>div:nth-child(2)>div:nth-child(2)]:text-white/70 [&>div:nth-child(2)>div:nth-child(3)]:text-white/60"
-                          />
+                          <div className="text-4xl md:text-5xl font-bold text-white">
+                            {formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)}
+                          </div>
 
                           {/* Show original price if there's a client discount */}
                           {isClient && oferta.precio_cliente && (
@@ -219,6 +197,33 @@ export default function OfertaDetailPage() {
                     </div>
                   </div>
                 </div>
+              </Card>
+
+              {/* Currency Selector Section */}
+              <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg" data-aos="fade-up" data-aos-delay="50">
+                <CardContent className="p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Seleccionar Moneda
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        Elige la moneda para ver el precio convertido
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <CurrencySelector
+                        baseCurrency={oferta.moneda.toUpperCase() as Currency}
+                        selectedCurrency={selectedCurrency}
+                        onCurrencyChange={setSelectedCurrency}
+                        basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
+                        size="lg"
+                        showConvertedPrice={true}
+                        className="[&_button]:bg-white [&_button]:border-gray-300 [&_button]:hover:bg-gray-50 [&_button]:shadow-sm"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
 
               <div className="grid lg:grid-cols-2 gap-8">
