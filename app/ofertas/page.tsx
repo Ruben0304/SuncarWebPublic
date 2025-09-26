@@ -6,15 +6,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
 import Footer from '@/components/footer';
-import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown, CreditCard, DollarSign, Euro, Info, MapPin } from 'lucide-react';
+import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown, CreditCard, DollarSign, Euro, Info, MapPin, Sparkles, Trophy, MessageCircle, X } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { OfertaSimplificada, OfertasResponse } from '@/types/ofertas';
+import { OfertaSimplificada, OfertasResponse, RecomendadorData } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
 import CurrencySelector from '@/components/CurrencySelector';
 import { Currency } from '@/hooks/useCurrencyExchange';
+import OfertasRecommendationInput from '@/components/OfertasRecommendationInput';
+import { recomendadorService } from '@/services/api/recomendadorService';
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
@@ -25,6 +27,12 @@ export default function OfertasPage() {
   const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
   const [selectedCurrencies, setSelectedCurrencies] = useState<Record<string, Currency>>({});
   const { isClient } = useClient();
+
+  // Estados del recomendador
+  const [recommendationData, setRecommendationData] = useState<RecomendadorData | null>(null);
+  const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
+  const [recommendationError, setRecommendationError] = useState<string | null>(null);
+  const [showRecommendations, setShowRecommendations] = useState(false);
 
   useEffect(() => {
     AOS.init({
@@ -39,6 +47,11 @@ export default function OfertasPage() {
   }, []);
 
   useEffect(() => {
+    // No aplicar filtros si hay recomendaciones activas
+    if (showRecommendations && recommendationData) {
+      return;
+    }
+
     let filtered = [...ofertas];
 
     // Aplicar filtro de precio
@@ -65,7 +78,7 @@ export default function OfertasPage() {
     });
 
     setFilteredOfertas(filtered);
-  }, [ofertas, sortBy, priceFilter]);
+  }, [ofertas, sortBy, priceFilter, showRecommendations, recommendationData]);
 
   const fetchOfertas = async () => {
     try {
@@ -110,6 +123,55 @@ export default function OfertasPage() {
     }));
   };
 
+  const handleRecommendationSearch = async (query: string) => {
+    try {
+      setIsRecommendationLoading(true);
+      setRecommendationError(null);
+
+      const response = await recomendadorService.recomendarOfertas(query);
+
+      if (response.success && response.data) {
+        setRecommendationData(response.data);
+        setShowRecommendations(true);
+
+        // Actualizar las ofertas filtradas con las recomendadas (ya ordenadas)
+        setFilteredOfertas(response.data.ofertas);
+
+        // Resetear filtros cuando se usan recomendaciones
+        setPriceFilter('all');
+        setSortBy('precio-asc');
+
+        // Inicializar monedas para nuevas ofertas si es necesario
+        const newCurrencies: Record<string, Currency> = {};
+        response.data.ofertas.forEach((oferta) => {
+          if (oferta.id && !selectedCurrencies[oferta.id]) {
+            newCurrencies[oferta.id] = oferta.moneda.toUpperCase() as Currency;
+          }
+        });
+
+        if (Object.keys(newCurrencies).length > 0) {
+          setSelectedCurrencies(prev => ({ ...prev, ...newCurrencies }));
+        }
+      } else {
+        setRecommendationError(response.message || 'Error al obtener recomendaciones');
+      }
+    } catch (error) {
+      console.error('Error en búsqueda de recomendaciones:', error);
+      setRecommendationError('Error de conexión al obtener recomendaciones');
+    } finally {
+      setIsRecommendationLoading(false);
+    }
+  };
+
+  const clearRecommendations = () => {
+    setRecommendationData(null);
+    setShowRecommendations(false);
+    setRecommendationError(null);
+
+    // Volver a las ofertas originales
+    setFilteredOfertas(ofertas);
+  };
+
   return (
     <>
       <Navigation />
@@ -152,60 +214,74 @@ export default function OfertasPage() {
             </div>
           </div>
 
-          {/* Floating Filters */}
+          {/* AI Recommendation Input */}
           {!loading && !error && ofertas.length > 0 && (
-            <div className="mb-8" data-aos="fade-up" data-aos-delay="200">
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 border border-gray-200 shadow-xl">
-                <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-                  {/* Filtro por precio */}
-                  <div className="flex items-center gap-3">
-                    <Filter className="w-5 h-5 text-gray-700" />
-                    <span className="text-gray-700 font-medium">Filtrar por precio:</span>
-                    <div className="flex gap-2">
-                      {[
-                        { key: 'all', label: 'Todos' },
-                        { key: 'low', label: '< 10k' },
-                        { key: 'mid', label: '10k - 50k' },
-                        { key: 'high', label: '> 50k' }
-                      ].map((filter) => (
-                        <button
-                          key={filter.key}
-                          onClick={() => setPriceFilter(filter.key as typeof priceFilter)}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                            priceFilter === filter.key
-                              ? 'bg-secondary-gradient text-white shadow-lg'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {filter.label}
-                        </button>
-                      ))}
+            <OfertasRecommendationInput
+              onSearch={handleRecommendationSearch}
+              loading={isRecommendationLoading}
+              disabled={loading}
+            />
+          )}
+
+          {/* Recommendation Results Banner */}
+          {showRecommendations && recommendationData && (
+            <div className="mb-8" data-aos="fade-up">
+              <div className="bg-gradient-to-r from-orange-50 via-yellow-50 to-orange-50 border-2 border-orange-200 rounded-2xl p-6 shadow-xl">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center">
+                      <Star className="w-6 h-6 text-white" />
                     </div>
                   </div>
-
-                  {/* Ordenamiento */}
-                  <div className="flex items-center gap-3">
-                    <ArrowUpDown className="w-5 h-5 text-gray-700" />
-                    <span className="text-gray-700 font-medium">Ordenar por:</span>
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                      className="bg-gray-100 text-gray-700 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#F26729]/50"
-                    >
-                      <option value="precio-asc">Precio: Menor a Mayor</option>
-                      <option value="precio-desc">Precio: Mayor a Menor</option>
-                      <option value="nombre">Nombre A-Z</option>
-                    </select>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-3">
+                      <h3 className="text-lg font-bold text-orange-700">Resultados de búsqueda</h3>
+                      <div className="flex items-center gap-1 bg-orange-100 px-2 py-1 rounded-full">
+                        <Trophy className="w-3 h-3 text-orange-600" />
+                        <span className="text-xs font-medium text-orange-700">Ordenadas por relevancia</span>
+                      </div>
+                    </div>
+                    <div className="bg-white/70 rounded-lg p-4 border border-orange-100">
+                      <div className="flex items-start gap-2">
+                        <MessageCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <p className="text-gray-700 text-sm leading-relaxed">{recommendationData.texto}</p>
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Contador de resultados */}
-                  <div className="text-gray-600 text-sm">
-                    {filteredOfertas.length} de {ofertas.length} ofertas
-                  </div>
+                  <button
+                    onClick={clearRecommendations}
+                    className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             </div>
           )}
+
+          {/* Recommendation Error */}
+          {recommendationError && (
+            <div className="mb-8" data-aos="fade-up">
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                    <span className="text-red-600 font-bold text-sm">!</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-red-800 mb-1">Error en recomendaciones</h3>
+                    <p className="text-sm text-red-700">{recommendationError}</p>
+                  </div>
+                  <button
+                    onClick={() => setRecommendationError(null)}
+                    className="p-2 text-red-400 hover:text-red-600 transition-colors duration-200"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
 
           {/* Loading State */}
           {loading && (
@@ -244,7 +320,9 @@ export default function OfertasPage() {
                     {filteredOfertas.map((oferta, index) => (
                         <Card
                             key={oferta.id || index}
-                            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                            className={`group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden ${
+                                showRecommendations ? 'border-orange-200' : ''
+                            }`}
                             data-aos="fade-up"
                             data-aos-delay={index * 100}
                         >
@@ -257,10 +335,26 @@ export default function OfertasPage() {
                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                                {/* Ranking Badge */}
+                                {showRecommendations && (
+                                    <div className="absolute top-4 left-4">
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full shadow-lg border-2 border-white">
+                                            <span className="text-white font-bold text-lg">#{index + 1}</span>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="absolute top-4 right-4">
-                                    <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
-                                        Oferta
-                                    </Badge>
+                                    {showRecommendations && index === 0 ? (
+                                        <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
+                                            Más recomendada
+                                        </Badge>
+                                    ) : !showRecommendations ? (
+                                        <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
+                                            Oferta
+                                        </Badge>
+                                    ) : null}
                                 </div>
                             </div>
 

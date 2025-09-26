@@ -38,3 +38,18 @@ export interface OfertaResponse {
   message: string;
   data: Oferta | null;
 }
+
+export interface RecomendadorRequest {
+  texto: string;
+}
+
+export interface RecomendadorData {
+  texto: string;
+  ofertas: OfertaSimplificada[];
+}
+
+export interface RecomendadorResponse {
+  success: boolean;
+  message: string;
+  data?: RecomendadorData;
+}

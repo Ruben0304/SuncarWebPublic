@@ -260,6 +260,52 @@ const config: Config = {
             transform: "translateY(-10px)",
           },
         },
+        "ai-rank-pulse": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 15px rgba(168, 85, 247, 0.4)",
+          },
+          "50%": {
+            transform: "scale(1.1)",
+            boxShadow: "0 0 25px rgba(168, 85, 247, 0.8), 0 0 35px rgba(59, 130, 246, 0.6)",
+          },
+        },
+        "ai-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 10px rgba(168, 85, 247, 0.3)",
+          },
+          "50%": {
+            boxShadow: "0 0 20px rgba(168, 85, 247, 0.6), 0 0 30px rgba(59, 130, 246, 0.4)",
+          },
+        },
+        "ai-recommended-float": {
+          "0%, 100%": {
+            transform: "translateY(0) rotateZ(0deg)",
+            boxShadow: "0 4px 20px rgba(168, 85, 247, 0.1)",
+          },
+          "50%": {
+            transform: "translateY(-5px) rotateZ(0.5deg)",
+            boxShadow: "0 8px 30px rgba(168, 85, 247, 0.2)",
+          },
+        },
+        "sparkle": {
+          "0%, 100%": {
+            transform: "rotate(0deg) scale(1)",
+            filter: "brightness(1)",
+          },
+          "25%": {
+            transform: "rotate(90deg) scale(1.1)",
+            filter: "brightness(1.2)",
+          },
+          "50%": {
+            transform: "rotate(180deg) scale(1)",
+            filter: "brightness(1.4)",
+          },
+          "75%": {
+            transform: "rotate(270deg) scale(1.1)",
+            filter: "brightness(1.2)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -280,6 +326,10 @@ const config: Config = {
         "gentle-float-image": "gentle-float-image 8s ease-in-out infinite",
         "pulse-soft": "pulse-soft 2s ease-in-out infinite",
         "bounce-soft": "bounce-soft 3s ease-in-out infinite",
+        "ai-rank-pulse": "ai-rank-pulse 2s ease-in-out infinite",
+        "ai-glow": "ai-glow 3s ease-in-out infinite",
+        "ai-recommended-float": "ai-recommended-float 4s ease-in-out infinite",
+        "sparkle": "sparkle 2s ease-in-out infinite",
       },
       animationDelay: {
         "200": "200ms",
