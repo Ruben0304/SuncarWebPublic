@@ -4,6 +4,8 @@ export interface OfertaSimplificada {
   precio: number;
   precio_cliente?: number | null;
   imagen?: string | null;
+  moneda: string;
+  financiamiento: boolean;
 }
 
 export interface OfertaElemento {
@@ -19,6 +21,8 @@ export interface Oferta {
   precio: number;
   precio_cliente?: number | null;
   imagen?: string | null;
+  moneda: string;
+  financiamiento: boolean;
   garantias: string[];
   elementos: OfertaElemento[];
 }

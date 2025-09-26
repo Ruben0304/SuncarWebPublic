@@ -155,15 +155,20 @@ export default function OfertaDetailPage() {
                       <div className="flex items-baseline gap-4 flex-wrap">
                         {isClient && oferta.precio_cliente ? (
                           <>
-                            <div className="text-4xl md:text-5xl font-bold">
-                              ${oferta.precio_cliente.toLocaleString()}                            </div>
-                            <div className="text-2xl md:text-3xl text-white/70 line-through">
-                              ${oferta.precio.toLocaleString()}
+                            <div className="text-4xl md:text-5xl font-bold flex items-center gap-2">
+                              {oferta.precio_cliente.toLocaleString()}
+                              <span className="text-lg md:text-xl font-medium bg-white/20 text-white px-3 py-1 rounded-lg backdrop-blur-sm">{oferta.moneda}</span>
+                            </div>
+                            <div className="text-2xl md:text-3xl text-white/70 line-through flex items-center gap-2">
+                              {oferta.precio.toLocaleString()}
+                              <span className="text-sm font-medium bg-white/10 text-white/60 px-2 py-1 rounded backdrop-blur-sm">{oferta.moneda}</span>
                             </div>
                           </>
                         ) : (
-                          <div className="text-4xl md:text-5xl font-bold">
-                            ${oferta.precio.toLocaleString()}                          </div>
+                          <div className="text-4xl md:text-5xl font-bold flex items-center gap-2">
+                            {oferta.precio.toLocaleString()}
+                            <span className="text-lg md:text-xl font-medium bg-white/20 text-white px-3 py-1 rounded-lg backdrop-blur-sm">{oferta.moneda}</span>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -287,7 +292,7 @@ export default function OfertaDetailPage() {
                         <div className="flex-1">
                           <p className="text-sm text-gray-600 mb-2 font-medium">Vista previa del mensaje:</p>
                           <div className="bg-[#DCF8C6] rounded-lg rounded-bl-none p-4 text-sm text-gray-800 shadow-sm border-l-4 border-[#25D366]">
-                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()}</span>. ¿Podrían darme más información?
+                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">{(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {oferta.moneda}</span>. ¿Podrían darme más información?
                           </div>
                         </div>
                       </div>
@@ -304,7 +309,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por $${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ¿Podrían darme más información?`)}`}
+                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${oferta.moneda} ¿Podrían darme más información?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"

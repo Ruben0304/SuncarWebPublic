@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
 import Footer from '@/components/footer';
-import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown } from 'lucide-react';
+import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown, CreditCard, DollarSign, Euro, Info, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AOS from 'aos';
@@ -85,6 +85,12 @@ export default function OfertasPage() {
     }
   };
 
+  const formatCurrency = (moneda: string) => {
+    if (moneda.toLowerCase() === 'eur') return 'EUR';
+    if (moneda.toLowerCase() === 'usd') return 'USD';
+    return moneda.toUpperCase();
+  };
+
   return (
     <>
       <Navigation />
@@ -113,9 +119,9 @@ export default function OfertasPage() {
                     <div className="flex gap-2">
                       {[
                         { key: 'all', label: 'Todos' },
-                        { key: 'low', label: '< $10k' },
-                        { key: 'mid', label: '$10k - $50k' },
-                        { key: 'high', label: '> $50k' }
+                        { key: 'low', label: '< 10k' },
+                        { key: 'mid', label: '10k - 50k' },
+                        { key: 'high', label: '> 50k' }
                       ].map((filter) => (
                         <button
                           key={filter.key}
@@ -222,21 +228,38 @@ export default function OfertasPage() {
                                     <div className="flex items-baseline gap-2 flex-wrap">
                                         {isClient && oferta.precio_cliente ? (
                                             <>
-                  <span className="text-2xl font-bold text-[#F26729]">
-                    ${oferta.precio_cliente.toLocaleString()}
+                  <span className="text-2xl font-bold text-[#F26729] flex items-center gap-1">
+                    {oferta.precio_cliente.toLocaleString()}
+                    <span className="text-sm font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded">{formatCurrency(oferta.moneda)}</span>
                   </span>
-                                                <span className="text-sm text-gray-500 line-through">
-                    ${oferta.precio.toLocaleString()}
+                                                <span className="text-sm text-gray-500 line-through flex items-center gap-1">
+                    {oferta.precio.toLocaleString()}
+                    <span className="text-xs font-medium bg-gray-50 text-gray-500 px-1.5 py-0.5 rounded">{formatCurrency(oferta.moneda)}</span>
                   </span>
                                             </>
                                         ) : (
                                             <>
-                  <span className="text-2xl font-bold text-[#F26729]">
-                    ${oferta.precio.toLocaleString()}
+                  <span className="text-2xl font-bold text-[#F26729] flex items-center gap-1">
+                    {oferta.precio.toLocaleString()}
+                    <span className="text-sm font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded">{formatCurrency(oferta.moneda)}</span>
                   </span>
                                             </>
                                         )}
                                     </div>
+
+                                    {/* Financing Information */}
+                                    {oferta.financiamiento && (
+                                        <div className="mt-3 pt-3 border-t border-gray-100">
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <span>o</span>
+                                                <span className="font-semibold text-blue-600">78 €/mes</span>
+                                                <div className="flex items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded-full">
+                                                    <MapPin className="w-3 h-3 text-blue-500" />
+                                                    <span className="text-blue-700">solo desde España</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <Button
@@ -275,6 +298,95 @@ export default function OfertasPage() {
                 </CardContent>
               </Card>
             </div>
+          )}
+
+          {/* Payment Information */}
+          {!loading && !error && (
+            <Card
+              className="bg-white/80 backdrop-blur-sm border-2 border-blue-100 shadow-xl mb-16 overflow-hidden relative"
+              data-aos="fade-up"
+            >
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-blue-50 to-transparent rounded-full -translate-y-20 translate-x-20"></div>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-orange-50 to-transparent rounded-full translate-y-16 -translate-x-16"></div>
+
+              <CardContent className="p-8 md:p-12 relative z-10">
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full mb-6 shadow-lg">
+                    <Info className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-[#0F2B66] mb-4">
+                    Opciones de Pago Flexibles
+                  </h3>
+                  <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-8">
+                    Facilitamos tu inversión en energía solar con múltiples opciones de pago y monedas aceptadas
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                  {/* Currency Exchange */}
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                        <DollarSign className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <h4 className="text-xl font-bold text-[#0F2B66]">Cambio de Moneda</h4>
+                    </div>
+                    <p className="text-gray-700 mb-4">
+                      Aceptamos pagos en múltiples monedas internacionales al tipo de cambio del día:
+                    </p>
+                    <div className="flex gap-3 flex-wrap">
+                      <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border">
+                        <DollarSign className="w-4 h-4 text-green-600" />
+                        <span className="font-medium text-gray-700">USD</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border">
+                        <Euro className="w-4 h-4 text-blue-600" />
+                        <span className="font-medium text-gray-700">EUR</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border line-through opacity-50">
+                        <span className="text-sm font-medium text-gray-500">CUP</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-3 italic">
+                      *No aceptamos pesos cubanos (CUP)
+                    </p>
+                  </div>
+
+                  {/* Payment Methods */}
+                  <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full">
+                        <CreditCard className="w-6 h-6 text-orange-600" />
+                      </div>
+                      <h4 className="text-xl font-bold text-[#0F2B66]">Métodos de Pago</h4>
+                    </div>
+                    <p className="text-gray-700 mb-4">
+                      Ofrecemos diversas formas de pago para tu comodidad:
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-lg shadow-sm border">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <span className="text-green-600 font-bold text-sm">$</span>
+                        </div>
+                        <span className="font-medium text-gray-700">Efectivo</span>
+                      </div>
+                      <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-lg shadow-sm border">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <CreditCard className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <span className="font-medium text-gray-700">Transferencia Bancaria en el Exterior</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-gray-600 bg-gray-50 px-6 py-3 rounded-full inline-block border">
+                    💡 <span className="font-medium">Tip:</span> Contacta con nuestro equipo para conocer las mejores opciones de financiamiento
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Contact CTA */}
