@@ -179,34 +179,36 @@ export default function OfertasPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-16" data-aos="fade-up">
-            <h1 className="text-4xl md:text-5xl font-bold text-[#0F2B66] mb-4">
+          <div className="text-center mb-12 md:mb-16 px-4" data-aos="fade-up">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#0F2B66] mb-4 leading-tight">
               Nuestras Ofertas
             </h1>
 
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Descubre las mejores opciones en sistemas solares con precios especiales para ti
             </p>
           </div>
 
           {/* Financing Marketing Banner */}
-          <div className="mb-12" data-aos="fade-up" data-aos-delay="100">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 max-w-4xl mx-auto">
-              <div className="flex items-center gap-4 text-center sm:text-left">
+          <div className="mb-8 md:mb-12 px-4" data-aos="fade-up" data-aos-delay="100">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-4 sm:p-6 max-w-4xl mx-auto">
+              <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Star className="w-6 h-6 text-blue-600" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Star className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
                 </div>
                 <div className="flex-1">
-                  <p className="text-gray-700 text-lg">
+                  <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed">
                     <span className="font-semibold text-blue-700">¿Sabías que</span> algunas ofertas puedes optarlas por
                     <span className="font-semibold text-blue-700"> pago a plazo</span> a través de un familiar en España?
-                    <span className="text-gray-600 text-base">Consulta disponibilidad en cada oferta.</span>
+                  </p>
+                  <p className="text-gray-600 text-xs sm:text-sm mt-1">
+                    Consulta disponibilidad en cada oferta.
                   </p>
                 </div>
-                <div className="flex-shrink-0">
-                  <div className="flex items-center gap-2 text-sm bg-blue-100 px-3 py-1.5 rounded-full">
+                <div className="flex-shrink-0 mt-2 sm:mt-0">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm bg-blue-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
                     <MapPin className="w-3 h-3 text-blue-600" />
                     <span className="text-blue-700 font-medium">desde España</span>
                   </div>
@@ -226,26 +228,27 @@ export default function OfertasPage() {
 
           {/* Recommendation Results Banner */}
           {showRecommendations && recommendationData && (
-            <div className="mb-8" data-aos="fade-up">
-              <div className="bg-gradient-to-r from-orange-50 via-yellow-50 to-orange-50 border-2 border-orange-200 rounded-2xl p-6 shadow-xl">
-                <div className="flex items-start gap-4">
+            <div className="mb-8 px-4" data-aos="fade-up">
+              <div className="bg-gradient-to-r from-orange-50 via-yellow-50 to-orange-50 border-2 border-orange-200 rounded-2xl p-4 sm:p-6 shadow-xl">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center">
-                      <Star className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center">
+                      <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-3">
-                      <h3 className="text-lg font-bold text-orange-700">Resultados de búsqueda</h3>
-                      <div className="flex items-center gap-1 bg-orange-100 px-2 py-1 rounded-full">
+                  <div className="flex-1 w-full">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                      <h3 className="text-base sm:text-lg font-bold text-orange-700">Resultados de búsqueda</h3>
+                      <div className="flex items-center gap-1 bg-orange-100 px-2 py-1 rounded-full w-fit">
                         <Trophy className="w-3 h-3 text-orange-600" />
-                        <span className="text-xs font-medium text-orange-700">Ordenadas por relevancia</span>
+                        <span className="text-xs font-medium text-orange-700 hidden sm:inline">Ordenadas por relevancia</span>
+                        <span className="text-xs font-medium text-orange-700 sm:hidden">Por relevancia</span>
                       </div>
                     </div>
-                    <div className="bg-white/70 rounded-lg p-4 border border-orange-100">
+                    <div className="bg-white/70 rounded-lg p-3 sm:p-4 border border-orange-100">
                       <div className="flex items-start gap-2">
                         <MessageCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                        <div className="text-gray-700 text-sm leading-relaxed prose prose-sm max-w-none">
+                        <div className="text-gray-700 text-xs sm:text-sm leading-relaxed prose prose-sm max-w-none">
                           <ReactMarkdown>{recommendationData.texto}</ReactMarkdown>
                         </div>
                       </div>
@@ -253,9 +256,9 @@ export default function OfertasPage() {
                   </div>
                   <button
                     onClick={clearRecommendations}
-                    className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                    className="flex-shrink-0 p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200 self-start sm:self-auto"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
@@ -264,19 +267,19 @@ export default function OfertasPage() {
 
           {/* Recommendation Error */}
           {recommendationError && (
-            <div className="mb-8" data-aos="fade-up">
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+            <div className="mb-8 px-4" data-aos="fade-up">
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-red-600 font-bold text-sm">!</span>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-red-800 mb-1">Error en recomendaciones</h3>
-                    <p className="text-sm text-red-700">{recommendationError}</p>
+                  <div className="flex-1 w-full">
+                    <h3 className="font-semibold text-red-800 mb-1 text-sm sm:text-base">Error en recomendaciones</h3>
+                    <p className="text-xs sm:text-sm text-red-700 leading-relaxed">{recommendationError}</p>
                   </div>
                   <button
                     onClick={() => setRecommendationError(null)}
-                    className="p-2 text-red-400 hover:text-red-600 transition-colors duration-200"
+                    className="p-1.5 sm:p-2 text-red-400 hover:text-red-600 transition-colors duration-200 self-end sm:self-auto"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -288,27 +291,27 @@ export default function OfertasPage() {
 
           {/* Loading State */}
           {loading && (
-            <div className="flex items-center justify-center py-16" data-aos="fade-up">
+            <div className="flex items-center justify-center py-12 md:py-16 px-4" data-aos="fade-up">
               <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[#0F2B66] mx-auto mb-4" />
-                <p className="text-gray-600">Cargando ofertas...</p>
+                <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-[#0F2B66] mx-auto mb-4" />
+                <p className="text-sm sm:text-base text-gray-600">Cargando ofertas...</p>
               </div>
             </div>
           )}
 
           {/* Error State */}
           {error && (
-            <div className="text-center py-16" data-aos="fade-up">
+            <div className="text-center py-12 md:py-16 px-4" data-aos="fade-up">
               <Card className="max-w-md mx-auto shadow-lg">
-                <CardContent className="p-8">
+                <CardContent className="p-6 sm:p-8">
                   <div className="text-red-500 mb-4">
-                    <Star className="w-12 h-12 mx-auto" />
+                    <Star className="w-10 h-10 sm:w-12 sm:h-12 mx-auto" />
                   </div>
-                  <h3 className="text-lg font-semibold text-[#0F2B66] mb-2">Error al cargar ofertas</h3>
-                  <p className="text-gray-600 mb-6">{error}</p>
+                  <h3 className="text-base sm:text-lg font-semibold text-[#0F2B66] mb-2">Error al cargar ofertas</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed">{error}</p>
                   <Button
                     onClick={fetchOfertas}
-                    className="bg-secondary-gradient hover:opacity-90 text-white"
+                    className="bg-secondary-gradient hover:opacity-90 text-white text-sm sm:text-base px-4 sm:px-6"
                   >
                     Intentar de nuevo
                   </Button>
@@ -421,17 +424,17 @@ export default function OfertasPage() {
 
           {/* Empty State */}
           {!loading && !error && ofertas.length === 0 && (
-            <div className="text-center py-16" data-aos="fade-up">
+            <div className="text-center py-12 md:py-16 px-4" data-aos="fade-up">
               <Card className="max-w-md mx-auto shadow-lg">
-                <CardContent className="p-8">
-                  <div className="w-16 h-16 text-gray-400 mx-auto mb-4 flex items-center justify-center">
-                    <Eye className="w-16 h-16" />
+                <CardContent className="p-6 sm:p-8">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4 flex items-center justify-center">
+                    <Eye className="w-12 h-12 sm:w-16 sm:h-16" />
                   </div>
-                  <h3 className="text-lg font-semibold text-[#0F2B66] mb-2">No hay ofertas disponibles</h3>
-                  <p className="text-gray-600 mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-[#0F2B66] mb-2">No hay ofertas disponibles</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed">
                     En este momento no tenemos ofertas disponibles. Vuelve pronto para ver nuestras nuevas opciones.
                   </p>
-                  <Button asChild className="bg-secondary-gradient hover:opacity-90 text-white">
+                  <Button asChild className="bg-secondary-gradient hover:opacity-90 text-white text-sm sm:text-base px-4 sm:px-6">
                     <Link href="/servicios">
                       <ArrowRight className="w-4 h-4 mr-2" />
                       Ver Servicios

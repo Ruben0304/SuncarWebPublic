@@ -147,54 +147,55 @@ export default function OfertaDetailPage() {
             <div className="space-y-8">
               {/* Header Card */}
               <Card className="overflow-hidden" data-aos="fade-up">
-                <div className="relative">
-                  <div className="relative h-64 md:h-80 lg:h-96">
-                    <Image
-                      src={oferta.imagen || "/images/oferta_generica.jpg"}
-                      alt={oferta.descripcion}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                    <div className="absolute bottom-6 left-6 right-6 text-white">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Badge className="bg-yellow-400 text-black font-bold px-3 py-1">
-                          OFERTA ESPECIAL
-                        </Badge>
-                      </div>
-                      <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                        {oferta.descripcion}
-                      </h1>
-                      <div className="space-y-4">
-                        {/* Price Display */}
-                        <div className="flex items-baseline gap-4 flex-wrap">
-                          <div className="text-4xl md:text-5xl font-bold text-white">
-                            {formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)}
-                          </div>
+                {/* Image Section */}
+                <div className="relative h-64 md:h-80 lg:h-96">
+                  <Image
+                    src={oferta.imagen || "/images/oferta_generica.jpg"}
+                    alt={oferta.descripcion}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <Badge className="bg-yellow-400 text-black font-bold px-3 py-1 shadow-lg">
+                      OFERTA ESPECIAL
+                    </Badge>
+                  </div>
+                </div>
 
-                          {/* Show original price if there's a client discount */}
-                          {isClient && oferta.precio_cliente && (
-                            <div className="text-2xl md:text-3xl text-white/70 line-through">
-                              {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
-                            </div>
-                          )}
-                        </div>
+                {/* Content Section - Below Image */}
+                <div className="p-6 md:p-8 lg:p-10 bg-white">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F2B66] mb-6 leading-tight">
+                    {oferta.descripcion}
+                  </h1>
+
+                  <div className="space-y-6">
+                    {/* Price Display */}
+                    <div className="flex items-baseline gap-4 flex-wrap">
+                      <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#F26729]">
+                        {formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)}
                       </div>
 
-                      {/* Financing Information */}
-                      {oferta.financiamiento && (
-                        <div className="mt-6 pt-4 border-t border-white/20">
-                          <div className="flex items-center gap-3 text-white">
-                            <span className="text-lg">o</span>
-                            <span className="text-2xl font-bold">78 €/mes</span>
-                            <div className="flex items-center gap-2 text-sm bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm">
-                              <MapPin className="w-4 h-4" />
-                              <span>solo desde España</span>
-                            </div>
-                          </div>
+                      {/* Show original price if there's a client discount */}
+                      {isClient && oferta.precio_cliente && (
+                        <div className="text-xl sm:text-2xl md:text-3xl text-gray-500 line-through">
+                          {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
                         </div>
                       )}
                     </div>
+
+                    {/* Financing Information */}
+                    {oferta.financiamiento && (
+                      <div className="pt-4 border-t border-gray-200">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-gray-700">
+                          <span className="text-base sm:text-lg">o desde</span>
+                          <span className="text-xl sm:text-2xl font-bold text-[#0F2B66]">78 €/mes</span>
+                          <div className="flex items-center gap-2 text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full w-fit">
+                            <MapPin className="w-4 h-4" />
+                            <span>solo desde España</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
