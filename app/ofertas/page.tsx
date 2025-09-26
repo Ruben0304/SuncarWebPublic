@@ -13,6 +13,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { OfertaSimplificada, OfertasResponse } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
+import CurrencySelector from '@/components/CurrencySelector';
+import { Currency } from '@/hooks/useCurrencyExchange';
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
@@ -21,6 +23,7 @@ export default function OfertasPage() {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'precio-asc' | 'precio-desc' | 'nombre'>('precio-asc');
   const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
+  const [selectedCurrencies, setSelectedCurrencies] = useState<Record<string, Currency>>({});
   const { isClient } = useClient();
 
   useEffect(() => {
@@ -74,6 +77,15 @@ export default function OfertasPage() {
 
       if (data.success) {
         setOfertas(data.data);
+
+        // Inicializar monedas seleccionadas con la moneda base de cada oferta
+        const initialCurrencies: Record<string, Currency> = {};
+        data.data.forEach((oferta) => {
+          if (oferta.id) {
+            initialCurrencies[oferta.id] = oferta.moneda.toUpperCase() as Currency;
+          }
+        });
+        setSelectedCurrencies(initialCurrencies);
       } else {
         setError(data.message || 'Error al cargar ofertas');
       }
@@ -89,6 +101,13 @@ export default function OfertasPage() {
     if (moneda.toLowerCase() === 'eur') return 'EUR';
     if (moneda.toLowerCase() === 'usd') return 'USD';
     return moneda.toUpperCase();
+  };
+
+  const handleCurrencyChange = (ofertaId: string, currency: Currency) => {
+    setSelectedCurrencies(prev => ({
+      ...prev,
+      [ofertaId]: currency
+    }));
   };
 
   return (
@@ -251,27 +270,27 @@ export default function OfertasPage() {
                                 </h3>
 
                                 <div className="mb-6">
-                                    <div className="flex items-baseline gap-2 flex-wrap">
-                                        {isClient && oferta.precio_cliente ? (
-                                            <>
-                  <span className="text-2xl font-bold text-[#F26729] flex items-center gap-1">
-                    {oferta.precio_cliente.toLocaleString()}
-                    <span className="text-sm font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded">{formatCurrency(oferta.moneda)}</span>
-                  </span>
-                                                <span className="text-sm text-gray-500 line-through flex items-center gap-1">
-                    {oferta.precio.toLocaleString()}
-                    <span className="text-xs font-medium bg-gray-50 text-gray-500 px-1.5 py-0.5 rounded">{formatCurrency(oferta.moneda)}</span>
-                  </span>
-                                            </>
-                                        ) : (
-                                            <>
-                  <span className="text-2xl font-bold text-[#F26729] flex items-center gap-1">
-                    {oferta.precio.toLocaleString()}
-                    <span className="text-sm font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded">{formatCurrency(oferta.moneda)}</span>
-                  </span>
-                                            </>
-                                        )}
-                                    </div>
+                                    {/* Currency Selector and Price Display */}
+                                    {oferta.id && selectedCurrencies[oferta.id] && (
+                                        <div className="space-y-3">
+                                            <CurrencySelector
+                                                baseCurrency={oferta.moneda.toUpperCase() as Currency}
+                                                selectedCurrency={selectedCurrencies[oferta.id]}
+                                                onCurrencyChange={(currency) => handleCurrencyChange(oferta.id!, currency)}
+                                                basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
+                                                size="md"
+                                                showConvertedPrice={true}
+                                                className="mb-2"
+                                            />
+
+                                            {/* Show original price if there's a client discount */}
+                                            {isClient && oferta.precio_cliente && (
+                                                <div className="text-xs text-gray-500">
+                                                    Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
                                     {/* Financing Information */}
                                     {oferta.financiamiento && (

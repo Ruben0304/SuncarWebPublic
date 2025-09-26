@@ -27,6 +27,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Oferta, OfertaResponse } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
+import CurrencySelector from '@/components/CurrencySelector';
+import { Currency, useCurrencyExchange } from '@/hooks/useCurrencyExchange';
 
 export default function OfertaDetailPage() {
   const params = useParams();
@@ -34,7 +36,9 @@ export default function OfertaDetailPage() {
   const [oferta, setOferta] = useState<Oferta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>('EUR');
   const { isClient } = useClient();
+  const { convertPrice, formatPrice } = useCurrencyExchange();
 
   const ofertaId = params.id as string;
 
@@ -62,6 +66,8 @@ export default function OfertaDetailPage() {
 
       if (data.success && data.data) {
         setOferta(data.data);
+        // Inicializar la moneda seleccionada con la moneda base de la oferta
+        setSelectedCurrency(data.data.moneda.toUpperCase() as Currency);
       } else {
         setError(data.message || 'Oferta no encontrada');
       }
@@ -159,24 +165,42 @@ export default function OfertaDetailPage() {
                       <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         {oferta.descripcion}
                       </h1>
-                      <div className="flex items-baseline gap-4 flex-wrap">
-                        {isClient && oferta.precio_cliente ? (
-                          <>
-                            <div className="text-4xl md:text-5xl font-bold flex items-center gap-2">
-                              {oferta.precio_cliente.toLocaleString()}
-                              <span className="text-lg md:text-xl font-medium bg-white/20 text-white px-3 py-1 rounded-lg backdrop-blur-sm">{formatCurrency(oferta.moneda)}</span>
-                            </div>
-                            <div className="text-2xl md:text-3xl text-white/70 line-through flex items-center gap-2">
-                              {oferta.precio.toLocaleString()}
-                              <span className="text-sm font-medium bg-white/10 text-white/60 px-2 py-1 rounded backdrop-blur-sm">{formatCurrency(oferta.moneda)}</span>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="text-4xl md:text-5xl font-bold flex items-center gap-2">
-                            {oferta.precio.toLocaleString()}
-                            <span className="text-lg md:text-xl font-medium bg-white/20 text-white px-3 py-1 rounded-lg backdrop-blur-sm">{formatCurrency(oferta.moneda)}</span>
+                      <div className="space-y-4">
+                        {/* Currency Selector */}
+                        <div className="flex items-center gap-4">
+                          <span className="text-lg text-white/80">Moneda:</span>
+                          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                            <CurrencySelector
+                              baseCurrency={oferta.moneda.toUpperCase() as Currency}
+                              selectedCurrency={selectedCurrency}
+                              onCurrencyChange={setSelectedCurrency}
+                              basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
+                              size="lg"
+                              showConvertedPrice={false}
+                              className="[&_button]:bg-white/20 [&_button]:text-white [&_button]:border-white/30"
+                            />
                           </div>
-                        )}
+                        </div>
+
+                        {/* Price Display */}
+                        <div className="flex items-baseline gap-4 flex-wrap">
+                          <CurrencySelector
+                            baseCurrency={oferta.moneda.toUpperCase() as Currency}
+                            selectedCurrency={selectedCurrency}
+                            onCurrencyChange={() => {}} // No change handler here, only display
+                            basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
+                            size="lg"
+                            showConvertedPrice={true}
+                            className="[&>div:first-child]:hidden [&>div:nth-child(2)>div:first-child]:text-4xl [&>div:nth-child(2)>div:first-child]:md:text-5xl [&>div:nth-child(2)>div:first-child]:text-white [&>div:nth-child(2)>div:nth-child(2)]:text-white/70 [&>div:nth-child(2)>div:nth-child(3)]:text-white/60"
+                          />
+
+                          {/* Show original price if there's a client discount */}
+                          {isClient && oferta.precio_cliente && (
+                            <div className="text-2xl md:text-3xl text-white/70 line-through">
+                              {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       {/* Financing Information */}
@@ -313,7 +337,7 @@ export default function OfertaDetailPage() {
                         <div className="flex-1">
                           <p className="text-sm text-gray-600 mb-2 font-medium">Vista previa del mensaje:</p>
                           <div className="bg-[#DCF8C6] rounded-lg rounded-bl-none p-4 text-sm text-gray-800 shadow-sm border-l-4 border-[#25D366]">
-                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">{(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}</span>. ¿Podrían darme más información?
+                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">{formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)}</span>. ¿Podrían darme más información?
                           </div>
                         </div>
                       </div>
@@ -330,7 +354,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} ¿Podrían darme más información?`)}`}
+                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)} ¿Podrían darme más información?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"
