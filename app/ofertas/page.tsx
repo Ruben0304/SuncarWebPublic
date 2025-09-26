@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
 import Footer from '@/components/footer';
 import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown, CreditCard, DollarSign, Euro, Info, MapPin, Sparkles, Trophy, MessageCircle, X } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';
 import AOS from 'aos';
@@ -244,7 +245,9 @@ export default function OfertasPage() {
                     <div className="bg-white/70 rounded-lg p-4 border border-orange-100">
                       <div className="flex items-start gap-2">
                         <MessageCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                        <p className="text-gray-700 text-sm leading-relaxed">{recommendationData.texto}</p>
+                        <div className="text-gray-700 text-sm leading-relaxed prose prose-sm max-w-none">
+                          <ReactMarkdown>{recommendationData.texto}</ReactMarkdown>
+                        </div>
                       </div>
                     </div>
                   </div>
