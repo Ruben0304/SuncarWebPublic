@@ -15,15 +15,16 @@ import {
 import clsx from "clsx";
 import ReactMarkdown from "react-markdown";
 
-// Mock de sugerencias
+// Preguntas frecuentes sobre energías renovables y sistemas fotovoltaicos
 const SUGERENCIAS = [
-  "¿Para qué sirves?",
-  "¿Qué puedes hacer?",
-  "¿De qué puedes hablarme?",
   "¿Cómo funcionan los paneles solares?",
-  "¿Cuánto cuesta un sistema solar?",
-  "¿Qué mantenimiento requieren?",
-  "Necesito una cotización",
+  "¿Qué mantenimiento requieren los paneles solares?",
+  "¿Cuánto puedo ahorrar con energía solar?",
+  "¿Funcionan los paneles en días nublados?",
+  "¿Cuánto tiempo dura la instalación?",
+  "¿Necesito baterías para mi sistema solar?",
+  "¿Qué pasa si hay un apagón?",
+  "¿Puedo expandir mi sistema después?",
 ];
 
 // Context information about Suncar
@@ -271,6 +272,8 @@ interface Mensaje {
   feedback?: "positive" | "negative" | null;
   feedbackDetails?: string | null;
   message_id?: string | null;
+  isTyping?: boolean;
+  displayedContent?: string;
 }
 
 const UnifiedChatAssistant: React.FC = () => {
@@ -295,11 +298,27 @@ const UnifiedChatAssistant: React.FC = () => {
   const [currentFeedbackMessageIndex, setCurrentFeedbackMessageIndex] = useState<number | null>(null);
   const [selectedFeedbackOption, setSelectedFeedbackOption] = useState<number | null>(null);
   const [customFeedback, setCustomFeedback] = useState("");
+  const [isUserAtBottom, setIsUserAtBottom] = useState(true);
   const messagesContainer = useRef<HTMLDivElement>(null);
 
   // WhatsApp config
   const phoneNumber = "5363962417";
   const defaultWhatsAppMessage = "¡Hola! Me interesa conocer más sobre sus servicios de energía solar. ¿Podrían brindarme información?";
+
+  // Función para verificar si el usuario está al final del scroll
+  const checkIfUserAtBottom = () => {
+    if (!messagesContainer.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainer.current;
+    const threshold = 100; // Margen de 100px para considerar que está "al final"
+    return scrollHeight - scrollTop - clientHeight < threshold;
+  };
+
+  // Función para hacer scroll al final
+  const scrollToBottom = () => {
+    if (messagesContainer.current) {
+      messagesContainer.current.scrollTop = messagesContainer.current.scrollHeight;
+    }
+  };
 
   // Seleccionar sugerencias aleatorias
   useEffect(() => {
@@ -307,12 +326,66 @@ const UnifiedChatAssistant: React.FC = () => {
     setDisplayedSuggestions(shuffled.slice(0, 3));
   }, []);
 
-  // Scroll automático al final
+  // Listener para detectar cuando el usuario hace scroll
   useEffect(() => {
-    if (messagesContainer.current) {
-      messagesContainer.current.scrollTop = messagesContainer.current.scrollHeight;
+    const container = messagesContainer.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const atBottom = checkIfUserAtBottom();
+      setIsUserAtBottom(atBottom);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    
+    // Verificar posición inicial
+    handleScroll();
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [isOpen]);
+
+  // Efecto de escritura progresiva
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.isTyping && lastMessage.role === "agent") {
+      const fullText = lastMessage.content;
+      const currentDisplayed = lastMessage.displayedContent || "";
+
+      if (currentDisplayed.length < fullText.length) {
+        const timer = setTimeout(() => {
+          setMessages((prev) => {
+            const updated = [...prev];
+            const lastMsg = updated[updated.length - 1];
+            
+            // Verificar que el mensaje sigue siendo el último y está en modo typing
+            if (lastMsg.isTyping && lastMsg.role === "agent") {
+              const nextChar = fullText[currentDisplayed.length];
+              lastMsg.displayedContent = currentDisplayed + nextChar;
+
+              // Si hemos mostrado todo el texto, terminar el efecto de escritura
+              if (lastMsg.displayedContent.length >= fullText.length) {
+                lastMsg.isTyping = false;
+                lastMsg.displayedContent = fullText; // Asegurar que se muestre el texto completo
+              }
+            }
+
+            return updated;
+          });
+        }, 0.5); // Velocidad de escritura: 0.5ms por carácter (un poco más lento para mejor UX)
+
+        return () => clearTimeout(timer);
+      }
     }
-  }, [messages, isOpen]);
+  }, [messages]);
+
+  // Scroll automático inteligente: solo si el usuario está al final
+  useEffect(() => {
+    if (isUserAtBottom && messagesContainer.current) {
+      scrollToBottom();
+    }
+  }, [messages, isUserAtBottom]);
 
   // Ocultar sugerencias al enviar mensaje
   useEffect(() => {
@@ -330,14 +403,21 @@ const UnifiedChatAssistant: React.FC = () => {
   const useSuggestion = (s: string) => {
     setInput(s);
     setShowSuggestions(false);
+    // Enviar automáticamente la pregunta después de un breve delay
+    setTimeout(() => {
+      sendMessage(s);
+    }, 100);
   };
 
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+  const sendMessage = async (messageText?: string) => {
+    const textToSend = messageText || input;
+    // Verificar si hay algún mensaje en modo de escritura progresiva
+    const isTypingInProgress = messages.some(msg => msg.isTyping && msg.role === "agent");
+    if (!textToSend.trim() || isLoading || isTypingInProgress) return;
     
     if (chatMode === "whatsapp") {
       // Modo WhatsApp: abrir WhatsApp con el mensaje
-      const finalMessage = input.trim() || defaultWhatsAppMessage;
+      const finalMessage = textToSend.trim() || defaultWhatsAppMessage;
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(finalMessage)}`;
       window.open(whatsappUrl, '_blank');
       setInput("");
@@ -349,11 +429,14 @@ const UnifiedChatAssistant: React.FC = () => {
     const timestamp = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
     setMessages((prev) => [
       ...prev,
-      { role: "user", content: input, timestamp, isNew: true },
+      { role: "user", content: textToSend, timestamp, isNew: true },
     ]);
-    const userMessage = input;
+    const userMessage = textToSend;
     setInput("");
     setIsLoading(true);
+    
+    // Asegurar que el scroll automático esté activo para nuevos mensajes
+    setIsUserAtBottom(true);
     
     try {
       const data = await sendAIMessage(userMessage);
@@ -367,6 +450,8 @@ const UnifiedChatAssistant: React.FC = () => {
           feedback: null,
           feedbackDetails: null,
           message_id: data.message_id,
+          isTyping: true,
+          displayedContent: "",
         },
       ]);
     } catch (e) {
@@ -380,6 +465,8 @@ const UnifiedChatAssistant: React.FC = () => {
           feedback: null,
           feedbackDetails: null,
           message_id: null,
+          isTyping: true,
+          displayedContent: "",
         },
       ]);
     } finally {
@@ -394,23 +481,40 @@ const UnifiedChatAssistant: React.FC = () => {
   const toggleFeedback = (messageIndex: number, type: "positive" | "negative") => {
     if (chatMode === "whatsapp") return; // No feedback para WhatsApp
     
+    console.log(`Toggle feedback: messageIndex=${messageIndex}, type=${type}`);
+    
     setMessages((prev) => {
       const updated = [...prev];
       const msg = updated[messageIndex];
       if (!msg.message_id) return prev;
+      
+      console.log(`Current feedback: ${msg.feedback}`);
+      
+      // Si ya está seleccionado el mismo tipo, desmarcarlo
       if (msg.feedback === type) {
         msg.feedback = null;
         msg.feedbackDetails = null;
+        console.log(`Deselecting feedback: ${type}`);
         mockSendFeedback(msg.message_id, null, null);
       } else {
+        // Seleccionar el nuevo tipo (esto desmarca automáticamente el anterior si existía)
         msg.feedback = type;
+        console.log(`Setting feedback to: ${type}`);
         if (type === "positive") {
+          // Limpiar detalles de feedback negativo si existían
+          msg.feedbackDetails = null;
           mockSendFeedback(msg.message_id, "positive", null);
         } else {
-          setCurrentFeedbackMessageIndex(messageIndex);
-          setSelectedFeedbackOption(null);
-          setCustomFeedback("");
-          setShowFeedbackModal(true);
+          // Para feedback negativo, abrir modal si no hay detalles previos
+          if (!msg.feedbackDetails) {
+            setCurrentFeedbackMessageIndex(messageIndex);
+            setSelectedFeedbackOption(null);
+            setCustomFeedback("");
+            setShowFeedbackModal(true);
+          } else {
+            // Si ya hay detalles, mantenerlos
+            mockSendFeedback(msg.message_id, "negative", msg.feedbackDetails);
+          }
         }
       }
       return updated;
@@ -458,7 +562,7 @@ const UnifiedChatAssistant: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300 hover:scale-105"
+          className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300 hover:scale-105 ring-2 ring-[#F26729]/40 hover:ring-[#F26729]/60"
           aria-label="Abrir chat"
         >
           <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
@@ -492,7 +596,7 @@ const UnifiedChatAssistant: React.FC = () => {
                       : "text-white/80 hover:text-white"
                   )}
                 >
-                  <Zap className="h-3 w-3" />
+                  <Zap className="h-3 w-3 text-orange-400" />
                   IA
                 </button>
                 <button
@@ -504,7 +608,7 @@ const UnifiedChatAssistant: React.FC = () => {
                       : "text-white/80 hover:text-white"
                   )}
                 >
-                  <MessageCircle className="h-3 w-3" />
+                  <MessageCircle className="h-3 w-3 text-green-400" />
                   WA
                 </button>
               </div>
@@ -553,7 +657,13 @@ const UnifiedChatAssistant: React.FC = () => {
             ) : (
               // Vista de IA con mensajes
               <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 sm:pb-24">
-                {messages.map((message, index) => (
+                {messages.map((message, index) => {
+                  // Debug: log feedback state for each message
+                  if (message.role === "agent" && message.message_id) {
+                    console.log(`Message ${index} feedback state:`, message.feedback);
+                  }
+                  
+                  return (
                   <div
                     key={index}
                     className={clsx(
@@ -586,7 +696,10 @@ const UnifiedChatAssistant: React.FC = () => {
                           <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                         ) : (
                           <div className="text-sm leading-relaxed markdown-body">
-                            <ReactMarkdown>{message.content}</ReactMarkdown>
+                            <ReactMarkdown>{message.isTyping ? (message.displayedContent || "") : message.content}</ReactMarkdown>
+                            {message.isTyping && (
+                              <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse" />
+                            )}
                           </div>
                         )}
                       </div>
@@ -596,22 +709,24 @@ const UnifiedChatAssistant: React.FC = () => {
                           <button
                             onClick={() => toggleFeedback(index, "positive")}
                             className={clsx(
-                              "p-1 rounded-full text-xs transition-colors",
+                              "p-1.5 rounded-full text-xs transition-all duration-200 border-2 font-bold",
                               message.feedback === "positive"
-                                ? "bg-green-100 text-green-600"
-                                : "text-gray-400 hover:text-green-600 hover:bg-green-50"
+                                ? "bg-green-500 text-white border-green-500 shadow-lg scale-110"
+                                : "text-gray-400 hover:text-green-600 hover:bg-green-50 border-gray-300 hover:border-green-400"
                             )}
+                            title={message.feedback === "positive" ? "Quitar like" : "Dar like"}
                           >
                             <ThumbsUp className="h-3 w-3" />
                           </button>
                           <button
                             onClick={() => toggleFeedback(index, "negative")}
                             className={clsx(
-                              "p-1 rounded-full text-xs transition-colors",
+                              "p-1.5 rounded-full text-xs transition-all duration-200 border-2 font-bold",
                               message.feedback === "negative"
-                                ? "bg-red-100 text-red-600"
-                                : "text-gray-400 hover:text-red-600 hover:bg-red-50"
+                                ? "bg-red-500 text-white border-red-500 shadow-lg scale-110"
+                                : "text-gray-400 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-400"
                             )}
+                            title={message.feedback === "negative" ? "Quitar dislike" : "Dar dislike"}
                           >
                             <ThumbsDown className="h-3 w-3" />
                           </button>
@@ -619,15 +734,16 @@ const UnifiedChatAssistant: React.FC = () => {
                       )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
 
                 {/* Loading solo para IA */}
                 {isLoading && chatMode === "ai" && (
-                  <div className="flex justify-center mt-6 animate-fade-in">
-                    <div className="flex gap-2">
-                      <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0s" }} />
-                      <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0.2s" }} />
-                      <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0.4s" }} />
+                  <div className="flex justify-start mt-6 animate-fade-in ml-2">
+                    <div className="flex gap-2 bg-white rounded-full px-4 py-3 shadow-sm ring-2 ring-[#F26729]/20">
+                      <div className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-[0_0_8px_rgba(242,103,41,0.4)]" style={{ animationDelay: "0s" }} />
+                      <div className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-[0_0_8px_rgba(242,103,41,0.4)]" style={{ animationDelay: "0.2s" }} />
+                      <div className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-[0_0_8px_rgba(242,103,41,0.4)]" style={{ animationDelay: "0.4s" }} />
                     </div>
                   </div>
                 )}
@@ -663,6 +779,19 @@ const UnifiedChatAssistant: React.FC = () => {
             )}
           </div>
 
+          {/* Botón flotante para volver al final - fuera del área de scroll */}
+          {!isUserAtBottom && (
+            <button
+              onClick={scrollToBottom}
+              className="absolute bottom-20 right-4 z-20 bg-primary text-white rounded-full p-2 shadow-lg hover:bg-primary/90 transition-all duration-300 hover:scale-105 animate-bounce"
+              aria-label="Ir al final del chat"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </button>
+          )}
+
           {/* Input fijo en la parte inferior */}
           <div className="p-3 sm:p-4 bg-white border-t border-gray-100">
             <div className="flex gap-2 sm:gap-3 items-center">
@@ -677,14 +806,17 @@ const UnifiedChatAssistant: React.FC = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    sendMessage();
+                    const isTypingInProgress = messages.some(msg => msg.isTyping && msg.role === "agent");
+                    if (!isTypingInProgress) {
+                      sendMessage();
+                    }
                   }
                 }}
                 className="flex-1 h-10 sm:h-12 py-2 px-3 sm:px-4 rounded-full border border-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-700 placeholder-gray-400 text-sm"
               />
               <button
-                onClick={sendMessage}
-                disabled={!input.trim() || (isLoading && chatMode === "ai")}
+                onClick={() => sendMessage()}
+                disabled={!input.trim() || (isLoading && chatMode === "ai") || messages.some(msg => msg.isTyping && msg.role === "agent")}
                 className={clsx(
                   "p-2.5 sm:p-3 text-white rounded-full hover:bg-primary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg",
                   chatMode === "whatsapp" ? "bg-[#25D366] hover:bg-[#128C7E]" : "bg-primary"
