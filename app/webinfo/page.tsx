@@ -102,7 +102,7 @@ export default function WebInfoPage() {
                         />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-gray-900 font-semibold">Fabián Fernández Galves</h4>
+                        <h4 className="text-gray-900 font-semibold">Fabián Fernández Gálvez</h4>
                         <p className="text-gray-600 text-sm">Backend Developer</p>
                       </div>
                       <a 
