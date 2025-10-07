@@ -322,104 +322,116 @@ export default function OfertasPage() {
 
             {/* Offers Grid */}
             {!loading && !error && filteredOfertas.length > 0 && (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                    {filteredOfertas.map((oferta, index) => (
-                        <Card
-                            key={oferta.id || index}
-                            className={`group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden ${
-                                showRecommendations ? 'border-orange-200' : ''
-                            }`}
-                            data-aos="fade-up"
-                            data-aos-delay={index * 100}
-                        >
-                            <div className="relative overflow-hidden aspect-square">
-                                <Image
-                                    src={oferta.imagen || "/images/oferta_generica.jpg"}
-                                    alt={oferta.descripcion}
-                                    width={400}
-                                    height={400}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                        {filteredOfertas.map((oferta, index) => (
+                            <Card
+                                key={oferta.id || index}
+                                className={`group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden ${
+                                    showRecommendations ? 'border-orange-200' : ''
+                                }`}
+                                data-aos="fade-up"
+                                data-aos-delay={index * 100}
+                            >
+                                <div className="relative overflow-hidden aspect-square">
+                                    <Image
+                                        src={oferta.imagen || "/images/oferta_generica.jpg"}
+                                        alt={oferta.descripcion}
+                                        width={400}
+                                        height={400}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                {/* Ranking Badge */}
-                                {showRecommendations && (
-                                    <div className="absolute top-4 left-4">
-                                        <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full shadow-lg border-2 border-white">
-                                            <span className="text-white font-bold text-lg">#{index + 1}</span>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="absolute top-4 right-4">
-                                    {showRecommendations && index === 0 ? (
-                                        <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
-                                            Más recomendada
-                                        </Badge>
-                                    ) : !showRecommendations ? (
-                                        <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
-                                            Oferta
-                                        </Badge>
-                                    ) : null}
-                                </div>
-                            </div>
-
-                            <CardContent className="p-6">
-                                <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
-                                    {oferta.descripcion}
-                                </h3>
-
-                                <div className="mb-6">
-                                    {/* Currency Selector and Price Display */}
-                                    {oferta.id && selectedCurrencies[oferta.id] && (
-                                        <div className="space-y-3">
-                                            <CurrencySelector
-                                                baseCurrency={oferta.moneda.toUpperCase() as Currency}
-                                                selectedCurrency={selectedCurrencies[oferta.id]}
-                                                onCurrencyChange={(currency) => handleCurrencyChange(oferta.id!, currency)}
-                                                basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
-                                                size="md"
-                                                showConvertedPrice={true}
-                                                className="mb-2"
-                                            />
-
-                                            {/* Show original price if there's a client discount */}
-                                            {isClient && oferta.precio_cliente && (
-                                                <div className="text-xs text-gray-500">
-                                                    Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Financing Information */}
-                                    {oferta.financiamiento && (
-                                        <div className="mt-3 pt-3 border-t border-gray-100">
-                                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                <span>o</span>
-                                                <span className="font-semibold text-blue-600">78 €/mes</span>
-                                                <div className="flex items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded-full">
-                                                    <MapPin className="w-3 h-3 text-blue-500" />
-                                                    <span className="text-blue-700">solo desde España</span>
-                                                </div>
+                                    {/* Ranking Badge */}
+                                    {showRecommendations && (
+                                        <div className="absolute top-4 left-4">
+                                            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full shadow-lg border-2 border-white">
+                                                <span className="text-white font-bold text-lg">#{index + 1}</span>
                                             </div>
                                         </div>
                                     )}
+
+                                    <div className="absolute top-4 right-4">
+                                        {showRecommendations && index === 0 ? (
+                                            <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
+                                                Más recomendada
+                                            </Badge>
+                                        ) : !showRecommendations ? (
+                                            <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
+                                                Oferta
+                                            </Badge>
+                                        ) : null}
+                                    </div>
                                 </div>
 
-                                <Button
-                                    asChild
-                                    className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
-                                >
-                                    <Link href={`/ofertas/${oferta.id}`}>
-                                        <Eye className="w-4 h-4 mr-2" />
-                                        Ver Detalles
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                                <CardContent className="p-6">
+                                    <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                                        {oferta.descripcion}
+                                    </h3>
+
+                                    <div className="mb-6">
+                                        {/* Currency Selector and Price Display */}
+                                        {oferta.id && selectedCurrencies[oferta.id] && (
+                                            <div className="space-y-3">
+                                                <CurrencySelector
+                                                    baseCurrency={oferta.moneda.toUpperCase() as Currency}
+                                                    selectedCurrency={selectedCurrencies[oferta.id]}
+                                                    onCurrencyChange={(currency) => handleCurrencyChange(oferta.id!, currency)}
+                                                    basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
+                                                    size="md"
+                                                    showConvertedPrice={true}
+                                                    className="mb-2"
+                                                />
+
+                                                {/* Show original price if there's a client discount */}
+                                                {isClient && oferta.precio_cliente && (
+                                                    <div className="text-xs text-gray-500">
+                                                        Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Financing Information */}
+                                        {oferta.financiamiento && (
+                                            <div className="mt-3 pt-3 border-t border-gray-100">
+                                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                    <span>o</span>
+                                                    <span className="font-semibold text-blue-600">78 €/mes</span>
+                                                    <div className="flex items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded-full">
+                                                        <MapPin className="w-3 h-3 text-blue-500" />
+                                                        <span className="text-blue-700">solo desde España</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <Button
+                                        asChild
+                                        className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
+                                    >
+                                        <Link href={`/ofertas/${oferta.id}`}>
+                                            <Eye className="w-4 h-4 mr-2" />
+                                            Ver Detalles
+                                        </Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+
+                    <div className="px-4 mt-6 mb-10" data-aos="fade-up" data-aos-delay="100">
+                        <div className="max-w-3xl mx-auto flex items-start gap-3 bg-white/80 backdrop-blur border border-blue-100 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-600">
+                            <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                            <p className="leading-relaxed">
+                                Los precios publicados son referenciales y pueden ajustarse ligeramente (al alza o a la baja) según las características finales de cada proyecto.
+                                Te avisaremos con antelación si aplica algún ajuste.
+                            </p>
+                        </div>
+                    </div>
+                </>
             )}
 
           {/* Empty State */}
