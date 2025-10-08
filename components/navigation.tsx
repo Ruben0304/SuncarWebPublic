@@ -1,16 +1,46 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Menu, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { useClient } from "@/hooks/useClient"
 import GlassSurface from "@/components/GlassSurface";
+import { cn } from "@/lib/utils"
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null)
+  const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { isClient, isLoading } = useClient()
+  const pathname = usePathname()
+
+  const isActive = (href: string) => {
+    if (!pathname) return false
+    if (href === "/") return pathname === "/"
+    return pathname.startsWith(href)
+  }
+
+  const clearHoverReset = () => {
+    if (hoverResetTimeout.current) {
+      clearTimeout(hoverResetTimeout.current)
+      hoverResetTimeout.current = null
+    }
+  }
+
+  const handleHover = (href: string) => {
+    clearHoverReset()
+    setHoveredHref(href)
+  }
+
+  const scheduleHoverReset = () => {
+    clearHoverReset()
+    hoverResetTimeout.current = setTimeout(() => {
+      setHoveredHref(null)
+    }, 160)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +50,12 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    return () => {
+      clearHoverReset()
+    }
+  }, [])
+
   const navItems = [
     { name: "Inicio", href: "/" },
     { name: "Servicios", href: "/servicios" },
@@ -27,7 +63,7 @@ export default function Navigation() {
     // { name: "Proyectos", href: "/projectos" },
     { name: "Testimonios", href: "/testimonios" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
-    { name: "Galería", href: "/galeria" },
+    { name: "Galeria", href: "/galeria" },
     { name: "Contacto", href: "/contacto" },
 
   ]
@@ -64,22 +100,43 @@ export default function Navigation() {
               </div>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-8">
-                {navItems.map((item) => (
-                  <div key={item.name} className="relative">
-                    <Link
-                      href={item.href}
-                      className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium flex items-center gap-2"
-                    >
-                      {item.name}
-                      {(item as any).isClient && (
-                        <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-xs px-2 py-1 rounded-full">
-                          Cliente
-                        </Badge>
-                      )}
-                    </Link>
-                  </div>
-                ))}
+              <div className="hidden md:flex items-center space-x-3 lg:space-x-4" onMouseLeave={scheduleHoverReset}>
+                {navItems.map((item) => {
+                  const isHighlighted =
+                    hoveredHref === item.href || (!hoveredHref && isActive(item.href))
+                  return (
+                    <div key={item.name} className="relative">
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "group relative flex items-center gap-2 px-4 py-1.5 text-sm font-medium transition-all duration-300",
+                          isHighlighted ? "text-primary" : "text-gray-700 hover:text-primary"
+                        )}
+                        aria-current={isActive(item.href) ? "page" : undefined}
+                        onMouseEnter={() => handleHover(item.href)}
+                        onMouseLeave={scheduleHoverReset}
+                        onFocus={() => handleHover(item.href)}
+                        onBlur={scheduleHoverReset}
+                      >
+                        <span className="relative z-10">{item.name}</span>
+                        {(item as any).isClient && (
+                          <Badge className="relative z-10 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-xs px-2 py-1 rounded-full">
+                            Cliente
+                          </Badge>
+                        )}
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#F26729] via-[#FDB813] to-[#F26729] opacity-0 transition-all duration-300",
+                            isHighlighted
+                              ? "opacity-100 translate-y-0"
+                              : "group-hover:opacity-100 group-hover:translate-y-0.5"
+                          )}
+                        />
+                      </Link>
+                    </div>
+                  )
+                })}
               </div>
 
               {/* CTA Button */}
@@ -106,7 +163,13 @@ export default function Navigation() {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium py-2 text-sm flex items-center gap-2"
+                      className={cn(
+                        "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
+                        isActive(item.href)
+                          ? "bg-white/80 text-primary shadow-sm ring-1 ring-primary/20"
+                          : "text-gray-700 hover:text-primary hover:bg-white/60"
+                      )}
+                      aria-current={isActive(item.href) ? "page" : undefined}
                       onClick={() => setIsOpen(false)}
                     >
                       {item.name}
@@ -128,6 +191,5 @@ export default function Navigation() {
         {/*</GlassSurface>*/}
       </div>
     </nav>
-
   )
 }
