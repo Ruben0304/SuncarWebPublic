@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
 import Footer from '@/components/footer';
-import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown, CreditCard, DollarSign, Euro, Info, MapPin, Sparkles, Trophy, MessageCircle, X } from 'lucide-react';
+import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown, CreditCard, DollarSign, Euro, Info, MapPin, Sparkles, Trophy, MessageCircle, X, Tag, Percent } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,6 +22,8 @@ import { recomendadorService } from '@/services/api/recomendadorService';
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
   const [filteredOfertas, setFilteredOfertas] = useState<OfertaSimplificada[]>([]);
+  const [ofertasConDescuento, setOfertasConDescuento] = useState<OfertaSimplificada[]>([]);
+  const [ofertasSinDescuento, setOfertasSinDescuento] = useState<OfertaSimplificada[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'precio-asc' | 'precio-desc' | 'nombre'>('precio-asc');
@@ -78,6 +80,23 @@ export default function OfertasPage() {
       }
     });
 
+    // Separar ofertas con y sin descuentos
+    const conDescuento = filtered.filter(oferta => {
+      // Verificar si tiene el campo descuentos y no está vacío
+      return oferta.descuentos &&
+             typeof oferta.descuentos === 'string' &&
+             oferta.descuentos.trim().length > 0;
+    });
+
+    const sinDescuento = filtered.filter(oferta => {
+      // Verificar si NO tiene descuentos o está vacío
+      return !oferta.descuentos ||
+             typeof oferta.descuentos !== 'string' ||
+             oferta.descuentos.trim().length === 0;
+    });
+
+    setOfertasConDescuento(conDescuento);
+    setOfertasSinDescuento(sinDescuento);
     setFilteredOfertas(filtered);
   }, [ofertas, sortBy, priceFilter, showRecommendations, recommendationData]);
 
@@ -320,16 +339,45 @@ export default function OfertasPage() {
             </div>
           )}
 
-            {/* Offers Grid */}
-            {!loading && !error && filteredOfertas.length > 0 && (
+            {/* Offers Grid - SIEMPRE muestra las dos secciones separadas cuando NO hay recomendaciones */}
+            {!loading && !error && !showRecommendations && filteredOfertas.length > 0 && (
                 <>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                        {filteredOfertas.map((oferta, index) => (
+                    {/* SECCIÓN 1: Ofertas con Descuentos */}
+                    {ofertasConDescuento.length > 0 && (
+                        <>
+                            {/* Promotional Banner for Discounted Offers */}
+                            <div className="mb-10 px-4" data-aos="fade-up">
+                                <div className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-black/10"></div>
+                                    <div className="absolute top-0 left-0 w-40 h-40 bg-white/10 rounded-full -translate-x-20 -translate-y-20"></div>
+                                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-16 translate-y-16"></div>
+
+                                    <div className="relative z-10">
+                                        <div className="flex justify-center mb-4">
+                                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                                                <Percent className="w-8 h-8 text-orange-600" />
+                                            </div>
+                                        </div>
+                                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                                            ¡Accede a Nuestras Ofertas con Descuentos!
+                                        </h2>
+                                        <p className="text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-relaxed drop-shadow">
+                                            Aprovecha nuestros descuentos exclusivos con reserva previa. ¡Entérate de nuestras promociones y reserva ahora!
+                                        </p>
+                                        <Link href="/contacto" className="mt-6 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-white/30 hover:bg-white/30 transition-all duration-300 cursor-pointer group">
+                                            <Tag className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-300" />
+                                            <span className="text-white font-semibold">Reserva Previa Disponible</span>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Grid de Ofertas con Descuentos */}
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                                {ofertasConDescuento.map((oferta, index) => (
                             <Card
                                 key={oferta.id || index}
-                                className={`group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden ${
-                                    showRecommendations ? 'border-orange-200' : ''
-                                }`}
+                                className="group bg-white border-2 border-orange-200 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
                                 data-aos="fade-up"
                                 data-aos-delay={index * 100}
                             >
@@ -343,25 +391,12 @@ export default function OfertasPage() {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                    {/* Ranking Badge */}
-                                    {showRecommendations && (
-                                        <div className="absolute top-4 left-4">
-                                            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full shadow-lg border-2 border-white">
-                                                <span className="text-white font-bold text-lg">#{index + 1}</span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="absolute top-4 right-4">
-                                        {showRecommendations && index === 0 ? (
-                                            <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
-                                                Más recomendada
-                                            </Badge>
-                                        ) : !showRecommendations ? (
-                                            <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
-                                                Oferta
-                                            </Badge>
-                                        ) : null}
+                                    {/* Discount Badge */}
+                                    <div className="absolute top-4 left-4">
+                                        <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 text-sm font-bold shadow-xl border-2 border-white flex items-center gap-2">
+                                            <Percent className="w-4 h-4" />
+                                            DESCUENTO
+                                        </Badge>
                                     </div>
                                 </div>
 
@@ -371,8 +406,8 @@ export default function OfertasPage() {
                                     </h3>
 
                                     <div className="mb-6">
-                                        {/* Currency Selector and Price Display */}
-                                        {oferta.id && selectedCurrencies[oferta.id] && (
+                                        {/* Currency Selector and Price Display - COMENTADO: API agotada */}
+                                        {/* {oferta.id && selectedCurrencies[oferta.id] && (
                                             <div className="space-y-3">
                                                 <CurrencySelector
                                                     baseCurrency={oferta.moneda.toUpperCase() as Currency}
@@ -384,14 +419,27 @@ export default function OfertasPage() {
                                                     className="mb-2"
                                                 />
 
-                                                {/* Show original price if there's a client discount */}
                                                 {isClient && oferta.precio_cliente && (
                                                     <div className="text-xs text-gray-500">
                                                         Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
                                                     </div>
                                                 )}
                                             </div>
-                                        )}
+                                        )} */}
+
+                                        {/* Mostrar precio simple sin conversión */}
+                                        <div className="space-y-3">
+                                            <div className="text-3xl font-bold text-[#F26729]">
+                                                {(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}
+                                            </div>
+
+                                            {/* Show original price if there's a client discount */}
+                                            {isClient && oferta.precio_cliente && (
+                                                <div className="text-sm text-gray-500 line-through">
+                                                    Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                                                </div>
+                                            )}
+                                        </div>
 
                                         {/* Financing Information */}
                                         {oferta.financiamiento && (
@@ -421,7 +469,241 @@ export default function OfertasPage() {
                             </Card>
                         ))}
                     </div>
+                        </>
+                    )}
 
+                    {/* SECCIÓN 2: Ofertas Tradicionales (Sin Descuentos) */}
+                    {ofertasSinDescuento.length > 0 && (
+                        <>
+                            {/* Banner for Traditional Offers */}
+                            <div className="mb-10 px-4" data-aos="fade-up">
+                                <div className="relative">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t-2 border-gray-200"></div>
+                                    </div>
+                                    <div className="relative flex justify-center">
+                                        <div className="bg-gradient-to-br from-slate-50 to-blue-50/30 px-8 py-6 rounded-2xl border-2 border-[#0F2B66]/20 shadow-lg">
+                                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0F2B66] text-center flex items-center gap-3">
+                                                <Star className="w-7 h-7 md:w-8 md:h-8 text-[#0F2B66]" />
+                                                Nuestras Ofertas Clásicas
+                                                <Star className="w-7 h-7 md:w-8 md:h-8 text-[#0F2B66]" />
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Grid de Ofertas Sin Descuentos */}
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                                {ofertasSinDescuento.map((oferta, index) => (
+                            <Card
+                                key={oferta.id || index}
+                                className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                                data-aos="fade-up"
+                                data-aos-delay={index * 100}
+                            >
+                                <div className="relative overflow-hidden aspect-square">
+                                    <Image
+                                        src={oferta.imagen || "/images/oferta_generica.jpg"}
+                                        alt={oferta.descripcion}
+                                        width={400}
+                                        height={400}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                                    <div className="absolute top-4 right-4">
+                                        <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
+                                            Oferta
+                                        </Badge>
+                                    </div>
+                                </div>
+
+                                <CardContent className="p-6">
+                                    <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                                        {oferta.descripcion}
+                                    </h3>
+
+                                    <div className="mb-6">
+                                        {/* Currency Selector and Price Display - COMENTADO: API agotada */}
+                                        {/* {oferta.id && selectedCurrencies[oferta.id] && (
+                                            <div className="space-y-3">
+                                                <CurrencySelector
+                                                    baseCurrency={oferta.moneda.toUpperCase() as Currency}
+                                                    selectedCurrency={selectedCurrencies[oferta.id]}
+                                                    onCurrencyChange={(currency) => handleCurrencyChange(oferta.id!, currency)}
+                                                    basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
+                                                    size="md"
+                                                    showConvertedPrice={true}
+                                                    className="mb-2"
+                                                />
+
+                                                {isClient && oferta.precio_cliente && (
+                                                    <div className="text-xs text-gray-500">
+                                                        Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )} */}
+
+                                        {/* Mostrar precio simple sin conversión */}
+                                        <div className="space-y-3">
+                                            <div className="text-3xl font-bold text-[#F26729]">
+                                                {(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}
+                                            </div>
+
+                                            {/* Show original price if there's a client discount */}
+                                            {isClient && oferta.precio_cliente && (
+                                                <div className="text-sm text-gray-500 line-through">
+                                                    Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Financing Information */}
+                                        {oferta.financiamiento && (
+                                            <div className="mt-3 pt-3 border-t border-gray-100">
+                                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                    <span>o</span>
+                                                    <span className="font-semibold text-blue-600">78 €/mes</span>
+                                                    <div className="flex items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded-full">
+                                                        <MapPin className="w-3 h-3 text-blue-500" />
+                                                        <span className="text-blue-700">solo desde España</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <Button
+                                        asChild
+                                        className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
+                                    >
+                                        <Link href={`/ofertas/${oferta.id}`}>
+                                            <Eye className="w-4 h-4 mr-2" />
+                                            Ver Detalles
+                                        </Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                        </>
+                    )}
+                </>
+            )}
+
+            {/* Vista de Recomendaciones - cuando el usuario usa el recomendador */}
+            {!loading && !error && showRecommendations && recommendationData && filteredOfertas.length > 0 && (
+                <>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                        {filteredOfertas.map((oferta, index) => (
+                            <Card
+                                key={oferta.id || index}
+                                className="group bg-white border-2 border-orange-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                                data-aos="fade-up"
+                                data-aos-delay={index * 100}
+                            >
+                                <div className="relative overflow-hidden aspect-square">
+                                    <Image
+                                        src={oferta.imagen || "/images/oferta_generica.jpg"}
+                                        alt={oferta.descripcion}
+                                        width={400}
+                                        height={400}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                                    {/* Ranking Badge */}
+                                    <div className="absolute top-4 left-4">
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full shadow-lg border-2 border-white">
+                                            <span className="text-white font-bold text-lg">#{index + 1}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="absolute top-4 right-4">
+                                        {index === 0 && (
+                                            <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
+                                                Más recomendada
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <CardContent className="p-6">
+                                    <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                                        {oferta.descripcion}
+                                    </h3>
+
+                                    <div className="mb-6">
+                                        {/* Currency Selector and Price Display - COMENTADO: API agotada */}
+                                        {/* {oferta.id && selectedCurrencies[oferta.id] && (
+                                            <div className="space-y-3">
+                                                <CurrencySelector
+                                                    baseCurrency={oferta.moneda.toUpperCase() as Currency}
+                                                    selectedCurrency={selectedCurrencies[oferta.id]}
+                                                    onCurrencyChange={(currency) => handleCurrencyChange(oferta.id!, currency)}
+                                                    basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
+                                                    size="md"
+                                                    showConvertedPrice={true}
+                                                    className="mb-2"
+                                                />
+
+                                                {isClient && oferta.precio_cliente && (
+                                                    <div className="text-xs text-gray-500">
+                                                        Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )} */}
+
+                                        {/* Mostrar precio simple sin conversión */}
+                                        <div className="space-y-3">
+                                            <div className="text-3xl font-bold text-[#F26729]">
+                                                {(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}
+                                            </div>
+
+                                            {/* Show original price if there's a client discount */}
+                                            {isClient && oferta.precio_cliente && (
+                                                <div className="text-sm text-gray-500 line-through">
+                                                    Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Financing Information */}
+                                        {oferta.financiamiento && (
+                                            <div className="mt-3 pt-3 border-t border-gray-100">
+                                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                    <span>o</span>
+                                                    <span className="font-semibold text-blue-600">78 €/mes</span>
+                                                    <div className="flex items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded-full">
+                                                        <MapPin className="w-3 h-3 text-blue-500" />
+                                                        <span className="text-blue-700">solo desde España</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <Button
+                                        asChild
+                                        className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
+                                    >
+                                        <Link href={`/ofertas/${oferta.id}`}>
+                                            <Eye className="w-4 h-4 mr-2" />
+                                            Ver Detalles
+                                        </Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </>
+            )}
+
+            {/* Info de precios - Se muestra siempre que hay ofertas */}
+            {!loading && !error && filteredOfertas.length > 0 && (
                     <div className="px-4 mt-6 mb-10" data-aos="fade-up" data-aos-delay="100">
                         <div className="max-w-3xl mx-auto flex items-start gap-3 bg-white/80 backdrop-blur border border-blue-100 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-600">
                             <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
@@ -431,7 +713,6 @@ export default function OfertasPage() {
                             </p>
                         </div>
                     </div>
-                </>
             )}
 
           {/* Empty State */}

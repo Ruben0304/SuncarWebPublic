@@ -1,11 +1,13 @@
 export interface OfertaSimplificada {
   id?: string | null;
   descripcion: string;
+  descripcion_detallada?: string | null;
   precio: number;
   precio_cliente?: number | null;
   imagen?: string | null;
   moneda: string;
   financiamiento: boolean;
+  descuentos?: string | null;
 }
 
 export interface OfertaElemento {
@@ -18,11 +20,13 @@ export interface OfertaElemento {
 export interface Oferta {
   id?: string | null;
   descripcion: string;
+  descripcion_detallada?: string | null;
   precio: number;
   precio_cliente?: number | null;
   imagen?: string | null;
   moneda: string;
   financiamiento: boolean;
+  descuentos?: string | null;
   garantias: string[];
   elementos: OfertaElemento[];
 }

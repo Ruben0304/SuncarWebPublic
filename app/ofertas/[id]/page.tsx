@@ -19,7 +19,10 @@ import {
   Image as ImageIcon,
   MessageCircle,
   Send,
-  MapPin
+  MapPin,
+  Percent,
+  Tag,
+  Info
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -156,9 +159,16 @@ export default function OfertaDetailPage() {
                     className="object-cover"
                   />
                   <div className="absolute top-4 left-4">
-                    <Badge className="bg-yellow-400 text-black font-bold px-3 py-1 shadow-lg">
-                      OFERTA ESPECIAL
-                    </Badge>
+                    {oferta.descuentos && oferta.descuentos.trim() !== '' ? (
+                      <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold px-4 py-2 shadow-xl border-2 border-white flex items-center gap-2">
+                        <Percent className="w-4 h-4" />
+                        CON DESCUENTO
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-yellow-400 text-black font-bold px-3 py-1 shadow-lg">
+                        OFERTA ESPECIAL
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
@@ -169,10 +179,10 @@ export default function OfertaDetailPage() {
                   </h1>
 
                   <div className="space-y-6">
-                    {/* Price Display */}
+                    {/* Price Display - Sin conversión de moneda (API agotada) */}
                     <div className="flex items-baseline gap-4 flex-wrap">
                       <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#F26729]">
-                        {formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)}
+                        {(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}
                       </div>
 
                       {/* Show original price if there's a client discount */}
@@ -200,8 +210,43 @@ export default function OfertaDetailPage() {
                 </div>
               </Card>
 
-              {/* Currency Selector Section */}
-              <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg" data-aos="fade-up" data-aos-delay="50">
+              {/* Discount Information Section */}
+              {oferta.descuentos && oferta.descuentos.trim() !== '' && (
+                <Card className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 border-2 border-orange-200 shadow-xl overflow-hidden relative" data-aos="fade-up" data-aos-delay="50">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-orange-100/30 rounded-full -translate-y-20 translate-x-20"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-100/30 rounded-full translate-y-16 -translate-x-16"></div>
+
+                  <CardHeader className="relative z-10">
+                    <CardTitle className="flex items-center gap-3 text-2xl text-orange-700">
+                      <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg">
+                        <Percent className="w-6 h-6 text-white" />
+                      </div>
+                      ¡Descuentos Especiales Disponibles!
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-orange-200 shadow-md">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Tag className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="text-gray-800 leading-relaxed whitespace-pre-line">
+                            {oferta.descuentos}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-orange-100">
+                        <p className="text-sm text-gray-600 flex items-center gap-2">
+                          <Info className="w-4 h-4 text-orange-500" />
+                          Contacta con nosotros para más detalles sobre estos descuentos y cómo aplicarlos.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Currency Selector Section - COMENTADO: API agotada */}
+              {/* <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg" data-aos="fade-up" data-aos-delay="75">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex-1">
@@ -225,11 +270,11 @@ export default function OfertaDetailPage() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               <div className="grid lg:grid-cols-2 gap-8">
                 {/* Garantías */}
-                <Card data-aos="fade-up" data-aos-delay="100">
+                <Card data-aos="fade-up" data-aos-delay="75">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <Shield className="w-6 h-6 text-[#F26729]" />
@@ -253,7 +298,7 @@ export default function OfertaDetailPage() {
                 </Card>
 
                 {/* Elementos/Componentes */}
-                <Card data-aos="fade-up" data-aos-delay="200">
+                <Card data-aos="fade-up" data-aos-delay="100">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <Package className="w-6 h-6 text-[#F26729]" />
@@ -306,7 +351,7 @@ export default function OfertaDetailPage() {
               <Card
                 className="bg-white border-2 border-gray-100 overflow-hidden relative shadow-xl"
                 data-aos="fade-up"
-                data-aos-delay="300"
+                data-aos-delay="150"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full -translate-y-16 translate-x-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-50 rounded-full translate-y-12 -translate-x-12"></div>
@@ -343,7 +388,7 @@ export default function OfertaDetailPage() {
                         <div className="flex-1">
                           <p className="text-sm text-gray-600 mb-2 font-medium">Vista previa del mensaje:</p>
                           <div className="bg-[#DCF8C6] rounded-lg rounded-bl-none p-4 text-sm text-gray-800 shadow-sm border-l-4 border-[#25D366]">
-                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">{formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)}</span>. ¿Podrían darme más información?
+                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">{(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}</span>. ¿Podrían darme más información?
                           </div>
                         </div>
                       </div>
@@ -360,7 +405,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${formatPrice(convertPrice(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio, oferta.moneda.toUpperCase() as Currency, selectedCurrency), selectedCurrency)} ¿Podrían darme más información?`)}`}
+                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} ¿Podrían darme más información?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"
