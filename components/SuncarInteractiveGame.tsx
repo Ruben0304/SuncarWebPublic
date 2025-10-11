@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { 
   Lightbulb, 
   Battery, 
@@ -533,19 +534,14 @@ export default function SuncarInteractiveGame() {
                     </div>
                   </div>
                   
-                  <button
-                    onClick={() => {
-                      const gameUrl = process.env.NEXT_PUBLIC_GAME_URL;
-                      if (gameUrl) {
-                        window.open(gameUrl, '_blank');
-                      }
-                    }}
+                  <Link
+                    href="/solar-survivor"
                     className="group px-10 py-5 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 text-xl flex items-center gap-4 mx-auto lg:mx-0"
                   >
                     <PlayCircle className="w-7 h-7 group-hover:animate-spin" />
                     ¡Empezar el Juego!
                     <ChevronRight className="w-7 h-7 group-hover:translate-x-1 transition-transform" />
-                  </button>
+                  </Link>
                 </div>
 
                 {/* Game Logo Section */}
@@ -902,22 +898,20 @@ export default function SuncarInteractiveGame() {
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <button
-                        onClick={() => {
-                          const gameUrl = process.env.NEXT_PUBLIC_GAME_URL;
-                          if (gameUrl) {
-                            window.open(gameUrl, '_blank');
-                          }
-                        }}
+                      <Link
+                        href="/solar-survivor"
                         className="px-8 py-4 bg-white/20 text-white font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2 justify-center transform hover:scale-105"
                       >
                         <RotateCcw className="w-5 h-5" />
                         Jugar el Juego Completo
-                      </button>
-                      <button className="px-8 py-4 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                      </Link>
+                      <Link
+                        href="/cotizacion"
+                        className="px-8 py-4 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+                      >
                         <Zap className="w-5 h-5" />
                         ¡Quiero Mi Estudio GRATUITO Ahora!
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
