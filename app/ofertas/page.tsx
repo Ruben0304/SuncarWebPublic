@@ -705,12 +705,21 @@ export default function OfertasPage() {
             {/* Info de precios - Se muestra siempre que hay ofertas */}
             {!loading && !error && filteredOfertas.length > 0 && (
                     <div className="px-4 mt-6 mb-10" data-aos="fade-up" data-aos-delay="100">
-                        <div className="max-w-3xl mx-auto flex items-start gap-3 bg-white/80 backdrop-blur border border-blue-100 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-600">
-                            <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                            <p className="leading-relaxed">
-                                Los precios publicados son referenciales y pueden ajustarse ligeramente (al alza o a la baja) según las características finales de cada proyecto.
-                                Te avisaremos con antelación si aplica algún ajuste.
-                            </p>
+                        <div className="max-w-3xl mx-auto space-y-3">
+                            <div className="flex items-start gap-3 bg-white/80 backdrop-blur border border-blue-100 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-600">
+                                <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                <p className="leading-relaxed">
+                                    Los precios publicados son referenciales y pueden ajustarse ligeramente (al alza o a la baja) según las características finales de cada proyecto.
+                                    Te avisaremos con antelación si aplica algún ajuste.
+                                </p>
+                            </div>
+                            <div className="flex items-start gap-3 bg-gradient-to-r from-orange-50 to-yellow-50 backdrop-blur border border-orange-200 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
+                                <MessageCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                                <p className="leading-relaxed">
+                                    <span className="font-semibold text-orange-700">Importante:</span> La información aquí presentada es solo referencial.
+                                    Le recomendamos hablar primero con nuestros profesionales para recibir asesoría personalizada y obtener detalles precisos sobre su proyecto solar.
+                                </p>
+                            </div>
                         </div>
                     </div>
             )}

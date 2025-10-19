@@ -283,13 +283,25 @@ export default function OfertaDetailPage() {
                   </CardHeader>
                   <CardContent>
                     {oferta.garantias && oferta.garantias.length > 0 ? (
-                      <div className="space-y-3">
-                        {oferta.garantias.map((garantia, index) => (
-                          <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-700">{garantia}</span>
+                      <div className="space-y-4">
+                        <div className="space-y-3">
+                          {oferta.garantias.map((garantia, index) => (
+                            <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+                              <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                              <span className="text-gray-700">{garantia}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Disclaimer sobre garantías */}
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-gray-700 leading-relaxed">
+                              <span className="font-semibold text-blue-700">Condiciones de garantía:</span> Las garantías ofrecidas son válidas únicamente cuando la instalación y el mantenimiento de los equipos son realizados por nuestro equipo de profesionales certificados de Suncar. Cualquier intervención de terceros anulará automáticamente la cobertura de garantía.
+                            </p>
                           </div>
-                        ))}
+                        </div>
                       </div>
                     ) : (
                       <p className="text-gray-500 italic">No hay garantías especificadas para esta oferta.</p>
