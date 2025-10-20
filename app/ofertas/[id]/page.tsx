@@ -27,12 +27,11 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { Oferta, OfertaResponse } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
 import CurrencySelector from '@/components/CurrencySelector';
 import { Currency, useCurrencyExchange } from '@/hooks/useCurrencyExchange';
+import { useAOS } from '@/hooks/useAOS';
 
 export default function OfertaDetailPage() {
   const params = useParams();
@@ -46,13 +45,8 @@ export default function OfertaDetailPage() {
 
   const ofertaId = params.id as string;
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-cubic'
-    });
-  }, []);
+  // Initialize AOS with global hook
+  useAOS({ duration: 800, once: true, easing: 'ease-out-cubic' });
 
   useEffect(() => {
     if (ofertaId) {
@@ -153,10 +147,9 @@ export default function OfertaDetailPage() {
               <Card className="overflow-hidden" data-aos="fade-up">
                 {/* Image Section */}
                 <div className="relative h-64 md:h-80 lg:h-96">
-                  <Image
+                  <img
                     src={oferta.imagen || "/images/oferta_generica.jpg"}
                     alt={oferta.descripcion}
-                    fill
                     className="object-cover"
                   />
                   <div className="absolute top-4 left-4">
@@ -348,10 +341,9 @@ export default function OfertaDetailPage() {
                           <div key={index} className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                             <div className="flex items-start gap-4">
                               <div className="relative w-16 h-16 flex-shrink-0">
-                                <Image
+                                <img
                                   src={elemento.foto || "/images/oferta_generica.jpg"}
                                   alt={elemento.descripcion || 'Elemento'}
-                                  fill
                                   className="object-cover rounded-lg"
                                 />
                               </div>

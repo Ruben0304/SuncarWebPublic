@@ -29,8 +29,6 @@ import {
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { OfertaSimplificada, OfertasResponse, RecomendadorData } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
 import CurrencySelector from '@/components/CurrencySelector';
@@ -38,6 +36,7 @@ import { Currency } from '@/hooks/useCurrencyExchange';
 import OfertasRecommendationInput from '@/components/OfertasRecommendationInput';
 import { recomendadorService } from '@/services/api/recomendadorService';
 import BrandFilterBanner from '@/components/BrandFilterBanner';
+import { useAOS } from '@/hooks/useAOS';
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
@@ -58,6 +57,8 @@ export default function OfertasPage() {
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
+  // Initialize AOS with global hook
+  useAOS({ duration: 600, once: true, easing: 'ease-out' });
   const brandOptions = useMemo(() => {
     const brandMap = new Map<string, { label: string; count: number }>();
 
@@ -496,11 +497,12 @@ export default function OfertasPage() {
                                 data-aos-delay={index * 100}
                             >
                                 <div className="relative overflow-hidden aspect-square">
-                                    <Image
+                                    <img
                                         src={oferta.imagen || "/images/oferta_generica.jpg"}
                                         alt={oferta.descripcion}
                                         width={400}
                                         height={400}
+                                        loading="lazy"
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -626,11 +628,12 @@ export default function OfertasPage() {
                                 data-aos-delay={index * 100}
                             >
                                 <div className="relative overflow-hidden aspect-square">
-                                    <Image
+                                    <img
                                         src={oferta.imagen || "/images/oferta_generica.jpg"}
                                         alt={oferta.descripcion}
                                         width={400}
                                         height={400}
+                                        loading="lazy"
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

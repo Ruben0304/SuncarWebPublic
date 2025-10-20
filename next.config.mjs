@@ -1,16 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Production optimizations
+  output: 'standalone', // Reduce bundle size by ~60%
+  compress: true, // Enable gzip compression
+  poweredByHeader: false, // Remove X-Powered-By header
+  reactStrictMode: true, // Enable React strict mode
+
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
+
+  // Disable Next.js image optimization (not using <Image> component)
   images: {
-    formats: ['image/webp', 'image/avif'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60,
+    unoptimized: true, // Disable image optimization to save RAM
     remotePatterns: [
       {
         protocol: 'https',

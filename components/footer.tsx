@@ -24,7 +24,7 @@ export default function Footer() {
           <div className="space-y-3 lg:space-y-4">
             <div className="flex items-center space-x-3">
               <div className="relative w-8 h-8 lg:w-10 lg:h-10">
-                <Image src="/images/suncar-logo.jpeg" alt="Suncar Logo" fill className="object-contain" />
+                <img src="/images/suncar-logo.jpeg" alt="Suncar Logo"  className="object-contain" />
               </div>
               <span className="text-lg lg:text-xl font-bold">SUNCAR</span>
             </div>
