@@ -6,7 +6,26 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
 import Footer from '@/components/footer';
-import { Star, Phone, Eye, ArrowRight, Loader2, Filter, ArrowUpDown, CreditCard, DollarSign, Euro, Info, MapPin, Sparkles, Trophy, MessageCircle, X, Tag, Percent } from 'lucide-react';
+import {
+  Star,
+  Phone,
+  Eye,
+  ArrowRight,
+  Loader2,
+  Filter,
+  ArrowUpDown,
+  CreditCard,
+  DollarSign,
+  Euro,
+  Info,
+  MapPin,
+  Sparkles,
+  Trophy,
+  MessageCircle,
+  X,
+  Tag,
+  Percent
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';

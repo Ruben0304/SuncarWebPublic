@@ -2,12 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Search,
-  Loader2,
-  X,
-  Zap
-} from 'lucide-react';
+import { Search, Loader2, X, Zap } from 'lucide-react';
 
 interface OfertasRecommendationInputProps {
   onSearch: (query: string) => Promise<void>;

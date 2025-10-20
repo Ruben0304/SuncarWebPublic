@@ -1,7 +1,18 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Star, MapPin, Zap, Battery, Calendar, ArrowRight, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Star,
+  MapPin,
+  Zap,
+  Battery,
+  Calendar,
+  ArrowRight,
+  Play,
+  Pause,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
 import Image from "next/image";
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"

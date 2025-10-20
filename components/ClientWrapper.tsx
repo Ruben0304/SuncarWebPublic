@@ -1,10 +1,16 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { useState, useEffect } from "react"
 import LoadingScreen from "./LoadingScreen"
 import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext"
 import { ClientProvider } from "@/hooks/useClient"
 import ClientVerificationManager from "./ClientVerificationManager"
+
+const UnifiedChatAssistant = dynamic(() => import("./UnifiedChatAssistant"), {
+  ssr: false,
+  loading: () => null
+})
 
 interface ClientWrapperProps {
   children: React.ReactNode
@@ -12,6 +18,7 @@ interface ClientWrapperProps {
 
 function ClientWrapperContent({ children }: ClientWrapperProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [shouldRenderChat, setShouldRenderChat] = useState(false)
   const { setLoadingComplete } = useLoadingContext()
 
   const handleLoadingComplete = () => {
@@ -21,6 +28,13 @@ function ClientWrapperContent({ children }: ClientWrapperProps) {
       // Delay adicional para suavizar la transición
     }, 200)
   }
+
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => setShouldRenderChat(true), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoading])
 
   return (
     <>
@@ -32,6 +46,7 @@ function ClientWrapperContent({ children }: ClientWrapperProps) {
       >
         {children}
       </div>
+      {shouldRenderChat && <UnifiedChatAssistant />}
     </>
   )
 }

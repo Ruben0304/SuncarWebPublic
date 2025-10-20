@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
 import '../styles/nprogress.css'
-import UnifiedChatAssistant from "@/components/UnifiedChatAssistant";
 import ClientWrapper from "@/components/ClientWrapper";
 import ProgressBarSuspense from "@/components/ProgressBarSuspense";
 
@@ -177,7 +176,6 @@ export default function RootLayout({
         <ProgressBarSuspense />
         <ClientWrapper>
           {children}
-          <UnifiedChatAssistant />
         </ClientWrapper>
       </body>
     </html>

@@ -3,12 +3,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { 
-  Lightbulb, 
-  Battery, 
-  Sun, 
-  Wrench, 
-  Zap, 
+import {
+  Lightbulb,
+  Battery,
+  Sun,
+  Wrench,
+  Zap,
   Search,
   Hammer,
   Shield,
@@ -34,7 +34,6 @@ import {
   ScanLine,
   Calculator,
   ThermometerSun,
-  Zap as Lightning,
   Crown
 } from 'lucide-react'
 
@@ -801,7 +800,7 @@ export default function SuncarInteractiveGame() {
                     >
                       <CheckCircle className="w-6 h-6" />
                       ¡Sistema Completado!
-                      <Lightning className="w-6 h-6" />
+                      <Zap className="w-6 h-6" />
                     </button>
                   </div>
                 )}

@@ -1,8 +1,8 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
-import LottieAnimation from "@/components/lottie-animation"
 import { Star, Zap, Battery, Wrench } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
@@ -10,8 +10,26 @@ import React, { useEffect, useState } from "react"
 import { useTypewriter } from "@/hooks/useTypewriter"
 import { useLoadingContext } from "@/hooks/useLoadingContext"
 import { useClient } from "@/hooks/useClient"
-import SuncarInteractiveGame from "@/components/SuncarInteractiveGame"
-import SplashCursor from "@/components/SplashCursor"
+
+const LottieAnimation = dynamic(() => import("@/components/lottie-animation"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full min-h-[400px] sm:min-h-[500px] lg:min-h-[700px] xl:min-h-[800px] flex items-center justify-center">
+      <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  )
+})
+
+const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteractiveGame"), {
+  ssr: false,
+  loading: () => (
+    <section className="py-16 lg:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8">
+        <div className="h-64 animate-pulse rounded-3xl bg-white/5" />
+      </div>
+    </section>
+  )
+})
 
 export default function HomePage() {
   const [count, setCount] = useState(0)
