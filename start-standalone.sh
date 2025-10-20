@@ -19,6 +19,14 @@ fi
 echo "✅ Archivos copiados"
 echo "🌐 Iniciando servidor standalone..."
 
+# Configurar variables de entorno para Railway
+export HOSTNAME="0.0.0.0"
+export PORT="${PORT:-3000}"
+
+echo "🔧 Configuración:"
+echo "   - Hostname: $HOSTNAME"
+echo "   - Port: $PORT"
+
 # Iniciar servidor
 cd .next/standalone
 node server.js
