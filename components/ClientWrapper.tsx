@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic"
 import { useState, useEffect } from "react"
-import LoadingScreen from "./LoadingScreen"
 import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext"
 import { ClientProvider } from "@/hooks/useClient"
 import ClientVerificationManager from "./ClientVerificationManager"
@@ -17,33 +16,22 @@ interface ClientWrapperProps {
 }
 
 function ClientWrapperContent({ children }: ClientWrapperProps) {
-  const [isLoading, setIsLoading] = useState(true)
   const [shouldRenderChat, setShouldRenderChat] = useState(false)
   const { setLoadingComplete } = useLoadingContext()
 
-  const handleLoadingComplete = () => {
-    setIsLoading(false)
+  useEffect(() => {
+    // Ensure components waiting on the loader can proceed immediately
     setLoadingComplete(true)
-    setTimeout(() => {
-      // Delay adicional para suavizar la transición
-    }, 200)
-  }
+  }, [setLoadingComplete])
 
   useEffect(() => {
-    if (!isLoading) {
-      const timer = setTimeout(() => setShouldRenderChat(true), 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [isLoading])
+    const timer = setTimeout(() => setShouldRenderChat(true), 2000)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <>
-      {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
-      <div
-        className={`transition-opacity duration-500 ${
-          isLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-      >
+      <div className="transition-opacity duration-500 opacity-100">
         {children}
       </div>
       {shouldRenderChat && <UnifiedChatAssistant />}
