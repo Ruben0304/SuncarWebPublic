@@ -21,6 +21,7 @@ import {
   Send,
   MapPin,
   Percent,
+  Sparkles,
   Tag,
   Info
 } from 'lucide-react';
@@ -170,6 +171,15 @@ export default function OfertaDetailPage() {
                       </Badge>
                     )}
                   </div>
+
+                  {oferta.marca && (
+                    <div className="absolute bottom-4 left-4">
+                      <div className="inline-flex items-center gap-3 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-[#0F2B66] shadow-lg">
+                        <Sparkles className="h-5 w-5 text-[#F26729]" />
+                        Marca certificada: {oferta.marca}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Content Section - Below Image */}
@@ -177,6 +187,20 @@ export default function OfertaDetailPage() {
                   <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F2B66] mb-6 leading-tight">
                     {oferta.descripcion}
                   </h1>
+
+                  {oferta.marca && (
+                    <div className="mb-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl border border-[#0F2B66] border-opacity-10 bg-gradient-to-r from-[#F4F7FF] to-[#EAF3FF] px-4 py-3 shadow-sm">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow">
+                          <Sparkles className="h-4 w-4 text-[#F26729]" />
+                          Marca aliada
+                        </div>
+                        <p className="text-sm sm:text-base text-[#0F2B66] opacity-80">
+                          {oferta.marca} respalda este sistema con componentes seleccionados y certificaciones vigentes.
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-6">
                     {/* Price Display - Sin conversión de moneda (API agotada) */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ import CurrencySelector from '@/components/CurrencySelector';
 import { Currency } from '@/hooks/useCurrencyExchange';
 import OfertasRecommendationInput from '@/components/OfertasRecommendationInput';
 import { recomendadorService } from '@/services/api/recomendadorService';
+import BrandFilterBanner from '@/components/BrandFilterBanner';
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
@@ -48,6 +49,7 @@ export default function OfertasPage() {
   const [sortBy, setSortBy] = useState<'precio-asc' | 'precio-desc' | 'nombre'>('precio-asc');
   const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
   const [selectedCurrencies, setSelectedCurrencies] = useState<Record<string, Currency>>({});
+  const [selectedBrandKey, setSelectedBrandKey] = useState<string | null>(null);
   const { isClient } = useClient();
 
   // Estados del recomendador
@@ -55,6 +57,58 @@ export default function OfertasPage() {
   const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
+
+  const brandOptions = useMemo(() => {
+    const brandMap = new Map<string, { label: string; count: number }>();
+
+    ofertas.forEach(oferta => {
+      const brand = oferta.marca?.trim();
+      if (!brand) {
+        return;
+      }
+      const key = brand.toLowerCase();
+      if (!brandMap.has(key)) {
+        brandMap.set(key, { label: brand, count: 1 });
+      } else {
+        const current = brandMap.get(key);
+        if (current) {
+          brandMap.set(key, { label: current.label, count: current.count + 1 });
+        }
+      }
+    });
+
+    return Array.from(brandMap.entries()).map(([key, value]) => ({
+      key,
+      label: value.label,
+      count: value.count
+    }));
+  }, [ofertas]);
+
+  useEffect(() => {
+    if (selectedBrandKey && !brandOptions.some(option => option.key === selectedBrandKey)) {
+      setSelectedBrandKey(null);
+    }
+  }, [brandOptions, selectedBrandKey]);
+
+  const matchesSelectedBrand = useCallback(
+    (marca?: string | null) => {
+      if (!selectedBrandKey) {
+        return true;
+      }
+
+      if (!marca) {
+        return false;
+      }
+
+      return marca.trim().toLowerCase() === selectedBrandKey;
+    },
+    [selectedBrandKey]
+  );
+
+  const selectedBrandOption = useMemo(
+    () => brandOptions.find(option => option.key === selectedBrandKey) || null,
+    [brandOptions, selectedBrandKey]
+  );
 
   useEffect(() => {
     AOS.init({
@@ -69,8 +123,26 @@ export default function OfertasPage() {
   }, []);
 
   useEffect(() => {
-    // No aplicar filtros si hay recomendaciones activas
     if (showRecommendations && recommendationData) {
+      let filtered = [...recommendationData.ofertas];
+
+      if (priceFilter !== 'all') {
+        filtered = filtered.filter(oferta => {
+          const precio = oferta.precio;
+          switch (priceFilter) {
+            case 'low': return precio < 10000;
+            case 'mid': return precio >= 10000 && precio < 50000;
+            case 'high': return precio >= 50000;
+            default: return true;
+          }
+        });
+      }
+
+      if (selectedBrandKey) {
+        filtered = filtered.filter(oferta => matchesSelectedBrand(oferta.marca));
+      }
+
+      setFilteredOfertas(filtered);
       return;
     }
 
@@ -87,6 +159,10 @@ export default function OfertasPage() {
           default: return true;
         }
       });
+    }
+
+    if (selectedBrandKey) {
+      filtered = filtered.filter(oferta => matchesSelectedBrand(oferta.marca));
     }
 
     // Aplicar ordenamiento
@@ -117,7 +193,15 @@ export default function OfertasPage() {
     setOfertasConDescuento(conDescuento);
     setOfertasSinDescuento(sinDescuento);
     setFilteredOfertas(filtered);
-  }, [ofertas, sortBy, priceFilter, showRecommendations, recommendationData]);
+  }, [
+    ofertas,
+    sortBy,
+    priceFilter,
+    showRecommendations,
+    recommendationData,
+    matchesSelectedBrand,
+    selectedBrandKey
+  ]);
 
   const fetchOfertas = async () => {
     try {
@@ -255,6 +339,8 @@ export default function OfertasPage() {
             </div>
           </div>
 
+
+
           {/* AI Recommendation Input */}
           {!loading && !error && ofertas.length > 0 && (
             <OfertasRecommendationInput
@@ -326,6 +412,14 @@ export default function OfertasPage() {
             </div>
           )}
 
+          {/* Brand Filter Banner */}
+          {!loading && !error && ofertas.length > 0 && brandOptions.length > 0 && (
+            <BrandFilterBanner
+              brandOptions={brandOptions}
+              selectedBrandKey={selectedBrandKey}
+              onBrandSelect={setSelectedBrandKey}
+            />
+          )}
 
           {/* Loading State */}
           {loading && (
@@ -388,6 +482,7 @@ export default function OfertasPage() {
                                             <span className="text-white font-semibold">Reserva Previa Disponible</span>
                                         </Link>
                                     </div>
+
                                 </div>
                             </div>
 
@@ -417,6 +512,15 @@ export default function OfertasPage() {
                                             DESCUENTO
                                         </Badge>
                                     </div>
+
+                                    {oferta.marca && (
+                                        <div className="absolute bottom-4 left-4">
+                                            <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow-lg">
+                                                <Sparkles className="h-3 w-3 text-[#F26729]" />
+                                                {oferta.marca}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <CardContent className="p-6">
@@ -536,6 +640,15 @@ export default function OfertasPage() {
                                             Oferta
                                         </Badge>
                                     </div>
+
+                                    {oferta.marca && (
+                                        <div className="absolute bottom-4 left-4">
+                                            <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow-lg">
+                                                <Sparkles className="h-3 w-3 text-[#F26729]" />
+                                                {oferta.marca}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <CardContent className="p-6">
@@ -639,6 +752,15 @@ export default function OfertasPage() {
                                             <span className="text-white font-bold text-lg">#{index + 1}</span>
                                         </div>
                                     </div>
+
+                                    {oferta.marca && (
+                                        <div className="absolute bottom-4 left-4">
+                                            <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow-lg">
+                                                <Sparkles className="h-3 w-3 text-[#F26729]" />
+                                                {oferta.marca}
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="absolute top-4 right-4">
                                         {index === 0 && (

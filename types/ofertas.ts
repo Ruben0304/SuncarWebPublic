@@ -2,6 +2,7 @@ export interface OfertaSimplificada {
   id?: string | null;
   descripcion: string;
   descripcion_detallada?: string | null;
+  marca?: string | null;
   precio: number;
   precio_cliente?: number | null;
   imagen?: string | null;
@@ -21,6 +22,7 @@ export interface Oferta {
   id?: string | null;
   descripcion: string;
   descripcion_detallada?: string | null;
+  marca?: string | null;
   precio: number;
   precio_cliente?: number | null;
   imagen?: string | null;
