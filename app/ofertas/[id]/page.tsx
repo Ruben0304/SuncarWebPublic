@@ -359,6 +359,37 @@ export default function OfertaDetailPage() {
                 </Card>
               </div>
 
+              {/* Service Coverage Information */}
+              <Card
+                className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 shadow-lg overflow-hidden relative"
+                data-aos="fade-up"
+                data-aos-delay="125"
+              >
+                <div className="absolute top-0 right-0 w-40 h-40 bg-green-100/30 rounded-full -translate-y-20 translate-x-20"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-100/30 rounded-full translate-y-16 -translate-x-16"></div>
+
+                <CardContent className="p-6 md:p-8 relative z-10">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center shadow-lg">
+                        <MapPin className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-green-800 mb-3">Cobertura de Servicio</h3>
+                      <div className="space-y-3 text-gray-700">
+                        <p className="leading-relaxed">
+                          <span className="font-semibold text-green-700">Servicio garantizado en La Habana:</span> Ofrecemos cobertura completa en todos los municipios de la capital.
+                        </p>
+                        <p className="leading-relaxed text-gray-600">
+                          <span className="font-medium text-gray-700">Otras provincias:</span> Evaluamos cada caso de forma individual. Por favor, contáctenos indicando su provincia para coordinar las opciones disponibles y brindarle la mejor solución para su proyecto de energía solar.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* WhatsApp Contact Section */}
               <Card
                 className="bg-white border-2 border-gray-100 overflow-hidden relative shadow-xl"
