@@ -134,7 +134,7 @@ export default function HomePage() {
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
                 <img
-                  src="/images/suncar hero.jpg"
+                  src="https://s3.suncarsrl.com/web/suncar hero.jpg"
                   alt="Logo futurista Suncar - Energía Solar"
                   width={600}
                   height={400}
