@@ -739,6 +739,18 @@ export default function OfertasPage() {
                                     Le recomendamos hablar primero con nuestros profesionales para recibir asesoría personalizada y obtener detalles precisos sobre su proyecto solar.
                                 </p>
                             </div>
+                            <div className="flex items-start gap-3 bg-gradient-to-r from-green-50 to-emerald-50 backdrop-blur border border-green-200 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
+                                <MapPin className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                <div className="leading-relaxed">
+                                    <p className="mb-2">
+                                        <span className="font-semibold text-green-700">Cobertura de servicio:</span> Brindamos servicio garantizado en{' '}
+                                        <span className="font-semibold">La Habana y sus municipios</span>.
+                                    </p>
+                                    <p className="text-gray-600">
+                                        Para otras provincias, existe disponibilidad según cada caso. Le invitamos a contactarnos indicando su provincia para evaluar las opciones de servicio y coordinar la mejor solución para su proyecto.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
             )}
