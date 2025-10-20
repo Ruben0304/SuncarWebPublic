@@ -152,10 +152,9 @@ export default function OfertaDetailPage() {
               <Card className="overflow-hidden" data-aos="fade-up">
                 {/* Image Section */}
                 <div className="relative h-64 md:h-80 lg:h-96">
-                  <Image
+                  <img
                     src={oferta.imagen || "/images/oferta_generica.jpg"}
                     alt={oferta.descripcion}
-                    fill
                     className="object-cover"
                   />
                   <div className="absolute top-4 left-4">
@@ -324,10 +323,9 @@ export default function OfertaDetailPage() {
                           <div key={index} className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                             <div className="flex items-start gap-4">
                               <div className="relative w-16 h-16 flex-shrink-0">
-                                <Image
+                                <img
                                   src={elemento.foto || "/images/oferta_generica.jpg"}
                                   alt={elemento.descripcion || 'Elemento'}
-                                  fill
                                   className="object-cover rounded-lg"
                                 />
                               </div>

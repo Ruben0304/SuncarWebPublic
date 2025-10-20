@@ -153,13 +153,10 @@ export default function GaleriaPage() {
           <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
             {/* Main Image */}
             <div className="relative h-96 md:h-[500px] lg:h-[600px] bg-gray-100 flex items-center justify-center">
-              <Image
+              <img
                 src={currentImages[currentImageIndex]}
                 alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
-                fill
                 className="object-contain transition-all duration-500"
-                priority
-                quality={95}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
               />
               
@@ -215,10 +212,9 @@ export default function GaleriaPage() {
                 }
               `}
             >
-              <Image
+              <img
                 src={image}
                 alt={`Miniatura ${index + 1}`}
-                fill
                 className="object-cover"
               />
               {index === currentImageIndex && (
@@ -259,13 +255,10 @@ export default function GaleriaPage() {
       {isZoomed && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
           <div className="relative w-full h-full flex items-center justify-center">
-            <Image
+            <img
               src={currentImages[currentImageIndex]}
               alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
-              fill
               className="object-contain"
-              quality={100}
-              priority
             />
             
             {/* Close Button */}

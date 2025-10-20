@@ -401,7 +401,7 @@ export default function OfertasPage() {
                                 data-aos-delay={index * 100}
                             >
                                 <div className="relative overflow-hidden aspect-square">
-                                    <Image
+                                    <img
                                         src={oferta.imagen || "/images/oferta_generica.jpg"}
                                         alt={oferta.descripcion}
                                         width={400}
@@ -522,7 +522,7 @@ export default function OfertasPage() {
                                 data-aos-delay={index * 100}
                             >
                                 <div className="relative overflow-hidden aspect-square">
-                                    <Image
+                                    <img
                                         src={oferta.imagen || "/images/oferta_generica.jpg"}
                                         alt={oferta.descripcion}
                                         width={400}

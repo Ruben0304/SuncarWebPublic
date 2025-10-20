@@ -163,12 +163,10 @@ export default function SolarSurvivorPage() {
               }}
             >
               <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto">
-                <Image
-                  src="/images/logo-juego.png"
+                <img
+                  src="https://s3.suncarsrl.comweb/logo-juego.png"
                   alt="Solar Survivor Logo"
-                  fill
                   className="object-contain drop-shadow-2xl animate-float"
-                  priority
                 />
 
                 {/* Elegant glow */}

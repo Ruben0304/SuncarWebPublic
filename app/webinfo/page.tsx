@@ -66,7 +66,7 @@ export default function WebInfoPage() {
                     {/* Frontend Developer */}
                     <div className="flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-gray-100 transition-all duration-300 animate-scale-in animation-delay-800 shadow-sm">
                       <div className="w-12 h-12 rounded-full overflow-hidden">
-                        <Image 
+                        <img 
                           src="https://github.com/Ruben0304.png" 
                           alt="Rubén Hernández Acevedo"
                           width={48}
@@ -93,7 +93,7 @@ export default function WebInfoPage() {
                     {/* Backend Developer */}
                     <div className="flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-gray-100 transition-all duration-300 animate-scale-in animation-delay-1000 shadow-sm">
                       <div className="w-12 h-12 rounded-full overflow-hidden">
-                        <Image 
+                        <img 
                           src="https://github.com/Fabian1820.png" 
                           alt="Fabián Fernández Galvez"
                           width={48}
