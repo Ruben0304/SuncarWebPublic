@@ -13,39 +13,16 @@ interface GalleryImages {
   nosotros: string[]
 }
 
+const createImagePaths = (folder: string, prefix: string, count: number) =>
+  Array.from({ length: count }, (_, index) => {
+    const imageIndex = count - index
+    return `https://s3.suncarsrl.com/galeria/${folder}/${prefix}${imageIndex}.jpg`
+  })
+
 const galleryData: GalleryImages = {
-  exterior: [
-    "/images/instalaciones_exterior/IE1.jpg",
-    "/images/instalaciones_exterior/IE2.jpg",
-    "/images/instalaciones_exterior/IE3.jpg",
-    "/images/instalaciones_exterior/IE4.jpg",
-    "/images/instalaciones_exterior/IE5.jpg",
-    "/images/instalaciones_exterior/IE6.jpg",
-    "/images/instalaciones_exterior/IE7.jpg",
-    "/images/instalaciones_exterior/IE8.jpg",
-    "/images/instalaciones_exterior/IE9.jpg",
-    "/images/instalaciones_exterior/IE10.jpg",
-    "/images/instalaciones_exterior/IE11.jpg",
-    "/images/instalaciones_exterior/IE12.jpg",
-    "/images/instalaciones_exterior/IE13.jpg",
-  ],
-  interior: [
-    "/images/instalaciones_interior/II1.jpg",
-    "/images/instalaciones_interior/II2.jpg",
-    "/images/instalaciones_interior/II3.jpg",
-    "/images/instalaciones_interior/II4.jpg",
-    "/images/instalaciones_interior/II5.jpg",
-    "/images/instalaciones_interior/II6.jpg",
-    "/images/instalaciones_interior/II7.jpg",
-    "/images/instalaciones_interior/II8.jpg",
-  ],
-  nosotros: [
-    "/images/nosotros/N1.jpg",
-    "/images/nosotros/N2.jpg",
-    "/images/nosotros/N3.jpg",
-    "/images/nosotros/N4.jpg",
-    "/images/nosotros/N5.jpg",
-  ],
+  exterior: createImagePaths("instalaciones_exterior", "IE", 26),
+  interior: createImagePaths("instalaciones_interior", "II", 8),
+  nosotros: createImagePaths("nosotros", "N", 5),
 }
 
 const categoryTitles = {

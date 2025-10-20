@@ -133,13 +133,12 @@ export default function HomePage() {
             <div className="relative opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.4s forwards, gentle-float-image 10s ease-in-out 1.8s infinite'}}>
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
-                <Image
+                <img
                   src="/images/suncar hero.jpg"
                   alt="Logo futurista Suncar - Energía Solar"
                   width={600}
                   height={400}
                   className="w-full h-auto object-contain"
-                  priority
                 />
 
                 {/* Floating particles around image */}
@@ -237,14 +236,12 @@ export default function HomePage() {
                 {/* Gradient overlay for elegance */}
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent z-10"></div>
 
-                <Image
-                  src="/images/felicity/felicityFernandoAndy.jpeg"
+                <img
+                  src="https://s3.suncarsrl.com/web/felicityFernandoAndy.jpg"
                   alt="Colaboración Suncar con Felicity Solar - Líderes en energía fotovoltaica"
                   width={700}
                   height={500}
                   className="w-full h-auto object-cover"
-                  quality={85}
-                  priority={false}
                 />
 
                 {/* Decorative corner accent */}
@@ -344,51 +341,7 @@ export default function HomePage() {
               casi todos nuestros productos y servicios.
             </p>
 
-            {/* Benefits Grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-10">
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-                <div className="w-16 h-16 bg-secondary-gradient rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🔧</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-primary">Mantenimiento</h3>
-                <p className="text-gray-600">Hasta 40% OFF en servicios técnicos</p>
-              </div>
-
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-                <div className="w-16 h-16 bg-secondary-gradient rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">⚡</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-primary">Expansiones</h3>
-                <p className="text-gray-600">Descuentos especiales en ampliaciones</p>
-              </div>
-
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-                <div className="w-16 h-16 bg-secondary-gradient rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🔋</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-primary">Productos</h3>
-                <p className="text-gray-600">Precios preferenciales en equipos</p>
-              </div>
-            </div>
-
-            {/* CTA Button */}
-            <button
-              onClick={() => {
-                if (isClient) {
-                  window.location.href = '/ofertas'
-                } else {
-                  setShowOfferDialog(true)
-                }
-              }}
-              className="group relative px-8 py-4 lg:px-12 lg:py-5 bg-secondary-gradient text-white font-bold text-lg lg:text-xl rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center justify-center gap-3">
-                <span>🎁</span>
-                <span>ACCEDER A MIS DESCUENTOS</span>
-                <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-              </div>
-            </button>
+            
 
             {/* Small disclaimer */}
             <p className="text-sm text-gray-500 mt-4">
