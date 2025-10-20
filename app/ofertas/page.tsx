@@ -29,14 +29,13 @@ import {
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { OfertaSimplificada, OfertasResponse, RecomendadorData } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
 import CurrencySelector from '@/components/CurrencySelector';
 import { Currency } from '@/hooks/useCurrencyExchange';
 import OfertasRecommendationInput from '@/components/OfertasRecommendationInput';
 import { recomendadorService } from '@/services/api/recomendadorService';
+import { useAOS } from '@/hooks/useAOS';
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
@@ -56,13 +55,8 @@ export default function OfertasPage() {
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
-  useEffect(() => {
-    AOS.init({
-      duration: 600,
-      once: true,
-      easing: 'ease-out'
-    });
-  }, []);
+  // Initialize AOS with global hook
+  useAOS({ duration: 600, once: true, easing: 'ease-out' });
 
   useEffect(() => {
     fetchOfertas();

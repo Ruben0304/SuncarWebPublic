@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "start:standalone": "bash start-standalone.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -46,8 +47,6 @@
     "clsx": "^2.1.1",
     "cmdk": "latest",
     "date-fns": "4.1.0",
-    "embla-carousel-react": "latest",
-    "framer-motion": "^12.23.12",
     "input-otp": "latest",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.454.0",
@@ -61,11 +60,9 @@
     "react-leaflet": "^5.0.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "latest",
-    "recharts": "latest",
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.180.0",
     "vaul": "latest",
     "zod": "^3.24.1"
   },

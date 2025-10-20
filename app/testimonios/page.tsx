@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Maximize2, Ro
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 import Link from "next/link"
-import AOS from "aos"
+import { useAOS } from "@/hooks/useAOS"
 
 export default function TestimonialsPage() {
   const [currentVideo, setCurrentVideo] = useState(0)
@@ -16,13 +16,8 @@ export default function TestimonialsPage() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 100,
-    })
-  }, [])
+  // Initialize AOS with global hook
+  useAOS({ duration: 800, once: true, offset: 100 })
 
   const videoTestimonials = [
     {

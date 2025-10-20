@@ -26,12 +26,11 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { Oferta, OfertaResponse } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
 import CurrencySelector from '@/components/CurrencySelector';
 import { Currency, useCurrencyExchange } from '@/hooks/useCurrencyExchange';
+import { useAOS } from '@/hooks/useAOS';
 
 export default function OfertaDetailPage() {
   const params = useParams();
@@ -45,13 +44,8 @@ export default function OfertaDetailPage() {
 
   const ofertaId = params.id as string;
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-cubic'
-    });
-  }, []);
+  // Initialize AOS with global hook
+  useAOS({ duration: 800, once: true, easing: 'ease-out-cubic' });
 
   useEffect(() => {
     if (ofertaId) {
