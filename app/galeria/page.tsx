@@ -156,6 +156,7 @@ export default function GaleriaPage() {
               <img
                 src={currentImages[currentImageIndex]}
                 alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
+                loading="lazy"
                 className="object-contain transition-all duration-500"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
               />
@@ -206,8 +207,8 @@ export default function GaleriaPage() {
               onClick={() => goToImage(index)}
               className={`
                 relative aspect-square rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105
-                ${index === currentImageIndex 
-                  ? "ring-4 ring-primary shadow-lg" 
+                ${index === currentImageIndex
+                  ? "ring-4 ring-primary shadow-lg"
                   : "hover:ring-2 hover:ring-primary/50"
                 }
               `}
@@ -215,6 +216,7 @@ export default function GaleriaPage() {
               <img
                 src={image}
                 alt={`Miniatura ${index + 1}`}
+                loading="lazy"
                 className="object-cover"
               />
               {index === currentImageIndex && (
@@ -258,6 +260,7 @@ export default function GaleriaPage() {
             <img
               src={currentImages[currentImageIndex]}
               alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
+              loading="lazy"
               className="object-contain"
             />
             
