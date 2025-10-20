@@ -37,6 +37,7 @@ import OfertasRecommendationInput from '@/components/OfertasRecommendationInput'
 import { recomendadorService } from '@/services/api/recomendadorService';
 import BrandFilterBanner from '@/components/BrandFilterBanner';
 import { useAOS } from '@/hooks/useAOS';
+import AOS from "aos";
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
