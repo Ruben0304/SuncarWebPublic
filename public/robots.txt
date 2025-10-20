@@ -29,6 +29,9 @@ Disallow: /
 User-agent: Google-Extended
 Disallow: /
 
+User-agent: Content-Signal
+Disallow: /
+
 User-agent: GPTBot
 Disallow: /
 

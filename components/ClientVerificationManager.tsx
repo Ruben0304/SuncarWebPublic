@@ -1,38 +1,48 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useClient } from '@/hooks/useClient';
-import ClientVerificationDialog from './ClientVerificationDialog';
-import { clientStorage } from '@/lib/clientStorage';
+import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import { useClient } from '@/hooks/useClient'
+import ClientVerificationDialog from './ClientVerificationDialog'
+import { clientStorage } from '@/lib/clientStorage'
 
 interface ClientVerificationManagerProps {
   children: React.ReactNode;
 }
 
 export default function ClientVerificationManager({ children }: ClientVerificationManagerProps) {
-  const { isClient, isLoading } = useClient();
-  const [showDialog, setShowDialog] = useState(false);
-  const [hasShownDialog, setHasShownDialog] = useState(false);
+  const { isLoading } = useClient()
+  const [showDialog, setShowDialog] = useState(false)
+  const [hasShownDialog, setHasShownDialog] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
-    if (!isLoading && !hasShownDialog) {
-      // Check if client data already exists in storage
-      const hasStoredClient = clientStorage.isClientStored();
-      
-      // If no stored client data, show the verification dialog
-      if (!hasStoredClient) {
-        // Add a small delay to ensure the loading screen has finished
-        const timer = setTimeout(() => {
-          setShowDialog(true);
-          setHasShownDialog(true);
-        }, 1000);
-        
-        return () => clearTimeout(timer);
-      } else {
-        setHasShownDialog(true);
+    // Skip the verification prompt on the homepage; component remains available for other routes.
+    if (pathname === "/") {
+      if (showDialog) {
+        setShowDialog(false)
       }
+      if (!hasShownDialog) {
+        setHasShownDialog(true)
+      }
+      return
     }
-  }, [isLoading, hasShownDialog]);
+
+    if (!isLoading && !hasShownDialog) {
+      const hasStoredClient = clientStorage.isClientStored()
+
+      if (!hasStoredClient) {
+        const timer = setTimeout(() => {
+          setShowDialog(true)
+          setHasShownDialog(true)
+        }, 1000)
+
+        return () => clearTimeout(timer)
+      }
+
+      setHasShownDialog(true)
+    }
+  }, [hasShownDialog, isLoading, pathname, showDialog])
 
   return (
     <>
