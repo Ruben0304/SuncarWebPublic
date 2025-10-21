@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -8,12 +8,15 @@ import { Badge } from "@/components/ui/badge"
 import { useClient } from "@/hooks/useClient"
 import GlassSurface from "@/components/GlassSurface";
 import { cn } from "@/lib/utils"
+import { CATEGORIAS_INFO } from "@/components/blog"
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hoveredHref, setHoveredHref] = useState<string | null>(null)
+  const [showBlogDropdown, setShowBlogDropdown] = useState(false)
   const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const blogDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { isClient, isLoading } = useClient()
   const pathname = usePathname()
 
@@ -42,6 +45,19 @@ export default function Navigation() {
     }, 160)
   }
 
+  const handleBlogMouseEnter = () => {
+    if (blogDropdownTimeout.current) {
+      clearTimeout(blogDropdownTimeout.current)
+    }
+    setShowBlogDropdown(true)
+  }
+
+  const handleBlogMouseLeave = () => {
+    blogDropdownTimeout.current = setTimeout(() => {
+      setShowBlogDropdown(false)
+    }, 200)
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
@@ -60,6 +76,7 @@ export default function Navigation() {
     { name: "Inicio", href: "/" },
     { name: "Servicios", href: "/servicios" },
     { name: "Ofertas", href: "/ofertas" },
+    { name: "Blog", href: "/blog", hasDropdown: true },
     // { name: "Proyectos", href: "/projectos" },
     { name: "Testimonios", href: "/testimonios" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
@@ -104,6 +121,80 @@ export default function Navigation() {
                 {navItems.map((item) => {
                   const isHighlighted =
                     hoveredHref === item.href || (!hoveredHref && isActive(item.href))
+
+                  // Si el item tiene dropdown (Blog)
+                  if ((item as any).hasDropdown) {
+                    return (
+                      <div
+                        key={item.name}
+                        className="relative"
+                        onMouseEnter={handleBlogMouseEnter}
+                        onMouseLeave={handleBlogMouseLeave}
+                      >
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            "group relative flex items-center gap-1 px-4 py-1.5 text-sm font-medium transition-all duration-300",
+                            isHighlighted ? "text-primary" : "text-gray-700 hover:text-primary"
+                          )}
+                          aria-current={isActive(item.href) ? "page" : undefined}
+                          onMouseEnter={() => handleHover(item.href)}
+                          onMouseLeave={scheduleHoverReset}
+                          onFocus={() => handleHover(item.href)}
+                          onBlur={scheduleHoverReset}
+                        >
+                          <span className="relative z-10">{item.name}</span>
+                          <ChevronDown className={cn(
+                            "w-4 h-4 transition-transform duration-300",
+                            showBlogDropdown && "rotate-180"
+                          )} />
+                          <span
+                            aria-hidden="true"
+                            className={cn(
+                              "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#F26729] via-[#FDB813] to-[#F26729] opacity-0 transition-all duration-300",
+                              isHighlighted
+                                ? "opacity-100 translate-y-0"
+                                : "group-hover:opacity-100 group-hover:translate-y-0.5"
+                            )}
+                          />
+                        </Link>
+
+                        {/* Dropdown Menu */}
+                        {showBlogDropdown && (
+                          <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
+                            <div className="py-2">
+                              <Link
+                                href="/blog"
+                                className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                onClick={() => setShowBlogDropdown(false)}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span>📰</span>
+                                  <span>Todos los artículos</span>
+                                </div>
+                              </Link>
+                              <div className="border-t border-gray-200 my-2"></div>
+                              {Object.entries(CATEGORIAS_INFO).map(([key, info]) => (
+                                <Link
+                                  key={key}
+                                  href={`/blog?categoria=${key}`}
+                                  className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                  onClick={() => setShowBlogDropdown(false)}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span>{info.icon}</span>
+                                    <span>{info.label}</span>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  }
+
+                  // Items normales
                   return (
                     <div key={item.name} className="relative">
                       <Link
