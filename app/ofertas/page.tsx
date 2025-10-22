@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -40,7 +40,7 @@ import BrandFilterBanner from '@/components/BrandFilterBanner';
 import { useAOS } from '@/hooks/useAOS';
 import AOS from "aos";
 
-export default function OfertasPage() {
+function OfertasContent() {
   const searchParams = useSearchParams();
   const marcaParam = searchParams.get("marca");
   
@@ -1027,5 +1027,24 @@ export default function OfertasPage() {
       </div>
       <Footer />
     </>
+  );
+}
+
+export default function OfertasPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
+        <Navigation />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-[#F26729] mx-auto mb-4" />
+            <p className="text-gray-600">Cargando ofertas...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    }>
+      <OfertasContent />
+    </Suspense>
   );
 }
