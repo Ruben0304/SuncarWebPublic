@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,9 @@ import { useAOS } from '@/hooks/useAOS';
 import AOS from "aos";
 
 export default function OfertasPage() {
+  const searchParams = useSearchParams();
+  const marcaParam = searchParams.get("marca");
+  
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
   const [filteredOfertas, setFilteredOfertas] = useState<OfertaSimplificada[]>([]);
   const [ofertasConDescuento, setOfertasConDescuento] = useState<OfertaSimplificada[]>([]);
@@ -49,7 +53,7 @@ export default function OfertasPage() {
   const [sortBy, setSortBy] = useState<'precio-asc' | 'precio-desc' | 'nombre'>('precio-asc');
   const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
   const [selectedCurrencies, setSelectedCurrencies] = useState<Record<string, Currency>>({});
-  const [selectedBrandKey, setSelectedBrandKey] = useState<string | null>(null);
+  const [selectedBrandKey, setSelectedBrandKey] = useState<string | null>(marcaParam);
   const { isClient } = useClient();
 
   // Estados del recomendador
@@ -91,6 +95,11 @@ export default function OfertasPage() {
       setSelectedBrandKey(null);
     }
   }, [brandOptions, selectedBrandKey]);
+
+  // Actualizar selectedBrandKey cuando cambie el parámetro de URL
+  useEffect(() => {
+    setSelectedBrandKey(marcaParam);
+  }, [marcaParam]);
 
   const matchesSelectedBrand = useCallback(
     (marca?: string | null) => {
@@ -414,14 +423,14 @@ export default function OfertasPage() {
             </div>
           )}
 
-          {/* Brand Filter Banner */}
-          {!loading && !error && ofertas.length > 0 && brandOptions.length > 0 && (
+          {/* Brand Filter Banner - Removido: ahora se maneja desde la navegación */}
+          {/* {!loading && !error && ofertas.length > 0 && brandOptions.length > 0 && (
             <BrandFilterBanner
               brandOptions={brandOptions}
               selectedBrandKey={selectedBrandKey}
               onBrandSelect={setSelectedBrandKey}
             />
-          )}
+          )} */}
 
           {/* Loading State */}
           {loading && (

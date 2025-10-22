@@ -9,15 +9,19 @@ import { useClient } from "@/hooks/useClient"
 import GlassSurface from "@/components/GlassSurface";
 import { cn } from "@/lib/utils"
 import { CATEGORIAS_INFO } from "@/components/blog"
+import { useOfertasBrands } from "@/hooks/useOfertasBrands"
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hoveredHref, setHoveredHref] = useState<string | null>(null)
   const [showBlogDropdown, setShowBlogDropdown] = useState(false)
+  const [showOfertasDropdown, setShowOfertasDropdown] = useState(false)
   const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const blogDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const ofertasDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { isClient, isLoading } = useClient()
+  const { brandOptions } = useOfertasBrands()
   const pathname = usePathname()
 
   const isActive = (href: string) => {
@@ -58,6 +62,19 @@ export default function Navigation() {
     }, 200)
   }
 
+  const handleOfertasMouseEnter = () => {
+    if (ofertasDropdownTimeout.current) {
+      clearTimeout(ofertasDropdownTimeout.current)
+    }
+    setShowOfertasDropdown(true)
+  }
+
+  const handleOfertasMouseLeave = () => {
+    ofertasDropdownTimeout.current = setTimeout(() => {
+      setShowOfertasDropdown(false)
+    }, 200)
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
@@ -69,14 +86,20 @@ export default function Navigation() {
   useEffect(() => {
     return () => {
       clearHoverReset()
+      if (blogDropdownTimeout.current) {
+        clearTimeout(blogDropdownTimeout.current)
+      }
+      if (ofertasDropdownTimeout.current) {
+        clearTimeout(ofertasDropdownTimeout.current)
+      }
     }
   }, [])
 
   const navItems = [
     { name: "Inicio", href: "/" },
     { name: "Servicios", href: "/servicios" },
-    { name: "Ofertas", href: "/ofertas" },
-    { name: "Blog", href: "/blog", hasDropdown: true },
+    { name: "Ofertas", href: "/ofertas", hasDropdown: true, dropdownType: "ofertas" },
+    { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
     // { name: "Proyectos", href: "/projectos" },
     { name: "Testimonios", href: "/testimonios" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
@@ -111,7 +134,7 @@ export default function Navigation() {
               {/* Logo */}
               <div className="flex items-center space-x-3">
                 <div className="relative w-8 h-8 lg:w-10 lg:h-10">
-                  <img src="/images/suncar-logo.jpeg" alt="Suncar Logo" fill className="object-contain" />
+                  <img src="/images/suncar-logo.jpeg" alt="Suncar Logo" className="object-contain rounded-lg" />
                 </div>
                 <span className="text-lg lg:text-xl font-bold text-primary">SUNCAR</span>
               </div>
@@ -122,14 +145,20 @@ export default function Navigation() {
                   const isHighlighted =
                     hoveredHref === item.href || (!hoveredHref && isActive(item.href))
 
-                  // Si el item tiene dropdown (Blog)
+                  // Si el item tiene dropdown (Blog u Ofertas)
                   if ((item as any).hasDropdown) {
+                    const isBlog = (item as any).dropdownType === "blog"
+                    const isOfertas = (item as any).dropdownType === "ofertas"
+                    const showDropdown = isBlog ? showBlogDropdown : showOfertasDropdown
+                    const handleMouseEnter = isBlog ? handleBlogMouseEnter : handleOfertasMouseEnter
+                    const handleMouseLeave = isBlog ? handleBlogMouseLeave : handleOfertasMouseLeave
+                    
                     return (
                       <div
                         key={item.name}
                         className="relative"
-                        onMouseEnter={handleBlogMouseEnter}
-                        onMouseLeave={handleBlogMouseLeave}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                       >
                         <Link
                           href={item.href}
@@ -146,7 +175,7 @@ export default function Navigation() {
                           <span className="relative z-10">{item.name}</span>
                           <ChevronDown className={cn(
                             "w-4 h-4 transition-transform duration-300",
-                            showBlogDropdown && "rotate-180"
+                            showDropdown && "rotate-180"
                           )} />
                           <span
                             aria-hidden="true"
@@ -160,33 +189,67 @@ export default function Navigation() {
                         </Link>
 
                         {/* Dropdown Menu */}
-                        {showBlogDropdown && (
+                        {showDropdown && (
                           <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
                             <div className="py-2">
-                              <Link
-                                href="/blog"
-                                className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                onClick={() => setShowBlogDropdown(false)}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <span>📰</span>
-                                  <span>Todos los artículos</span>
-                                </div>
-                              </Link>
-                              <div className="border-t border-gray-200 my-2"></div>
-                              {Object.entries(CATEGORIAS_INFO).map(([key, info]) => (
-                                <Link
-                                  key={key}
-                                  href={`/blog?categoria=${key}`}
-                                  className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                  onClick={() => setShowBlogDropdown(false)}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <span>{info.icon}</span>
-                                    <span>{info.label}</span>
-                                  </div>
-                                </Link>
-                              ))}
+                              {isBlog ? (
+                                <>
+                                  <Link
+                                    href="/blog"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowBlogDropdown(false)}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <span>📰</span>
+                                      <span>Todos los artículos</span>
+                                    </div>
+                                  </Link>
+                                  <div className="border-t border-gray-200 my-2"></div>
+                                  {Object.entries(CATEGORIAS_INFO).map(([key, info]) => (
+                                    <Link
+                                      key={key}
+                                      href={`/blog?categoria=${key}`}
+                                      className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                      onClick={() => setShowBlogDropdown(false)}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <span>{info.icon}</span>
+                                        <span>{info.label}</span>
+                                      </div>
+                                    </Link>
+                                  ))}
+                                </>
+                              ) : isOfertas ? (
+                                <>
+                                  <Link
+                                    href="/ofertas"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowOfertasDropdown(false)}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <span>🏷️</span>
+                                      <span>Todas las ofertas</span>
+                                    </div>
+                                  </Link>
+                                  <div className="border-t border-gray-200 my-2"></div>
+                                  {brandOptions.map((brand) => (
+                                    <Link
+                                      key={brand.key}
+                                      href={`/ofertas?marca=${brand.key}`}
+                                      className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                      onClick={() => setShowOfertasDropdown(false)}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <span>⚡</span>
+                                        <span>{brand.label}</span>
+                                        <span className="ml-auto text-xs bg-gray-100 px-2 py-1 rounded-full">
+                                          {brand.count}
+                                        </span>
+                                      </div>
+                                    </Link>
+                                  ))}
+                                </>
+                              ) : null}
                             </div>
                           </div>
                         )}

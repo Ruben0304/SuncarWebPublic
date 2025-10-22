@@ -146,11 +146,13 @@ export default function OfertaDetailPage() {
               {/* Header Card */}
               <Card className="overflow-hidden" data-aos="fade-up">
                 {/* Image Section */}
-                <div className="relative h-64 md:h-80 lg:h-96">
-                  <img
+                <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
+                  <Image
                     src={oferta.imagen || "/images/oferta_generica.jpg"}
                     alt={oferta.descripcion}
+                    fill
                     className="object-cover"
+                    priority
                   />
                   <div className="absolute top-4 left-4">
                     {oferta.descuentos && oferta.descuentos.trim() !== '' ? (
@@ -340,11 +342,13 @@ export default function OfertaDetailPage() {
                         {oferta.elementos.map((elemento, index) => (
                           <div key={index} className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                             <div className="flex items-start gap-4">
-                              <div className="relative w-16 h-16 flex-shrink-0">
-                                <img
+                              <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg">
+                                <Image
                                   src={elemento.foto || "/images/oferta_generica.jpg"}
                                   alt={elemento.descripcion || 'Elemento'}
-                                  className="object-cover rounded-lg"
+                                  fill
+                                  className="object-cover"
+                                  sizes="64px"
                                 />
                               </div>
                               <div className="flex-1">

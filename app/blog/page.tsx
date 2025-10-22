@@ -93,7 +93,7 @@ function BlogContent() {
               ) : (
                 <>
                   Blog de
-                  <span className="block bg-secondary-gradient bg-clip-text text-transparent mt-2">
+                  <span className="block bg-secondary-gradient bg-clip-text text-transparent mt-2 leading-tight pb-1">
                     Energía Solar
                   </span>
                 </>
