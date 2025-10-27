@@ -55,6 +55,18 @@ export async function GET(
 
     console.log('Respuesta del backend:', backendData);
 
+    // Verificar si la oferta está activa
+    if (backendData.success && backendData.data) {
+      const oferta = backendData.data;
+      // Si is_active está definido y es false, devolver error 404
+      if (oferta.is_active === false) {
+        return NextResponse.json({
+          success: false,
+          message: 'Oferta no disponible'
+        }, { status: 404 });
+      }
+    }
+
     return NextResponse.json(backendData);
 
   } catch (error) {

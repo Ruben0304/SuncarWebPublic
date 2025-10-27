@@ -47,6 +47,15 @@ export async function POST(request: NextRequest) {
 
     console.log('Respuesta del backend (recomendador):', backendData);
 
+    // Filtrar ofertas activas en las recomendaciones
+    if (backendData.success && backendData.data && backendData.data.ofertas && Array.isArray(backendData.data.ofertas)) {
+      backendData.data.ofertas = backendData.data.ofertas.filter((oferta: any) => {
+        // Solo mostrar ofertas que tienen is_active: true
+        // Si is_active no está definido, asumir que está activa (comportamiento por defecto)
+        return oferta.is_active !== false;
+      });
+    }
+
     return NextResponse.json(backendData);
 
   } catch (error) {
