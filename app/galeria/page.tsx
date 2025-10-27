@@ -7,22 +7,18 @@ import { Badge } from "@/components/ui/badge"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 
+interface FotoGaleria {
+  nombre_archivo: string
+  url: string
+  carpeta: string
+  tamano: number
+  fecha_subida: string
+}
+
 interface GalleryImages {
   exterior: string[]
   interior: string[]
   nosotros: string[]
-}
-
-const createImagePaths = (folder: string, prefix: string, count: number) =>
-  Array.from({ length: count }, (_, index) => {
-    const imageIndex = count - index
-    return `https://s3.suncarsrl.com/galeria/${folder}/${prefix}${imageIndex}.jpg`
-  })
-
-const galleryData: GalleryImages = {
-  exterior: createImagePaths("instalaciones_exterior", "IE", 26),
-  interior: createImagePaths("instalaciones_interior", "II", 8),
-  nosotros: createImagePaths("nosotros", "N", 5),
 }
 
 const categoryTitles = {
@@ -42,6 +38,43 @@ export default function GaleriaPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isAutoPlay, setIsAutoPlay] = useState(true)
   const [isZoomed, setIsZoomed] = useState(false)
+  const [galleryData, setGalleryData] = useState<GalleryImages>({
+    exterior: [],
+    interior: [],
+    nosotros: []
+  })
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch gallery images from API
+  useEffect(() => {
+    const fetchGalleryImages = async () => {
+      setIsLoading(true)
+      try {
+        // Fetch photos for each category through Next.js API routes
+        const [exteriorRes, interiorRes, nosotrosRes] = await Promise.all([
+          fetch('/api/galeriaweb/instalaciones_exterior'),
+          fetch('/api/galeriaweb/instalaciones_interior'),
+          fetch('/api/galeriaweb/nosotros')
+        ])
+
+        const exteriorData = await exteriorRes.json()
+        const interiorData = await interiorRes.json()
+        const nosotrosData = await nosotrosRes.json()
+
+        setGalleryData({
+          exterior: exteriorData.success ? exteriorData.data.map((foto: FotoGaleria) => foto.url) : [],
+          interior: interiorData.success ? interiorData.data.map((foto: FotoGaleria) => foto.url) : [],
+          nosotros: nosotrosData.success ? nosotrosData.data.map((foto: FotoGaleria) => foto.url) : []
+        })
+      } catch (error) {
+        console.error('Error fetching gallery images:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchGalleryImages()
+  }, [])
 
   const currentImages = galleryData[activeCategory]
 
@@ -50,16 +83,16 @@ export default function GaleriaPage() {
   }, [activeCategory])
 
   useEffect(() => {
-    if (!isAutoPlay) return
+    if (!isAutoPlay || isLoading || currentImages.length === 0) return
 
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         prevIndex === currentImages.length - 1 ? 0 : prevIndex + 1
       )
     }, 4000)
 
     return () => clearInterval(interval)
-  }, [currentImages.length, isAutoPlay])
+  }, [currentImages.length, isAutoPlay, isLoading])
 
   // Handle keyboard events for zoom modal
   useEffect(() => {
@@ -153,103 +186,119 @@ export default function GaleriaPage() {
           <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
             {/* Main Image */}
             <div className="relative h-96 md:h-[500px] lg:h-[600px] bg-gray-100 flex items-center justify-center">
-              <img
-                src={currentImages[currentImageIndex]}
-                alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
-                loading="lazy"
-                className="object-contain transition-all duration-500"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-              />
-              
-              {/* Zoom Button */}
-              <button
-                onClick={() => setIsZoomed(true)}
-                className="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 z-10"
-              >
-                <ZoomIn size={20} />
-              </button>
-              
-              {/* Navigation Arrows */}
-              <button
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-              >
-                <ChevronLeft size={24} />
-              </button>
-              <button
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-              >
-                <ChevronRight size={24} />
-              </button>
+              {isLoading || currentImages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                  <p className="text-gray-600">Cargando imágenes...</p>
+                </div>
+              ) : (
+                <img
+                  src={currentImages[currentImageIndex]}
+                  alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
+                  loading="lazy"
+                  className="object-contain transition-all duration-500"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                />
+              )}
 
-              {/* Auto-play Control */}
-              <button
-                onClick={() => setIsAutoPlay(!isAutoPlay)}
-                className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300"
-              >
-                {isAutoPlay ? <Pause size={20} /> : <Play size={20} />}
-              </button>
+              {/* Controls - only show when images are loaded */}
+              {!isLoading && currentImages.length > 0 && (
+                <>
+                  {/* Zoom Button */}
+                  <button
+                    onClick={() => setIsZoomed(true)}
+                    className="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+                  >
+                    <ZoomIn size={20} />
+                  </button>
 
-              {/* Image Counter */}
-              <div className="absolute bottom-4 left-4 bg-black/50 text-white px-4 py-2 rounded-full">
-                {currentImageIndex + 1} / {currentImages.length}
-              </div>
+                  {/* Navigation Arrows */}
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+
+                  {/* Auto-play Control */}
+                  <button
+                    onClick={() => setIsAutoPlay(!isAutoPlay)}
+                    className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300"
+                  >
+                    {isAutoPlay ? <Pause size={20} /> : <Play size={20} />}
+                  </button>
+
+                  {/* Image Counter */}
+                  <div className="absolute bottom-4 left-4 bg-black/50 text-white px-4 py-2 rounded-full">
+                    {currentImageIndex + 1} / {currentImages.length}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Thumbnail Gallery */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 mb-8">
-          {currentImages.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => goToImage(index)}
-              className={`
-                relative aspect-square rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105
-                ${index === currentImageIndex
-                  ? "ring-4 ring-primary shadow-lg"
-                  : "hover:ring-2 hover:ring-primary/50"
-                }
-              `}
-            >
-              <img
-                src={image}
-                alt={`Miniatura ${index + 1}`}
-                loading="lazy"
-                className="object-cover"
+        {/* Thumbnail Gallery - only show when loaded */}
+        {!isLoading && currentImages.length > 0 && (
+          <>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 mb-8">
+              {currentImages.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToImage(index)}
+                  className={`
+                    relative aspect-square rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105
+                    ${index === currentImageIndex
+                      ? "ring-4 ring-primary shadow-lg"
+                      : "hover:ring-2 hover:ring-primary/50"
+                    }
+                  `}
+                >
+                  <img
+                    src={image}
+                    alt={`Miniatura ${index + 1}`}
+                    loading="lazy"
+                    className="object-cover"
+                  />
+                  {index === currentImageIndex && (
+                    <div className="absolute inset-0 bg-primary/20" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+              <div
+                className="bg-secondary-gradient h-2 rounded-full transition-all duration-300"
+                style={{ width: `${((currentImageIndex + 1) / currentImages.length) * 100}%` }}
               />
-              {index === currentImageIndex && (
-                <div className="absolute inset-0 bg-primary/20" />
-              )}
-            </button>
-          ))}
-        </div>
+            </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-          <div 
-            className="bg-secondary-gradient h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentImageIndex + 1) / currentImages.length) * 100}%` }}
-          />
-        </div>
-
-        {/* Auto-play Status */}
-        <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg">
-            {isAutoPlay ? (
-              <>
-                <Play size={16} className="text-green-600" />
-                <span className="text-sm text-gray-700">Reproducción automática activa</span>
-              </>
-            ) : (
-              <>
-                <Pause size={16} className="text-gray-600" />
-                <span className="text-sm text-gray-700">Reproducción automática pausada</span>
-              </>
-            )}
-          </div>
-        </div>
+            {/* Auto-play Status */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg">
+                {isAutoPlay ? (
+                  <>
+                    <Play size={16} className="text-green-600" />
+                    <span className="text-sm text-gray-700">Reproducción automática activa</span>
+                  </>
+                ) : (
+                  <>
+                    <Pause size={16} className="text-gray-600" />
+                    <span className="text-sm text-gray-700">Reproducción automática pausada</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </>
+        )}
         </div>
       </div>
 
