@@ -17,7 +17,6 @@ import {
   ArrowUpDown,
   CreditCard,
   DollarSign,
-  Euro,
   Info,
   MapPin,
   Sparkles,
@@ -860,6 +859,25 @@ function OfertasContent() {
             {!loading && !error && filteredOfertas.length > 0 && (
                     <div className="px-4 mt-6 mb-10" data-aos="fade-up" data-aos-delay="100">
                         <div className="max-w-3xl mx-auto space-y-3">
+                            {/* Nota Legal sobre Monedas */}
+                            <div className="flex items-start gap-3 bg-gradient-to-r from-amber-50 to-yellow-50 backdrop-blur border-2 border-amber-300 px-4 py-3 rounded-xl shadow-md text-xs sm:text-sm text-gray-800">
+                                <DollarSign className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                <div className="leading-relaxed">
+                                    <p className="font-semibold text-amber-800 mb-1">Precios en Moneda Extranjera:</p>
+                                    <p>
+                                        Los precios expresados en USD son <span className="font-semibold">referenciales internacionales</span> y aplican para:
+                                    </p>
+                                    <ul className="list-disc list-inside mt-1 space-y-0.5 text-gray-700">
+                                        <li>Pagos desde el exterior</li>
+                                        <li>Opciones de financiamiento internacional</li>
+                                    </ul>
+                                    <p className="mt-2 text-gray-700">
+                                        Para pagos en Cuba, los precios se cobrarán en <span className="font-semibold">monedas locales al tipo de cambio vigente</span>.
+                                        
+                                    </p>
+                                </div>
+                            </div>
+
                             <div className="flex items-start gap-3 bg-white/80 backdrop-blur border border-blue-100 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-600">
                                 <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                                 <p className="leading-relaxed">
@@ -914,7 +932,7 @@ function OfertasContent() {
           )}
 
           {/* Payment Information */}
-          {!loading && !error && (
+          {/* {!loading && !error && (
             <Card
               className="bg-white/80 backdrop-blur-sm border-2 border-blue-100 shadow-xl mb-16 overflow-hidden relative"
               data-aos="fade-up"
@@ -931,42 +949,13 @@ function OfertasContent() {
                     Opciones de Pago Flexibles
                   </h3>
                   <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-8">
-                    Facilitamos tu inversión en energía solar con múltiples opciones de pago y monedas aceptadas
+                    Facilitamos tu inversión en energía solar con diversas opciones de pago
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  {/* Currency Exchange */}
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                        <DollarSign className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <h4 className="text-xl font-bold text-[#0F2B66]">Cambio de Moneda</h4>
-                    </div>
-                    <p className="text-gray-700 mb-4">
-                      Aceptamos pagos en múltiples monedas internacionales al tipo de cambio del día:
-                    </p>
-                    <div className="flex gap-3 flex-wrap">
-                      <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border">
-                        <DollarSign className="w-4 h-4 text-green-600" />
-                        <span className="font-medium text-gray-700">USD</span>
-                      </div>
-                      <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border">
-                        <Euro className="w-4 h-4 text-blue-600" />
-                        <span className="font-medium text-gray-700">EUR</span>
-                      </div>
-                      <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border line-through opacity-50">
-                        <span className="text-sm font-medium text-gray-500">CUP</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-3 italic">
-                      *No aceptamos pesos cubanos (CUP)
-                    </p>
-                  </div>
-
-                  {/* Payment Methods */}
-                  <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-100">
+                <div className="max-w-2xl mx-auto">
+                
+                   <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-100">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full">
                         <CreditCard className="w-6 h-6 text-orange-600" />
@@ -990,7 +979,7 @@ function OfertasContent() {
                         <span className="font-medium text-gray-700">Transferencia Bancaria en el Exterior</span>
                       </div>
                     </div>
-                  </div>
+                  </div> 
                 </div>
 
                 <div className="mt-8 text-center">
@@ -1000,7 +989,7 @@ function OfertasContent() {
                 </div>
               </CardContent>
             </Card>
-          )}
+          )} */}
 
           {/* Contact CTA */}
           <Card className="bg-secondary-gradient text-white text-center shadow-xl" data-aos="fade-up">
