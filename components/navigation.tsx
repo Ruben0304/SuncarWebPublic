@@ -9,25 +9,37 @@ import { useClient } from "@/hooks/useClient"
 import GlassSurface from "@/components/GlassSurface";
 import { cn } from "@/lib/utils"
 import { CATEGORIAS_INFO } from "@/components/blog"
-import { useOfertasBrands } from "@/hooks/useOfertasBrands"
+
+type NavItem = {
+  name: string
+  href: string
+  hasDropdown?: boolean
+  dropdownType?: "blog" | "precios" | "nosotro"
+  matchHrefs?: string[]
+  badge?: string
+}
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hoveredHref, setHoveredHref] = useState<string | null>(null)
   const [showBlogDropdown, setShowBlogDropdown] = useState(false)
-  const [showOfertasDropdown, setShowOfertasDropdown] = useState(false)
+  const [showPreciosDropdown, setShowPreciosDropdown] = useState(false)
+  const [showNosotroDropdown, setShowNosotroDropdown] = useState(false)
   const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const blogDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const ofertasDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const preciosDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nosotroDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { isClient, isLoading } = useClient()
-  const { brandOptions } = useOfertasBrands()
   const pathname = usePathname()
 
-  const isActive = (href: string) => {
+  const isActive = (href: string, matchHrefs?: string[]) => {
     if (!pathname) return false
-    if (href === "/") return pathname === "/"
-    return pathname.startsWith(href)
+    const targets = matchHrefs && matchHrefs.length > 0 ? matchHrefs : [href]
+    return targets.some((target) => {
+      if (target === "/") return pathname === "/"
+      return pathname.startsWith(target)
+    })
   }
 
   const clearHoverReset = () => {
@@ -62,16 +74,29 @@ export default function Navigation() {
     }, 200)
   }
 
-  const handleOfertasMouseEnter = () => {
-    if (ofertasDropdownTimeout.current) {
-      clearTimeout(ofertasDropdownTimeout.current)
+  const handlePreciosMouseEnter = () => {
+    if (preciosDropdownTimeout.current) {
+      clearTimeout(preciosDropdownTimeout.current)
     }
-    setShowOfertasDropdown(true)
+    setShowPreciosDropdown(true)
   }
 
-  const handleOfertasMouseLeave = () => {
-    ofertasDropdownTimeout.current = setTimeout(() => {
-      setShowOfertasDropdown(false)
+  const handlePreciosMouseLeave = () => {
+    preciosDropdownTimeout.current = setTimeout(() => {
+      setShowPreciosDropdown(false)
+    }, 200)
+  }
+
+  const handleNosotroMouseEnter = () => {
+    if (nosotroDropdownTimeout.current) {
+      clearTimeout(nosotroDropdownTimeout.current)
+    }
+    setShowNosotroDropdown(true)
+  }
+
+  const handleNosotroMouseLeave = () => {
+    nosotroDropdownTimeout.current = setTimeout(() => {
+      setShowNosotroDropdown(false)
     }, 200)
   }
 
@@ -89,23 +114,47 @@ export default function Navigation() {
       if (blogDropdownTimeout.current) {
         clearTimeout(blogDropdownTimeout.current)
       }
-      if (ofertasDropdownTimeout.current) {
-        clearTimeout(ofertasDropdownTimeout.current)
+      if (preciosDropdownTimeout.current) {
+        clearTimeout(preciosDropdownTimeout.current)
+      }
+      if (nosotroDropdownTimeout.current) {
+        clearTimeout(nosotroDropdownTimeout.current)
       }
     }
   }, [])
 
-  const navItems = [
+  const desktopNavItems: NavItem[] = [
     { name: "Inicio", href: "/" },
     { name: "Servicios", href: "/servicios" },
-    { name: "Ofertas", href: "/ofertas", hasDropdown: true, dropdownType: "ofertas" },
+    {
+      name: "Precios",
+      href: "/ofertas",
+      hasDropdown: true,
+      dropdownType: "precios",
+      matchHrefs: ["/ofertas", "/productos"],
+    },
     { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
-    // { name: "Proyectos", href: "/projectos" },
+    { name: "Testimonios", href: "/testimonios" },
+    {
+      name: "Nosotros",
+      href: "/sobre-nosotros",
+      hasDropdown: true,
+      dropdownType: "nosotro",
+      matchHrefs: ["/sobre-nosotros", "/contacto"],
+    },
+    { name: "Galeria", href: "/galeria" },
+  ]
+
+  const mobileNavItems: NavItem[] = [
+    { name: "Inicio", href: "/" },
+    { name: "Servicios", href: "/servicios" },
+    { name: "Productos", href: "/productos", badge: "Pronto" },
+    { name: "Kits completos (instalación)", href: "/ofertas" },
+    { name: "Blog", href: "/blog" },
     { name: "Testimonios", href: "/testimonios" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Galeria", href: "/galeria" },
     { name: "Contacto", href: "/contacto" },
-
   ]
 
 
@@ -141,18 +190,31 @@ export default function Navigation() {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-3 lg:space-x-4" onMouseLeave={scheduleHoverReset}>
-                {navItems.map((item) => {
+                {desktopNavItems.map((item) => {
+                  const matchHrefs = item.matchHrefs
                   const isHighlighted =
-                    hoveredHref === item.href || (!hoveredHref && isActive(item.href))
+                    hoveredHref === item.href || (!hoveredHref && isActive(item.href, matchHrefs))
 
-                  // Si el item tiene dropdown (Blog u Ofertas)
-                  if ((item as any).hasDropdown) {
-                    const isBlog = (item as any).dropdownType === "blog"
-                    const isOfertas = (item as any).dropdownType === "ofertas"
-                    const showDropdown = isBlog ? showBlogDropdown : showOfertasDropdown
-                    const handleMouseEnter = isBlog ? handleBlogMouseEnter : handleOfertasMouseEnter
-                    const handleMouseLeave = isBlog ? handleBlogMouseLeave : handleOfertasMouseLeave
-                    
+                  if (item.hasDropdown) {
+                    const isBlog = item.dropdownType === "blog"
+                    const isPrecios = item.dropdownType === "precios"
+                    const isNosotro = item.dropdownType === "nosotro"
+                    const showDropdown = isBlog
+                      ? showBlogDropdown
+                      : isPrecios
+                      ? showPreciosDropdown
+                      : showNosotroDropdown
+                    const handleMouseEnter = isBlog
+                      ? handleBlogMouseEnter
+                      : isPrecios
+                      ? handlePreciosMouseEnter
+                      : handleNosotroMouseEnter
+                    const handleMouseLeave = isBlog
+                      ? handleBlogMouseLeave
+                      : isPrecios
+                      ? handlePreciosMouseLeave
+                      : handleNosotroMouseLeave
+
                     return (
                       <div
                         key={item.name}
@@ -166,17 +228,19 @@ export default function Navigation() {
                             "group relative flex items-center gap-1 px-4 py-1.5 text-sm font-medium transition-all duration-300",
                             isHighlighted ? "text-primary" : "text-gray-700 hover:text-primary"
                           )}
-                          aria-current={isActive(item.href) ? "page" : undefined}
+                          aria-current={isActive(item.href, matchHrefs) ? "page" : undefined}
                           onMouseEnter={() => handleHover(item.href)}
                           onMouseLeave={scheduleHoverReset}
                           onFocus={() => handleHover(item.href)}
                           onBlur={scheduleHoverReset}
                         >
                           <span className="relative z-10">{item.name}</span>
-                          <ChevronDown className={cn(
-                            "w-4 h-4 transition-transform duration-300",
-                            showDropdown && "rotate-180"
-                          )} />
+                          <ChevronDown
+                            className={cn(
+                              "w-4 h-4 transition-transform duration-300",
+                              showDropdown && "rotate-180"
+                            )}
+                          />
                           <span
                             aria-hidden="true"
                             className={cn(
@@ -219,35 +283,44 @@ export default function Navigation() {
                                     </Link>
                                   ))}
                                 </>
-                              ) : isOfertas ? (
+                              ) : isPrecios ? (
                                 <>
+                                  <Link
+                                    href="/productos"
+                                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowPreciosDropdown(false)}
+                                  >
+                                    <span>Productos</span>
+                                    <Badge className="bg-primary text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
+                                      Pronto
+                                    </Badge>
+                                  </Link>
+                                  <div className="border-t border-gray-200 my-2"></div>
                                   <Link
                                     href="/ofertas"
                                     className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() => setShowOfertasDropdown(false)}
+                                    onClick={() => setShowPreciosDropdown(false)}
                                   >
-                                    <div className="flex items-center gap-2">
-                                      <span>🏷️</span>
-                                      <span>Todas las ofertas</span>
-                                    </div>
+                                    Kits completos (instalación)
+                                  </Link>
+                                </>
+                              ) : isNosotro ? (
+                                <>
+                                  <Link
+                                    href="/sobre-nosotros"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowNosotroDropdown(false)}
+                                  >
+                                    Conócenos
                                   </Link>
                                   <div className="border-t border-gray-200 my-2"></div>
-                                  {brandOptions.map((brand) => (
-                                    <Link
-                                      key={brand.key}
-                                      href={`/ofertas?marca=${brand.key}`}
-                                      className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                      onClick={() => setShowOfertasDropdown(false)}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <span>⚡</span>
-                                        <span>{brand.label}</span>
-                                        <span className="ml-auto text-xs bg-gray-100 px-2 py-1 rounded-full">
-                                          {brand.count}
-                                        </span>
-                                      </div>
-                                    </Link>
-                                  ))}
+                                  <Link
+                                    href="/contacto"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowNosotroDropdown(false)}
+                                  >
+                                    Contacto
+                                  </Link>
                                 </>
                               ) : null}
                             </div>
@@ -257,7 +330,6 @@ export default function Navigation() {
                     )
                   }
 
-                  // Items normales
                   return (
                     <div key={item.name} className="relative">
                       <Link
@@ -266,7 +338,7 @@ export default function Navigation() {
                           "group relative flex items-center gap-2 px-4 py-1.5 text-sm font-medium transition-all duration-300",
                           isHighlighted ? "text-primary" : "text-gray-700 hover:text-primary"
                         )}
-                        aria-current={isActive(item.href) ? "page" : undefined}
+                        aria-current={isActive(item.href, matchHrefs) ? "page" : undefined}
                         onMouseEnter={() => handleHover(item.href)}
                         onMouseLeave={scheduleHoverReset}
                         onFocus={() => handleHover(item.href)}
@@ -313,20 +385,25 @@ export default function Navigation() {
             {isOpen && (
               <div className="md:hidden mt-3 pt-3 border-t border-gray-200/50">
                 <div className="flex flex-col space-y-2">
-                  {navItems.map((item) => (
+                  {mobileNavItems.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
                       className={cn(
                         "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
-                        isActive(item.href)
+                        isActive(item.href, item.matchHrefs)
                           ? "bg-white/80 text-primary shadow-sm ring-1 ring-primary/20"
                           : "text-gray-700 hover:text-primary hover:bg-white/60"
                       )}
-                      aria-current={isActive(item.href) ? "page" : undefined}
+                      aria-current={isActive(item.href, item.matchHrefs) ? "page" : undefined}
                       onClick={() => setIsOpen(false)}
                     >
                       {item.name}
+                      {item.badge && (
+                        <Badge className="bg-primary text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
+                          {item.badge}
+                        </Badge>
+                      )}
                       {(item as any).isClient && (
                         <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-xs px-2 py-1 rounded-full">
                           Cliente

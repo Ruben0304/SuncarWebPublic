@@ -65,12 +65,21 @@ export default function SuncarInteractiveGame() {
               </div>
 
               <Link
-                href="#contacto"
-                className="group px-10 py-5 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 text-xl flex items-center gap-4 mx-auto lg:mx-0"
+                href="/solar-survivor"
+                className="group relative px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 text-xl flex items-center gap-3 mx-auto lg:mx-0 overflow-hidden hover:-translate-y-1"
               >
-                <PlayCircle className="w-7 h-7 group-hover:animate-spin" />
-                Solicitar estudio gratuito
-                <ChevronRight className="w-7 h-7 group-hover:translate-x-1 transition-transform" />
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 animate-pulse"></div>
+                <div className="relative flex items-center gap-3 z-10">
+                  <span className="relative">
+                    🎮 Jugar Simulador
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></span>
+                  </span>
+                  <svg className="w-6 h-6 transform group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               </Link>
             </div>
 
