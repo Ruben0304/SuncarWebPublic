@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Star, Zap, Battery, Wrench } from "lucide-react"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useTypewriter } from "@/hooks/useTypewriter"
 import { useLoadingContext } from "@/hooks/useLoadingContext"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
@@ -48,6 +48,7 @@ const GoogleMapsIcon = ({ size = 24, className = "" }) => (
 export default function HomePage() {
   const [count, setCount] = useState(0)
   const { isLoadingComplete } = useLoadingContext()
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   // Typewriter effects sincronizados con el loader
   const blueText = useTypewriter({
@@ -90,6 +91,72 @@ export default function HomePage() {
 
     return () => clearTimeout(startDelay)
   }, [isLoadingComplete, orangeText.isComplete])
+
+  // Auto-scroll para el carrusel de partners
+  useEffect(() => {
+    const scrollContainer = scrollRef.current
+    if (!scrollContainer) return
+
+    let scrollSpeed = 1 // píxeles por frame
+    let isPaused = false
+    let animationFrameId: number
+    let isDown = false
+    let startX = 0
+    let scrollLeft = 0
+
+    const scroll = () => {
+      if (!isPaused && !isDown && scrollContainer) {
+        scrollContainer.scrollLeft += scrollSpeed
+
+        // Si llegamos al final del primer set, reiniciar al inicio
+        const maxScroll = scrollContainer.scrollWidth / 2
+        if (scrollContainer.scrollLeft >= maxScroll) {
+          scrollContainer.scrollLeft = 0
+        }
+      }
+      animationFrameId = requestAnimationFrame(scroll)
+    }
+
+    // Pausar scroll al hacer hover
+    const handleMouseEnter = () => { isPaused = true }
+    const handleMouseLeave = () => { isPaused = false; isDown = false }
+
+    // Drag functionality
+    const handleMouseDown = (e: MouseEvent) => {
+      isDown = true
+      startX = e.pageX - scrollContainer.offsetLeft
+      scrollLeft = scrollContainer.scrollLeft
+    }
+
+    const handleMouseUp = () => {
+      isDown = false
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDown) return
+      e.preventDefault()
+      const x = e.pageX - scrollContainer.offsetLeft
+      const walk = (x - startX) * 2 // scroll-fast
+      scrollContainer.scrollLeft = scrollLeft - walk
+    }
+
+    scrollContainer.addEventListener('mouseenter', handleMouseEnter)
+    scrollContainer.addEventListener('mouseleave', handleMouseLeave)
+    scrollContainer.addEventListener('mousedown', handleMouseDown)
+    scrollContainer.addEventListener('mouseup', handleMouseUp)
+    scrollContainer.addEventListener('mousemove', handleMouseMove)
+
+    animationFrameId = requestAnimationFrame(scroll)
+
+    return () => {
+      cancelAnimationFrame(animationFrameId)
+      scrollContainer.removeEventListener('mouseenter', handleMouseEnter)
+      scrollContainer.removeEventListener('mouseleave', handleMouseLeave)
+      scrollContainer.removeEventListener('mousedown', handleMouseDown)
+      scrollContainer.removeEventListener('mouseup', handleMouseUp)
+      scrollContainer.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -198,8 +265,15 @@ export default function HomePage() {
 
           {/* Partners Carousel */}
           <div className="relative max-w-7xl mx-auto">
-            <div className="overflow-hidden">
-              <div className="flex gap-8 md:gap-12 lg:gap-16 animate-scroll-infinite" style={{ width: 'max-content' }}>
+            <div
+              ref={scrollRef}
+              className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
+              style={{
+                scrollBehavior: 'auto',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              <div className="flex gap-8 md:gap-12 lg:gap-16" style={{ width: 'max-content' }}>
                 {/* First set of logos */}
                 {/* 1. ONU */}
                 <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">

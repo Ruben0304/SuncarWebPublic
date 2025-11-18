@@ -474,20 +474,21 @@ html {
   }
 }
 
-/* Partners carousel infinite scroll animation */
-@keyframes scroll-infinite {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+/* Partners carousel - hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
-.animate-scroll-infinite {
-  animation: scroll-infinite 40s linear infinite;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
 }
 
-.animate-scroll-infinite:hover {
-  animation-play-state: paused;
+/* Smooth drag behavior for carousel */
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grab:active {
+  cursor: grabbing;
 }
