@@ -250,204 +250,228 @@ export default function HomePage() {
 
         <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
           {/* Header */}
-          <div className="text-center mb-12 lg:mb-20">
+          <div className="text-center mb-12 lg:mb-16">
             {/* <div className="inline-block px-4 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-blue-100 to-orange-50 text-primary text-sm lg:text-base font-semibold rounded-full mb-4 lg:mb-6">
               Nuestros Clientes
             </div> */}
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 lg:mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 lg:mb-4">
               Confían en Nosotros
             </h2>
-            <div className="h-1 w-24 bg-secondary-gradient rounded-full mx-auto mb-4"></div>
-            <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <div className="h-1 w-20 bg-secondary-gradient rounded-full mx-auto mb-3"></div>
+            <p className="text-sm lg:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Empresas líderes que han confiado en nuestra experiencia y tecnología solar de vanguardia
             </p>
           </div>
 
           {/* Partners Carousel */}
           <div className="relative max-w-7xl mx-auto">
+            {/* Gradient fade left */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+
+            {/* Gradient fade right */}
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+
             <div
               ref={scrollRef}
-              className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
+              className="overflow-x-scroll scrollbar-hide cursor-grab active:cursor-grabbing"
               style={{
                 scrollBehavior: 'auto',
-                WebkitOverflowScrolling: 'touch'
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
               }}
             >
-              <div className="flex gap-8 md:gap-12 lg:gap-16" style={{ width: 'max-content' }}>
+              <div className="flex gap-4 md:gap-6 lg:gap-8 py-4" style={{ width: 'max-content' }}>
                 {/* First set of logos */}
                 {/* 1. ONU */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/onu.png"
                       alt="ONU - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 2. Hotel Nacional */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/nacional.png"
                       alt="Hotel Nacional - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 3. Supermarket 23 */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/supermarket23.png"
                       alt="Supermarket 23 - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 4. Fournier */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/fournier.png"
                       alt="Fournier - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 5. Fadiar */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/fadiar.png"
                       alt="Fadiar - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 6. Milexus */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/milexus.png"
                       alt="Milexus - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 7. Mercazon */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/mercazon.png"
                       alt="Mercazon - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 8. Humidores */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/humidores.png"
                       alt="Humidores - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* Duplicate set for infinite scroll effect */}
                 {/* 1. ONU */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/onu.png"
                       alt="ONU - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 2. Hotel Nacional */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/nacional.png"
                       alt="Hotel Nacional - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 3. Supermarket 23 */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/supermarket23.png"
                       alt="Supermarket 23 - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 4. Fournier */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/fournier.png"
                       alt="Fournier - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 5. Fadiar */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/fadiar.png"
                       alt="Fadiar - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 6. Milexus */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/milexus.png"
                       alt="Milexus - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 7. Mercazon */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/mercazon.png"
                       alt="Mercazon - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
 
                 {/* 8. Humidores */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[200px] sm:w-[240px] lg:w-[280px]">
-                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
                     <img
                       src="https://s3.suncarsrl.com/partners/humidores.png"
                       alt="Humidores - Cliente de Suncar"
-                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
                     />
                   </div>
                 </div>
