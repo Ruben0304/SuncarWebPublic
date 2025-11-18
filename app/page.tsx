@@ -256,59 +256,48 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Section */}
+      {/* Services Section */}
       <section className="py-12 sm:py-16 lg:py-28 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-20 items-center">
-            {/* Lottie Animation - Now takes more space */}
+            {/* Lottie Animation - Left side */}
             <div className="order-2 lg:order-1 lg:col-span-3">
               <LottieAnimation />
             </div>
 
-            {/* Content - Now takes less space */}
-            <div className="order-1 lg:order-2 lg:col-span-2 space-y-6 lg:space-y-8">
-              <div className="space-y-4 lg:space-y-6">
-                <div className="inline-block px-4 py-2 lg:px-6 lg:py-3 bg-secondary-gradient text-white text-sm lg:text-base font-semibold rounded-full">
-                  Sobre Suncar
-                </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary leading-tight">
-                  Especialistas en Energía Solar
-                </h2>
-                <p className="text-base lg:text-lg xl:text-xl text-gray-600 leading-relaxed">
-                  Transformamos hogares y negocios cubanos con tecnología solar de vanguardia.
+            {/* Services Cards - Right side */}
+            <div className="order-1 lg:order-2 lg:col-span-2 space-y-4 lg:space-y-6">
+              <Link
+                href="/productos"
+                className="group block bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] border border-gray-100 hover:border-orange-200"
+              >
+                <h3 className="font-bold text-primary text-xl lg:text-2xl mb-3 group-hover:text-orange-600 transition-colors">
+                  Venta de Productos
+                </h3>
+                <p className="text-gray-600 text-base lg:text-lg leading-relaxed">
+                  Paneles solares, baterías, inversores y accesorios de las mejores marcas
                 </p>
-              </div>
+              </Link>
 
-              <div className="space-y-4 lg:space-y-6">
-                <div className="flex items-start gap-3 lg:gap-4">
-                  <div className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-primary text-sm lg:text-base xl:text-lg mb-1">Paneles Premium</h3>
-                    <p className="text-gray-600 text-sm lg:text-base xl:text-lg">Máxima eficiencia energética</p>
-                  </div>
-                </div>
+              <Link
+                href="/ofertas"
+                className="group block bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] border border-gray-100 hover:border-orange-200"
+              >
+                <h3 className="font-bold text-primary text-xl lg:text-2xl mb-3 group-hover:text-orange-600 transition-colors">
+                  Kits Completos con Instalación
+                </h3>
+                <p className="text-gray-600 text-base lg:text-lg leading-relaxed">
+                  Sistemas fotovoltaicos completos listos para instalar, con todo incluido
+                </p>
+              </Link>
 
-                <div className="flex items-start gap-3 lg:gap-4">
-                  <div className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Battery className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-primary text-sm lg:text-base xl:text-lg mb-1">Baterías Inteligentes</h3>
-                    <p className="text-gray-600 text-sm lg:text-base xl:text-lg">Energía 24/7 disponible</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 lg:gap-4">
-                  <div className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 bg-secondary-gradient rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Wrench className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-primary text-sm lg:text-base xl:text-lg mb-1">Soporte Técnico</h3>
-                    <p className="text-gray-600 text-sm lg:text-base xl:text-lg">Mantenimiento especializado</p>
-                  </div>
-                </div>
+              <div className="block bg-white rounded-2xl p-6 lg:p-8 shadow-lg border border-gray-100">
+                <h3 className="font-bold text-primary text-xl lg:text-2xl mb-3">
+                  Mantenimiento y Reparación
+                </h3>
+                <p className="text-gray-600 text-base lg:text-lg leading-relaxed">
+                  Servicio técnico especializado para mantener tu sistema al 100%
+                </p>
               </div>
             </div>
           </div>
