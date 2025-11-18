@@ -458,18 +458,36 @@ html {
   .video-controls {
     padding: 0.5rem;
   }
-  
+
   .video-controls button {
     width: 2rem;
     height: 2rem;
   }
-  
+
   .video-controls .slider {
     height: 6px;
   }
-  
+
   .video-controls .slider::-webkit-slider-thumb {
     height: 16px;
     width: 16px;
   }
+}
+
+/* Partners carousel infinite scroll animation */
+@keyframes scroll-infinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-infinite {
+  animation: scroll-infinite 40s linear infinite;
+}
+
+.animate-scroll-infinite:hover {
+  animation-play-state: paused;
 }

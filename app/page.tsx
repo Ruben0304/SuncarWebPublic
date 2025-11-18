@@ -196,49 +196,187 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Partners Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 lg:gap-16 max-w-6xl mx-auto">
-            {/* Humidores */}
-            <div className="flex items-center justify-center group">
-              <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
-                <img
-                  src="https://s3.suncarsrl.com/partners/humidores.png"
-                  alt="Humidores - Cliente de Suncar"
-                  className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                />
-              </div>
-            </div>
+          {/* Partners Carousel */}
+          <div className="relative max-w-7xl mx-auto">
+            <div className="overflow-hidden">
+              <div className="flex gap-8 md:gap-12 lg:gap-16 animate-scroll-infinite">
+                {/* First set of logos */}
+                {/* ONU */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/onu.png"
+                      alt="ONU - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
 
-            {/* Nacional */}
-            <div className="flex items-center justify-center group">
-              <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
-                <img
-                  src="https://s3.suncarsrl.com/partners/nacional.png"
-                  alt="Nacional - Cliente de Suncar"
-                  className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                />
-              </div>
-            </div>
+                {/* Fadiar */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/fadiar.png"
+                      alt="Fadiar - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
 
-            {/* Fournier */}
-            <div className="flex items-center justify-center group">
-              <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
-                <img
-                  src="https://s3.suncarsrl.com/partners/fournier.png"
-                  alt="Fournier - Cliente de Suncar"
-                  className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                />
-              </div>
-            </div>
+                {/* Milexus */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/milexus.png"
+                      alt="Milexus - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
 
-            {/* Supermarket 23 */}
-            <div className="flex items-center justify-center group">
-              <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
-                <img
-                  src="https://s3.suncarsrl.com/partners/supermarket23.png"
-                  alt="Supermarket 23 - Cliente de Suncar"
-                  className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                />
+                {/* Mercazon */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/mercazon.png"
+                      alt="Mercazon - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Nacional */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/nacional.png"
+                      alt="Nacional - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Fournier */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/fournier.png"
+                      alt="Fournier - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Supermarket 23 */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/supermarket23.png"
+                      alt="Supermarket 23 - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Humidores */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/humidores.png"
+                      alt="Humidores - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Duplicate set for infinite scroll effect */}
+                {/* ONU */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/onu.png"
+                      alt="ONU - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Fadiar */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/fadiar.png"
+                      alt="Fadiar - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Milexus */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/milexus.png"
+                      alt="Milexus - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Mercazon */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/mercazon.png"
+                      alt="Mercazon - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Nacional */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/nacional.png"
+                      alt="Nacional - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Fournier */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/fournier.png"
+                      alt="Fournier - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Supermarket 23 */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/supermarket23.png"
+                      alt="Supermarket 23 - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Humidores */}
+                <div className="flex items-center justify-center min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]">
+                  <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-48">
+                    <img
+                      src="https://s3.suncarsrl.com/partners/humidores.png"
+                      alt="Humidores - Cliente de Suncar"
+                      className="w-full h-full object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
