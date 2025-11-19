@@ -14,7 +14,7 @@ type NavItem = {
   name: string
   href: string
   hasDropdown?: boolean
-  dropdownType?: "blog" | "precios" | "nosotro"
+  dropdownType?: "blog" | "precios" | "nosotro" | "apps"
   matchHrefs?: string[]
   badge?: string
 }
@@ -26,10 +26,12 @@ export default function Navigation() {
   const [showBlogDropdown, setShowBlogDropdown] = useState(false)
   const [showPreciosDropdown, setShowPreciosDropdown] = useState(false)
   const [showNosotroDropdown, setShowNosotroDropdown] = useState(false)
+  const [showAppsDropdown, setShowAppsDropdown] = useState(false)
   const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const blogDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const preciosDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const nosotroDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const appsDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { isClient, isLoading } = useClient()
   const pathname = usePathname()
 
@@ -100,6 +102,19 @@ export default function Navigation() {
     }, 200)
   }
 
+  const handleAppsMouseEnter = () => {
+    if (appsDropdownTimeout.current) {
+      clearTimeout(appsDropdownTimeout.current)
+    }
+    setShowAppsDropdown(true)
+  }
+
+  const handleAppsMouseLeave = () => {
+    appsDropdownTimeout.current = setTimeout(() => {
+      setShowAppsDropdown(false)
+    }, 200)
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
@@ -120,6 +135,9 @@ export default function Navigation() {
       if (nosotroDropdownTimeout.current) {
         clearTimeout(nosotroDropdownTimeout.current)
       }
+      if (appsDropdownTimeout.current) {
+        clearTimeout(appsDropdownTimeout.current)
+      }
     }
   }, [])
 
@@ -134,6 +152,13 @@ export default function Navigation() {
       matchHrefs: ["/ofertas", "/productos"],
     },
     { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
+    {
+      name: "Apps",
+      href: "/apps",
+      hasDropdown: true,
+      dropdownType: "apps",
+      matchHrefs: ["/apps", "/solar-survivor", "/calculadora"],
+    },
     { name: "Testimonios", href: "/testimonios" },
     {
       name: "Nosotros",
@@ -151,6 +176,9 @@ export default function Navigation() {
     { name: "Productos", href: "/productos", badge: "Pronto" },
     { name: "Kits completos (instalación)", href: "/ofertas" },
     { name: "Blog", href: "/blog" },
+    { name: "Solar Survivor", href: "/solar-survivor" },
+    { name: "Calculadora de Kw", href: "/calculadora" },
+    { name: "Recomendador de ofertas", href: "/ofertas", badge: "IA" },
     { name: "Testimonios", href: "/testimonios" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Galeria", href: "/galeria" },
@@ -199,21 +227,28 @@ export default function Navigation() {
                     const isBlog = item.dropdownType === "blog"
                     const isPrecios = item.dropdownType === "precios"
                     const isNosotro = item.dropdownType === "nosotro"
+                    const isApps = item.dropdownType === "apps"
                     const showDropdown = isBlog
                       ? showBlogDropdown
                       : isPrecios
                       ? showPreciosDropdown
-                      : showNosotroDropdown
+                      : isNosotro
+                      ? showNosotroDropdown
+                      : showAppsDropdown
                     const handleMouseEnter = isBlog
                       ? handleBlogMouseEnter
                       : isPrecios
                       ? handlePreciosMouseEnter
-                      : handleNosotroMouseEnter
+                      : isNosotro
+                      ? handleNosotroMouseEnter
+                      : handleAppsMouseEnter
                     const handleMouseLeave = isBlog
                       ? handleBlogMouseLeave
                       : isPrecios
                       ? handlePreciosMouseLeave
-                      : handleNosotroMouseLeave
+                      : isNosotro
+                      ? handleNosotroMouseLeave
+                      : handleAppsMouseLeave
 
                     return (
                       <div
@@ -320,6 +355,35 @@ export default function Navigation() {
                                     onClick={() => setShowNosotroDropdown(false)}
                                   >
                                     Contacto
+                                  </Link>
+                                </>
+                              ) : isApps ? (
+                                <>
+                                  <Link
+                                    href="/solar-survivor"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowAppsDropdown(false)}
+                                  >
+                                    Solar Survivor
+                                  </Link>
+                                  <div className="border-t border-gray-200 my-2"></div>
+                                  <Link
+                                    href="/calculadora"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowAppsDropdown(false)}
+                                  >
+                                    Calculadora de Kw
+                                  </Link>
+                                  <div className="border-t border-gray-200 my-2"></div>
+                                  <Link
+                                    href="/ofertas"
+                                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowAppsDropdown(false)}
+                                  >
+                                    <span>Recomendador de ofertas</span>
+                                    <Badge className="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
+                                      IA
+                                    </Badge>
                                   </Link>
                                 </>
                               ) : null}
