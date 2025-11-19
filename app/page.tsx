@@ -31,24 +31,67 @@ const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteracti
   )
 })
 
+const SolarHouseModel = dynamic(() => import("@/components/solar-house-model"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full min-h-[400px] md:min-h-[500px] lg:min-h-[600px] flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
+        <p className="text-primary font-semibold">Cargando modelo 3D...</p>
+      </div>
+    </div>
+  )
+})
+
 // WhatsApp Icon Component
 const WhatsAppIcon = ({ size = 24, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
   </svg>
 )
 
 // Google Maps Icon Component
 const GoogleMapsIcon = ({ size = 24, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M12 0C7.802 0 4.403 3.403 4.403 7.602c0 1.7.577 3.261 1.547 4.516l5.536 8.906c.18.29.51.476.864.476h.002c.354 0 .684-.186.864-.477l5.535-8.906c.97-1.255 1.547-2.816 1.547-4.516C19.597 3.403 16.198 0 12 0zm0 11.25c-2.004 0-3.631-1.627-3.631-3.631S9.996 3.988 12 3.988s3.631 1.627 3.631 3.631S14.004 11.25 12 11.25z"/>
+    <path d="M12 0C7.802 0 4.403 3.403 4.403 7.602c0 1.7.577 3.261 1.547 4.516l5.536 8.906c.18.29.51.476.864.476h.002c.354 0 .684-.186.864-.477l5.535-8.906c.97-1.255 1.547-2.816 1.547-4.516C19.597 3.403 16.198 0 12 0zm0 11.25c-2.004 0-3.631-1.627-3.631-3.631S9.996 3.988 12 3.988s3.631 1.627 3.631 3.631S14.004 11.25 12 11.25z" />
   </svg>
 )
+
+// Partner Item Component
+const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
+  <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
+    <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
+      <img
+        src={src}
+        alt={alt}
+        className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
+      />
+    </div>
+  </div>
+)
+
+// Partners data
+const partners = [
+  { src: "https://s3.suncarsrl.com/partners/onu.png", alt: "ONU - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/nacional.png", alt: "Hotel Nacional - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/supermarket23.png", alt: "Supermarket 23 - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/fournier.png", alt: "Fournier - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/fadiar.png", alt: "Fadiar - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/milexus.png", alt: "Milexus - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/mercazon.png", alt: "Mercazon - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/humidores.png", alt: "Humidores - Cliente de Suncar" },
+]
+
+// Dividir partners en dos grupos para las dos filas
+const partnersRow1 = partners.filter((_, index) => index % 2 === 0) // Pares: 0, 2, 4, 6
+const partnersRow2 = partners.filter((_, index) => index % 2 !== 0) // Impares: 1, 3, 5, 7
 
 export default function HomePage() {
   const [count, setCount] = useState(0)
   const { isLoadingComplete } = useLoadingContext()
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollRef1 = useRef<HTMLDivElement>(null)
+  const scrollRef2 = useRef<HTMLDivElement>(null)
 
   // Typewriter effects sincronizados con el loader
   const blueText = useTypewriter({
@@ -92,69 +135,109 @@ export default function HomePage() {
     return () => clearTimeout(startDelay)
   }, [isLoadingComplete, orangeText.isComplete])
 
-  // Auto-scroll para el carrusel de partners
+  // Auto-scroll para el carrusel de partners con dos filas en direcciones opuestas
   useEffect(() => {
-    const scrollContainer = scrollRef.current
-    if (!scrollContainer) return
+    const scrollContainer1 = scrollRef1.current
+    const scrollContainer2 = scrollRef2.current
+    if (!scrollContainer1 || !scrollContainer2) return
 
     let scrollSpeed = 1 // píxeles por frame
-    let isPaused = false
+    let isPaused1 = false
+    let isPaused2 = false
     let animationFrameId: number
-    let isDown = false
-    let startX = 0
-    let scrollLeft = 0
+    let isDown1 = false
+    let isDown2 = false
+    let startX1 = 0
+    let startX2 = 0
+    let scrollLeft1 = 0
+    let scrollLeft2 = 0
 
     const scroll = () => {
-      if (!isPaused && !isDown && scrollContainer) {
-        scrollContainer.scrollLeft += scrollSpeed
-
-        // Si llegamos al final del primer set, reiniciar al inicio
-        const maxScroll = scrollContainer.scrollWidth / 2
-        if (scrollContainer.scrollLeft >= maxScroll) {
-          scrollContainer.scrollLeft = 0
+      // Scroll fila 1 hacia la derecha
+      if (!isPaused1 && !isDown1 && scrollContainer1) {
+        scrollContainer1.scrollLeft += scrollSpeed
+        const maxScroll1 = scrollContainer1.scrollWidth / 2
+        if (scrollContainer1.scrollLeft >= maxScroll1) {
+          scrollContainer1.scrollLeft = 0
         }
       }
+
+      // Scroll fila 2 hacia la izquierda
+      if (!isPaused2 && !isDown2 && scrollContainer2) {
+        scrollContainer2.scrollLeft -= scrollSpeed
+        if (scrollContainer2.scrollLeft <= 0) {
+          scrollContainer2.scrollLeft = scrollContainer2.scrollWidth / 2
+        }
+      }
+
       animationFrameId = requestAnimationFrame(scroll)
     }
 
-    // Pausar scroll al hacer hover
-    const handleMouseEnter = () => { isPaused = true }
-    const handleMouseLeave = () => { isPaused = false; isDown = false }
-
-    // Drag functionality
-    const handleMouseDown = (e: MouseEvent) => {
-      isDown = true
-      startX = e.pageX - scrollContainer.offsetLeft
-      scrollLeft = scrollContainer.scrollLeft
+    // Handlers para fila 1
+    const handleMouseEnter1 = () => { isPaused1 = true }
+    const handleMouseLeave1 = () => { isPaused1 = false; isDown1 = false }
+    const handleMouseDown1 = (e: MouseEvent) => {
+      isDown1 = true
+      startX1 = e.pageX - scrollContainer1.offsetLeft
+      scrollLeft1 = scrollContainer1.scrollLeft
     }
-
-    const handleMouseUp = () => {
-      isDown = false
-    }
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDown) return
+    const handleMouseUp1 = () => { isDown1 = false }
+    const handleMouseMove1 = (e: MouseEvent) => {
+      if (!isDown1) return
       e.preventDefault()
-      const x = e.pageX - scrollContainer.offsetLeft
-      const walk = (x - startX) * 2 // scroll-fast
-      scrollContainer.scrollLeft = scrollLeft - walk
+      const x = e.pageX - scrollContainer1.offsetLeft
+      const walk = (x - startX1) * 2
+      scrollContainer1.scrollLeft = scrollLeft1 - walk
     }
 
-    scrollContainer.addEventListener('mouseenter', handleMouseEnter)
-    scrollContainer.addEventListener('mouseleave', handleMouseLeave)
-    scrollContainer.addEventListener('mousedown', handleMouseDown)
-    scrollContainer.addEventListener('mouseup', handleMouseUp)
-    scrollContainer.addEventListener('mousemove', handleMouseMove)
+    // Handlers para fila 2
+    const handleMouseEnter2 = () => { isPaused2 = true }
+    const handleMouseLeave2 = () => { isPaused2 = false; isDown2 = false }
+    const handleMouseDown2 = (e: MouseEvent) => {
+      isDown2 = true
+      startX2 = e.pageX - scrollContainer2.offsetLeft
+      scrollLeft2 = scrollContainer2.scrollLeft
+    }
+    const handleMouseUp2 = () => { isDown2 = false }
+    const handleMouseMove2 = (e: MouseEvent) => {
+      if (!isDown2) return
+      e.preventDefault()
+      const x = e.pageX - scrollContainer2.offsetLeft
+      const walk = (x - startX2) * 2
+      scrollContainer2.scrollLeft = scrollLeft2 - walk
+    }
+
+    // Event listeners fila 1
+    scrollContainer1.addEventListener('mouseenter', handleMouseEnter1)
+    scrollContainer1.addEventListener('mouseleave', handleMouseLeave1)
+    scrollContainer1.addEventListener('mousedown', handleMouseDown1)
+    scrollContainer1.addEventListener('mouseup', handleMouseUp1)
+    scrollContainer1.addEventListener('mousemove', handleMouseMove1)
+
+    // Event listeners fila 2
+    scrollContainer2.addEventListener('mouseenter', handleMouseEnter2)
+    scrollContainer2.addEventListener('mouseleave', handleMouseLeave2)
+    scrollContainer2.addEventListener('mousedown', handleMouseDown2)
+    scrollContainer2.addEventListener('mouseup', handleMouseUp2)
+    scrollContainer2.addEventListener('mousemove', handleMouseMove2)
+
+    // Iniciar la segunda fila en la mitad para el efecto de scroll inverso
+    scrollContainer2.scrollLeft = scrollContainer2.scrollWidth / 2
 
     animationFrameId = requestAnimationFrame(scroll)
 
     return () => {
       cancelAnimationFrame(animationFrameId)
-      scrollContainer.removeEventListener('mouseenter', handleMouseEnter)
-      scrollContainer.removeEventListener('mouseleave', handleMouseLeave)
-      scrollContainer.removeEventListener('mousedown', handleMouseDown)
-      scrollContainer.removeEventListener('mouseup', handleMouseUp)
-      scrollContainer.removeEventListener('mousemove', handleMouseMove)
+      scrollContainer1.removeEventListener('mouseenter', handleMouseEnter1)
+      scrollContainer1.removeEventListener('mouseleave', handleMouseLeave1)
+      scrollContainer1.removeEventListener('mousedown', handleMouseDown1)
+      scrollContainer1.removeEventListener('mouseup', handleMouseUp1)
+      scrollContainer1.removeEventListener('mousemove', handleMouseMove1)
+      scrollContainer2.removeEventListener('mouseenter', handleMouseEnter2)
+      scrollContainer2.removeEventListener('mouseleave', handleMouseLeave2)
+      scrollContainer2.removeEventListener('mousedown', handleMouseDown2)
+      scrollContainer2.removeEventListener('mouseup', handleMouseUp2)
+      scrollContainer2.removeEventListener('mousemove', handleMouseMove2)
     }
   }, [])
 
@@ -179,13 +262,13 @@ export default function HomePage() {
                     {!orangeText.isComplete && <span className="animate-pulse text-orange-500">|</span>}
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards, gentle-float 8s ease-in-out 1.9s infinite'}}>
+                <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards, gentle-float 8s ease-in-out 1.9s infinite' }}>
                   Transforma tu hogar o negocio con energía limpia y renovable con
                   nuestros sistemas de paneles solares y baterías de última generación.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards, gentle-float 8s ease-in-out 2.1s infinite'}}>
+              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards, gentle-float 8s ease-in-out 2.1s infinite' }}>
                 <Link href="/cotizacion" className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber">
                   Cotizar Ahora
                 </Link>
@@ -209,29 +292,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Hero Image */}
-            <div className="relative opacity-0" style={{animation: 'subtle-fade-in 0.8s ease-out 0.4s forwards, gentle-float-image 10s ease-in-out 1.8s infinite'}}>
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10"></div>
-                <img
-                  src="https://s3.suncarsrl.com/web/suncar hero.jpg"
-                  alt="Logo futurista Suncar - Energía Solar"
-                  width={600}
-                  height={400}
-                  className="w-full h-auto object-contain"
-                />
-
-                {/* Floating particles around image */}
-                <div className="floating-particle particle-1" style={{ top: '10%', left: '20%' }}></div>
-                <div className="floating-particle particle-2" style={{ top: '30%', right: '15%' }}></div>
-                <div className="floating-particle particle-3" style={{ bottom: '20%', left: '10%' }}></div>
-                <div className="floating-particle particle-4" style={{ bottom: '40%', right: '20%' }}></div>
-                <div className="floating-particle particle-5" style={{ top: '60%', left: '5%' }}></div>
-                <div className="floating-particle particle-6" style={{ top: '20%', right: '5%' }}></div>
-              </div>
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary-gradient rounded-full opacity-20 blur-xl animate-pulse"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse animation-delay-500"></div>
+            {/* Hero 3D Model */}
+            <div className="relative opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.4s forwards, gentle-float-image 10s ease-in-out 1.8s infinite' }}>
+              <SolarHouseModel />
             </div>
           </div>
         </div>
@@ -263,16 +326,17 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Partners Carousel */}
-          <div className="relative max-w-7xl mx-auto">
+          {/* Partners Carousel - Two Rows */}
+          <div className="relative max-w-7xl mx-auto space-y-4 md:space-y-6">
             {/* Gradient fade left */}
             <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
 
             {/* Gradient fade right */}
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
 
+            {/* Primera fila - Se mueve hacia la derecha */}
             <div
-              ref={scrollRef}
+              ref={scrollRef1}
               className="overflow-x-scroll scrollbar-hide cursor-grab active:cursor-grabbing"
               style={{
                 scrollBehavior: 'auto',
@@ -282,199 +346,37 @@ export default function HomePage() {
               }}
             >
               <div className="flex gap-4 md:gap-6 lg:gap-8 py-4" style={{ width: 'max-content' }}>
-                {/* First set of logos */}
-                {/* 1. ONU */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/onu.png"
-                      alt="ONU - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
+                {/* First set */}
+                {partnersRow1.map((partner, index) => (
+                  <PartnerItem key={`row1-set1-${index}`} src={partner.src} alt={partner.alt} />
+                ))}
+                {/* Duplicate set for infinite scroll */}
+                {partnersRow1.map((partner, index) => (
+                  <PartnerItem key={`row1-set2-${index}`} src={partner.src} alt={partner.alt} />
+                ))}
+              </div>
+            </div>
 
-                {/* 2. Hotel Nacional */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/nacional.png"
-                      alt="Hotel Nacional - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 3. Supermarket 23 */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/supermarket23.png"
-                      alt="Supermarket 23 - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 4. Fournier */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/fournier.png"
-                      alt="Fournier - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 5. Fadiar */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/fadiar.png"
-                      alt="Fadiar - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 6. Milexus */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/milexus.png"
-                      alt="Milexus - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 7. Mercazon */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/mercazon.png"
-                      alt="Mercazon - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 8. Humidores */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/humidores.png"
-                      alt="Humidores - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* Duplicate set for infinite scroll effect */}
-                {/* 1. ONU */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/onu.png"
-                      alt="ONU - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 2. Hotel Nacional */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/nacional.png"
-                      alt="Hotel Nacional - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 3. Supermarket 23 */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/supermarket23.png"
-                      alt="Supermarket 23 - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 4. Fournier */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/fournier.png"
-                      alt="Fournier - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 5. Fadiar */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/fadiar.png"
-                      alt="Fadiar - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 6. Milexus */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/milexus.png"
-                      alt="Milexus - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 7. Mercazon */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/mercazon.png"
-                      alt="Mercazon - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* 8. Humidores */}
-                <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                  <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-                    <img
-                      src="https://s3.suncarsrl.com/partners/humidores.png"
-                      alt="Humidores - Cliente de Suncar"
-                      className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
+            {/* Segunda fila - Se mueve hacia la izquierda */}
+            <div
+              ref={scrollRef2}
+              className="overflow-x-scroll scrollbar-hide cursor-grab active:cursor-grabbing"
+              style={{
+                scrollBehavior: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
+              }}
+            >
+              <div className="flex gap-4 md:gap-6 lg:gap-8 py-4" style={{ width: 'max-content' }}>
+                {/* First set */}
+                {partnersRow2.map((partner, index) => (
+                  <PartnerItem key={`row2-set1-${index}`} src={partner.src} alt={partner.alt} />
+                ))}
+                {/* Duplicate set for infinite scroll */}
+                {partnersRow2.map((partner, index) => (
+                  <PartnerItem key={`row2-set2-${index}`} src={partner.src} alt={partner.alt} />
+                ))}
               </div>
             </div>
           </div>
@@ -677,65 +579,65 @@ export default function HomePage() {
               {/* Felicity */}
               <div
                 className="flex items-center justify-center opacity-0 translate-y-8"
-                style={{animation: 'fade-in-up 0.8s ease-out 0.1s forwards'}}
+                style={{ animation: 'fade-in-up 0.8s ease-out 0.1s forwards' }}
               >
                 <img
                   src="https://s3.suncarsrl.com/marcas/felicity.png"
                   alt="Felicity Solar"
                   className="w-full h-auto object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                  style={{maxHeight: '160px'}}
+                  style={{ maxHeight: '160px' }}
                 />
               </div>
 
               {/* Must */}
               <div
                 className="flex items-center justify-center opacity-0 translate-y-8"
-                style={{animation: 'fade-in-up 0.8s ease-out 0.2s forwards'}}
+                style={{ animation: 'fade-in-up 0.8s ease-out 0.2s forwards' }}
               >
                 <img
                   src="https://s3.suncarsrl.com/marcas/must.png"
                   alt="Must"
                   className="w-full h-auto object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                  style={{maxHeight: '160px'}}
+                  style={{ maxHeight: '160px' }}
                 />
               </div>
 
               {/* Greenheiss */}
               <div
                 className="flex items-center justify-center opacity-0 translate-y-8"
-                style={{animation: 'fade-in-up 0.8s ease-out 0.3s forwards'}}
+                style={{ animation: 'fade-in-up 0.8s ease-out 0.3s forwards' }}
               >
                 <img
                   src="https://s3.suncarsrl.com/marcas/greenheiss.png"
                   alt="Greenheiss"
                   className="w-full h-auto object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                  style={{maxHeight: '160px'}}
+                  style={{ maxHeight: '160px' }}
                 />
               </div>
 
               {/* Pylontech */}
               <div
                 className="flex items-center justify-center opacity-0 translate-y-8"
-                style={{animation: 'fade-in-up 0.8s ease-out 0.4s forwards'}}
+                style={{ animation: 'fade-in-up 0.8s ease-out 0.4s forwards' }}
               >
                 <img
                   src="https://s3.suncarsrl.com/marcas/pylontech.png"
                   alt="Pylontech"
                   className="w-full h-auto object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                  style={{maxHeight: '160px'}}
+                  style={{ maxHeight: '160px' }}
                 />
               </div>
 
               {/* Huawei */}
               <div
                 className="flex items-center justify-center opacity-0 translate-y-8"
-                style={{animation: 'fade-in-up 0.8s ease-out 0.5s forwards'}}
+                style={{ animation: 'fade-in-up 0.8s ease-out 0.5s forwards' }}
               >
                 <img
                   src="https://s3.suncarsrl.com/marcas/huawei.png"
                   alt="Huawei"
                   className="w-full h-auto object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
-                  style={{maxHeight: '160px'}}
+                  style={{ maxHeight: '160px' }}
                 />
               </div>
             </div>

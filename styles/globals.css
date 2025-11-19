@@ -842,3 +842,18 @@ body {
 .animate-glow-pulse {
   animation: glow-pulse 2s ease-in-out infinite;
 }
+
+/* Model Viewer - Force white background */
+model-viewer {
+  --poster-color: #ffffff !important;
+  --progress-bar-color: transparent !important;
+  background-color: #ffffff !important;
+}
+
+model-viewer::part(default-progress-bar) {
+  display: none;
+}
+
+model-viewer::part(default-progress-mask) {
+  background: transparent;
+}
