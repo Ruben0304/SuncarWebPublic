@@ -8,7 +8,65 @@ export default function BrandsSection() {
             <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-orange-100/20 rounded-full blur-3xl translate-x-1/2"></div>
 
             <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                {/* Mobile Header - Centered */}
+                <div className="text-center mb-12 lg:hidden">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">
+                        Marcas que Instalamos
+                    </h2>
+                    <div className="h-1 w-20 bg-secondary-gradient rounded-full mx-auto mb-3"></div>
+                    <p className="text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        Trabajamos exclusivamente con las marcas líderes mundiales en tecnología solar
+                    </p>
+                </div>
+
+                {/* Mobile Grid - Simple centered grid */}
+                <div className="block lg:hidden max-w-4xl mx-auto mb-8">
+                    <div className="grid grid-cols-3 gap-4 px-4">
+                        <div className="flex items-center justify-center p-2">
+                            <img
+                                src="https://s3.suncarsrl.com/marcas/felicity.png"
+                                alt="Felicity Solar"
+                                className="w-full h-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+                                style={{ maxHeight: '70px' }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-center p-2">
+                            <img
+                                src="https://s3.suncarsrl.com/marcas/must.png"
+                                alt="Must"
+                                className="w-full h-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+                                style={{ maxHeight: '70px' }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-center p-2">
+                            <img
+                                src="https://s3.suncarsrl.com/marcas/greenheiss.png"
+                                alt="Greenheiss"
+                                className="w-full h-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+                                style={{ maxHeight: '70px' }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-center p-2">
+                            <img
+                                src="https://s3.suncarsrl.com/marcas/pylontech.png"
+                                alt="Pylontech"
+                                className="w-full h-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+                                style={{ maxHeight: '70px' }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-center p-2">
+                            <img
+                                src="https://s3.suncarsrl.com/marcas/huawei.png"
+                                alt="Huawei"
+                                className="w-full h-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+                                style={{ maxHeight: '70px' }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Desktop Layout - Two columns */}
+                <div className="hidden lg:grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
                     {/* Left Content */}
                     <div className="space-y-6 lg:space-y-8">
