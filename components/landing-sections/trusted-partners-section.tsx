@@ -2,11 +2,25 @@
 
 import React, { useRef, useEffect } from "react"
 
-// Partner Item Component
+// Partner Item Component for Carousel (Desktop)
 const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
     <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
         <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
+            <img
+                src={src}
+                alt={alt}
+                className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
+            />
+        </div>
+    </div>
+)
+
+// Partner Item Component for Grid (Mobile)
+const PartnerItemGrid = ({ src, alt }: { src: string; alt: string }) => (
+    <div className="flex items-center justify-center p-3">
+        <div className="relative w-full h-20 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg"></div>
             <img
                 src={src}
                 alt={alt}
@@ -160,8 +174,17 @@ export default function TrustedPartnersSection() {
                     </p>
                 </div>
 
-                {/* Partners Carousel - Two Rows */}
-                <div className="relative max-w-7xl mx-auto space-y-4 md:space-y-6">
+                {/* Mobile Grid - Visible only on mobile */}
+                <div className="block md:hidden max-w-4xl mx-auto">
+                    <div className="grid grid-cols-3 gap-2 px-4">
+                        {partners.map((partner, index) => (
+                            <PartnerItemGrid key={`mobile-${index}`} src={partner.src} alt={partner.alt} />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Desktop Carousel - Two Rows - Hidden on mobile */}
+                <div className="hidden md:block relative max-w-7xl mx-auto space-y-4 md:space-y-6">
                     {/* Gradient fade left */}
                     <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
 
