@@ -2,11 +2,14 @@
 
 /// <reference types="../types/model-viewer" />
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import "@google/model-viewer"
 
 export default function SolarHouseModel() {
     const modelViewerRef = useRef<any>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [isFullscreen, setIsFullscreen] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         // Optional: Add event listeners or configurations here
@@ -15,19 +18,46 @@ export default function SolarHouseModel() {
         if (modelViewer) {
             modelViewer.addEventListener('load', () => {
                 console.log('3D model loaded successfully')
+                setIsLoading(false)
             })
 
             modelViewer.addEventListener('error', (error: any) => {
                 console.error('Error loading 3D model:', error)
+                setIsLoading(false)
             })
+        }
+
+        // Listen for fullscreen changes
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement)
+        }
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange)
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange)
         }
     }, [])
 
+    const toggleFullscreen = async () => {
+        if (!containerRef.current) return
+
+        try {
+            if (!document.fullscreenElement) {
+                await containerRef.current.requestFullscreen()
+            } else {
+                await document.exitFullscreen()
+            }
+        } catch (error) {
+            console.error('Error toggling fullscreen:', error)
+        }
+    }
+
     return (
-        <div className="relative w-full h-full min-h-[500px] md:min-h-[600px] lg:min-h-[700px] pt-12">
+        <div ref={containerRef} className="relative w-full h-full min-h-[500px] md:min-h-[600px] lg:min-h-[700px] pt-12 group">
             <model-viewer
                 ref={modelViewerRef}
                 src="https://s3.suncarsrl.com/3dmodels/solar_house.glb"
+                poster="https://s3.suncarsrl.com/web/3d_placeholder.jpg"
                 alt="Modelo 3D de casa con paneles solares - Suncar"
                 camera-controls
                 disable-zoom
@@ -54,13 +84,6 @@ export default function SolarHouseModel() {
                 ar-modes="webxr scene-viewer quick-look"
                 className="w-full h-full bg-white"
             >
-                {/* Loading indicator */}
-                <div slot="poster" className="absolute inset-0 flex items-center justify-center bg-white">
-                    <div className="text-center space-y-4">
-                        <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                        <p className="text-primary font-semibold">Cargando modelo 3D...</p>
-                    </div>
-                </div>
 
                 {/* AR button */}
                 <button
@@ -71,6 +94,23 @@ export default function SolarHouseModel() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                     Ver en AR
+                </button>
+
+                {/* Fullscreen button - subtle and appears on hover */}
+                <button
+                    onClick={toggleFullscreen}
+                    className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm text-gray-600 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white hover:text-primary hover:scale-110 z-10"
+                    title={isFullscreen ? "Salir de pantalla completa" : "Ver en pantalla completa"}
+                >
+                    {isFullscreen ? (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                    )}
                 </button>
 
                 {/* Error message */}
@@ -84,6 +124,14 @@ export default function SolarHouseModel() {
                     </div>
                 </div>
             </model-viewer>
+
+            {/* Subtle Loading Indicator */}
+            <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-500 ${isLoading ? 'opacity-100' : 'opacity-0'}`}>
+                <div className="bg-white/80 backdrop-blur-md px-6 py-3 rounded-full shadow-lg flex items-center gap-3 border border-white/50">
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm font-medium text-primary/80">Cargando modelo interactivo 3D...</span>
+                </div>
+            </div>
 
             {/* Floating particles around the model */}
             <div className="floating-particle particle-1" style={{ top: '10%', left: '20%' }}></div>
