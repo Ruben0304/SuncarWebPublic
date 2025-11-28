@@ -17,7 +17,7 @@
 - Se pueden obtener fotos filtradas por carpeta específica.
 - Cada foto incluye su URL pública, nombre de archivo, carpeta, tamaño y fecha de subida.
 
-### 2. **Subida de Fotos**
+### 2. **Subida de Fotos** 
 - Se pueden subir nuevas fotos a cualquiera de las tres carpetas.
 - Solo se aceptan archivos de imagen (jpg, jpeg, png, gif, webp).
 - Las fotos se almacenan con su nombre original en la carpeta especificada.
