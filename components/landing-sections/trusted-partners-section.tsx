@@ -40,11 +40,12 @@ const partners = [
     { src: "https://s3.suncarsrl.com/partners/milexus.png", alt: "Milexus - Cliente de Suncar" },
     { src: "https://s3.suncarsrl.com/partners/mercazon.png", alt: "Mercazon - Cliente de Suncar" },
     { src: "https://s3.suncarsrl.com/partners/humidores.png", alt: "Humidores - Cliente de Suncar" },
+    { src: "https://s3.suncarsrl.com/partners/online-tools.svg", alt: "Online Tools - Cliente de Suncar" },
 ]
 
 // Dividir partners en dos grupos para las dos filas
-const partnersRow1 = partners.filter((_, index) => index % 2 === 0) // Pares: 0, 2, 4, 6
-const partnersRow2 = partners.filter((_, index) => index % 2 !== 0) // Impares: 1, 3, 5, 7
+const partnersRow1 = partners.filter((_, index) => index % 2 === 0) // Índices pares
+const partnersRow2 = partners.filter((_, index) => index % 2 !== 0) // Índices impares
 
 export default function TrustedPartnersSection() {
     const scrollRef1 = useRef<HTMLDivElement>(null)
