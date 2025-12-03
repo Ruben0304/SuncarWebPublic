@@ -13,6 +13,7 @@ import { isChristmasSeason } from "@/lib/christmas-utils"
 // Import landing sections
 import HeroSection from "@/components/landing-sections/hero-section"
 import HeroSectionChristmas from "@/components/landing-sections/hero-section-christmas"
+import ChristmasInstagramSection from "@/components/landing-sections/christmas-instagram-section"
 import TrustedPartnersSection from "@/components/landing-sections/trusted-partners-section"
 import ServicesSection from "@/components/landing-sections/services-section"
 import FelicityPartnershipSection from "@/components/landing-sections/felicity-partnership-section"
@@ -94,6 +95,9 @@ export default function HomePage() {
       ) : (
         <HeroSection blueText={blueText} orangeText={orangeText} />
       )}
+
+      {/* Christmas Instagram Section - Only during Christmas season */}
+      {isChristmas && <ChristmasInstagramSection />}
 
       {/* Trusted Partners Section */}
       <TrustedPartnersSection />
