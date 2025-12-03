@@ -39,7 +39,7 @@ const partners = [
     { src: "https://s3.suncarsrl.com/partners/fadiar.png", alt: "Fadiar - Cliente de Suncar" },
     { src: "https://s3.suncarsrl.com/partners/milexus.png", alt: "Milexus - Cliente de Suncar" },
     { src: "https://s3.suncarsrl.com/partners/mercazon.png", alt: "Mercazon - Cliente de Suncar" },
-    { src: "https://s3.suncarsrl.com/partners/humidores.png", alt: "Humidores - Cliente de Suncar" },
+    { src: "https://s3.suncarsrl.com/partners/dorian.png", alt:"Donde Dorian - Cliente de Suncar" },
     { src: "https://s3.suncarsrl.com/partners/online-tools.svg", alt: "Online Tools - Cliente de Suncar" },
 ]
 
