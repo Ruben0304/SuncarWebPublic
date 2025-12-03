@@ -57,7 +57,7 @@ export default function SolarHouseModel() {
             <model-viewer
                 ref={modelViewerRef}
                 src="https://s3.suncarsrl.com/3dmodels/solar_house.glb"
-                poster="https://s3.suncarsrl.com/web/3d_placeholder.jpg"
+                poster="https://s3.suncarsrl.com/web/3d_placeholder_navidad.png"
                 alt="Modelo 3D de casa con paneles solares - Suncar"
                 camera-controls
                 disable-zoom
