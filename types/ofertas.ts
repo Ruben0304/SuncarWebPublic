@@ -9,6 +9,7 @@ export interface OfertaSimplificada {
   moneda: string;
   financiamiento: boolean;
   descuentos?: string | null;
+  pdf?: string | null;
   is_active?: boolean;
 }
 
@@ -30,6 +31,7 @@ export interface Oferta {
   moneda: string;
   financiamiento: boolean;
   descuentos?: string | null;
+  pdf?: string | null;
   garantias: string[];
   elementos: OfertaElemento[];
   is_active?: boolean;

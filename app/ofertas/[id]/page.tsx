@@ -25,7 +25,9 @@ import {
   Percent,
   Sparkles,
   Tag,
-  Info
+  Info,
+  FileText,
+  Download
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -387,11 +389,58 @@ export default function OfertaDetailPage() {
                 </Card>
               </div>
 
+              {/* PDF Ficha Técnica Section */}
+              {oferta.pdf && oferta.pdf.trim() !== '' && (
+                <Card
+                  className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-lg overflow-hidden relative"
+                  data-aos="fade-up"
+                  data-aos-delay="125"
+                >
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-blue-100/30 rounded-full -translate-y-20 translate-x-20"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-100/30 rounded-full translate-y-16 -translate-x-16"></div>
+
+                  <CardContent className="p-6 md:p-8 relative z-10">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                            <FileText className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-blue-800 mb-2">Ficha Técnica Completa</h3>
+                          <p className="text-gray-700 leading-relaxed">
+                            Descarga el documento PDF con toda la información técnica detallada de esta oferta, incluyendo especificaciones, características y certificaciones.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="w-full md:w-auto">
+                        <Button
+                          asChild
+                          size="lg"
+                          className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          <a
+                            href={oferta.pdf}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2"
+                          >
+                            <Download className="w-5 h-5" />
+                            Descargar PDF
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Service Coverage Information */}
               <Card
                 className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 shadow-lg overflow-hidden relative"
                 data-aos="fade-up"
-                data-aos-delay="125"
+                data-aos-delay="150"
               >
                 <div className="absolute top-0 right-0 w-40 h-40 bg-green-100/30 rounded-full -translate-y-20 translate-x-20"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-100/30 rounded-full translate-y-16 -translate-x-16"></div>
@@ -422,7 +471,7 @@ export default function OfertaDetailPage() {
               <Card
                 className="bg-white border-2 border-gray-100 overflow-hidden relative shadow-xl"
                 data-aos="fade-up"
-                data-aos-delay="150"
+                data-aos-delay="175"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full -translate-y-16 translate-x-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-50 rounded-full translate-y-12 -translate-x-12"></div>
