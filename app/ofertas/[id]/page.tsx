@@ -6,7 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
+import NavigationChristmas from '@/components/navigation-christmas';
 import Footer from '@/components/footer';
+import { isChristmasSeason } from '@/lib/christmas-utils';
 import {
   ArrowLeft,
   Star,
@@ -40,10 +42,16 @@ export default function OfertaDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>('EUR');
+  const [isChristmas, setIsChristmas] = useState(false);
   const { isClient } = useClient();
   const { convertPrice, formatPrice } = useCurrencyExchange();
 
   const ofertaId = params.id as string;
+
+  // Check if it's Christmas season
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason());
+  }, []);
 
   // Initialize AOS with global hook
   useAOS({ duration: 800, once: true, easing: 'ease-out-cubic' });
@@ -86,7 +94,7 @@ export default function OfertaDetailPage() {
 
   return (
     <>
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}

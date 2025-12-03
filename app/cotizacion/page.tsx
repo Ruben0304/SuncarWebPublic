@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Calculator, Zap, Home, DollarSign, CheckCircle, ArrowRight, Sun, Battery, Shield, Loader2 } from "lucide-react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import dynamic from "next/dynamic"
 import { clientCotizacionService } from "@/services/api/clientCotizacionService"
 import { CotizacionData } from "@/services/domain/interfaces/cotizacionInterfaces"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 // Dynamic import for the map component to avoid SSR issues
 const LocationMapPicker = dynamic(() => import("@/components/LocationMapPicker"), {
@@ -34,6 +36,11 @@ export default function QuotationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState(null)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -194,7 +201,7 @@ export default function QuotationPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">

@@ -1,14 +1,22 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useContactos } from "@/hooks/useContactos"
 import TiendaAnimation from "@/components/TiendaAnimation"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 export default function ProductosPage() {
   const { contactos, loading } = useContactos()
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
 
   // Obtener el número de WhatsApp del primer contacto
   const defaultPhone = "+53 6 396 2417"
@@ -23,7 +31,7 @@ export default function ProductosPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       <main className="pt-28 pb-20 px-4">
         <div className="max-w-5xl mx-auto">
           {/* Lottie Animation */}

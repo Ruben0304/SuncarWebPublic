@@ -1,10 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from "lucide-react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import dynamic from "next/dynamic"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 // Importar el mapa dinámicamente para evitar problemas de SSR
 const StaticLocationMap = dynamic(() => import('@/components/StaticLocationMap'), {
@@ -29,6 +31,11 @@ export default function ContactPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -103,7 +110,7 @@ ${formData.message}
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">

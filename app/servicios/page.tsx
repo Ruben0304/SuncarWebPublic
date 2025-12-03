@@ -1,24 +1,32 @@
 "use client"
 
-import { 
-  Sun, 
-  Battery, 
-  Wrench, 
-  Calculator, 
-  Home, 
-  Zap, 
-  Shield, 
-  Clock, 
-  Users, 
+import {
+  Sun,
+  Battery,
+  Wrench,
+  Calculator,
+  Home,
+  Zap,
+  Shield,
+  Clock,
+  Users,
   Award,
   CheckCircle,
   ArrowRight
 } from "lucide-react"
+import { useState, useEffect } from "react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import SolarCellAnimation from "@/components/SolarCellAnimation"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 export default function ServicesPage() {
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
   const services = [
     {
       icon: <Sun className="w-8 h-8" />,
@@ -126,7 +134,7 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
       <section className="relative pt-20 pb-8 sm:pt-24 sm:pb-12 lg:py-32 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">

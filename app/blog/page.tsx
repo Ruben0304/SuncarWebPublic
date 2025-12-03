@@ -4,8 +4,10 @@ import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import { BlogCard, CATEGORIAS_INFO, type Categoria } from "@/components/blog"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 // Tipos basados en la API
 interface BlogPublicoListadoItem {
@@ -28,8 +30,10 @@ function BlogContent() {
   const [blogs, setBlogs] = useState<BlogPublicoListadoItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isChristmas, setIsChristmas] = useState(false)
 
   useEffect(() => {
+    setIsChristmas(isChristmasSeason())
     fetchBlogs()
   }, [])
 
@@ -62,7 +66,7 @@ function BlogContent() {
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-primary via-blue-900 to-primary overflow-hidden">
@@ -169,10 +173,16 @@ function BlogContent() {
 }
 
 export default function BlogPage() {
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
+
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-white overflow-x-hidden">
-        <Navigation />
+        {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-primary via-blue-900 to-primary overflow-hidden">
           <div className="container mx-auto text-center">
             <div className="h-16 w-16 mx-auto animate-spin rounded-full border-4 border-white border-t-transparent"></div>

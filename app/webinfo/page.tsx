@@ -1,19 +1,28 @@
 "use client"
 
-import { 
+import { useState, useEffect } from "react"
+import {
   CheckCircle,
   Users,
   ArrowLeft
 } from "lucide-react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import Link from "next/link"
 import Image from "next/image"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 export default function WebInfoPage() {
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
+
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 overflow-hidden">

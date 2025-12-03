@@ -6,7 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
+import NavigationChristmas from '@/components/navigation-christmas';
 import Footer from '@/components/footer';
+import { isChristmasSeason } from '@/lib/christmas-utils';
 import {
   Star,
   Phone,
@@ -42,7 +44,7 @@ import AOS from "aos";
 function OfertasContent() {
   const searchParams = useSearchParams();
   const marcaParam = searchParams.get("marca");
-  
+
   const [ofertas, setOfertas] = useState<OfertaSimplificada[]>([]);
   const [filteredOfertas, setFilteredOfertas] = useState<OfertaSimplificada[]>([]);
   const [ofertasConDescuento, setOfertasConDescuento] = useState<OfertaSimplificada[]>([]);
@@ -53,6 +55,7 @@ function OfertasContent() {
   const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
   const [selectedCurrencies, setSelectedCurrencies] = useState<Record<string, Currency>>({});
   const [selectedBrandKey, setSelectedBrandKey] = useState<string | null>(marcaParam);
+  const [isChristmas, setIsChristmas] = useState(false);
   const { isClient } = useClient();
 
   // Estados del recomendador
@@ -60,6 +63,11 @@ function OfertasContent() {
   const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
+
+  // Check if it's Christmas season
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason());
+  }, []);
 
   // Initialize AOS with global hook
   useAOS({ duration: 600, once: true, easing: 'ease-out' });
@@ -307,7 +315,7 @@ function OfertasContent() {
 
   return (
     <>
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
@@ -1020,10 +1028,16 @@ function OfertasContent() {
 }
 
 export default function OfertasPage() {
+  const [isChristmas, setIsChristmas] = useState(false);
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason());
+  }, []);
+
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
-        <Navigation />
+        {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin text-[#F26729] mx-auto mb-4" />

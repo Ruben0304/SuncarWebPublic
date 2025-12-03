@@ -5,11 +5,13 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Calendar, TrendingUp, Tag, Share2, Clock, User } from "lucide-react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import { CategoryBadge, type Categoria } from "@/components/blog"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkBreaks from "remark-breaks"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 // Tipos basados en la API
 type Estado = "borrador" | "publicado" | "archivado"
@@ -39,6 +41,11 @@ export default function BlogDetailPage() {
   const [blog, setBlog] = useState<BlogPublicoDetalle | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
 
   useEffect(() => {
     if (slug) {
@@ -113,7 +120,7 @@ export default function BlogDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation />
+        {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <div className="container mx-auto px-4 py-24">
           <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
@@ -134,7 +141,7 @@ export default function BlogDetailPage() {
   if (error || !blog) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation />
+        {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <div className="container mx-auto px-4 py-24">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block p-12 bg-gray-50 rounded-2xl">
@@ -158,7 +165,7 @@ export default function BlogDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       {/* Clean Article Header - Medium Style */}
       <article className="pt-20 pb-8">

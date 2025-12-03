@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef } from "react"
 import { ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Maximize2, RotateCcw } from "lucide-react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import Link from "next/link"
 import { useAOS } from "@/hooks/useAOS"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 export default function TestimonialsPage() {
   const [currentVideo, setCurrentVideo] = useState(0)
@@ -14,7 +16,13 @@ export default function TestimonialsPage() {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isChristmas, setIsChristmas] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+
+  // Check if it's Christmas season
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
 
   // Initialize AOS with global hook
   useAOS({ duration: 800, once: true, offset: 100 })
@@ -117,7 +125,7 @@ export default function TestimonialsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">

@@ -1,10 +1,11 @@
 "use client"
 
-import { 
-  Sun, 
-  Target, 
-  Heart, 
-  Users, 
+import { useState, useEffect } from "react"
+import {
+  Sun,
+  Target,
+  Heart,
+  Users,
   Award,
   CheckCircle,
   Home,
@@ -16,10 +17,17 @@ import {
   TrendingUp
 } from "lucide-react"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import Link from "next/link"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 export default function SobreNosotrosPage() {
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
   const targetAudiences = [
     {
       icon: <Home className="w-8 h-8" />,
@@ -97,7 +105,7 @@ export default function SobreNosotrosPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">

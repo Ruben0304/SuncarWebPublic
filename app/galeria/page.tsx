@@ -5,7 +5,9 @@ import { ChevronLeft, ChevronRight, Play, Pause, X, ZoomIn } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 interface FotoGaleria {
   nombre_archivo: string
@@ -44,6 +46,12 @@ export default function GaleriaPage() {
     nosotros: []
   })
   const [isLoading, setIsLoading] = useState(true)
+  const [isChristmas, setIsChristmas] = useState(false)
+
+  // Check if it's Christmas season
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
 
   // Fetch gallery images from API
   useEffect(() => {
@@ -131,7 +139,7 @@ export default function GaleriaPage() {
 
   return (
     <>
-      <Navigation />
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50/50 to-white pt-36 pb-16 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-100/30"></div>
