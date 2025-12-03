@@ -2,14 +2,17 @@
 
 import dynamic from "next/dynamic"
 import Navigation from "@/components/navigation"
+import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
 import React, { useEffect, useState } from "react"
 import { useTypewriter } from "@/hooks/useTypewriter"
 import { useLoadingContext } from "@/hooks/useLoadingContext"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 // Import landing sections
 import HeroSection from "@/components/landing-sections/hero-section"
+import HeroSectionChristmas from "@/components/landing-sections/hero-section-christmas"
 import TrustedPartnersSection from "@/components/landing-sections/trusted-partners-section"
 import ServicesSection from "@/components/landing-sections/services-section"
 import FelicityPartnershipSection from "@/components/landing-sections/felicity-partnership-section"
@@ -29,7 +32,13 @@ const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteracti
 
 export default function HomePage() {
   const [count, setCount] = useState(0)
+  const [isChristmas, setIsChristmas] = useState(false)
   const { isLoadingComplete } = useLoadingContext()
+
+  // Check if it's Christmas season
+  useEffect(() => {
+    setIsChristmas(isChristmasSeason())
+  }, [])
 
   // Typewriter effects sincronizados con el loader
   const blueText = useTypewriter({
@@ -75,11 +84,16 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      <Navigation />
+      {/* Conditional Navigation - Christmas or Regular */}
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
       <ScrollProgress />
 
-      {/* Hero Section */}
-      <HeroSection blueText={blueText} orangeText={orangeText} />
+      {/* Hero Section - Christmas or Regular */}
+      {isChristmas ? (
+        <HeroSectionChristmas blueText={blueText} orangeText={orangeText} />
+      ) : (
+        <HeroSection blueText={blueText} orangeText={orangeText} />
+      )}
 
       {/* Trusted Partners Section */}
       <TrustedPartnersSection />

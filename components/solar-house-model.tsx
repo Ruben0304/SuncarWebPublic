@@ -74,15 +74,15 @@ export default function SolarHouseModel() {
                     width: '100%',
                     height: '100%',
                     minHeight: '500px',
-                    backgroundColor: '#ffffff',
-                    '--poster-color': '#ffffff',
+                    backgroundColor: 'transparent',
+                    '--poster-color': 'transparent',
                     '--progress-bar-color': 'transparent'
                 } as any}
                 loading="eager"
                 reveal="auto"
                 ar
                 ar-modes="webxr scene-viewer quick-look"
-                className="w-full h-full bg-white"
+                className="w-full h-full bg-transparent"
             >
 
                 {/* AR button */}
@@ -114,8 +114,8 @@ export default function SolarHouseModel() {
                 </button>
 
                 {/* Error message */}
-                <div slot="error" className="absolute inset-0 flex items-center justify-center bg-white">
-                    <div className="text-center space-y-2 p-6">
+                <div slot="error" className="absolute inset-0 flex items-center justify-center bg-transparent">
+                    <div className="text-center space-y-2 p-6 bg-white/90 backdrop-blur-sm rounded-lg">
                         <svg className="w-12 h-12 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>

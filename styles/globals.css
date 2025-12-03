@@ -49,6 +49,7 @@ body {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -89,6 +90,7 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -126,12 +128,15 @@ body {
     transform: rotate(0deg) translateX(150px) rotate(0deg);
     opacity: 0;
   }
+
   5% {
     opacity: 1;
   }
+
   95% {
     opacity: 1;
   }
+
   100% {
     transform: rotate(360deg) translateX(150px) rotate(-360deg);
     opacity: 0.8;
@@ -149,7 +154,7 @@ body {
   animation: rotate-around-image 8s linear infinite;
   animation-delay: 2s;
   z-index: 100;
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(253, 184, 19, 0.9),
     0 0 40px rgba(242, 103, 41, 0.7),
     0 0 60px rgba(253, 184, 19, 0.5);
@@ -175,14 +180,18 @@ body {
 
 /* Floating particles */
 @keyframes float-particle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
     opacity: 1;
   }
+
   33% {
     transform: translateY(-20px) rotate(120deg);
     opacity: 0.8;
   }
+
   66% {
     transform: translateY(10px) rotate(240deg);
     opacity: 0.9;
@@ -200,24 +209,70 @@ body {
   z-index: 100;
 }
 
-.particle-1 { animation-delay: 2s; }
-.particle-2 { animation-delay: 2.5s; }
-.particle-3 { animation-delay: 3s; }
-.particle-4 { animation-delay: 3.5s; }
-.particle-5 { animation-delay: 4s; }
-.particle-6 { animation-delay: 4.5s; }
+.particle-1 {
+  animation-delay: 2s;
+}
+
+.particle-2 {
+  animation-delay: 2.5s;
+}
+
+.particle-3 {
+  animation-delay: 3s;
+}
+
+.particle-4 {
+  animation-delay: 3.5s;
+}
+
+.particle-5 {
+  animation-delay: 4s;
+}
+
+.particle-6 {
+  animation-delay: 4.5s;
+}
 
 /* Animation delay classes */
-.animation-delay-200 { animation-delay: 200ms; }
-.animation-delay-400 { animation-delay: 400ms; }
-.animation-delay-600 { animation-delay: 600ms; }
-.animation-delay-800 { animation-delay: 800ms; }
-.animation-delay-1000 { animation-delay: 1000ms; }
-.animation-delay-1200 { animation-delay: 1200ms; }
-.animation-delay-1400 { animation-delay: 1400ms; }
-.animation-delay-1600 { animation-delay: 1600ms; }
-.animation-delay-1800 { animation-delay: 1800ms; }
-.animation-delay-2000 { animation-delay: 2000ms; }
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
+
+.animation-delay-800 {
+  animation-delay: 800ms;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1000ms;
+}
+
+.animation-delay-1200 {
+  animation-delay: 1200ms;
+}
+
+.animation-delay-1400 {
+  animation-delay: 1400ms;
+}
+
+.animation-delay-1600 {
+  animation-delay: 1600ms;
+}
+
+.animation-delay-1800 {
+  animation-delay: 1800ms;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2000ms;
+}
 
 /* Eye-catching scroll animations */
 @keyframes reveal-on-scroll {
@@ -225,6 +280,7 @@ body {
     opacity: 0;
     transform: translateY(50px) scale(0.95);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -233,10 +289,13 @@ body {
 
 /* Attention-grabbing pulse */
 @keyframes attention-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.05);
     opacity: 0.9;
@@ -248,9 +307,11 @@ body {
   0% {
     transform: translateY(0) scale(1);
   }
+
   50% {
     transform: translateY(-5px) scale(1.02);
   }
+
   100% {
     transform: translateY(0) scale(1);
   }
@@ -258,14 +319,17 @@ body {
 
 /* Glowing border effect */
 @keyframes glow-border {
-  0%, 100% {
-    box-shadow: 
+
+  0%,
+  100% {
+    box-shadow:
       0 0 20px rgba(253, 184, 19, 0.3),
       0 0 40px rgba(242, 103, 41, 0.2),
       inset 0 0 20px rgba(253, 184, 19, 0.1);
   }
+
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 30px rgba(253, 184, 19, 0.6),
       0 0 60px rgba(242, 103, 41, 0.4),
       inset 0 0 30px rgba(253, 184, 19, 0.2);
@@ -277,12 +341,15 @@ body {
   0% {
     transform: translateY(0px) translateX(0px) rotate(0deg);
   }
+
   33% {
     transform: translateY(-30px) translateX(10px) rotate(120deg);
   }
+
   66% {
     transform: translateY(10px) translateX(-15px) rotate(240deg);
   }
+
   100% {
     transform: translateY(0px) translateX(0px) rotate(360deg);
   }
@@ -294,10 +361,12 @@ body {
     opacity: 0;
     transform: translateY(30px) rotateX(90deg);
   }
+
   50% {
     opacity: 0.5;
     transform: translateY(15px) rotateX(45deg);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) rotateX(0deg);
@@ -306,9 +375,12 @@ body {
 
 /* Morphing background */
 @keyframes morph-bg {
-  0%, 100% {
+
+  0%,
+  100% {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   }
+
   50% {
     border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
   }
@@ -378,11 +450,13 @@ body {
     transform: translateY(60px) scale(0.9);
     filter: blur(5px);
   }
+
   60% {
     opacity: 0.8;
     transform: translateY(-5px) scale(1.02);
     filter: blur(1px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -396,6 +470,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -408,6 +483,7 @@ body {
     transform: translateX(-30px) rotateY(30deg);
     filter: blur(3px);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0) rotateY(0deg);
@@ -421,11 +497,13 @@ body {
     transform: scale(0.8) rotateZ(-5deg);
     filter: blur(4px);
   }
+
   70% {
     opacity: 0.9;
     transform: scale(1.05) rotateZ(2deg);
     filter: blur(1px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) rotateZ(0deg);
@@ -435,30 +513,40 @@ body {
 
 /* Floating animation for after entrance */
 @keyframes gentle-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotateZ(0deg);
   }
+
   25% {
     transform: translateY(-8px) rotateZ(0.5deg);
   }
+
   50% {
     transform: translateY(-12px) rotateZ(0deg);
   }
+
   75% {
     transform: translateY(-4px) rotateZ(-0.5deg);
   }
 }
 
 @keyframes gentle-float-image {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotateZ(0deg) scale(1);
   }
+
   25% {
     transform: translateY(-15px) rotateZ(1deg) scale(1.02);
   }
+
   50% {
     transform: translateY(-20px) rotateZ(0deg) scale(1.01);
   }
+
   75% {
     transform: translateY(-8px) rotateZ(-1deg) scale(1.02);
   }
@@ -492,34 +580,43 @@ body {
     transform: translateY(60px) scale(0.9);
     filter: blur(5px);
   }
+
   50% {
     opacity: 0.8;
     transform: translateY(-5px) scale(1.02);
     filter: blur(1px);
   }
+
   70% {
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0);
   }
+
   85% {
     transform: translateY(-8px) rotateZ(0.5deg);
   }
+
   100% {
     transform: translateY(0) rotateZ(0deg);
   }
 }
 
 @keyframes hero-text-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotateZ(0deg);
   }
+
   25% {
     transform: translateY(-8px) rotateZ(0.5deg);
   }
+
   50% {
     transform: translateY(-12px) rotateZ(0deg);
   }
+
   75% {
     transform: translateY(-4px) rotateZ(-0.5deg);
   }
@@ -531,34 +628,43 @@ body {
     transform: scale(0.8) rotateZ(-5deg);
     filter: blur(8px);
   }
+
   60% {
     opacity: 0.9;
     transform: scale(1.05) rotateZ(2deg);
     filter: blur(2px);
   }
+
   80% {
     opacity: 1;
     transform: scale(1) rotateZ(0deg);
     filter: blur(0);
   }
+
   90% {
     transform: translateY(-15px) rotateZ(1deg) scale(1.02);
   }
+
   100% {
     transform: translateY(0) rotateZ(0deg) scale(1);
   }
 }
 
 @keyframes hero-image-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotateZ(0deg) scale(1);
   }
+
   25% {
     transform: translateY(-15px) rotateZ(1deg) scale(1.02);
   }
+
   50% {
     transform: translateY(-20px) rotateZ(0deg) scale(1.01);
   }
+
   75% {
     transform: translateY(-8px) rotateZ(-1deg) scale(1.02);
   }
@@ -568,65 +674,84 @@ body {
 .hero-text-1 {
   opacity: 0;
   animation: hero-text-entrance 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards,
-             hero-text-float 6s ease-in-out 2.5s infinite;
+    hero-text-float 6s ease-in-out 2.5s infinite;
 }
 
 .hero-text-2 {
   opacity: 0;
   animation: hero-text-entrance 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards,
-             hero-text-float 6s ease-in-out 2.7s infinite;
+    hero-text-float 6s ease-in-out 2.7s infinite;
 }
 
 .hero-text-3 {
   opacity: 0;
   animation: hero-text-entrance 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s forwards,
-             hero-text-float 6s ease-in-out 2.9s infinite;
+    hero-text-float 6s ease-in-out 2.9s infinite;
 }
 
 .hero-buttons {
   opacity: 0;
   animation: hero-text-entrance 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.8s forwards,
-             hero-text-float 6s ease-in-out 3.1s infinite;
+    hero-text-float 6s ease-in-out 3.1s infinite;
 }
 
 .hero-counter {
   opacity: 0;
   animation: hero-text-entrance 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s forwards,
-             hero-text-float 6s ease-in-out 3.3s infinite;
+    hero-text-float 6s ease-in-out 3.3s infinite;
 }
 
 .hero-image {
   opacity: 0;
   animation: hero-image-entrance 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards,
-             hero-image-float 8s ease-in-out 3s infinite;
+    hero-image-float 8s ease-in-out 3s infinite;
 }
 
 /* Delay classes for staggered animations */
-.delay-200 { animation-delay: 200ms; }
-.delay-400 { animation-delay: 400ms; }
-.delay-600 { animation-delay: 600ms; }
-.delay-800 { animation-delay: 800ms; }
-.delay-1000 { animation-delay: 1000ms; }
-.delay-1200 { animation-delay: 1200ms; }
-.delay-1400 { animation-delay: 1400ms; }
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+.delay-600 {
+  animation-delay: 600ms;
+}
+
+.delay-800 {
+  animation-delay: 800ms;
+}
+
+.delay-1000 {
+  animation-delay: 1000ms;
+}
+
+.delay-1200 {
+  animation-delay: 1200ms;
+}
+
+.delay-1400 {
+  animation-delay: 1400ms;
+}
 
 /* Loading shimmer effect */
 @keyframes shimmer {
   0% {
     background-position: -468px 0;
   }
+
   100% {
     background-position: 468px 0;
   }
 }
 
 .shimmer-effect {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(253, 184, 19, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(253, 184, 19, 0.2),
+      transparent);
   background-size: 468px 100%;
   animation: shimmer 2s infinite;
 }
@@ -637,6 +762,7 @@ body {
     opacity: 0;
     transform: scale(0.8);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -647,16 +773,20 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
 
 @keyframes float-particle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
     opacity: 0.6;
   }
+
   50% {
     transform: translateY(-30px) rotate(180deg);
     opacity: 1;
@@ -681,15 +811,20 @@ body {
 
 /* Floating animation for game logo */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotateZ(0deg) scale(1);
   }
+
   25% {
     transform: translateY(-15px) rotateZ(1deg) scale(1.02);
   }
+
   50% {
     transform: translateY(-20px) rotateZ(0deg) scale(1.01);
   }
+
   75% {
     transform: translateY(-8px) rotateZ(-1deg) scale(1.02);
   }
@@ -730,9 +865,12 @@ body {
 
 /* Gradient animation for text */
 @keyframes gradient-x {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -749,6 +887,7 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -776,6 +915,7 @@ body {
   0% {
     transform: translate(-50%, -50%) rotate(0deg) translateX(150px) rotate(0deg);
   }
+
   100% {
     transform: translate(-50%, -50%) rotate(360deg) translateX(150px) rotate(-360deg);
   }
@@ -790,6 +930,7 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -804,6 +945,7 @@ body {
   0% {
     transform: rotate(360deg);
   }
+
   100% {
     transform: rotate(0deg);
   }
@@ -819,6 +961,7 @@ body {
     opacity: 0;
     transform: scale(0.8);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -831,9 +974,12 @@ body {
 
 /* Glow pulse for elements */
 @keyframes glow-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
   }
+
   50% {
     box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 191, 36, 0.4);
   }
@@ -843,11 +989,11 @@ body {
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
-/* Model Viewer - Force white background */
+/* Model Viewer - Force transparent background */
 model-viewer {
-  --poster-color: #ffffff !important;
+  --poster-color: transparent !important;
   --progress-bar-color: transparent !important;
-  background-color: #ffffff !important;
+  background-color: transparent !important;
 }
 
 model-viewer::part(default-progress-bar) {
@@ -856,4 +1002,57 @@ model-viewer::part(default-progress-bar) {
 
 model-viewer::part(default-progress-mask) {
   background: transparent;
+}
+
+/* ========================================
+   CHRISTMAS THEME ANIMATIONS
+   ======================================== */
+
+/* Snowfall animation */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) translateX(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-snowfall {
+  animation: snowfall 10s linear infinite;
+}
+
+/* Enhanced slow spin for Christmas decorations */
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* Christmas light twinkle */
+@keyframes christmas-twinkle {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-christmas-twinkle {
+  animation: christmas-twinkle 1.5s ease-in-out infinite;
 }

@@ -1,8 +1,16 @@
 import type { Metadata } from 'next'
+import { Cinzel } from 'next/font/google'
 import '../styles/globals.css'
 import '../styles/nprogress.css'
 import ClientWrapper from "@/components/ClientWrapper";
 import ProgressBarSuspense from "@/components/ProgressBarSuspense";
+
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-cinzel',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -94,7 +102,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" className={cinzel.variable}>
       <head>
         <script
           type="application/ld+json"
@@ -144,7 +152,7 @@ export default function RootLayout({
                     }
                   },
                   {
-                    "@type": "Offer", 
+                    "@type": "Offer",
                     "itemOffered": {
                       "@type": "Service",
                       "name": "Sistemas Solares Comerciales",
@@ -154,7 +162,7 @@ export default function RootLayout({
                   {
                     "@type": "Offer",
                     "itemOffered": {
-                      "@type": "Service", 
+                      "@type": "Service",
                       "name": "Consultoría Energética",
                       "description": "Asesoramiento profesional en eficiencia energética"
                     }

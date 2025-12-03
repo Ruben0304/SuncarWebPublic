@@ -198,22 +198,22 @@ export default function Navigation() {
         {/*  blur={80}*/}
         {/*  className="transition-all duration-300"*/}
         {/*>*/}
-          <div
-            className={`
+        <div
+          className={`
               absolute inset-0 rounded-[16px] bg-white/60 backdrop-blur-md border border-white/250
               transition-all duration-300
               ${scrolled ? "bg-white/90" : ""}
             `}
-          />
-          <div className="relative z-10 w-full h-full flex items-center">
-            <div className="w-full px-4 lg:px-6 py-3 lg:py-4">
+        />
+        <div className="relative z-10 w-full h-full flex items-center">
+          <div className="w-full px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-center justify-between">
               {/* Logo */}
               <div className="flex items-center space-x-3">
                 <div className="relative w-8 h-8 lg:w-10 lg:h-10">
                   <img src="/images/suncar-logo.jpeg" alt="Suncar Logo" className="object-contain rounded-lg" />
                 </div>
-                <span className="text-lg lg:text-xl font-bold text-primary">SUNCAR</span>
+                <span className="text-lg lg:text-xl font-bold text-primary font-[family-name:var(--font-cinzel)]">SUNCAR</span>
               </div>
 
               {/* Desktop Navigation */}
@@ -231,24 +231,24 @@ export default function Navigation() {
                     const showDropdown = isBlog
                       ? showBlogDropdown
                       : isPrecios
-                      ? showPreciosDropdown
-                      : isNosotro
-                      ? showNosotroDropdown
-                      : showAppsDropdown
+                        ? showPreciosDropdown
+                        : isNosotro
+                          ? showNosotroDropdown
+                          : showAppsDropdown
                     const handleMouseEnter = isBlog
                       ? handleBlogMouseEnter
                       : isPrecios
-                      ? handlePreciosMouseEnter
-                      : isNosotro
-                      ? handleNosotroMouseEnter
-                      : handleAppsMouseEnter
+                        ? handlePreciosMouseEnter
+                        : isNosotro
+                          ? handleNosotroMouseEnter
+                          : handleAppsMouseEnter
                     const handleMouseLeave = isBlog
                       ? handleBlogMouseLeave
                       : isPrecios
-                      ? handlePreciosMouseLeave
-                      : isNosotro
-                      ? handleNosotroMouseLeave
-                      : handleAppsMouseLeave
+                        ? handlePreciosMouseLeave
+                        : isNosotro
+                          ? handleNosotroMouseLeave
+                          : handleAppsMouseLeave
 
                     return (
                       <div
@@ -481,8 +481,8 @@ export default function Navigation() {
                 </div>
               </div>
             )}
-            </div>
           </div>
+        </div>
         {/*</GlassSurface>*/}
       </div>
     </nav>
