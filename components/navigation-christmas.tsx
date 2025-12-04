@@ -286,7 +286,7 @@ export default function NavigationChristmas() {
 
                                                 {/* Dropdown Menu - Christmas themed */}
                                                 {showDropdown && (
-                                                    <div className="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-emerald-900/98 via-green-800/98 to-emerald-900/98 backdrop-blur-md rounded-xl shadow-2xl border-2 border-red-400/30 overflow-hidden z-50">
+                                                    <div className="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-emerald-800/95 via-green-700/95 to-emerald-800/95 backdrop-blur-md rounded-xl shadow-2xl border-2 border-red-400/30 overflow-hidden z-50">
                                                         <div className="py-2">
                                                             {isBlog ? (
                                                                 <>
