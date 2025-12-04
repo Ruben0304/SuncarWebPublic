@@ -306,6 +306,32 @@ const config: Config = {
             filter: "brightness(1.2)",
           },
         },
+        "shimmer": {
+          "0%": {
+            transform: "translateX(-100%)",
+          },
+          "100%": {
+            transform: "translateX(100%)",
+          },
+        },
+        "progress": {
+          "0%": {
+            transform: "translateX(-100%)",
+          },
+          "100%": {
+            transform: "translateX(0%)",
+          },
+        },
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.95)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -330,6 +356,9 @@ const config: Config = {
         "ai-glow": "ai-glow 3s ease-in-out infinite",
         "ai-recommended-float": "ai-recommended-float 4s ease-in-out infinite",
         "sparkle": "sparkle 2s ease-in-out infinite",
+        "shimmer": "shimmer 2s ease-in-out infinite",
+        "progress": "progress 2s ease-out forwards",
+        "fade-in": "fade-in 0.5s ease-out forwards",
       },
       animationDelay: {
         "200": "200ms",
