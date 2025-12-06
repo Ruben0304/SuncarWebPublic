@@ -1,14 +1,31 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MessageCircle, X, Send } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { getCartOpenState } from '@/components/ShoppingCart'
 
 const WhatsAppFAB = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [message, setMessage] = useState('')
-  
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const pathname = usePathname()
+
   const phoneNumber = "5363962417" // Número sin el +
   const defaultMessage = "¡Hola! Me interesa conocer más sobre sus servicios de energía solar. ¿Podrían brindarme información?"
+
+  // Verificar si el carrito está abierto cada 100ms
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsCartOpen(getCartOpenState())
+    }, 100)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Ocultar en la página de tienda o cuando el carrito está abierto
+  const shouldHide = pathname === '/tienda' || isCartOpen
+
+  if (shouldHide) return null
 
   const handleSendMessage = () => {
     const finalMessage = message.trim() || defaultMessage

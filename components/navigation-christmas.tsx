@@ -149,7 +149,7 @@ export default function NavigationChristmas() {
             href: "/ofertas",
             hasDropdown: true,
             dropdownType: "precios",
-            matchHrefs: ["/ofertas", "/productos"],
+            matchHrefs: ["/ofertas", "/productos", "/tienda"],
         },
         { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
         {
@@ -173,7 +173,8 @@ export default function NavigationChristmas() {
     const mobileNavItems: NavItem[] = [
         { name: "Inicio", href: "/" },
         { name: "Servicios", href: "/servicios" },
-        { name: "Productos", href: "/productos", badge: "Pronto" },
+        { name: "Tienda (física)", href: "/productos", badge: "Pronto" },
+        { name: "Tienda (online)", href: "/tienda" },
         { name: "Kits completos (instalación)", href: "/ofertas" },
         { name: "Blog", href: "/blog" },
         { name: "Solar Survivor", href: "/solar-survivor" },
@@ -322,10 +323,18 @@ export default function NavigationChristmas() {
                                                                         className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
                                                                         onClick={() => setShowPreciosDropdown(false)}
                                                                     >
-                                                                        <span>Productos</span>
+                                                                        <span>Tienda (física)</span>
                                                                         <Badge className="bg-red-600 text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
                                                                             Pronto
                                                                         </Badge>
+                                                                    </Link>
+                                                                    <div className="border-t border-red-400/20 my-2"></div>
+                                                                    <Link
+                                                                        href="/tienda"
+                                                                        className="block px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
+                                                                        onClick={() => setShowPreciosDropdown(false)}
+                                                                    >
+                                                                        Tienda (online)
                                                                     </Link>
                                                                     <div className="border-t border-red-400/20 my-2"></div>
                                                                     <Link

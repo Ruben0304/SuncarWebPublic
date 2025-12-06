@@ -10,8 +10,20 @@ export default function SolarHouseModel() {
     const containerRef = useRef<HTMLDivElement>(null)
     const [isFullscreen, setIsFullscreen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    const [webGLError, setWebGLError] = useState(false)
 
     useEffect(() => {
+        // Check if WebGL is available
+        const canvas = document.createElement('canvas')
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+
+        if (!gl) {
+            console.warn('WebGL no está disponible en este navegador')
+            setWebGLError(true)
+            setIsLoading(false)
+            return
+        }
+
         // Optional: Add event listeners or configurations here
         const modelViewer = modelViewerRef.current
 
@@ -23,6 +35,7 @@ export default function SolarHouseModel() {
 
             modelViewer.addEventListener('error', (error: any) => {
                 console.error('Error loading 3D model:', error)
+                setWebGLError(true)
                 setIsLoading(false)
             })
         }
@@ -50,6 +63,26 @@ export default function SolarHouseModel() {
         } catch (error) {
             console.error('Error toggling fullscreen:', error)
         }
+    }
+
+    // Si WebGL no está disponible, mostrar imagen estática
+    if (webGLError) {
+        return (
+            <div className="relative w-full h-full min-h-[500px] md:min-h-[600px] lg:min-h-[700px] pt-12">
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                        src="https://s3.suncarsrl.com/web/3d_placeholder_navidad.png"
+                        alt="Casa con paneles solares - Suncar"
+                        className="w-full h-full object-contain"
+                    />
+                </div>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md">
+                    <p className="text-xs text-slate-600 text-center">
+                        Modelo 3D no disponible en este navegador
+                    </p>
+                </div>
+            </div>
+        )
     }
 
     return (

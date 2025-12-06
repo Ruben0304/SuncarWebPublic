@@ -1,16 +1,34 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { getCartOpenState } from "@/components/ShoppingCart";
 
 const UnifiedChatAssistant: React.FC = () => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const pathname = usePathname();
+
   // WhatsApp config
   const phoneNumber = "5363962417";
   const defaultWhatsAppMessage = "¡Hola! Me interesa conocer más sobre sus servicios de energía solar. ¿Podrían brindarme información?";
+
+  // Verificar si el carrito está abierto cada 100ms
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsCartOpen(getCartOpenState());
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
 
   const openWhatsApp = () => {
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(defaultWhatsAppMessage)}`;
     window.open(whatsappUrl, '_blank');
   };
+
+  // Ocultar en la página de tienda o cuando el carrito está abierto
+  const shouldHide = pathname === '/tienda' || isCartOpen;
+
+  if (shouldHide) return null;
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-4 sm:right-4 z-50">

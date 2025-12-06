@@ -1,4 +1,5 @@
 "use client"
+
 import { useState, useEffect, useRef } from "react"
 import { Menu, X, ChevronDown } from "lucide-react"
 import Image from "next/image"
@@ -149,7 +150,7 @@ export default function Navigation() {
       href: "/ofertas",
       hasDropdown: true,
       dropdownType: "precios",
-      matchHrefs: ["/ofertas", "/productos"],
+      matchHrefs: ["/ofertas", "/productos", "/tienda"],
     },
     { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
     {
@@ -173,7 +174,8 @@ export default function Navigation() {
   const mobileNavItems: NavItem[] = [
     { name: "Inicio", href: "/" },
     { name: "Servicios", href: "/servicios" },
-    { name: "Productos", href: "/productos", badge: "Pronto" },
+    { name: "Tienda (física)", href: "/productos", badge: "Pronto" },
+    { name: "Tienda (online)", href: "/tienda" },
     { name: "Kits completos (instalación)", href: "/ofertas" },
     { name: "Blog", href: "/blog" },
     { name: "Solar Survivor", href: "/solar-survivor" },
@@ -325,10 +327,18 @@ export default function Navigation() {
                                     className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
                                     onClick={() => setShowPreciosDropdown(false)}
                                   >
-                                    <span>Productos</span>
+                                    <span>Tienda (física)</span>
                                     <Badge className="bg-primary text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
                                       Pronto
                                     </Badge>
+                                  </Link>
+                                  <div className="border-t border-gray-200 my-2"></div>
+                                  <Link
+                                    href="/tienda"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() => setShowPreciosDropdown(false)}
+                                  >
+                                    Tienda (online)
                                   </Link>
                                   <div className="border-t border-gray-200 my-2"></div>
                                   <Link

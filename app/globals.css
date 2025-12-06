@@ -507,3 +507,25 @@ html {
 .cursor-grab:active {
   cursor: grabbing;
 }
+
+/* Cart flying animation */
+@keyframes fly-to-cart {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: translate(var(--tx), var(--ty)) scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.fly-to-cart {
+  animation: fly-to-cart 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
