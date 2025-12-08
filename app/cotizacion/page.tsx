@@ -5,6 +5,7 @@ import { Calculator, Zap, Home, DollarSign, CheckCircle, ArrowRight, Sun, Batter
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import dynamic from "next/dynamic"
 import { clientCotizacionService } from "@/services/api/clientCotizacionService"
 import { CotizacionData } from "@/services/domain/interfaces/cotizacionInterfaces"
@@ -765,7 +766,7 @@ export default function QuotationPage() {
         </div>
       </section>
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }

@@ -18,6 +18,7 @@ import { useState, useEffect } from "react"
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import SolarCellAnimation from "@/components/SolarCellAnimation"
 import { isChristmasSeason } from "@/lib/christmas-utils"
 
@@ -286,7 +287,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }

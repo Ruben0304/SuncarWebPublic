@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useContactos } from "@/hooks/useContactos"
@@ -77,7 +78,7 @@ export default function ProductosPage() {
           </div>
         </div>
       </main>
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }

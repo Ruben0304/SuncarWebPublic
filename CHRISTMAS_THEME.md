@@ -26,6 +26,17 @@ El tema navideño se activa automáticamente del **1 al 26 de diciembre**.
 - Promoción especial con descuentos
 - Elementos decorativos mínimos en el fondo
 
+### 3. **Footer Christmas** (`components/footer-christmas.tsx`)
+- Fondo degradado verde esmeralda consistente con la navegación
+- Luces navideñas animadas en la parte superior (rojo, amarillo, verde)
+- Copos de nieve sutiles flotando de fondo
+- Logo navideño con mensaje "Feliz Navidad"
+- Títulos de secciones con emojis navideños (✨, 🎁, ☃️)
+- Viñetas decorativas en rojo para los enlaces
+- Botón de cotización con tema de regalo navideño
+- Borde inferior decorativo con colores navideños
+- Mensaje "¡Felices Fiestas!" con Santa animado
+
 ## 🔧 Cómo Funciona
 
 El sistema usa una función de utilidad en `lib/christmas-utils.ts`:
@@ -53,6 +64,7 @@ useEffect(() => {
 // Renderizado condicional
 {isChristmas ? <NavigationChristmas /> : <Navigation />}
 {isChristmas ? <HeroSectionChristmas /> : <HeroSection />}
+{isChristmas ? <FooterChristmas /> : <Footer />}
 ```
 
 ## 🎯 Características del Diseño
@@ -117,6 +129,7 @@ Para cambiar colores, edita los gradientes en los componentes navideños:
 ```
 /lib/christmas-utils.ts                              # Utilidad de fecha
 /components/navigation-christmas.tsx                 # Nav navideña
+/components/footer-christmas.tsx                     # Footer navideño
 /components/landing-sections/hero-section-christmas.tsx  # Hero navideño
 /app/page.tsx                                        # Lógica condicional
 /styles/globals.css                                  # Animaciones CSS

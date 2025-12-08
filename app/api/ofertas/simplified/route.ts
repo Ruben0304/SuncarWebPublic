@@ -42,14 +42,8 @@ export async function GET() {
 
     console.log('Respuesta del backend:', backendData);
 
-    // Filtrar ofertas activas (is_active: true)
-    if (backendData.success && backendData.data && Array.isArray(backendData.data)) {
-      backendData.data = backendData.data.filter((oferta: any) => {
-        // Solo mostrar ofertas que tienen is_active: true
-        // Si is_active no está definido, asumir que está activa (comportamiento por defecto)
-        return oferta.is_active !== false;
-      });
-    }
+    // Ya NO filtramos por is_active - mostramos todas las ofertas
+    // Las ofertas con is_active=false mostrarán badge de "Agotada" en el frontend
 
     return NextResponse.json(backendData);
 

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import { isChristmasSeason } from "@/lib/christmas-utils"
 
 interface FotoGaleria {
@@ -351,7 +352,7 @@ export default function GaleriaPage() {
         </div>
       )}
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </>
   )
 }

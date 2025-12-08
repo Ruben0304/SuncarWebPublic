@@ -164,7 +164,16 @@ export default function OfertaDetailPage() {
                     className="object-cover"
                     priority
                   />
-                  <div className="absolute top-4 left-4">
+                  {/* Status badges - top left corner */}
+                  <div className="absolute top-4 left-4 flex flex-col gap-2">
+                    {/* Sold Out Badge - for inactive offers */}
+                    {oferta.is_active === false && (
+                      <Badge className="bg-gray-600 text-white px-4 py-2 text-base font-bold shadow-xl border-2 border-white">
+                        AGOTADA
+                      </Badge>
+                    )}
+
+                    {/* Discount or Special Offer Badge */}
                     {oferta.descuentos && oferta.descuentos.trim() !== '' ? (
                       <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold px-4 py-2 shadow-xl border-2 border-white flex items-center gap-2">
                         <Percent className="w-4 h-4" />

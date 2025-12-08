@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Maximize2, Ro
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import Link from "next/link"
 import { useAOS } from "@/hooks/useAOS"
 import { isChristmasSeason } from "@/lib/christmas-utils"
@@ -323,7 +324,7 @@ export default function TestimonialsPage() {
         </div>
       </section>
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }

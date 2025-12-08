@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
@@ -38,6 +39,7 @@ import { calculoEnergeticoService } from "@/services/api/calculoEnergeticoServic
 import type { CalculoEnergeticoCategoria, CalculoEnergeticoEquipo } from "@/services/api/calculoEnergeticoService"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
+import { isChristmasSeason } from "@/lib/christmas-utils"
 
 const categoriaIconos: Record<string, string> = {
   "Electrodomésticos de Cocina": "🏠",
@@ -94,6 +96,7 @@ export default function CalculadoraPage() {
   const [initialLoading, setInitialLoading] = useState(true)
   const [loadingCategorias, setLoadingCategorias] = useState(false)
   const [categoriasError, setCategoriasError] = useState<string | null>(null)
+  const [isChristmas, setIsChristmas] = useState(false)
 
   const fetchCategorias = useCallback(async () => {
     setLoadingCategorias(true)
@@ -114,6 +117,7 @@ export default function CalculadoraPage() {
   }, [])
 
   useEffect(() => {
+    setIsChristmas(isChristmasSeason())
     fetchCategorias()
   }, [fetchCategorias])
 
@@ -437,7 +441,7 @@ export default function CalculadoraPage() {
             <p className="text-gray-600">Cargando calculadora...</p>
           </div>
         </div>
-        <Footer />
+        {isChristmas ? <FooterChristmas /> : <Footer />}
       </div>
     )
   }
@@ -988,7 +992,7 @@ export default function CalculadoraPage() {
 
       <Toaster />
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }

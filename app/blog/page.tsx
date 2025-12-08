@@ -6,6 +6,7 @@ import Link from "next/link"
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import { BlogCard, CATEGORIAS_INFO, type Categoria } from "@/components/blog"
 import { isChristmasSeason } from "@/lib/christmas-utils"
 
@@ -167,7 +168,7 @@ function BlogContent() {
         </div>
       </section>
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }

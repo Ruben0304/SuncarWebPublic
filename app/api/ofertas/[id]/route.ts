@@ -55,17 +55,8 @@ export async function GET(
 
     console.log('Respuesta del backend:', backendData);
 
-    // Verificar si la oferta está activa
-    if (backendData.success && backendData.data) {
-      const oferta = backendData.data;
-      // Si is_active está definido y es false, devolver error 404
-      if (oferta.is_active === false) {
-        return NextResponse.json({
-          success: false,
-          message: 'Oferta no disponible'
-        }, { status: 404 });
-      }
-    }
+    // Ya NO filtramos por is_active - mostramos la oferta aunque esté agotada
+    // El frontend mostrará un badge de "AGOTADA" para ofertas con is_active=false
 
     return NextResponse.json(backendData);
 

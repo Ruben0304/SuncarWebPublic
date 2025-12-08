@@ -881,6 +881,12 @@ body {
   animation: gradient-x 3s ease infinite;
 }
 
+/* Gradient animation for text */
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-x 4s ease infinite;
+}
+
 /* Fade in up animation with delays */
 @keyframes fade-in-up {
   0% {

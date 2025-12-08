@@ -4,6 +4,7 @@ import dynamic from "next/dynamic"
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import React, { useEffect, useState } from "react"
 import { useTypewriter } from "@/hooks/useTypewriter"
 import { useLoadingContext } from "@/hooks/useLoadingContext"
@@ -117,7 +118,8 @@ export default function HomePage() {
       {/* Quick Contact Section */}
       <QuickContactSection />
 
-      <Footer />
+      {/* Footer - Christmas or Regular */}
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }

@@ -483,8 +483,16 @@ function OfertasContent() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                          {/* Discount Badge */}
-                          <div className="absolute top-4 left-4">
+                          {/* Status Badge - top left corner */}
+                          <div className="absolute top-4 left-4 flex flex-col gap-2">
+                            {/* Sold Out Badge - for inactive offers */}
+                            {oferta.is_active === false && (
+                              <Badge className="bg-gray-600 text-white px-4 py-2 text-sm font-bold shadow-xl border-2 border-white">
+                                AGOTADA
+                              </Badge>
+                            )}
+
+                            {/* Discount Badge */}
                             <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 text-sm font-bold shadow-xl border-2 border-white flex items-center gap-2">
                               <Percent className="w-4 h-4" />
                               DESCUENTO
@@ -597,10 +605,16 @@ function OfertasContent() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
-                              Oferta
-                            </Badge>
+                          <div className="absolute top-4 left-4">
+                            {oferta.is_active === false ? (
+                              <Badge className="bg-gray-600 text-white px-3 py-1 text-sm font-bold shadow-xl border-2 border-white">
+                                AGOTADA
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
+                                Oferta
+                              </Badge>
+                            )}
                           </div>
 
                           {oferta.marca && (
@@ -708,8 +722,22 @@ function OfertasContent() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                      {/* Ranking Badge */}
-                      <div className="absolute top-4 left-4">
+                      {/* Status badges - top left corner */}
+                      <div className="absolute top-4 left-4 flex flex-col gap-2">
+                        {oferta.is_active === false && (
+                          <Badge className="bg-gray-600 text-white px-3 py-1 text-sm font-bold shadow-xl border-2 border-white">
+                            AGOTADA
+                          </Badge>
+                        )}
+                        {index === 0 && oferta.is_active !== false && (
+                          <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
+                            Más recomendada
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Ranking Badge - moved to top right */}
+                      <div className="absolute top-4 right-4">
                         <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full shadow-lg border-2 border-white">
                           <span className="text-white font-bold text-lg">#{index + 1}</span>
                         </div>
@@ -723,14 +751,6 @@ function OfertasContent() {
                           </div>
                         </div>
                       )}
-
-                      <div className="absolute top-4 right-4">
-                        {index === 0 && (
-                          <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
-                            Más recomendada
-                          </Badge>
-                        )}
-                      </div>
                     </div>
 
                     <CardContent className="p-6">

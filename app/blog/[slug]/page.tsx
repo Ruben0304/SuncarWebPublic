@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, TrendingUp, Tag, Share2, Clock, User } from "lucid
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
+import FooterChristmas from "@/components/footer-christmas"
 import { CategoryBadge, type Categoria } from "@/components/blog"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -379,7 +380,7 @@ export default function BlogDetailPage() {
         </div>
       </article>
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )
 }
