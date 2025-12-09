@@ -155,10 +155,10 @@ export default function Navigation() {
     { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
     {
       name: "Apps",
-      href: "/apps",
+      href: "/calculadora",
       hasDropdown: true,
       dropdownType: "apps",
-      matchHrefs: ["/apps", "/solar-survivor", "/calculadora"],
+      matchHrefs: ["/calculadora", "/solar-survivor"],
     },
     { name: "Testimonios", href: "/testimonios" },
     {

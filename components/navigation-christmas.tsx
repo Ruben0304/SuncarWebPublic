@@ -154,10 +154,10 @@ export default function NavigationChristmas() {
         { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
         {
             name: "Apps",
-            href: "/apps",
+            href: "/calculadora",
             hasDropdown: true,
             dropdownType: "apps",
-            matchHrefs: ["/apps", "/solar-survivor", "/calculadora"],
+            matchHrefs: ["/solar-survivor", "/calculadora"],
         },
         { name: "Testimonios", href: "/testimonios" },
         {

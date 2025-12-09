@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import Navigation from '@/components/navigation';
 import NavigationChristmas from '@/components/navigation-christmas';
 import Footer from '@/components/footer';
+import FooterChristmas from '@/components/footer-christmas';
 import {
   Search,
   Filter,
@@ -171,7 +172,7 @@ export default function TiendaPage() {
             <p className="text-gray-600">Cargando productos...</p>
           </div>
         </main>
-        <Footer />
+        {isChristmas ? <FooterChristmas /> : <Footer />}
       </div>
     );
   }
@@ -193,7 +194,7 @@ export default function TiendaPage() {
             </Card>
           </div>
         </main>
-        <Footer />
+        {isChristmas ? <FooterChristmas /> : <Footer />}
       </div>
     );
   }
@@ -570,7 +571,7 @@ export default function TiendaPage() {
         </div>
       </section>
 
-      <Footer />
+      {isChristmas ? <FooterChristmas /> : <Footer />}
 
       {selectedProduct && (
         <ProductDetailModal
