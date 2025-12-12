@@ -45,26 +45,21 @@ export default function HeroSection({ blueText, orangeText }: HeroSectionProps) 
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards, gentle-float 8s ease-in-out 2.1s infinite' }}>
+                        <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards, gentle-float 8s ease-in-out 2.1s infinite' }}>
                             <Link
                                 href="/ofertas"
-                                className="group relative px-6 py-4 bg-gradient-to-r from-orange-500 via-orange-400 to-yellow-500 text-white font-semibold rounded-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] text-sm lg:text-base overflow-hidden shadow-lg shadow-orange-500/40"
+                                className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber"
                             >
-                                <div className="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-transparent to-white/20"></div>
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                    🎁 Ver Kits Solares
-                                </span>
+                                🧰 Ver Kits de Instalación
                             </Link>
                             <Link
-                                href="/tienda"
-                                className="group relative px-6 py-4 bg-primary text-white font-semibold rounded-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] text-sm lg:text-base overflow-hidden shadow-lg shadow-primary/40"
+                                href="/productos"
+                                className="group relative px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 text-sm lg:text-base overflow-hidden transform hover:scale-105 hover:-translate-y-1"
                             >
-                                <div className="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-transparent to-white/10"></div>
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                    🛒 Tienda Online
-                                </span>
+                                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 animate-pulse"></div>
+                                <span className="relative z-10">🛒 Ver Productos</span>
+                                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                             </Link>
                         </div>
                     </div>

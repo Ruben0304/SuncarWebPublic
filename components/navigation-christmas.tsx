@@ -173,9 +173,9 @@ export default function NavigationChristmas() {
     const mobileNavItems: NavItem[] = [
         { name: "Inicio", href: "/" },
         { name: "Servicios", href: "/servicios" },
-        { name: "Tienda (física)", href: "/productos", badge: "Pronto" },
-        { name: "Tienda (online)", href: "/tienda" },
-        { name: "Kits completos (instalación)", href: "/ofertas" },
+        { name: "Kits Completos (instalación)", href: "/ofertas" },
+        { name: "Productos Online", href: "/productos" },
+        { name: "Tienda", href: "/tienda", badge: "Pronto" },
         { name: "Blog", href: "/blog" },
         { name: "Solar Survivor", href: "/solar-survivor" },
         { name: "Calculadora de Kw", href: "/calculadora" },
@@ -319,30 +319,30 @@ export default function NavigationChristmas() {
                                                             ) : isPrecios ? (
                                                                 <>
                                                                     <Link
-                                                                        href="/productos"
-                                                                        className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
-                                                                        onClick={() => setShowPreciosDropdown(false)}
-                                                                    >
-                                                                        <span>Tienda (física)</span>
-                                                                        <Badge className="bg-red-600 text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
-                                                                            Pronto
-                                                                        </Badge>
-                                                                    </Link>
-                                                                    <div className="border-t border-red-400/20 my-2"></div>
-                                                                    <Link
-                                                                        href="/tienda"
-                                                                        className="block px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
-                                                                        onClick={() => setShowPreciosDropdown(false)}
-                                                                    >
-                                                                        Tienda (online)
-                                                                    </Link>
-                                                                    <div className="border-t border-red-400/20 my-2"></div>
-                                                                    <Link
                                                                         href="/ofertas"
                                                                         className="block px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
                                                                         onClick={() => setShowPreciosDropdown(false)}
                                                                     >
-                                                                        Kits completos (instalación)
+                                                                        Kits Completos (instalación)
+                                                                    </Link>
+                                                                    <div className="border-t border-red-400/20 my-2"></div>
+                                                                    <Link
+                                                                        href="/productos"
+                                                                        className="block px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
+                                                                        onClick={() => setShowPreciosDropdown(false)}
+                                                                    >
+                                                                        Productos Online
+                                                                    </Link>
+                                                                    <div className="border-t border-red-400/20 my-2"></div>
+                                                                    <Link
+                                                                        href="/tienda"
+                                                                        className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
+                                                                        onClick={() => setShowPreciosDropdown(false)}
+                                                                    >
+                                                                        <span>Tienda</span>
+                                                                        <Badge className="bg-red-600 text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
+                                                                            Pronto
+                                                                        </Badge>
                                                                     </Link>
                                                                 </>
                                                             ) : isNosotro ? (
