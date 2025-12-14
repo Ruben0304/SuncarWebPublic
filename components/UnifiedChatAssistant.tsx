@@ -25,8 +25,8 @@ const UnifiedChatAssistant: React.FC = () => {
     window.open(whatsappUrl, '_blank');
   };
 
-  // Ocultar en la página de tienda o cuando el carrito está abierto
-  const shouldHide = pathname === '/tienda' || isCartOpen;
+  // Ocultar en la página de tienda, productos o cuando el carrito está abierto
+  const shouldHide = pathname === '/productos' || isCartOpen;
 
   if (shouldHide) return null;
 

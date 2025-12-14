@@ -129,20 +129,20 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4 pointer-events-none">
         <div
-          className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto animate-in zoom-in-95 duration-200"
+          className="bg-white rounded-2xl md:rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] md:max-h-[90vh] overflow-y-auto pointer-events-auto animate-in zoom-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-3xl">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Package className="w-5 h-5 text-primary" />
+          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-3 md:px-6 py-3 md:py-4 flex items-center justify-between rounded-t-2xl md:rounded-t-3xl">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Package className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Detalles del Producto</h2>
-                <Badge className="mt-1 bg-primary text-white">
+                <h2 className="text-base md:text-xl font-bold text-gray-900">Detalles del Producto</h2>
+                <Badge className="mt-0.5 md:mt-1 bg-primary text-white text-[10px] md:text-xs px-2 py-0.5">
                   {producto.categoria}
                 </Badge>
               </div>
@@ -151,86 +151,86 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
               onClick={onClose}
               variant="ghost"
               size="icon"
-              className="rounded-full hover:bg-gray-100"
+              className="rounded-full hover:bg-gray-100 h-8 w-8 md:h-10 md:w-10"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 md:w-5 md:h-5" />
             </Button>
           </div>
 
           {/* Content */}
-          <div className="p-6 md:p-8">
-            <div className="grid md:grid-cols-2 gap-8">
+          <div className="p-3 md:p-6 lg:p-8">
+            <div className="grid md:grid-cols-2 gap-4 md:gap-8">
               {/* Imagen del producto */}
-              <div className="space-y-4">
-                <div className="relative h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden border border-gray-200">
+              <div className="space-y-3 md:space-y-4">
+                <div className="relative h-64 md:h-80 lg:h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl md:rounded-2xl overflow-hidden border border-gray-200">
                   {producto.foto ? (
                     <Image
                       src={producto.foto}
                       alt={producto.modelo}
                       fill
-                      className="object-contain p-8"
+                      className="object-contain p-4 md:p-8"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full">
-                      <Package className="w-24 h-24 text-gray-300" />
+                      <Package className="w-16 h-16 md:w-24 md:h-24 text-gray-300" />
                     </div>
                   )}
                 </div>
 
                 {/* Características destacadas */}
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2 md:gap-3">
                   <Card className="bg-blue-50 border-blue-200">
-                    <CardContent className="p-4 text-center">
-                      <Zap className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                      <p className="text-xs font-semibold text-blue-900">Alta Eficiencia</p>
+                    <CardContent className="p-2 md:p-4 text-center">
+                      <Zap className="w-4 h-4 md:w-6 md:h-6 text-blue-600 mx-auto mb-1 md:mb-2" />
+                      <p className="text-[10px] md:text-xs font-semibold text-blue-900">Alta Eficiencia</p>
                     </CardContent>
                   </Card>
                   <Card className="bg-green-50 border-green-200">
-                    <CardContent className="p-4 text-center">
-                      <Shield className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                      <p className="text-xs font-semibold text-green-900">Garantía</p>
+                    <CardContent className="p-2 md:p-4 text-center">
+                      <Shield className="w-4 h-4 md:w-6 md:h-6 text-green-600 mx-auto mb-1 md:mb-2" />
+                      <p className="text-[10px] md:text-xs font-semibold text-green-900">Garantía</p>
                     </CardContent>
                   </Card>
                   <Card className="bg-purple-50 border-purple-200">
-                    <CardContent className="p-4 text-center">
-                      <Package className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-                      <p className="text-xs font-semibold text-purple-900">Calidad</p>
+                    <CardContent className="p-2 md:p-4 text-center">
+                      <Package className="w-4 h-4 md:w-6 md:h-6 text-purple-600 mx-auto mb-1 md:mb-2" />
+                      <p className="text-[10px] md:text-xs font-semibold text-purple-900">Calidad</p>
                     </CardContent>
                   </Card>
                 </div>
               </div>
 
               {/* Información del producto */}
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 <div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
                     {producto.modelo}
                   </h3>
                   {producto.descripcion_uso && (
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                       {producto.descripcion_uso}
                     </p>
                   )}
                 </div>
 
                 {/* Precio */}
-                <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6 border border-slate-200">
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl md:rounded-2xl p-4 md:p-6 border border-slate-200">
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-4xl font-bold text-slate-900">
+                    <span className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">
                       ${precioActual.toLocaleString()}
                     </span>
-                    <span className="text-slate-600">
+                    <span className="text-sm md:text-base text-slate-600">
                       / {producto.unidad}
                     </span>
                   </div>
 
                   {selectedQuantity && descuentoPorcentaje > 0 && (
-                    <div className="flex items-center gap-2 mb-4">
-                      <Badge className="bg-green-500 text-white">
-                        <TrendingDown className="w-3 h-3 mr-1" />
+                    <div className="flex items-center gap-2 mb-3 md:mb-4">
+                      <Badge className="bg-green-500 text-white text-[10px] md:text-xs">
+                        <TrendingDown className="w-2.5 h-2.5 md:w-3 md:h-3 mr-1" />
                         {descuentoPorcentaje}% descuento
                       </Badge>
-                      <span className="text-sm text-slate-500 line-through">
+                      <span className="text-xs md:text-sm text-slate-500 line-through">
                         ${producto.precio.toLocaleString()}
                       </span>
                     </div>
@@ -238,22 +238,22 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
 
                   {/* Selector de cantidad si hay precios por volumen */}
                   {preciosPorCantidad.length > 0 && (
-                    <div className="space-y-3">
-                      <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                        <TrendingDown className="w-4 h-4" />
+                    <div className="space-y-2 md:space-y-3">
+                      <label className="text-xs md:text-sm font-semibold text-slate-700 flex items-center gap-1.5 md:gap-2">
+                        <TrendingDown className="w-3 h-3 md:w-4 md:h-4" />
                         Descuentos por volumen:
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-1.5 md:gap-2">
                         <Button
                           variant={selectedQuantity === null ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setSelectedQuantity(null)}
-                          className={selectedQuantity === null
+                          className={`h-auto py-2 md:py-2.5 ${selectedQuantity === null
                             ? 'justify-between bg-primary text-white hover:bg-primary/90'
-                            : 'justify-between border-slate-300 text-slate-700 hover:bg-slate-50'}
+                            : 'justify-between border-slate-300 text-slate-700 hover:bg-slate-50'}`}
                         >
-                          <span className="font-medium">1 {producto.unidad}</span>
-                          <span className="text-xs font-semibold">${producto.precio.toLocaleString()}</span>
+                          <span className="font-medium text-[10px] md:text-sm">1 {producto.unidad}</span>
+                          <span className="text-[9px] md:text-xs font-semibold">${producto.precio.toLocaleString()}</span>
                         </Button>
                         {preciosPorCantidad.map(([cantidad, precio]) => (
                           <Button
@@ -261,12 +261,12 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
                             variant={selectedQuantity === cantidad ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => setSelectedQuantity(cantidad)}
-                            className={selectedQuantity === cantidad
+                            className={`h-auto py-2 md:py-2.5 ${selectedQuantity === cantidad
                               ? 'justify-between bg-primary text-white hover:bg-primary/90'
-                              : 'justify-between border-slate-300 text-slate-700 hover:bg-slate-50'}
+                              : 'justify-between border-slate-300 text-slate-700 hover:bg-slate-50'}`}
                           >
-                            <span className="font-medium">{cantidad}+ {producto.unidad}s</span>
-                            <span className="text-xs font-semibold">${precio.toLocaleString()}</span>
+                            <span className="font-medium text-[10px] md:text-sm">{cantidad}+ {producto.unidad}s</span>
+                            <span className="text-[9px] md:text-xs font-semibold">${precio.toLocaleString()}</span>
                           </Button>
                         ))}
                       </div>
@@ -275,57 +275,57 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   {quantityInCart > 0 && (
-                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-semibold text-primary">En tu carrito:</span>
-                        <div className="flex items-center gap-2 bg-white rounded-lg border-2 border-primary px-2 py-1">
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg md:rounded-xl p-3 md:p-4">
+                      <div className="flex items-center justify-between mb-2 md:mb-3">
+                        <span className="text-xs md:text-sm font-semibold text-primary">En tu carrito:</span>
+                        <div className="flex items-center gap-1 md:gap-2 bg-white rounded-lg border-2 border-primary px-1.5 md:px-2 py-0.5 md:py-1">
                           <Button
                             size="icon"
                             variant="ghost"
                             onClick={() => updateQuantity(producto.id, quantityInCart - 1)}
-                            className="h-8 w-8 hover:bg-primary/10 rounded-lg"
+                            className="h-7 w-7 md:h-8 md:w-8 hover:bg-primary/10 rounded-lg"
                           >
-                            <Minus className="w-4 h-4 text-primary" />
+                            <Minus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                           </Button>
-                          <span className="w-12 text-center font-bold text-primary text-lg">
+                          <span className="w-8 md:w-12 text-center font-bold text-primary text-base md:text-lg">
                             {quantityInCart}
                           </span>
                           <Button
                             size="icon"
                             variant="ghost"
                             onClick={handleAddToCart}
-                            className="h-8 w-8 hover:bg-primary/10 rounded-lg"
+                            className="h-7 w-7 md:h-8 md:w-8 hover:bg-primary/10 rounded-lg"
                           >
-                            <Plus className="w-4 h-4 text-primary" />
+                            <Plus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                           </Button>
                         </div>
                       </div>
-                      <p className="text-xs text-slate-600">
+                      <p className="text-[10px] md:text-xs text-slate-600">
                         Subtotal: <span className="font-bold text-primary">${(producto.precio * quantityInCart).toLocaleString()}</span>
                       </p>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 md:gap-3">
                     {quantityInCart === 0 && (
                       <Button
                         onClick={handleAddToCart}
                         variant="outline"
-                        className="h-12 border-2 border-primary text-primary hover:bg-primary/5 font-semibold"
+                        className="h-10 md:h-12 border-2 border-primary text-primary hover:bg-primary/5 font-semibold text-xs md:text-base"
                         size="lg"
                       >
-                        <Plus className="w-5 h-5 mr-2" />
+                        <Plus className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
                         Al Carrito
                       </Button>
                     )}
                     <Button
                       onClick={handleWhatsAppContact}
-                      className={`h-12 bg-secondary-gradient text-white font-semibold shadow-lg hover:shadow-xl transition-all ${quantityInCart > 0 ? 'col-span-2' : ''}`}
+                      className={`h-10 md:h-12 bg-secondary-gradient text-white font-semibold shadow-lg hover:shadow-xl transition-all text-xs md:text-base ${quantityInCart > 0 ? 'col-span-2' : ''}`}
                       size="lg"
                     >
-                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
                       Comprar ya
                     </Button>
                   </div>
@@ -333,23 +333,23 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
 
                 {/* Especificaciones técnicas */}
                 {allSpecEntries.length > 0 && (
-                  <div className="border-t border-slate-200 pt-6">
-                    <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                      <Info className="w-5 h-5 text-primary" />
+                  <div className="border-t border-slate-200 pt-4 md:pt-6">
+                    <h4 className="text-base md:text-lg font-bold text-slate-900 mb-3 md:mb-4 flex items-center gap-1.5 md:gap-2">
+                      <Info className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                       Especificaciones Técnicas
                     </h4>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5 md:space-y-2">
                       {/* Especificaciones visibles (mínimo 2) */}
                       {visibleSpecs.map(([key, value]) => (
                         <div
                           key={key}
-                          className="flex justify-between items-center py-2.5 border-b border-slate-100"
+                          className="flex justify-between items-center py-2 md:py-2.5 border-b border-slate-100"
                         >
-                          <span className="text-sm font-medium text-slate-700">
+                          <span className="text-xs md:text-sm font-medium text-slate-700">
                             {formatSpecName(key)}
                           </span>
-                          <span className="text-sm text-slate-900 font-semibold">
+                          <span className="text-xs md:text-sm text-slate-900 font-semibold">
                             {formatSpecValue(value)}
                           </span>
                         </div>
@@ -361,12 +361,12 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
                           {showAllSpecs && hiddenSpecs.map(([key, value]) => (
                             <div
                               key={key}
-                              className="flex justify-between items-center py-2.5 border-b border-slate-100"
+                              className="flex justify-between items-center py-2 md:py-2.5 border-b border-slate-100"
                             >
-                              <span className="text-sm font-medium text-slate-700">
+                              <span className="text-xs md:text-sm font-medium text-slate-700">
                                 {formatSpecName(key)}
                               </span>
-                              <span className="text-sm text-slate-900 font-semibold">
+                              <span className="text-xs md:text-sm text-slate-900 font-semibold">
                                 {formatSpecValue(value)}
                               </span>
                             </div>
@@ -376,16 +376,16 @@ export default function ProductDetailModal({ producto, onClose }: ProductDetailM
                             variant="ghost"
                             size="sm"
                             onClick={() => setShowAllSpecs(!showAllSpecs)}
-                            className="w-full mt-3 text-primary hover:bg-primary/5"
+                            className="w-full mt-2 md:mt-3 text-primary hover:bg-primary/5 h-9 md:h-10 text-xs md:text-sm"
                           >
                             {showAllSpecs ? (
                               <>
-                                <ChevronUp className="w-4 h-4 mr-2" />
+                                <ChevronUp className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
                                 Ver menos especificaciones
                               </>
                             ) : (
                               <>
-                                <ChevronDown className="w-4 h-4 mr-2" />
+                                <ChevronDown className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
                                 Ver más especificaciones ({hiddenSpecs.length} adicionales)
                               </>
                             )}

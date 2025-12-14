@@ -23,6 +23,7 @@ import {
   Plus,
   Minus,
   ShoppingCart,
+  Eye,
 } from 'lucide-react';
 import Image from 'next/image';
 import { ArticuloTienda } from '@/types/tienda';
@@ -252,41 +253,43 @@ export default function TiendaPage() {
 
               {/* Filtros de categoría */}
               <div className="mt-4 pt-4 border-t border-slate-200">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 mr-2">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Categorías:
                   </span>
-                  <Button
-                    onClick={() => setSelectedCategoria(null)}
-                    variant={selectedCategoria === null ? 'default' : 'outline'}
-                    size="sm"
-                    className={selectedCategoria === null
-                      ? 'bg-secondary-gradient text-white border-none shadow-md hover:shadow-lg'
-                      : 'border-slate-200 text-slate-700 hover:bg-slate-50'}
-                  >
-                    Todas
-                  </Button>
-                  {categorias.map((cat) => (
+                  <div className="flex flex-wrap items-center gap-1.5 md:gap-2 flex-1">
                     <Button
-                      key={cat}
-                      onClick={() => setSelectedCategoria(cat)}
-                      variant={selectedCategoria === cat ? 'default' : 'outline'}
+                      onClick={() => setSelectedCategoria(null)}
+                      variant={selectedCategoria === null ? 'default' : 'outline'}
                       size="sm"
-                      className={selectedCategoria === cat
+                      className={`h-8 text-xs md:text-sm px-3 md:px-4 ${selectedCategoria === null
                         ? 'bg-secondary-gradient text-white border-none shadow-md hover:shadow-lg'
-                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'}
+                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                     >
-                      {cat}
+                      Todas
                     </Button>
-                  ))}
+                    {categorias.map((cat) => (
+                      <Button
+                        key={cat}
+                        onClick={() => setSelectedCategoria(cat)}
+                        variant={selectedCategoria === cat ? 'default' : 'outline'}
+                        size="sm"
+                        className={`h-8 text-xs md:text-sm px-3 md:px-4 ${selectedCategoria === cat
+                          ? 'bg-secondary-gradient text-white border-none shadow-md hover:shadow-lg'
+                          : 'border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      >
+                        {cat}
+                      </Button>
+                    ))}
+                  </div>
                   {hasActiveFilters && (
                     <Button
                       onClick={clearFilters}
                       variant="ghost"
                       size="sm"
-                      className="text-slate-600 hover:bg-slate-100 ml-auto"
+                      className="text-slate-600 hover:bg-slate-100 h-8 text-xs md:text-sm px-3 self-start sm:self-auto"
                     >
-                      <X className="w-4 h-4 mr-1" />
+                      <X className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1" />
                       Limpiar filtros
                     </Button>
                   )}
@@ -366,7 +369,7 @@ export default function TiendaPage() {
                           <Card
                             key={producto.id}
                             data-product-card
-                            className="group min-w-[260px] max-w-[320px] snap-start border border-slate-200/70 bg-white/90 backdrop-blur shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                            className="group min-w-[200px] max-w-[240px] sm:min-w-[240px] sm:max-w-[280px] md:min-w-[260px] md:max-w-[320px] snap-start border border-slate-200/70 bg-white/90 backdrop-blur shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                             data-aos="fade-up"
                             data-aos-delay={Math.min(200, index * 60)}
                           >
@@ -374,7 +377,7 @@ export default function TiendaPage() {
                               className="cursor-pointer"
                               onClick={() => setSelectedProduct(producto)}
                             >
-                              <div className="relative h-48 bg-gradient-to-br from-slate-50 via-white to-primary/5 overflow-hidden">
+                              <div className="relative h-36 sm:h-40 md:h-48 bg-gradient-to-br from-slate-50 via-white to-primary/5 overflow-hidden">
                                 {producto.foto ? (
                                   <Image
                                     src={producto.foto}
@@ -387,43 +390,43 @@ export default function TiendaPage() {
                                     <Package className="w-16 h-16 text-gray-300" />
                                   </div>
                                 )}
-                                <Badge className="absolute top-3 left-3 bg-white/90 text-primary border border-primary/10 shadow-sm">
+                                <Badge className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 text-primary border border-primary/10 shadow-sm text-[10px] md:text-xs px-2 py-0.5">
                                   {producto.categoria}
                                 </Badge>
                                 {producto.precio_por_cantidad && (
-                                  <span className="absolute top-3 right-3 px-3 py-1 text-xs font-semibold text-amber-900 bg-gradient-to-r from-amber-100 via-amber-50 to-white rounded-full border border-amber-200 shadow-sm">
+                                  <span className="absolute top-2 right-2 md:top-3 md:right-3 px-2 py-0.5 md:px-3 md:py-1 text-[9px] md:text-xs font-semibold text-amber-900 bg-gradient-to-r from-amber-100 via-amber-50 to-white rounded-full border border-amber-200 shadow-sm">
                                     Descuento
                                   </span>
                                 )}
                               </div>
 
-                              <CardContent className="p-4 space-y-3">
+                              <CardContent className="p-3 md:p-4 space-y-2 md:space-y-3">
                                 <div>
-                                  <h3 className="font-bold text-lg text-slate-900 mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                                  <h3 className="font-bold text-sm md:text-lg text-slate-900 mb-1 line-clamp-2 group-hover:text-primary transition-colors">
                                     {producto.modelo}
                                   </h3>
                                   {producto.descripcion_uso && (
-                                    <p className="text-sm text-slate-600 line-clamp-2">
+                                    <p className="text-xs md:text-sm text-slate-600 line-clamp-2">
                                       {producto.descripcion_uso}
                                     </p>
                                   )}
                                 </div>
 
-                                <div className="space-y-2">
-                                  <div className="flex items-end justify-between gap-3">
+                                <div className="space-y-1.5 md:space-y-2">
+                                  <div className="flex items-end justify-between gap-2">
                                     <div>
-                                      <div className="text-2xl font-bold text-slate-900">
+                                      <div className="text-lg md:text-2xl font-bold text-slate-900">
                                         ${producto.precio.toLocaleString()}
                                       </div>
-                                      <div className={producto.precio_por_cantidad ? 'text-primary underline decoration-primary/60 decoration-2 underline-offset-4 font-semibold text-sm' : 'text-gray-500 text-sm'}>
+                                      <div className={producto.precio_por_cantidad ? 'text-primary underline decoration-primary/60 decoration-2 underline-offset-4 font-semibold text-xs md:text-sm' : 'text-gray-500 text-xs md:text-sm'}>
                                         Por {producto.unidad}
                                       </div>
                                     </div>
                                   </div>
 
                                   {producto.precio_por_cantidad && (
-                                    <div className="flex items-center gap-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 shadow-inner">
-                                      <Zap className="w-4 h-4" />
+                                    <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 md:px-3 py-1.5 md:py-2 shadow-inner">
+                                      <Zap className="w-3 h-3 md:w-4 md:h-4" />
                                       <span>Mejor precio por volumen</span>
                                     </div>
                                   )}
@@ -432,7 +435,7 @@ export default function TiendaPage() {
                             </div>
 
                             {/* Botones de acción */}
-                            <div className="p-4 pt-0 grid grid-cols-2 gap-2">
+                            <div className="p-3 md:p-4 pt-0 grid grid-cols-2 gap-1.5 md:gap-2">
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -440,9 +443,10 @@ export default function TiendaPage() {
                                   e.stopPropagation();
                                   setSelectedProduct(producto);
                                 }}
-                                className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                                className="border-slate-300 text-slate-700 hover:bg-slate-50 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                               >
-                                Ver más
+                                <Eye className="w-3.5 h-3.5 md:mr-1.5" />
+                                <span className="hidden md:inline">Ver más</span>
                               </Button>
 
                               {(() => {
@@ -450,7 +454,7 @@ export default function TiendaPage() {
 
                                 if (quantityInCart > 0) {
                                   return (
-                                    <div className="flex items-center gap-1 bg-white rounded-lg border-2 border-primary">
+                                    <div className="flex items-center gap-0.5 md:gap-1 bg-white rounded-lg border-2 border-primary h-8 md:h-9">
                                       <Button
                                         size="sm"
                                         variant="ghost"
@@ -458,11 +462,11 @@ export default function TiendaPage() {
                                           e.stopPropagation();
                                           updateQuantity(producto.id, quantityInCart - 1);
                                         }}
-                                        className="h-full px-2 hover:bg-primary/10 rounded-l-lg"
+                                        className="h-full px-1.5 md:px-2 hover:bg-primary/10 rounded-l-lg"
                                       >
-                                        <Minus className="w-4 h-4 text-primary" />
+                                        <Minus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                                       </Button>
-                                      <span className="flex-1 text-center font-bold text-primary text-sm">
+                                      <span className="flex-1 text-center font-bold text-primary text-xs md:text-sm">
                                         {quantityInCart}
                                       </span>
                                       <Button
@@ -473,9 +477,9 @@ export default function TiendaPage() {
                                           showAddToCartNotification();
                                           addItem(producto);
                                         }}
-                                        className="h-full px-2 hover:bg-primary/10 rounded-r-lg"
+                                        className="h-full px-1.5 md:px-2 hover:bg-primary/10 rounded-r-lg"
                                       >
-                                        <Plus className="w-4 h-4 text-primary" />
+                                        <Plus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                                       </Button>
                                     </div>
                                   );
@@ -488,9 +492,9 @@ export default function TiendaPage() {
                                         showAddToCartNotification();
                                         addItem(producto);
                                       }}
-                                      className="bg-secondary-gradient text-white shadow-md hover:shadow-lg relative overflow-hidden"
+                                      className="bg-secondary-gradient text-white shadow-md hover:shadow-lg relative overflow-hidden h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                                     >
-                                      <Plus className="w-4 h-4 mr-1" />
+                                      <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                                       Agregar
                                     </Button>
                                   );
@@ -501,9 +505,9 @@ export default function TiendaPage() {
                         ))}
                         </div>
 
-                        {/* Indicador de scroll mejorado */}
+                        {/* Indicador de scroll mejorado - Oculto en móvil */}
                         {productosDeCategoria.length > 3 && (
-                          <div className="flex items-center justify-center mt-6 gap-3">
+                          <div className="hidden md:flex items-center justify-center mt-6 gap-3">
                             {/* Barra de progreso */}
                             <div className="relative w-full max-w-xs h-2 bg-slate-200 rounded-full overflow-hidden">
                               <div
