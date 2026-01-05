@@ -181,6 +181,30 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Suncar" />
       </head>
       <body className="overflow-x-hidden">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Protección contra redirecciones maliciosas
+              (function() {
+                var allowedDomains = ['suncarsrl.com', 'www.suncarsrl.com', 'wa.me', 'whatsapp.com', 'google.com', 'facebook.com', 'instagram.com'];
+                var originalOpen = window.open;
+                window.open = function(url) {
+                  if (url) {
+                    try {
+                      var domain = new URL(url).hostname;
+                      var isAllowed = allowedDomains.some(function(d) { return domain.includes(d); });
+                      if (!isAllowed && domain.includes('kryy')) {
+                        console.warn('Blocked suspicious redirect to:', url);
+                        return null;
+                      }
+                    } catch(e) {}
+                  }
+                  return originalOpen.apply(this, arguments);
+                };
+              })();
+            `
+          }}
+        />
         <ProgressBarSuspense />
         <ClientWrapper>
           {children}
