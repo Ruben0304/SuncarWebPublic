@@ -52,7 +52,6 @@ export default function ServicesSection() {
                                 href="/ofertas"
                                 className="group flex items-center justify-between w-full px-5 py-3.5 bg-[#1a3d7a] text-white font-semibold rounded-xl hover:bg-[#153361] transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl shadow-lg relative overflow-hidden"
                             >
-                                <div className="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-transparent to-white/10"></div>
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                 <div className="flex items-center gap-3 relative z-10">
                                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
@@ -71,7 +70,6 @@ export default function ServicesSection() {
                                 href="/tienda"
                                 className="group flex items-center justify-between w-full px-5 py-3.5 bg-[#1a3d7a] text-white font-semibold rounded-xl hover:bg-[#153361] transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl shadow-lg relative overflow-hidden"
                             >
-                                <div className="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-transparent to-white/10"></div>
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                 <div className="flex items-center gap-3 relative z-10">
                                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
@@ -88,9 +86,8 @@ export default function ServicesSection() {
                             {/* Tienda Física */}
                             <Link
                                 href="/productos"
-                                className="group flex items-center justify-between w-full px-5 py-3.5 bg-orange-500 text-white font-semibold rounded-xl hover:bg-orange-600 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl shadow-lg relative overflow-hidden"
+                                className="group flex items-center justify-between w-full px-5 py-3.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl shadow-lg relative overflow-hidden"
                             >
-                                <div className="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-transparent to-yellow-400/15"></div>
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                 <div className="flex items-center gap-3 relative z-10">
                                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
@@ -99,7 +96,7 @@ export default function ServicesSection() {
                                     <div className="text-left">
                                         <div className="text-base font-bold flex items-center gap-2">
                                             Tienda Física
-                                            <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full font-bold">Pronto</span>
+                                            <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold">Pronto</span>
                                         </div>
                                         <div className="text-xs text-white/90">Visítanos y recibe asesoría personalizada</div>
                                     </div>

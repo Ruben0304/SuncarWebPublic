@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
 import NavigationChristmas from '@/components/navigation-christmas';
 import Footer from '@/components/footer';
-import FooterChristmas from '@/components/footer-christmas';
 import { isChristmasSeason } from '@/lib/christmas-utils';
 import {
   Star,
@@ -1011,7 +1010,7 @@ function OfertasContent() {
           </Card>
         </div>
       </div>
-      {isChristmas ? <FooterChristmas /> : <Footer />}
+      <Footer />
     </>
   );
 }
@@ -1033,7 +1032,7 @@ export default function OfertasPage() {
             <p className="text-gray-600">Cargando ofertas...</p>
           </div>
         </div>
-        {isChristmas ? <FooterChristmas /> : <Footer />}
+        <Footer />
       </div>
     }>
       <OfertasContent />

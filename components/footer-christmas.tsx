@@ -182,7 +182,7 @@ export default function FooterChristmas() {
               <span>Todos los derechos reservados.</span>
               <span className="text-red-400">🎄</span>
             </p>
-            <div className="flex items-center gap-3 text-sm ml-4 md:ml-8">
+            <div className="flex items-center gap-3 text-sm">
               <span className="text-2xl animate-pulse">🎅</span>
               <span className="text-emerald-100">¡Felices Fiestas!</span>
             </div>
