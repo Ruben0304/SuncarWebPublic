@@ -412,18 +412,19 @@ export default function CalculadoraPage() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+      <>
         {/* Back Button */}
         <Link
-            href="/"
-            className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-orange-200 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
+          href="/"
+          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-orange-200 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-semibold">Volver</span>
         </Link>
 
-        {/* Barra superior compacta */}
-        <header className="bg-white border-b border-orange-200 sticky top-0 z-20 shadow-sm">
+        <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+          {/* Barra superior compacta */}
+          <header className="bg-white border-b border-orange-200 sticky top-0 z-20 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -452,14 +453,25 @@ export default function CalculadoraPage() {
           </div>
         </div>
         {isChristmas ? <FooterChristmas /> : <Footer />}
-      </div>
+        </div>
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
-      {/* Barra superior compacta */}
-      <header className="bg-white border-b border-orange-200 sticky top-0 z-20 shadow-sm">
+    <>
+      {/* Back Button */}
+      <Link
+        href="/"
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-orange-200 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
+      >
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-semibold">Volver</span>
+      </Link>
+
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+        {/* Barra superior compacta */}
+        <header className="bg-white border-b border-orange-200 sticky top-0 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -1003,6 +1015,7 @@ export default function CalculadoraPage() {
       <Toaster />
 
       {isChristmas ? <FooterChristmas /> : <Footer />}
-    </div>
+      </div>
+    </>
   )
 }
