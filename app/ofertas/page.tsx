@@ -876,6 +876,13 @@ function OfertasContent() {
                   </div>
                 </div>
 
+                <div className="flex items-start gap-3 bg-gradient-to-r from-purple-50 to-pink-50 backdrop-blur border border-purple-200 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
+                  <Info className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                  <p className="leading-relaxed">
+                    Los presupuestos tienen una validez de <span className="font-semibold text-purple-700">10 días naturales</span> a partir de su emisión.
+                  </p>
+                </div>
+
                 {/* Financing Marketing Banner - Movido al final */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
