@@ -42,6 +42,48 @@ import BrandFilterBanner from '@/components/BrandFilterBanner';
 import { useAOS } from '@/hooks/useAOS';
 import AOS from "aos";
 
+const IS_OFERTAS_MAINTENANCE = process.env.NEXT_PUBLIC_OFERTAS_MAINTENANCE === 'true';
+
+function OfertasMaintenance({ isChristmas }: { isChristmas: boolean }) {
+  return (
+    <>
+      {isChristmas ? <NavigationChristmas /> : <Navigation />}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="shadow-2xl border-0 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#0F2B66] to-[#1F4AA6] px-6 py-4">
+              <p className="text-white font-semibold text-sm sm:text-base">
+                Aviso temporal
+              </p>
+            </div>
+            <CardContent className="p-6 sm:p-10">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <Info className="w-6 h-6 sm:w-7 sm:h-7 text-[#F26729]" />
+                </div>
+                <div className="space-y-3">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#0F2B66]">
+                    Estamos ajustando nuestras ofertas
+                  </h2>
+                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+                    Estamos modificando las ofertas actuales para hacerlas más aptas para ti.
+                    Vuelve en un rato y encontrarás novedades.
+                  </p>
+                  <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium">
+                    <Sparkles className="w-4 h-4" />
+                    Actualizando catálogo de ofertas
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      {isChristmas ? <FooterChristmas /> : <Footer />}
+    </>
+  );
+}
+
 function OfertasContent() {
   const searchParams = useSearchParams();
   const marcaParam = searchParams.get("marca");
@@ -1029,6 +1071,10 @@ export default function OfertasPage() {
   useEffect(() => {
     setIsChristmas(isChristmasSeason());
   }, []);
+
+  if (IS_OFERTAS_MAINTENANCE) {
+    return <OfertasMaintenance isChristmas={isChristmas} />;
+  }
 
   return (
     <Suspense fallback={
