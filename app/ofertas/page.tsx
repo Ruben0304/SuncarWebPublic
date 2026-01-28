@@ -42,7 +42,7 @@ import BrandFilterBanner from '@/components/BrandFilterBanner';
 import { useAOS } from '@/hooks/useAOS';
 import AOS from "aos";
 
-const IS_OFERTAS_MAINTENANCE = process.env.NEXT_PUBLIC_OFERTAS_MAINTENANCE === 'true';
+const IS_OFERTAS_MAINTENANCE = process.env.NEXT_PUBLIC_OFERTAS_MAINTENANCE !== 'false';
 
 function OfertasMaintenance({ isChristmas }: { isChristmas: boolean }) {
   return (
