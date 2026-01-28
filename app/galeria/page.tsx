@@ -66,14 +66,25 @@ export default function GaleriaPage() {
           fetch('/api/galeriaweb/nosotros')
         ])
 
+        // Check if responses are ok
+        if (!exteriorRes.ok || !interiorRes.ok || !nosotrosRes.ok) {
+          console.error('Error fetching gallery images:', {
+            exterior: exteriorRes.status,
+            interior: interiorRes.status,
+            nosotros: nosotrosRes.status
+          })
+        }
+
         const exteriorData = await exteriorRes.json()
         const interiorData = await interiorRes.json()
         const nosotrosData = await nosotrosRes.json()
 
+        console.log('Gallery data received:', { exteriorData, interiorData, nosotrosData })
+
         setGalleryData({
-          exterior: exteriorData.success ? exteriorData.data.map((foto: FotoGaleria) => foto.url) : [],
-          interior: interiorData.success ? interiorData.data.map((foto: FotoGaleria) => foto.url) : [],
-          nosotros: nosotrosData.success ? nosotrosData.data.map((foto: FotoGaleria) => foto.url) : []
+          exterior: exteriorData.success && exteriorData.data ? exteriorData.data.map((foto: FotoGaleria) => foto.url) : [],
+          interior: interiorData.success && interiorData.data ? interiorData.data.map((foto: FotoGaleria) => foto.url) : [],
+          nosotros: nosotrosData.success && nosotrosData.data ? nosotrosData.data.map((foto: FotoGaleria) => foto.url) : []
         })
       } catch (error) {
         console.error('Error fetching gallery images:', error)

@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { carpeta: string } }
+  { params }: { params: Promise<{ carpeta: string }> }
 ) {
   try {
-    const { carpeta } = params;
+    const { carpeta } = await params;
 
     // Verificar que BACKEND_URL esté definida
     // En API routes del servidor, usar BACKEND_URL sin NEXT_PUBLIC_
