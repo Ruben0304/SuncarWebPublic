@@ -7,11 +7,12 @@ export async function GET(
   try {
     const { carpeta } = params;
 
-    // Verificar que NEXT_PUBLIC_BACKEND_URL esté definida
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    // Verificar que BACKEND_URL esté definida
+    // En API routes del servidor, usar BACKEND_URL sin NEXT_PUBLIC_
+    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
-      console.error('NEXT_PUBLIC_BACKEND_URL no está definida en variables de entorno');
+      console.error('BACKEND_URL no está definida en variables de entorno');
       return NextResponse.json({
         success: false,
         message: 'Error de configuración del servidor'
@@ -30,7 +31,7 @@ export async function GET(
     // Llamar al endpoint del backend
     const targetUrl = `${backendUrl}/api/galeriaweb/${carpeta}`;
     console.log(`=== DEBUG GALERIAWEB CALL ===`);
-    console.log(`NEXT_PUBLIC_BACKEND_URL env var: ${backendUrl}`);
+    console.log(`BACKEND_URL env var: ${backendUrl}`);
     console.log(`Target URL: ${targetUrl}`);
     console.log(`Carpeta: ${carpeta}`);
     console.log(`=== END DEBUG ===`);

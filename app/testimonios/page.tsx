@@ -39,7 +39,7 @@ export default function TestimonialsPage() {
     {
       id: 2,
       name: "Cliente Satisfecho Testimonio 2", 
-      videoUrl: "https://s3.suncarsrl.com/testimonios/T1.mp4",
+      videoUrl: "https://s3.suncarsrl.com/testimonios/T2.mp4",
       thumbnail: "/images/placeholder.jpg",
       description: "Testimonio de cliente satisfecho con su instalación de energía solar"
     }
