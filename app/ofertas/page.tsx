@@ -802,27 +802,6 @@ function OfertasContent() {
                       </h3>
 
                       <div className="mb-6">
-                        {/* Currency Selector and Price Display - COMENTADO: API agotada */}
-                        {/* {oferta.id && selectedCurrencies[oferta.id] && (
-                                            <div className="space-y-3">
-                                                <CurrencySelector
-                                                    baseCurrency={oferta.moneda.toUpperCase() as Currency}
-                                                    selectedCurrency={selectedCurrencies[oferta.id]}
-                                                    onCurrencyChange={(currency) => handleCurrencyChange(oferta.id!, currency)}
-                                                    basePrice={isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio}
-                                                    size="md"
-                                                    showConvertedPrice={true}
-                                                    className="mb-2"
-                                                />
-
-                                                {isClient && oferta.precio_cliente && (
-                                                    <div className="text-xs text-gray-500">
-                                                        Precio original: {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )} */}
-
                         {/* Mostrar precio simple sin conversión */}
                         <div className="space-y-3">
                           <div className="text-3xl font-bold text-[#F26729]">

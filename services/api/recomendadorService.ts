@@ -6,9 +6,24 @@ class RecomendadorService extends BaseApiService {
     try {
       const request: RecomendadorRequest = { texto };
 
-      const response = await this.post<RecomendadorResponse>('/ofertas/recomendador', request);
+      // Llamar al endpoint proxy de Next.js en lugar del backend directamente
+      // El proxy se encarga de obtener las ofertas de confección y enviarlas al backend
+      const response = await fetch('/api/ofertas/recomendador', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request)
+      });
 
-      return response;
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error del recomendador:', errorText);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data: RecomendadorResponse = await response.json();
+      return data;
     } catch (error) {
       console.error('Error al obtener recomendaciones:', error);
 
