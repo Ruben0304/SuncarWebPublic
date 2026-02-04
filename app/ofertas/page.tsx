@@ -16,9 +16,6 @@ import {
   Eye,
   ArrowRight,
   Loader2,
-  Filter,
-  ArrowUpDown,
-  CreditCard,
   DollarSign,
   Info,
   MapPin,
@@ -34,55 +31,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { OfertaSimplificada, OfertasResponse, RecomendadorData } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
-import CurrencySelector from '@/components/CurrencySelector';
 import { Currency } from '@/hooks/useCurrencyExchange';
 import OfertasRecommendationInput from '@/components/OfertasRecommendationInput';
 import { recomendadorService } from '@/services/api/recomendadorService';
-import BrandFilterBanner from '@/components/BrandFilterBanner';
 import { useAOS } from '@/hooks/useAOS';
 import AOS from "aos";
-
-const IS_OFERTAS_MAINTENANCE = process.env.NEXT_PUBLIC_OFERTAS_MAINTENANCE !== 'false';
-
-function OfertasMaintenance({ isChristmas }: { isChristmas: boolean }) {
-  return (
-    <>
-      {isChristmas ? <NavigationChristmas /> : <Navigation />}
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="shadow-2xl border-0 overflow-hidden">
-            <div className="bg-gradient-to-r from-[#0F2B66] to-[#1F4AA6] px-6 py-4">
-              <p className="text-white font-semibold text-sm sm:text-base">
-                Aviso temporal
-              </p>
-            </div>
-            <CardContent className="p-6 sm:p-10">
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                  <Info className="w-6 h-6 sm:w-7 sm:h-7 text-[#F26729]" />
-                </div>
-                <div className="space-y-3">
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#0F2B66]">
-                    Estamos ajustando nuestras ofertas
-                  </h2>
-                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-                    Estamos modificando las ofertas actuales para hacerlas más aptas para ti.
-                    Vuelve en un rato y encontrarás novedades.
-                  </p>
-                  <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium">
-                    <Sparkles className="w-4 h-4" />
-                    Actualizando catálogo de ofertas
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-      {isChristmas ? <FooterChristmas /> : <Footer />}
-    </>
-  );
-}
 
 function OfertasContent() {
   const searchParams = useSearchParams();
@@ -96,7 +49,6 @@ function OfertasContent() {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'precio-asc' | 'precio-desc' | 'nombre'>('precio-asc');
   const [priceFilter, setPriceFilter] = useState<'all' | 'low' | 'mid' | 'high'>('all');
-  const [selectedCurrencies, setSelectedCurrencies] = useState<Record<string, Currency>>({});
   const [selectedBrandKey, setSelectedBrandKey] = useState<string | null>(marcaParam);
   const [isChristmas, setIsChristmas] = useState(false);
   const { isClient } = useClient();
@@ -114,37 +66,6 @@ function OfertasContent() {
 
   // Initialize AOS with global hook
   useAOS({ duration: 600, once: true, easing: 'ease-out' });
-  const brandOptions = useMemo(() => {
-    const brandMap = new Map<string, { label: string; count: number }>();
-
-    ofertas.forEach(oferta => {
-      const brand = oferta.marca?.trim();
-      if (!brand) {
-        return;
-      }
-      const key = brand.toLowerCase();
-      if (!brandMap.has(key)) {
-        brandMap.set(key, { label: brand, count: 1 });
-      } else {
-        const current = brandMap.get(key);
-        if (current) {
-          brandMap.set(key, { label: current.label, count: current.count + 1 });
-        }
-      }
-    });
-
-    return Array.from(brandMap.entries()).map(([key, value]) => ({
-      key,
-      label: value.label,
-      count: value.count
-    }));
-  }, [ofertas]);
-
-  useEffect(() => {
-    if (selectedBrandKey && !brandOptions.some(option => option.key === selectedBrandKey)) {
-      setSelectedBrandKey(null);
-    }
-  }, [brandOptions, selectedBrandKey]);
 
   // Actualizar selectedBrandKey cuando cambie el parámetro de URL
   useEffect(() => {
@@ -164,11 +85,6 @@ function OfertasContent() {
       return marca.trim().toLowerCase() === selectedBrandKey;
     },
     [selectedBrandKey]
-  );
-
-  const selectedBrandOption = useMemo(
-    () => brandOptions.find(option => option.key === selectedBrandKey) || null,
-    [brandOptions, selectedBrandKey]
   );
 
   useEffect(() => {
@@ -274,15 +190,6 @@ function OfertasContent() {
 
       if (data.success) {
         setOfertas(data.data);
-
-        // Inicializar monedas seleccionadas con la moneda base de cada oferta
-        const initialCurrencies: Record<string, Currency> = {};
-        data.data.forEach((oferta) => {
-          if (oferta.id) {
-            initialCurrencies[oferta.id] = oferta.moneda.toUpperCase() as Currency;
-          }
-        });
-        setSelectedCurrencies(initialCurrencies);
       } else {
         setError(data.message || 'Error al cargar ofertas');
       }
@@ -298,13 +205,6 @@ function OfertasContent() {
     if (moneda.toLowerCase() === 'eur') return 'EUR';
     if (moneda.toLowerCase() === 'usd') return 'USD';
     return moneda.toUpperCase();
-  };
-
-  const handleCurrencyChange = (ofertaId: string, currency: Currency) => {
-    setSelectedCurrencies(prev => ({
-      ...prev,
-      [ofertaId]: currency
-    }));
   };
 
   const handleRecommendationSearch = async (query: string) => {
@@ -324,18 +224,6 @@ function OfertasContent() {
         // Resetear filtros cuando se usan recomendaciones
         setPriceFilter('all');
         setSortBy('precio-asc');
-
-        // Inicializar monedas para nuevas ofertas si es necesario
-        const newCurrencies: Record<string, Currency> = {};
-        response.data.ofertas.forEach((oferta) => {
-          if (oferta.id && !selectedCurrencies[oferta.id]) {
-            newCurrencies[oferta.id] = oferta.moneda.toUpperCase() as Currency;
-          }
-        });
-
-        if (Object.keys(newCurrencies).length > 0) {
-          setSelectedCurrencies(prev => ({ ...prev, ...newCurrencies }));
-        }
       } else {
         setRecommendationError(response.message || 'Error al obtener recomendaciones');
       }
@@ -1050,10 +938,6 @@ export default function OfertasPage() {
   useEffect(() => {
     setIsChristmas(isChristmasSeason());
   }, []);
-
-  if (IS_OFERTAS_MAINTENANCE) {
-    return <OfertasMaintenance isChristmas={isChristmas} />;
-  }
 
   return (
     <Suspense fallback={
