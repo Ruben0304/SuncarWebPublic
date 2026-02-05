@@ -9,7 +9,8 @@ interface OfertaConfeccionItem {
 }
 
 interface OfertaConfeccion {
-  _id: string;
+  _id?: string;
+  numero_oferta?: string;
   nombre_completo?: string;
   nombre_oferta?: string;
   precio_final: number;
@@ -104,20 +105,32 @@ export async function GET() {
     }
 
     // Mapear ofertas de confección al formato simplificado esperado por el frontend
-    const ofertasSimplificadas = backendData.data.map((oferta: OfertaConfeccion) => ({
-      id: oferta._id,
-      descripcion: oferta.nombre_completo || oferta.nombre_oferta || 'Oferta sin nombre',
-      descripcion_detallada: oferta.nombre_completo || null,
-      marca: extractMarcaFromItems(oferta.items),
-      precio: oferta.precio_final,
-      precio_cliente: null, // No disponible en ofertas de confección
-      imagen: oferta.foto_portada || null,
-      moneda: oferta.moneda_pago,
-      financiamiento: true, // Por defecto todas tienen financiamiento
-      descuentos: null, // Las ofertas actuales no tienen descuentos
-      pdf: null, // No disponible
-      is_active: oferta.tipo_oferta === 'generica' && oferta.estado === 'aprobada_para_enviar'
-    }));
+    const ofertasSimplificadas = backendData.data.map((oferta: OfertaConfeccion) => {
+      // Usar numero_oferta o _id como identificador
+      const id = oferta.numero_oferta || oferta._id;
+
+      console.log(`=== MAPEANDO OFERTA ===`);
+      console.log(`_id:`, oferta._id);
+      console.log(`numero_oferta:`, oferta.numero_oferta);
+      console.log(`ID usado:`, id);
+      console.log(`nombre:`, oferta.nombre_completo || oferta.nombre_oferta);
+      console.log(`=== FIN MAPEO ===`);
+
+      return {
+        id: id,
+        descripcion: oferta.nombre_completo || oferta.nombre_oferta || 'Oferta sin nombre',
+        descripcion_detallada: oferta.nombre_completo || null,
+        marca: extractMarcaFromItems(oferta.items),
+        precio: oferta.precio_final,
+        precio_cliente: null, // No disponible en ofertas de confección
+        imagen: oferta.foto_portada || null,
+        moneda: oferta.moneda_pago,
+        financiamiento: true, // Por defecto todas tienen financiamiento
+        descuentos: null, // Las ofertas actuales no tienen descuentos
+        pdf: null, // No disponible
+        is_active: oferta.tipo_oferta === 'generica' && oferta.estado === 'aprobada_para_enviar'
+      };
+    });
 
     console.log(`Ofertas mapeadas: ${ofertasSimplificadas.length}`);
 

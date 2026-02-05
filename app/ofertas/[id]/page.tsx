@@ -48,6 +48,13 @@ export default function OfertaDetailPage() {
   const { isClient } = useClient();
   const { convertPrice, formatPrice } = useCurrencyExchange();
 
+  // Debug: ver qué contiene params
+  console.log('=== DEBUG PARAMS ===');
+  console.log('params:', params);
+  console.log('params.id:', params.id);
+  console.log('typeof params.id:', typeof params.id);
+  console.log('=== END DEBUG ===');
+
   const ofertaId = params.id as string;
 
   // Check if it's Christmas season
@@ -68,6 +75,12 @@ export default function OfertaDetailPage() {
     try {
       setLoading(true);
       setError(null);
+
+      if (!ofertaId) {
+        setError('ID de oferta no válido');
+        setLoading(false);
+        return;
+      }
 
       const response = await fetch(`/api/ofertas/${ofertaId}`);
       const data: OfertaResponse = await response.json();
