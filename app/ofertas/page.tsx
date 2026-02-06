@@ -39,6 +39,7 @@ import AOS from "aos";
 
 const OFERTAS_CACHE_KEY = 'suncar_ofertas_simplified_cache_v1';
 const OFERTAS_CACHE_TTL_MS = 5 * 60 * 1000;
+const OFERTAS_SCROLL_RESTORE_KEY = 'suncar_ofertas_scroll_restore_v1';
 
 type OfertasCacheEntry = {
   data: OfertaSimplificada[];
@@ -108,6 +109,52 @@ function getCachedOfertas(options: { allowStale?: boolean } = {}): OfertaSimplif
   return cache.data;
 }
 
+function saveOfertasScrollPosition(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      OFERTAS_SCROLL_RESTORE_KEY,
+      JSON.stringify({
+        y: window.scrollY,
+        timestamp: Date.now(),
+      })
+    );
+  } catch {
+    // Ignorar errores de storage para no afectar navegación.
+  }
+}
+
+function consumeOfertasScrollPosition(): number | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(OFERTAS_SCROLL_RESTORE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    window.sessionStorage.removeItem(OFERTAS_SCROLL_RESTORE_KEY);
+    const parsed = JSON.parse(raw) as { y?: number; timestamp?: number };
+    if (typeof parsed?.y !== 'number' || typeof parsed?.timestamp !== 'number') {
+      return null;
+    }
+
+    // Evitar restaurar posiciones viejas de navegaciones antiguas.
+    if (Date.now() - parsed.timestamp > 30 * 60 * 1000) {
+      return null;
+    }
+
+    return Math.max(0, parsed.y);
+  } catch {
+    return null;
+  }
+}
+
 function OfertasContent() {
   const searchParams = useSearchParams();
   const marcaParam = searchParams.get("marca");
@@ -129,6 +176,7 @@ function OfertasContent() {
   const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [scrollRestoreApplied, setScrollRestoreApplied] = useState(false);
 
   // Check if it's Christmas season
   useEffect(() => {
@@ -338,6 +386,38 @@ function OfertasContent() {
     // Volver a las ofertas originales
     setFilteredOfertas(ofertas);
   };
+
+  useEffect(() => {
+    if (loading || scrollRestoreApplied || ofertas.length === 0) {
+      return;
+    }
+
+    const scrollY = consumeOfertasScrollPosition();
+    if (scrollY === null) {
+      setScrollRestoreApplied(true);
+      return;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 20;
+
+    const restore = () => {
+      attempts += 1;
+      window.scrollTo({ top: scrollY, behavior: 'auto' });
+
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const enoughHeight = maxScroll >= scrollY - 8;
+
+      if (!enoughHeight && attempts < maxAttempts) {
+        requestAnimationFrame(restore);
+        return;
+      }
+
+      setScrollRestoreApplied(true);
+    };
+
+    requestAnimationFrame(restore);
+  }, [loading, ofertas.length, scrollRestoreApplied]);
 
   return (
     <>
@@ -595,7 +675,7 @@ function OfertasContent() {
                             asChild
                             className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
                           >
-                            <Link href={`/ofertas/${oferta.id}`}>
+                            <Link href={`/ofertas/${oferta.id}`} onClick={saveOfertasScrollPosition}>
                               <Eye className="w-4 h-4 mr-2" />
                               Ver Detalles
                             </Link>
@@ -713,7 +793,7 @@ function OfertasContent() {
                             asChild
                             className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
                           >
-                            <Link href={`/ofertas/${oferta.id}`}>
+                            <Link href={`/ofertas/${oferta.id}`} onClick={saveOfertasScrollPosition}>
                               <Eye className="w-4 h-4 mr-2" />
                               Ver Detalles
                             </Link>
@@ -818,7 +898,7 @@ function OfertasContent() {
                         asChild
                         className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg"
                       >
-                        <Link href={`/ofertas/${oferta.id}`}>
+                        <Link href={`/ofertas/${oferta.id}`} onClick={saveOfertasScrollPosition}>
                           <Eye className="w-4 h-4 mr-2" />
                           Ver Detalles
                         </Link>
