@@ -37,6 +37,77 @@ import { recomendadorService } from '@/services/api/recomendadorService';
 import { useAOS } from '@/hooks/useAOS';
 import AOS from "aos";
 
+const OFERTAS_CACHE_KEY = 'suncar_ofertas_simplified_cache_v1';
+const OFERTAS_CACHE_TTL_MS = 5 * 60 * 1000;
+
+type OfertasCacheEntry = {
+  data: OfertaSimplificada[];
+  timestamp: number;
+};
+
+let ofertasMemoryCache: OfertasCacheEntry | null = null;
+
+function readOfertasCache(): OfertasCacheEntry | null {
+  if (ofertasMemoryCache) {
+    return ofertasMemoryCache;
+  }
+
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(OFERTAS_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as OfertasCacheEntry;
+    if (!parsed || !Array.isArray(parsed.data) || typeof parsed.timestamp !== 'number') {
+      return null;
+    }
+
+    ofertasMemoryCache = parsed;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeOfertasCache(data: OfertaSimplificada[]): void {
+  const entry: OfertasCacheEntry = {
+    data,
+    timestamp: Date.now(),
+  };
+
+  ofertasMemoryCache = entry;
+
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(OFERTAS_CACHE_KEY, JSON.stringify(entry));
+  } catch {
+    // Ignorar errores de storage para no afectar la carga de la vista.
+  }
+}
+
+function getCachedOfertas(options: { allowStale?: boolean } = {}): OfertaSimplificada[] | null {
+  const { allowStale = false } = options;
+  const cache = readOfertasCache();
+  if (!cache) {
+    return null;
+  }
+
+  const isFresh = Date.now() - cache.timestamp <= OFERTAS_CACHE_TTL_MS;
+  if (!isFresh && !allowStale) {
+    return null;
+  }
+
+  return cache.data;
+}
+
 function OfertasContent() {
   const searchParams = useSearchParams();
   const marcaParam = searchParams.get("marca");
@@ -93,10 +164,6 @@ function OfertasContent() {
       once: true,
       easing: 'ease-out'
     });
-  }, []);
-
-  useEffect(() => {
-    fetchOfertas();
   }, []);
 
   useEffect(() => {
@@ -180,26 +247,54 @@ function OfertasContent() {
     selectedBrandKey
   ]);
 
-  const fetchOfertas = async () => {
+  const fetchOfertas = useCallback(async ({ silent = false }: { silent?: boolean } = {}) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!silent) {
+        setLoading(true);
+        setError(null);
+      }
 
       const response = await fetch('/api/ofertas/simplified');
       const data: OfertasResponse = await response.json();
 
       if (data.success) {
         setOfertas(data.data);
+        writeOfertasCache(data.data);
       } else {
-        setError(data.message || 'Error al cargar ofertas');
+        if (!silent) {
+          setError(data.message || 'Error al cargar ofertas');
+        }
       }
     } catch (err) {
       console.error('Error fetching ofertas:', err);
-      setError('Error de conexión al cargar ofertas');
+      if (!silent) {
+        setError('Error de conexión al cargar ofertas');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const cachedFresh = getCachedOfertas();
+    if (cachedFresh) {
+      setOfertas(cachedFresh);
+      setLoading(false);
+      return;
+    }
+
+    const cachedStale = getCachedOfertas({ allowStale: true });
+    if (cachedStale) {
+      setOfertas(cachedStale);
+      setLoading(false);
+      void fetchOfertas({ silent: true });
+      return;
+    }
+
+    void fetchOfertas();
+  }, [fetchOfertas]);
 
   const formatCurrency = (moneda: string) => {
     if (moneda.toLowerCase() === 'eur') return 'EUR';
@@ -399,7 +494,7 @@ function OfertasContent() {
                     {ofertasConDescuento.map((oferta, index) => (
                       <Card
                         key={oferta.id || index}
-                        className="group bg-white border-2 border-orange-200 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                        className="group bg-white border-2 border-orange-200 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col"
                         data-aos="fade-up"
                         data-aos-delay={index * 100}
                       >
@@ -440,12 +535,12 @@ function OfertasContent() {
                           )}
                         </div>
 
-                        <CardContent className="p-6">
-                          <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                        <CardContent className="p-6 flex flex-col">
+                          <h3 className="text-lg font-bold text-[#0F2B66] mb-3 leading-snug break-words group-hover:text-[#F26729] transition-colors duration-300">
                             {oferta.descripcion}
                           </h3>
 
-                          <div className="mb-6">
+                          <div className="mb-6 flex-1">
                             {/* Currency Selector and Price Display - COMENTADO: API agotada */}
                             {/* {oferta.id && selectedCurrencies[oferta.id] && (
                                             <div className="space-y-3">
@@ -521,7 +616,7 @@ function OfertasContent() {
                     {ofertasSinDescuento.map((oferta, index) => (
                       <Card
                         key={oferta.id || index}
-                        className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                        className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col"
                         data-aos="fade-up"
                         data-aos-delay={index * 100}
                       >
@@ -558,12 +653,12 @@ function OfertasContent() {
                           )}
                         </div>
 
-                        <CardContent className="p-6">
-                          <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                        <CardContent className="p-6 flex flex-col">
+                          <h3 className="text-lg font-bold text-[#0F2B66] mb-3 leading-snug break-words group-hover:text-[#F26729] transition-colors duration-300">
                             {oferta.descripcion}
                           </h3>
 
-                          <div className="mb-6">
+                          <div className="mb-6 flex-1">
                             {/* Currency Selector and Price Display - COMENTADO: API agotada */}
                             {/* {oferta.id && selectedCurrencies[oferta.id] && (
                                             <div className="space-y-3">
@@ -639,7 +734,7 @@ function OfertasContent() {
                 {filteredOfertas.map((oferta, index) => (
                   <Card
                     key={oferta.id || index}
-                    className="group bg-white border-2 border-orange-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                    className="group bg-white border-2 border-orange-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col"
                     data-aos="fade-up"
                     data-aos-delay={index * 100}
                   >
@@ -684,12 +779,12 @@ function OfertasContent() {
                       )}
                     </div>
 
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-[#0F2B66] mb-3 line-clamp-2 group-hover:text-[#F26729] transition-colors duration-300">
+                    <CardContent className="p-6 flex flex-col">
+                      <h3 className="text-lg font-bold text-[#0F2B66] mb-3 leading-snug break-words group-hover:text-[#F26729] transition-colors duration-300">
                         {oferta.descripcion}
                       </h3>
 
-                      <div className="mb-6">
+                      <div className="mb-6 flex-1">
                         {/* Mostrar precio simple sin conversión */}
                         <div className="space-y-3">
                           <div className="text-3xl font-bold text-[#F26729]">
