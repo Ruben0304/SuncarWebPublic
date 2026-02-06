@@ -405,7 +405,7 @@ function OfertasContent() {
                       >
                         <div className="relative overflow-hidden aspect-square">
                           <img
-                            src={oferta.imagen || "/images/oferta_generica.jpg"}
+                            src={oferta.imagen || "/placeholder.svg"}
                             alt={oferta.descripcion}
                             width={400}
                             height={400}
@@ -527,7 +527,7 @@ function OfertasContent() {
                       >
                         <div className="relative overflow-hidden aspect-square">
                           <img
-                            src={oferta.imagen || "/images/oferta_generica.jpg"}
+                            src={oferta.imagen || "/placeholder.svg"}
                             alt={oferta.descripcion}
                             width={400}
                             height={400}
@@ -645,7 +645,7 @@ function OfertasContent() {
                   >
                     <div className="relative overflow-hidden aspect-square">
                       <Image
-                        src={oferta.imagen || "/images/oferta_generica.jpg"}
+                        src={oferta.imagen || "/placeholder.svg"}
                         alt={oferta.descripcion}
                         width={400}
                         height={400}
@@ -956,3 +956,4 @@ export default function OfertasPage() {
     </Suspense>
   );
 }
+

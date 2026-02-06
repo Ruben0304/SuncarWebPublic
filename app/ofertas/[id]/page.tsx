@@ -43,6 +43,7 @@ export default function OfertaDetailPage() {
   const [oferta, setOferta] = useState<Oferta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [failedElementImages, setFailedElementImages] = useState<Record<string, boolean>>({});
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>('EUR');
   const [isChristmas, setIsChristmas] = useState(false);
   const { isClient } = useClient();
@@ -87,6 +88,7 @@ export default function OfertaDetailPage() {
 
       if (data.success && data.data) {
         setOferta(data.data);
+        setFailedElementImages({});
         // Inicializar la moneda seleccionada con la moneda base de la oferta
         setSelectedCurrency(data.data.moneda.toUpperCase() as Currency);
       } else {
@@ -171,7 +173,7 @@ export default function OfertaDetailPage() {
                 {/* Image Section */}
                 <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
                   <Image
-                    src={oferta.imagen || "/images/oferta_generica.jpg"}
+                    src={oferta.imagen || "/placeholder.svg"}
                     alt={oferta.descripcion}
                     fill
                     className="object-cover"
@@ -374,15 +376,31 @@ export default function OfertaDetailPage() {
                         {oferta.elementos.map((elemento, index) => (
                           <div key={index} className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                             <div className="flex items-start gap-4">
-                              <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg">
-                                <Image
-                                  src={elemento.foto || "/images/oferta_generica.jpg"}
-                                  alt={elemento.descripcion || 'Elemento'}
-                                  fill
-                                  className="object-cover"
-                                  sizes="64px"
-                                />
-                              </div>
+                              {(() => {
+                                const imageKey = `${index}-${elemento.categoria || ''}-${elemento.descripcion || ''}`;
+                                const showImage = Boolean(elemento.foto) && !failedElementImages[imageKey];
+                                return showImage ? (
+                                  <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-white border border-gray-200">
+                                    <Image
+                                      src={elemento.foto as string}
+                                      alt={elemento.descripcion || 'Elemento'}
+                                      fill
+                                      className="object-contain p-1"
+                                      sizes="64px"
+                                      onError={() =>
+                                        setFailedElementImages((prev) => ({
+                                          ...prev,
+                                          [imageKey]: true,
+                                        }))
+                                      }
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="w-16 h-16 flex-shrink-0 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center">
+                                    <ImageIcon className="w-6 h-6 text-amber-700" />
+                                  </div>
+                                );
+                              })()}
                               <div className="flex-1">
                                 {elemento.categoria && (
                                   <Badge variant="outline" className="mb-2 text-xs">
@@ -584,3 +602,4 @@ export default function OfertaDetailPage() {
     </>
   );
 }
+
