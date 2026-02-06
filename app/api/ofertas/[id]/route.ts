@@ -61,6 +61,11 @@ interface TokenLoginResponse {
   token?: string;
 }
 
+interface TerminosCondicionesData {
+  lineas: string[];
+  texto: string | null;
+}
+
 function extractMarcaFromItems(items?: OfertaConfeccionItem[]): string | null {
   if (!items || items.length === 0) return null;
 
@@ -239,7 +244,43 @@ async function fetchMateriales(backendUrl: string): Promise<Map<string, string>>
   return new Map();
 }
 
-async function fetchTerminosCondiciones(backendUrl: string): Promise<string[]> {
+function normalizeTerminosText(texto: string): string {
+  return texto.replace(/\r\n/g, "\n").trim();
+}
+
+function isUpperHeading(line: string): boolean {
+  const clean = line.replace(/[0-9.,:%()\-•]/g, "").trim();
+  if (clean.length < 4) return false;
+
+  const letters = clean.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, "");
+  if (letters.length < 3) return false;
+
+  return letters === letters.toUpperCase();
+}
+
+function extractGarantiaSection(texto: string): string | null {
+  const normalized = normalizeTerminosText(texto);
+  const headerRegex = /(?:^|\n)\s*GARANT[ÍI]A\s*(?:\n+|:\s*)/i;
+  const headerMatch = headerRegex.exec(normalized);
+  if (!headerMatch) return null;
+
+  const remaining = normalized.slice(headerMatch.index + headerMatch[0].length);
+  const lines = remaining.split("\n");
+  const sectionLines: string[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    if (isUpperHeading(line)) break;
+
+    sectionLines.push(line.replace(/^[•\-*]\s*/, ""));
+  }
+
+  const text = sectionLines.join(" ").replace(/\s+/g, " ").trim();
+  return text.length > 0 ? text : null;
+}
+
+async function fetchTerminosCondiciones(backendUrl: string): Promise<TerminosCondicionesData> {
   try {
     const response = await fetch(`${backendUrl}/api/terminos-condiciones/activo`, {
       method: "GET",
@@ -251,19 +292,20 @@ async function fetchTerminosCondiciones(backendUrl: string): Promise<string[]> {
 
     if (!response.ok) {
       console.error("Error al obtener terminos y condiciones");
-      return [];
+      return { lineas: [], texto: null };
     }
 
     const data: TerminosCondicionesResponse = await response.json();
-    if (!data.success || !data.data?.texto) return [];
+    if (!data.success || !data.data?.texto) return { lineas: [], texto: null };
 
-    return data.data.texto
-      .split("\n")
-      .map((linea) => linea.trim())
-      .filter((linea) => linea.length > 0);
+    const garantiaTexto = extractGarantiaSection(data.data.texto);
+    return {
+      lineas: garantiaTexto ? [garantiaTexto] : [],
+      texto: garantiaTexto,
+    };
   } catch (error) {
     console.error("Error fetching terminos y condiciones:", error);
-    return [];
+    return { lineas: [], texto: null };
   }
 }
 
@@ -325,7 +367,7 @@ export async function GET(
     }
 
     const oferta = backendData.data;
-    const [garantias, fotosMap] = await Promise.all([
+    const [terminosCondiciones, fotosMap] = await Promise.all([
       fetchTerminosCondiciones(backendUrl),
       fetchMateriales(backendUrl),
     ]);
@@ -379,7 +421,8 @@ export async function GET(
       financiamiento: true,
       descuentos: null,
       pdf: null,
-      garantias,
+      terminos_condiciones_texto: terminosCondiciones.texto,
+      garantias: terminosCondiciones.lineas,
       elementos,
       is_active: oferta.tipo_oferta === "generica" && oferta.estado === "aprobada_para_enviar",
     };

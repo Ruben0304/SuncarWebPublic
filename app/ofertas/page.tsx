@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, Suspense } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -35,7 +35,6 @@ import { Currency } from '@/hooks/useCurrencyExchange';
 import OfertasRecommendationInput from '@/components/OfertasRecommendationInput';
 import { recomendadorService } from '@/services/api/recomendadorService';
 import { useAOS } from '@/hooks/useAOS';
-import AOS from "aos";
 
 const OFERTAS_CACHE_KEY = 'suncar_ofertas_simplified_cache_v1';
 const OFERTAS_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -176,7 +175,8 @@ function OfertasContent() {
   const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
-  const [scrollRestoreApplied, setScrollRestoreApplied] = useState(false);
+  const [isRestoringScroll, setIsRestoringScroll] = useState(false);
+  const pendingScrollRef = useRef<number | null>(null);
 
   // Check if it's Christmas season
   useEffect(() => {
@@ -205,14 +205,6 @@ function OfertasContent() {
     },
     [selectedBrandKey]
   );
-
-  useEffect(() => {
-    AOS.init({
-      duration: 600,
-      once: true,
-      easing: 'ease-out'
-    });
-  }, []);
 
   useEffect(() => {
     if (showRecommendations && recommendationData) {
@@ -325,6 +317,27 @@ function OfertasContent() {
     }
   }, []);
 
+  useLayoutEffect(() => {
+    const targetY = consumeOfertasScrollPosition();
+    if (targetY !== null) {
+      pendingScrollRef.current = targetY;
+      setIsRestoringScroll(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('scrollRestoration' in window.history)) {
+      return;
+    }
+
+    const previous = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+
+    return () => {
+      window.history.scrollRestoration = previous;
+    };
+  }, []);
+
   useEffect(() => {
     const cachedFresh = getCachedOfertas();
     if (cachedFresh) {
@@ -387,19 +400,20 @@ function OfertasContent() {
     setFilteredOfertas(ofertas);
   };
 
-  useEffect(() => {
-    if (loading || scrollRestoreApplied || ofertas.length === 0) {
+  useLayoutEffect(() => {
+    if (loading || !isRestoringScroll || ofertas.length === 0) {
       return;
     }
 
-    const scrollY = consumeOfertasScrollPosition();
+    const scrollY = pendingScrollRef.current;
     if (scrollY === null) {
-      setScrollRestoreApplied(true);
+      setIsRestoringScroll(false);
       return;
     }
 
+    let rafId = 0;
     let attempts = 0;
-    const maxAttempts = 20;
+    const maxAttempts = 14;
 
     const restore = () => {
       attempts += 1;
@@ -407,23 +421,31 @@ function OfertasContent() {
 
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       const enoughHeight = maxScroll >= scrollY - 8;
+      const target = Math.min(scrollY, maxScroll);
+      const closeEnough = Math.abs(window.scrollY - target) < 4;
 
-      if (!enoughHeight && attempts < maxAttempts) {
-        requestAnimationFrame(restore);
+      if ((!enoughHeight || !closeEnough) && attempts < maxAttempts) {
+        rafId = requestAnimationFrame(restore);
         return;
       }
 
-      setScrollRestoreApplied(true);
+      pendingScrollRef.current = null;
+      setIsRestoringScroll(false);
     };
 
-    requestAnimationFrame(restore);
-  }, [loading, ofertas.length, scrollRestoreApplied]);
+    rafId = requestAnimationFrame(restore);
+    return () => cancelAnimationFrame(rafId);
+  }, [loading, ofertas.length, isRestoringScroll]);
 
   return (
     <>
-      {isChristmas ? <NavigationChristmas /> : <Navigation />}
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        className={isRestoringScroll ? 'opacity-0 pointer-events-none select-none' : ''}
+        aria-hidden={isRestoringScroll}
+      >
+        {isChristmas ? <NavigationChristmas /> : <Navigation />}
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* AI Recommendation Input */}
           {!loading && !error && ofertas.length > 0 && (
             <OfertasRecommendationInput
@@ -1101,8 +1123,17 @@ function OfertasContent() {
             </CardContent>
           </Card>
         </div>
+        </div>
+        {isChristmas ? <FooterChristmas /> : <Footer />}
       </div>
-      {isChristmas ? <FooterChristmas /> : <Footer />}
+      {isRestoringScroll && (
+        <div className="fixed inset-0 z-[70] bg-white flex items-center justify-center">
+          <div className="flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700 shadow-sm">
+            <Loader2 className="w-4 h-4 animate-spin text-[#F26729]" />
+            Restaurando posicion...
+          </div>
+        </div>
+      )}
     </>
   );
 }

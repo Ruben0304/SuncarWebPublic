@@ -4,7 +4,6 @@ import dynamic from "next/dynamic"
 import { useState, useEffect } from "react"
 import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext"
 import { ClientProvider } from "@/hooks/useClient"
-import ClientVerificationManager from "./ClientVerificationManager"
 
 const UnifiedChatAssistant = dynamic(() => import("./UnifiedChatAssistant"), {
   ssr: false,
@@ -43,9 +42,7 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
   return (
     <LoadingProvider>
       <ClientProvider>
-        <ClientVerificationManager>
-          <ClientWrapperContent>{children}</ClientWrapperContent>
-        </ClientVerificationManager>
+        <ClientWrapperContent>{children}</ClientWrapperContent>
       </ClientProvider>
     </LoadingProvider>
   )

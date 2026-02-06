@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
 import NavigationChristmas from '@/components/navigation-christmas';
@@ -34,7 +34,7 @@ import Image from 'next/image';
 import { Oferta, OfertaResponse } from '@/types/ofertas';
 import { useClient } from '@/hooks/useClient';
 import CurrencySelector from '@/components/CurrencySelector';
-import { Currency, useCurrencyExchange } from '@/hooks/useCurrencyExchange';
+import { Currency } from '@/hooks/useCurrencyExchange';
 import { useAOS } from '@/hooks/useAOS';
 
 export default function OfertaDetailPage() {
@@ -47,7 +47,6 @@ export default function OfertaDetailPage() {
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>('EUR');
   const [isChristmas, setIsChristmas] = useState(false);
   const { isClient } = useClient();
-  const { convertPrice, formatPrice } = useCurrencyExchange();
 
   // Debug: ver qué contiene params
   console.log('=== DEBUG PARAMS ===');
@@ -325,9 +324,13 @@ export default function OfertaDetailPage() {
                 </CardContent>
               </Card> */}
 
-              <div className="grid lg:grid-cols-2 gap-8">
+              <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
                 {/* Garantías */}
-                <Card data-aos="fade-up" data-aos-delay="75">
+                <Card
+                  data-aos="fade-up"
+                  data-aos-delay="75"
+                  className="lg:sticky lg:top-28 lg:self-start"
+                >
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <Shield className="w-6 h-6 text-[#F26729]" />
@@ -346,12 +349,11 @@ export default function OfertaDetailPage() {
                           ))}
                         </div>
 
-                        {/* Disclaimer sobre garantías */}
                         <div className="mt-4 pt-4 border-t border-gray-200">
                           <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
                             <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                             <p className="text-xs text-gray-700 leading-relaxed">
-                              <span className="font-semibold text-blue-700">Condiciones de garantía:</span> Las garantías ofrecidas son válidas únicamente cuando la instalación y el mantenimiento de los equipos son realizados por nuestro equipo de profesionales certificados de Suncar. Cualquier intervención de terceros anulará automáticamente la cobertura de garantía.
+                              Cualquier intervención de terceros anulará automáticamente la cobertura de garantía realizada por nuestro equipo de profesionales certificados de SUNCAR.
                             </p>
                           </div>
                         </div>

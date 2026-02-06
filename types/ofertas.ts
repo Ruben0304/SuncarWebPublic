@@ -32,6 +32,7 @@ export interface Oferta {
   financiamiento: boolean;
   descuentos?: string | null;
   pdf?: string | null;
+  terminos_condiciones_texto?: string | null;
   garantias: string[];
   elementos: OfertaElemento[];
   is_active?: boolean;
