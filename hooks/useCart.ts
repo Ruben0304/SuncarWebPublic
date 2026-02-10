@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { ArticuloTienda } from '@/types/tienda';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { ArticuloTienda } from "@/types/tienda";
 
 export interface CartItem {
   producto: ArticuloTienda;
@@ -24,14 +24,16 @@ export const useCart = create<CartStore>()(
 
       addItem: (producto, cantidad = 1) => {
         set((state) => {
-          const existingItem = state.items.find((item) => item.producto.id === producto.id);
+          const existingItem = state.items.find(
+            (item) => item.producto.id === producto.id,
+          );
 
           if (existingItem) {
             return {
               items: state.items.map((item) =>
                 item.producto.id === producto.id
                   ? { ...item, cantidad: item.cantidad + cantidad }
-                  : item
+                  : item,
               ),
             };
           }
@@ -56,9 +58,7 @@ export const useCart = create<CartStore>()(
 
         set((state) => ({
           items: state.items.map((item) =>
-            item.producto.id === productoId
-              ? { ...item, cantidad }
-              : item
+            item.producto.id === productoId ? { ...item, cantidad } : item,
           ),
         }));
       },
@@ -74,12 +74,12 @@ export const useCart = create<CartStore>()(
       getTotalPrice: () => {
         return get().items.reduce(
           (total, item) => total + item.producto.precio * item.cantidad,
-          0
+          0,
         );
       },
     }),
     {
-      name: 'suncar-cart-storage',
-    }
-  )
+      name: "suncar-cart-storage-v2",
+    },
+  ),
 );

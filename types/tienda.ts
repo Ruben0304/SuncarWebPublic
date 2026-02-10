@@ -1,6 +1,6 @@
 // Tipos para la tienda de productos fotovoltaicos
 
-export type UnidadTipo = "pieza" | "set";
+export type UnidadTipo = "pieza" | "set" | "m";
 
 export interface EspecificacionesTecnicas {
   capacidad?: string;
@@ -43,6 +43,9 @@ export interface ArticuloTienda {
   precio: number;
   precio_por_cantidad?: PrecioPorCantidad | null;
   especificaciones?: EspecificacionesTecnicas | null;
+  marca_id?: string | null;
+  marca_nombre?: string | null;
+  potenciaKW?: number | null;
 }
 
 export interface ArticulosTiendaResponse {
@@ -51,30 +54,39 @@ export interface ArticulosTiendaResponse {
   data: ArticuloTienda[];
 }
 
-export interface ArticuloTiendaResponse {
-  success: boolean;
-  message: string;
-  data: ArticuloTienda | null;
+// Tipos para las respuestas raw del backend de productos
+
+export interface BackendMarca {
+  _id: string;
+  nombre: string;
 }
 
-export interface CreateArticuloRequest {
-  categoria: string;
-  modelo: string;
-  unidad: UnidadTipo;
+export interface BackendMaterial {
+  codigo: string;
+  descripcion?: string;
+  um?: string;
   precio: number;
-  descripcion_uso?: string;
-  foto?: File;
-  precio_por_cantidad?: string; // JSON string
-  especificaciones?: string; // JSON string
+  nombre?: string;
+  marca_id?: string;
+  foto?: string | null;
+  potenciaKW?: number;
+  habilitar_venta_web?: boolean;
+  precio_por_cantidad?: PrecioPorCantidad;
+  especificaciones?: EspecificacionesTecnicas;
 }
 
-export interface UpdateArticuloRequest {
-  categoria?: string;
-  modelo?: string;
-  descripcion_uso?: string;
-  foto?: File;
-  unidad?: UnidadTipo;
-  precio?: number;
-  precio_por_cantidad?: string; // JSON string
-  especificaciones?: string; // JSON string
+export interface BackendCategoria {
+  id: string;
+  categoria: string;
+  materiales: BackendMaterial[];
+}
+
+export interface BackendProductosResponse {
+  success: boolean;
+  data: BackendCategoria[];
+}
+
+export interface BackendMarcasResponse {
+  success: boolean;
+  data: BackendMarca[];
 }
