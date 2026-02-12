@@ -33,6 +33,8 @@ import { isChristmasSeason } from "@/lib/christmas-utils";
 import ShoppingCartComponent from "@/components/ShoppingCart";
 import { useCart } from "@/hooks/useCart";
 
+const SHOW_PRODUCTS_MAINTENANCE = true;
+
 export default function TiendaPage() {
   const [productos, setProductos] = useState<ArticuloTienda[]>([]);
   const [filteredProductos, setFilteredProductos] = useState<ArticuloTienda[]>(
@@ -174,6 +176,36 @@ export default function TiendaPage() {
   };
 
   const hasActiveFilters = Boolean(searchTerm || selectedCategoria);
+
+  if (SHOW_PRODUCTS_MAINTENANCE) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100">
+        {isChristmas ? <NavigationChristmas /> : <Navigation />}
+
+        <main className="pt-28 pb-20 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center bg-white/80 backdrop-blur rounded-3xl shadow-xl border border-white/50 p-10 md:p-16">
+              <Badge className="mx-auto mb-6 bg-secondary-gradient text-white px-4 py-1 text-sm">
+                En mantenimiento
+              </Badge>
+
+              <h1 className="text-3xl md:text-5xl font-bold text-primary mb-6">
+                Estamos actualizando esta sección
+              </h1>
+
+              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+                Estamos actualizando los precios para hacerlos más asequibles.
+                Vuelve pronto para ver el catálogo de productos sueltos con los
+                nuevos valores.
+              </p>
+            </div>
+          </div>
+        </main>
+
+        {isChristmas ? <FooterChristmas /> : <Footer />}
+      </div>
+    );
+  }
 
   if (loading) {
     return (
