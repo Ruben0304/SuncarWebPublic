@@ -48,7 +48,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' blob: https://*.suncarsrl.com https://*.supabase.co https://www.google-analytics.com https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com wss:",
+              "connect-src 'self' blob: https://*.suncarsrl.com https://*.supabase.co https://www.google-analytics.com https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://lottie.host wss:",
               "worker-src 'self' blob:",
               "media-src 'self' blob: https://*.suncarsrl.com https://*.supabase.co",
               "frame-src 'self' https://www.google.com",
