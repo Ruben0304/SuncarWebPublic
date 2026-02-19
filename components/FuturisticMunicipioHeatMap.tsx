@@ -26,8 +26,24 @@ interface FuturisticMunicipioHeatMapProps {
   height?: string;
 }
 
+type MetricKey = "paneles" | "inversores";
+
 const DEFAULT_ENDPOINT = "/api/clientes/estadisticas/kw-instalados-por-municipio";
 const mapCenter: [number, number] = [21.5218, -77.7812];
+
+const METRIC_CONFIG: Record<
+  MetricKey,
+  { label: string; field: "potencia_paneles_kw" | "potencia_inversores_kw" }
+> = {
+  inversores: {
+    label: "Inversores",
+    field: "potencia_inversores_kw",
+  },
+  paneles: {
+    label: "Paneles",
+    field: "potencia_paneles_kw",
+  },
+};
 
 function normalizeText(value: string): string {
   return value
@@ -53,6 +69,7 @@ export default function FuturisticMunicipioHeatMap({
   endpoint = DEFAULT_ENDPOINT,
   height = "620px",
 }: FuturisticMunicipioHeatMapProps) {
+  const [selectedMetric, setSelectedMetric] = useState<MetricKey>("inversores");
   const [geoJsonData, setGeoJsonData] = useState<GeoJsonObject | null>(null);
   const [stats, setStats] = useState<MunicipioStatApiItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,24 +129,43 @@ export default function FuturisticMunicipioHeatMap({
   }, [endpoint]);
 
   const metricByMunicipio = useMemo(() => {
-    const map = new Map<string, number>();
+    const map = new Map<
+      string,
+      { potencia_paneles_kw: number; potencia_inversores_kw: number }
+    >();
+
     for (const item of stats) {
-      map.set(normalizeText(item.municipio), Number(item.total_kw_instalados || 0));
+      const key = normalizeText(item.municipio);
+      const current = map.get(key) ?? {
+        potencia_paneles_kw: 0,
+        potencia_inversores_kw: 0,
+      };
+
+      current.potencia_paneles_kw += Number(item.potencia_paneles_kw || 0);
+      current.potencia_inversores_kw += Number(item.potencia_inversores_kw || 0);
+      map.set(key, current);
     }
+
     return map;
   }, [stats]);
 
   const maxMetricValue = useMemo(() => {
-    const values = Array.from(metricByMunicipio.values());
+    const field = METRIC_CONFIG[selectedMetric].field;
+    const values = Array.from(metricByMunicipio.values()).map((entry) =>
+      Number(entry[field] || 0),
+    );
     const max = Math.max(...values, 0);
     return max > 0 ? max : 1;
-  }, [metricByMunicipio]);
+  }, [metricByMunicipio, selectedMetric]);
 
   const getFeatureStyle = (feature?: Feature): PathOptions => {
     const shapeName = String(
       (feature?.properties as Record<string, unknown> | undefined)?.shapeName ?? "",
     );
-    const value = metricByMunicipio.get(normalizeText(shapeName)) ?? 0;
+    const field = METRIC_CONFIG[selectedMetric].field;
+    const value = Number(
+      metricByMunicipio.get(normalizeText(shapeName))?.[field] ?? 0,
+    );
     const ratio = Math.sqrt(Math.max(value, 0) / maxMetricValue);
 
     return {
@@ -145,7 +181,26 @@ export default function FuturisticMunicipioHeatMap({
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_15%,rgba(59,130,246,0.12),transparent_40%),radial-gradient(circle_at_80%_85%,rgba(34,211,238,0.10),transparent_40%)]" />
 
       <div className="relative p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-end">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="inline-flex items-center rounded-full border border-blue-100 bg-white/95 p-1">
+            {(Object.keys(METRIC_CONFIG) as MetricKey[]).map((metric) => {
+              const active = metric === selectedMetric;
+              return (
+                <button
+                  key={metric}
+                  type="button"
+                  onClick={() => setSelectedMetric(metric)}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                    active
+                      ? "bg-primary text-white"
+                      : "text-primary/80 hover:bg-blue-50"
+                  }`}
+                >
+                  {METRIC_CONFIG[metric].label}
+                </button>
+              );
+            })}
+          </div>
           <div className="inline-flex items-center gap-3 rounded-full border border-blue-100 bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-600">
             <span className="text-[11px] uppercase tracking-wide">Menor</span>
             <span className="h-2 w-24 rounded-full bg-gradient-to-r from-[#e5e7eb] via-[#60a5fa] to-[#f97316]" />
