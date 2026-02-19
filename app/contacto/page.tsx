@@ -27,7 +27,7 @@ const FuturisticMunicipioHeatMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[620px] rounded-3xl border border-cyan-300/30 bg-slate-900 text-cyan-100 flex items-center justify-center">
+      <div className="h-[620px] rounded-3xl border border-blue-200 bg-white text-primary flex items-center justify-center">
         Cargando radar nacional...
       </div>
     ),
@@ -394,7 +394,7 @@ ${formData.message}
       {/*  </div>*/}
       {/*</section>*/}
 
-      <section className="py-16 lg:py-20 bg-slate-950">
+      <section className="py-16 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <FuturisticMunicipioHeatMap />
         </div>

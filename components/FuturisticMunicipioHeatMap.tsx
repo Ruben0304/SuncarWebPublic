@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Feature, GeoJsonObject } from "geojson";
 import type { Layer, LeafletMouseEvent, PathOptions } from "leaflet";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
-import { Activity, Cpu, Sun, Zap } from "lucide-react";
+import { Cpu, Sun, Zap } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
 type MetricKey = "paneles" | "inversores" | "total";
@@ -33,18 +33,26 @@ interface AggregatedMunicipioStat {
   total_kw_instalados: number;
 }
 
+interface HoverInfo {
+  municipio: string;
+  x: number;
+  y: number;
+  stat: AggregatedMunicipioStat | null;
+}
+
 interface FuturisticMunicipioHeatMapProps {
   endpoint?: string;
   height?: string;
 }
 
 const DEFAULT_ENDPOINT = "/api/clientes/estadisticas/kw-instalados-por-municipio";
+const CARD_WIDTH = 240;
+const CARD_HEIGHT = 160;
 
 const METRIC_CONFIG: Record<
   MetricKey,
   {
     label: string;
-    unit: string;
     field:
       | "potencia_paneles_kw"
       | "potencia_inversores_kw"
@@ -54,19 +62,16 @@ const METRIC_CONFIG: Record<
 > = {
   paneles: {
     label: "Paneles",
-    unit: "kW",
     field: "potencia_paneles_kw",
     icon: Sun,
   },
   inversores: {
     label: "Inversores",
-    unit: "kW",
     field: "potencia_inversores_kw",
     icon: Cpu,
   },
   total: {
     label: "Total",
-    unit: "kW",
     field: "total_kw_instalados",
     icon: Zap,
   },
@@ -91,25 +96,30 @@ function formatMetric(value: number): string {
 }
 
 function heatColorFromRatio(ratio: number): string {
-  if (ratio <= 0) return "#081224";
-  if (ratio < 0.15) return "#0c2b44";
-  if (ratio < 0.3) return "#13526b";
-  if (ratio < 0.5) return "#1b7e9f";
-  if (ratio < 0.7) return "#25a5c9";
-  if (ratio < 0.85) return "#5fc0d4";
-  if (ratio < 0.95) return "#f4c84b";
-  return "#ff6b6b";
+  if (ratio <= 0) return "#dbeafe";
+  if (ratio < 0.2) return "#93c5fd";
+  if (ratio < 0.4) return "#60a5fa";
+  if (ratio < 0.6) return "#38bdf8";
+  if (ratio < 0.78) return "#22d3ee";
+  if (ratio < 0.9) return "#facc15";
+  return "#f97316";
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }
 
 export default function FuturisticMunicipioHeatMap({
   endpoint = DEFAULT_ENDPOINT,
   height = "620px",
 }: FuturisticMunicipioHeatMapProps) {
+  const mapShellRef = useRef<HTMLDivElement>(null);
   const [selectedMetric, setSelectedMetric] = useState<MetricKey>("paneles");
   const [geoJsonData, setGeoJsonData] = useState<GeoJsonObject | null>(null);
   const [stats, setStats] = useState<MunicipioStatApiItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -198,16 +208,6 @@ export default function FuturisticMunicipioHeatMap({
     return map;
   }, [stats]);
 
-  const totalClientes = useMemo(
-    () => stats.reduce((sum, item) => sum + Number(item.total_clientes_instalados || 0), 0),
-    [stats],
-  );
-
-  const totalKwGlobal = useMemo(
-    () => stats.reduce((sum, item) => sum + Number(item.total_kw_instalados || 0), 0),
-    [stats],
-  );
-
   const maxMetricValue = useMemo(() => {
     const field = METRIC_CONFIG[selectedMetric].field;
     const values = Array.from(aggregatedStats.values()).map((item) =>
@@ -215,13 +215,6 @@ export default function FuturisticMunicipioHeatMap({
     );
     const max = Math.max(...values, 0);
     return max > 0 ? max : 1;
-  }, [aggregatedStats, selectedMetric]);
-
-  const topMunicipios = useMemo(() => {
-    const field = METRIC_CONFIG[selectedMetric].field;
-    return Array.from(aggregatedStats.values())
-      .sort((a, b) => Number(b[field]) - Number(a[field]))
-      .slice(0, 5);
   }, [aggregatedStats, selectedMetric]);
 
   const getMetricValue = (
@@ -240,10 +233,10 @@ export default function FuturisticMunicipioHeatMap({
 
     if (!stat) {
       return {
-        color: "#1f2b45",
+        color: "#93c5fd",
         weight: 0.8,
-        fillColor: "#081224",
-        fillOpacity: 0.5,
+        fillColor: "#dbeafe",
+        fillOpacity: 0.35,
       };
     }
 
@@ -251,10 +244,22 @@ export default function FuturisticMunicipioHeatMap({
     const ratio = Math.sqrt(Math.max(value, 0) / maxMetricValue);
 
     return {
-      color: "#31b4d4",
-      weight: 1.2,
+      color: "#1d4ed8",
+      weight: 1.1,
       fillColor: heatColorFromRatio(ratio),
-      fillOpacity: 0.85,
+      fillOpacity: 0.82,
+    };
+  };
+
+  const getHoverCardPosition = (x: number, y: number) => {
+    const shell = mapShellRef.current;
+    if (!shell) return { left: x + 18, top: y - 18 };
+
+    const width = shell.clientWidth;
+    const heightValue = shell.clientHeight;
+    return {
+      left: clamp(x + 18, 12, Math.max(12, width - CARD_WIDTH - 12)),
+      top: clamp(y - CARD_HEIGHT - 8, 12, Math.max(12, heightValue - CARD_HEIGHT - 12)),
     };
   };
 
@@ -263,38 +268,7 @@ export default function FuturisticMunicipioHeatMap({
       (feature.properties as Record<string, unknown> | undefined)?.shapeName ?? "Municipio",
     );
 
-    const stat = aggregatedStats.get(normalizeText(shapeName));
-    const unit = METRIC_CONFIG[selectedMetric].unit;
-    const value = stat ? getMetricValue(stat, selectedMetric) : 0;
-
-    const tooltipHtml = stat
-      ? `
-        <div class="intel-tooltip">
-          <div class="intel-tooltip-title">${shapeName}</div>
-          <div class="intel-tooltip-row">Provincia(s): ${stat.provincias.join(", ")}</div>
-          <div class="intel-tooltip-row">Clientes: ${stat.total_clientes_instalados}</div>
-          <div class="intel-tooltip-row">Paneles: ${formatMetric(stat.potencia_paneles_kw)} kW</div>
-          <div class="intel-tooltip-row">Inversores: ${formatMetric(stat.potencia_inversores_kw)} kW</div>
-          <div class="intel-tooltip-highlight">${METRIC_CONFIG[selectedMetric].label}: ${formatMetric(value)} ${unit}</div>
-        </div>
-      `
-      : `
-        <div class="intel-tooltip">
-          <div class="intel-tooltip-title">${shapeName}</div>
-          <div class="intel-tooltip-row">Sin instalaciones registradas</div>
-        </div>
-      `;
-
-    if ("bindTooltip" in layer) {
-      (layer as {
-        bindTooltip: (content: string, options: Record<string, unknown>) => void;
-      }).bindTooltip(tooltipHtml, {
-        sticky: true,
-        opacity: 1,
-        direction: "top",
-        className: "intel-tooltip-shell",
-      });
-    }
+    const stat = aggregatedStats.get(normalizeText(shapeName)) ?? null;
 
     if ("on" in layer && "setStyle" in layer) {
       (
@@ -305,228 +279,212 @@ export default function FuturisticMunicipioHeatMap({
       ).on({
         mouseover: (event: LeafletMouseEvent) => {
           event.target.setStyle({
-            weight: 2.5,
-            color: "#a5f3fc",
+            weight: 2.2,
+            color: "#0ea5e9",
             fillOpacity: 1,
+          });
+
+          setHoverInfo({
+            municipio: shapeName,
+            x: event.containerPoint.x,
+            y: event.containerPoint.y,
+            stat,
+          });
+        },
+        mousemove: (event: LeafletMouseEvent) => {
+          setHoverInfo({
+            municipio: shapeName,
+            x: event.containerPoint.x,
+            y: event.containerPoint.y,
+            stat,
           });
         },
         mouseout: (event: LeafletMouseEvent) => {
           event.target.setStyle(getFeatureStyle(feature));
+          setHoverInfo((previous) =>
+            previous?.municipio === shapeName ? null : previous,
+          );
         },
       });
     }
   };
 
-  const selectedMetricLabel = METRIC_CONFIG[selectedMetric].label;
-  const selectedMetricIcon = METRIC_CONFIG[selectedMetric].icon;
-  const SelectedMetricIcon = selectedMetricIcon;
+  const hoverCardStyle = hoverInfo
+    ? getHoverCardPosition(hoverInfo.x, hoverInfo.y)
+    : null;
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-cyan-400/40 bg-gradient-to-br from-slate-950 via-[#02172d] to-slate-900 p-4 sm:p-6 lg:p-8 shadow-[0_0_40px_rgba(34,211,238,0.15)]">
-      <div className="pointer-events-none absolute inset-0 opacity-30 [background:radial-gradient(circle_at_20%_20%,rgba(6,182,212,0.35),transparent_40%),radial-gradient(circle_at_80%_10%,rgba(56,189,248,0.25),transparent_45%),radial-gradient(circle_at_50%_90%,rgba(14,116,144,0.22),transparent_40%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-20 [background:repeating-linear-gradient(180deg,rgba(56,189,248,0.12)_0px,rgba(56,189,248,0.12)_1px,transparent_1px,transparent_7px)]" />
+    <div className="relative">
+      <div className="intel-tilt-stage">
+        <div
+          ref={mapShellRef}
+          className="intel-map-shell relative overflow-hidden rounded-[28px] border border-blue-200 bg-white p-2 shadow-[0_24px_70px_rgba(14,116,144,0.2)]"
+        >
+          <div className="pointer-events-none absolute inset-0 z-[5] rounded-[24px] [background:radial-gradient(circle_at_18%_15%,rgba(59,130,246,0.18),transparent_42%),radial-gradient(circle_at_85%_80%,rgba(34,211,238,0.16),transparent_38%)]" />
+          <div className="pointer-events-none absolute inset-0 z-[6] rounded-[24px] [background:repeating-linear-gradient(180deg,rgba(14,165,233,0.06)_0px,rgba(14,165,233,0.06)_1px,transparent_1px,transparent_8px)]" />
+          <div className="intel-radar-sweep pointer-events-none absolute inset-0 z-[7] rounded-[24px]" />
 
-      <div className="relative z-10 space-y-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
-              <Activity className="h-3.5 w-3.5" />
-              Centro de Inteligencia Energética
-            </p>
-            <h3 className="text-2xl font-bold text-cyan-100 sm:text-3xl">
-              Radar Nacional de Instalaciones
-            </h3>
-            <p className="mt-2 max-w-2xl text-sm text-cyan-100/80 sm:text-base">
-              Mapa táctico por municipio con visualización de calor para potencia
-              instalada.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 rounded-2xl border border-cyan-400/30 bg-slate-950/60 p-2">
+          <div className="absolute left-5 top-5 z-20 grid grid-cols-3 gap-1.5 rounded-xl border border-blue-200 bg-white/90 p-1 shadow-md backdrop-blur">
             {(Object.keys(METRIC_CONFIG) as MetricKey[]).map((metric) => {
               const Icon = METRIC_CONFIG[metric].icon;
               const active = metric === selectedMetric;
-
               return (
                 <button
                   key={metric}
                   type="button"
                   onClick={() => setSelectedMetric(metric)}
-                  className={`flex min-w-[96px] items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all sm:text-sm ${
+                  className={`flex items-center justify-center gap-1 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-colors sm:text-xs ${
                     active
-                      ? "bg-cyan-400/20 text-cyan-100 shadow-[0_0_22px_rgba(56,189,248,0.4)]"
-                      : "text-cyan-200/70 hover:bg-cyan-400/10 hover:text-cyan-100"
+                      ? "bg-primary text-white"
+                      : "text-primary/80 hover:bg-blue-50"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5" />
                   {METRIC_CONFIG[metric].label}
                 </button>
               );
             })}
           </div>
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-cyan-500/30 bg-slate-950/60 p-4">
-            <p className="text-xs uppercase tracking-[0.15em] text-cyan-300/70">
-              Municipios Activos
-            </p>
-            <p className="mt-2 text-2xl font-bold text-cyan-100">
-              {aggregatedStats.size}
-            </p>
-          </div>
-          <div className="rounded-2xl border border-cyan-500/30 bg-slate-950/60 p-4">
-            <p className="text-xs uppercase tracking-[0.15em] text-cyan-300/70">
-              Clientes Instalados
-            </p>
-            <p className="mt-2 text-2xl font-bold text-cyan-100">
-              {formatMetric(totalClientes)}
-            </p>
-          </div>
-          <div className="rounded-2xl border border-cyan-500/30 bg-slate-950/60 p-4">
-            <p className="text-xs uppercase tracking-[0.15em] text-cyan-300/70">
-              Potencia Total
-            </p>
-            <p className="mt-2 text-2xl font-bold text-cyan-100">
-              {formatMetric(totalKwGlobal)} kW
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-          <div className="intel-map-shell relative overflow-hidden rounded-2xl border border-cyan-400/40 bg-slate-950/60 p-2">
-            {isLoading && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/85 text-cyan-100">
-                Cargando mapa táctico...
-              </div>
-            )}
-
-            {error && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/90 px-4 text-center text-red-300">
-                {error}
-              </div>
-            )}
-
-            {geoJsonData && (
-              <MapContainer
-                center={mapCenter}
-                zoom={7}
-                minZoom={6}
-                maxZoom={10}
-                style={{ height, width: "100%" }}
-                className="rounded-xl"
-                scrollWheelZoom
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <GeoJSON
-                  key={selectedMetric}
-                  data={geoJsonData}
-                  style={(feature) => getFeatureStyle(feature as Feature)}
-                  onEachFeature={(feature, layer) =>
-                    onEachFeature(feature as Feature, layer)
-                  }
-                />
-              </MapContainer>
-            )}
-          </div>
-
-          <aside className="space-y-4 rounded-2xl border border-cyan-500/30 bg-slate-950/60 p-4">
-            <div className="flex items-center gap-2 text-cyan-100">
-              <SelectedMetricIcon className="h-4 w-4" />
-              <h4 className="text-sm font-semibold uppercase tracking-[0.14em]">
-                Top Municipios ({selectedMetricLabel})
-              </h4>
+          {isLoading && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 text-primary">
+              Cargando mapa de calor...
             </div>
+          )}
 
-            <div className="space-y-2">
-              {topMunicipios.map((municipio, idx) => (
-                <div
-                  key={`${municipio.municipio}-${idx}`}
-                  className="rounded-xl border border-cyan-400/20 bg-slate-900/70 px-3 py-2"
-                >
-                  <p className="text-sm font-semibold text-cyan-100">
-                    {idx + 1}. {municipio.municipio}
+          {error && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/90 px-4 text-center text-red-600">
+              {error}
+            </div>
+          )}
+
+          {hoverInfo && hoverCardStyle && (
+            <div
+              className="pointer-events-none absolute z-30 w-[240px] rounded-2xl border border-cyan-200 bg-slate-950/95 p-3 text-cyan-50 shadow-[0_0_26px_rgba(34,211,238,0.28)] backdrop-blur-md"
+              style={{ left: hoverCardStyle.left, top: hoverCardStyle.top }}
+            >
+              <p className="mb-1 text-sm font-bold text-cyan-100">
+                {hoverInfo.municipio}
+              </p>
+              <p className="mb-2 text-[11px] uppercase tracking-[0.13em] text-cyan-300/80">
+                Panel Energético
+              </p>
+              {hoverInfo.stat ? (
+                <div className="space-y-1 text-xs">
+                  <p className="text-cyan-100/90">
+                    Provincia(s): {hoverInfo.stat.provincias.join(", ")}
                   </p>
-                  <p className="text-xs text-cyan-200/80">
-                    {formatMetric(getMetricValue(municipio, selectedMetric))}{" "}
-                    {METRIC_CONFIG[selectedMetric].unit}
-                  </p>
-                  <p className="text-[11px] text-cyan-300/60">
-                    {municipio.provincias.join(", ")}
+                  <p>Clientes: {formatMetric(hoverInfo.stat.total_clientes_instalados)}</p>
+                  <p>Paneles: {formatMetric(hoverInfo.stat.potencia_paneles_kw)} kW</p>
+                  <p>Inversores: {formatMetric(hoverInfo.stat.potencia_inversores_kw)} kW</p>
+                  <p className="mt-2 border-t border-cyan-200/25 pt-2 font-semibold text-cyan-200">
+                    Total: {formatMetric(hoverInfo.stat.total_kw_instalados)} kW
                   </p>
                 </div>
-              ))}
+              ) : (
+                <p className="text-xs text-cyan-100/85">
+                  Sin instalaciones registradas.
+                </p>
+              )}
             </div>
-          </aside>
+          )}
+
+          {geoJsonData && (
+            <MapContainer
+              center={mapCenter}
+              zoom={7}
+              minZoom={6}
+              maxZoom={10}
+              style={{ height, width: "100%" }}
+              className="rounded-[20px]"
+              scrollWheelZoom
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <GeoJSON
+                key={selectedMetric}
+                data={geoJsonData}
+                style={(feature) => getFeatureStyle(feature as Feature)}
+                onEachFeature={(feature, layer) =>
+                  onEachFeature(feature as Feature, layer)
+                }
+              />
+            </MapContainer>
+          )}
         </div>
       </div>
 
       <style jsx global>{`
+        .intel-tilt-stage {
+          perspective: 1500px;
+        }
+
+        .intel-map-shell {
+          transform: rotateX(7deg) rotateY(-4deg) rotateZ(0.3deg);
+          transform-style: preserve-3d;
+          transition: transform 450ms ease, box-shadow 450ms ease;
+        }
+
+        .intel-map-shell:hover {
+          transform: rotateX(4.8deg) rotateY(-2deg) rotateZ(0deg);
+          box-shadow: 0 28px 85px rgba(14, 116, 144, 0.26);
+        }
+
+        .intel-radar-sweep {
+          background: conic-gradient(
+            from 0deg at 50% 50%,
+            transparent 0deg,
+            transparent 300deg,
+            rgba(14, 165, 233, 0.22) 360deg
+          );
+          mix-blend-mode: screen;
+          animation: intel-radar-rotate 7s linear infinite;
+          transform-origin: center;
+        }
+
         .intel-map-shell .leaflet-container {
-          background: #020617;
+          background: #eff6ff;
         }
 
         .intel-map-shell .leaflet-control-attribution {
-          background: rgba(2, 6, 23, 0.8);
-          color: rgba(186, 230, 253, 0.85);
+          background: rgba(255, 255, 255, 0.8);
+          color: #1e3a8a;
           border-top-left-radius: 6px;
-          border: 1px solid rgba(56, 189, 248, 0.2);
+          border: 1px solid rgba(147, 197, 253, 0.7);
         }
 
         .intel-map-shell .leaflet-control-attribution a {
-          color: rgba(125, 211, 252, 0.95);
+          color: #1d4ed8;
         }
 
         .intel-map-shell .leaflet-control-zoom a {
-          background: rgba(2, 6, 23, 0.85);
-          color: #a5f3fc;
-          border-color: rgba(56, 189, 248, 0.4);
+          background: rgba(255, 255, 255, 0.9);
+          color: #1d4ed8;
+          border-color: rgba(147, 197, 253, 0.9);
         }
 
         .intel-map-shell .leaflet-control-zoom a:hover {
-          background: rgba(14, 116, 144, 0.5);
+          background: rgba(219, 234, 254, 0.95);
         }
 
-        .leaflet-tooltip.intel-tooltip-shell {
-          border: 1px solid rgba(34, 211, 238, 0.35);
-          background: rgba(2, 6, 23, 0.94);
-          color: #cffafe;
-          box-shadow: 0 0 28px rgba(34, 211, 238, 0.22);
-          border-radius: 10px;
-          padding: 0;
+        @keyframes intel-radar-rotate {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
 
-        .leaflet-tooltip.intel-tooltip-shell::before {
-          border-top-color: rgba(34, 211, 238, 0.35);
-        }
-
-        .intel-tooltip {
-          padding: 10px 12px;
-          font-size: 12px;
-          line-height: 1.4;
-          min-width: 190px;
-        }
-
-        .intel-tooltip-title {
-          font-size: 13px;
-          font-weight: 700;
-          color: #a5f3fc;
-          margin-bottom: 6px;
-        }
-
-        .intel-tooltip-row {
-          color: rgba(186, 230, 253, 0.9);
-        }
-
-        .intel-tooltip-highlight {
-          margin-top: 6px;
-          color: #22d3ee;
-          font-weight: 700;
+        @media (max-width: 1024px) {
+          .intel-map-shell,
+          .intel-map-shell:hover {
+            transform: none;
+          }
         }
       `}</style>
-    </section>
+    </div>
   );
 }
