@@ -259,6 +259,7 @@ export default function OfertaDetailPage() {
                         </div>
                       </div>
                     )}
+                    */}
                   </div>
                 </div>
               </Card>
