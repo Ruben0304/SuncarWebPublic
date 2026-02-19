@@ -22,6 +22,18 @@ const StaticLocationMap = dynamic(() => import('@/components/StaticLocationMap')
   )
 })
 
+const FuturisticMunicipioHeatMap = dynamic(
+  () => import("@/components/FuturisticMunicipioHeatMap"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[620px] rounded-3xl border border-cyan-300/30 bg-slate-900 text-cyan-100 flex items-center justify-center">
+        Cargando radar nacional...
+      </div>
+    ),
+  },
+)
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -381,6 +393,12 @@ ${formData.message}
       {/*    </div>*/}
       {/*  </div>*/}
       {/*</section>*/}
+
+      <section className="py-16 lg:py-20 bg-slate-950">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <FuturisticMunicipioHeatMap />
+        </div>
+      </section>
 
 
       {isChristmas ? <FooterChristmas /> : <Footer />}
