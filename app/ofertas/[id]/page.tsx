@@ -246,6 +246,7 @@ export default function OfertaDetailPage() {
                     </div>
 
                     {/* Financing Information */}
+                    {/* TEMPORALMENTE COMENTADO
                     {oferta.financiamiento && (
                       <div className="pt-4 border-t border-gray-200">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-gray-700">

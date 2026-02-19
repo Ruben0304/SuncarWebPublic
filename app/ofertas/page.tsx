@@ -679,6 +679,7 @@ function OfertasContent() {
                             </div>
 
                             {/* Financing Information */}
+                            {/* TEMPORALMENTE COMENTADO
                             {oferta.financiamiento && (
                               <div className="mt-3 pt-3 border-t border-gray-100">
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -691,6 +692,7 @@ function OfertasContent() {
                                 </div>
                               </div>
                             )}
+                            */}
                           </div>
 
                           <Button
@@ -797,6 +799,7 @@ function OfertasContent() {
                             </div>
 
                             {/* Financing Information */}
+                            {/* TEMPORALMENTE COMENTADO
                             {oferta.financiamiento && (
                               <div className="mt-3 pt-3 border-t border-gray-100">
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -809,6 +812,7 @@ function OfertasContent() {
                                 </div>
                               </div>
                             )}
+                            */}
                           </div>
 
                           <Button
@@ -902,6 +906,7 @@ function OfertasContent() {
                         </div>
 
                         {/* Financing Information */}
+                        {/* TEMPORALMENTE COMENTADO
                         {oferta.financiamiento && (
                           <div className="mt-3 pt-3 border-t border-gray-100">
                             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -914,6 +919,7 @@ function OfertasContent() {
                             </div>
                           </div>
                         )}
+                        */}
                       </div>
 
                       <Button
