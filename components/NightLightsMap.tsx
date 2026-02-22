@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
 import L, { type Layer, type PathOptions } from "leaflet";
-import { GeoJSON, MapContainer, Marker, TileLayer } from "react-leaflet";
+import { GeoJSON, MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface MunicipioStatApiItem {
@@ -362,9 +362,11 @@ export default function NightLightsMap({
           maxZoom={10}
           style={{ height, width: "100%" }}
           className="rounded-2xl lg:rounded-3xl"
-          scrollWheelZoom={false}
+          scrollWheelZoom
           dragging={true}
-          doubleClickZoom={false}
+          doubleClickZoom
+          touchZoom
+          keyboard
           zoomControl={false}
           attributionControl={false}
         >
@@ -388,6 +390,7 @@ export default function NightLightsMap({
               interactive={false}
             />
           ))}
+          <ZoomControl position="bottomright" />
         </MapContainer>
 
         <div
@@ -400,25 +403,18 @@ export default function NightLightsMap({
         />
       </div>
 
-      <div className="pointer-events-none absolute top-4 left-4 z-[1200]">
-        <div
-          className={`rounded-2xl border px-4 py-3 backdrop-blur-xl transition-all duration-700 ${
-            lightsOn
-              ? "border-amber-300/60 bg-amber-100/15 shadow-[0_0_25px_rgba(251,191,36,0.32)]"
-              : "border-white/20 bg-black/45"
-          }`}
-        >
-          <p className={`text-[11px] uppercase tracking-[0.22em] ${lightsOn ? "text-amber-100/90" : "text-white/55"}`}>
-            Hub Solar
-          </p>
-          <p className={`mt-1 text-3xl font-semibold leading-none ${lightsOn ? "text-amber-50 animate-hub-breathe" : "text-white/70"}`}>
-            {totalMunicipios}
-          </p>
-          <p className={`mt-1 text-xs ${lightsOn ? "text-amber-50/80" : "text-white/55"}`}>
-            municipios iluminados
-          </p>
+      {lightsOn && (
+        <div className="pointer-events-none absolute top-4 left-4 z-[1200]">
+          <div
+            className="rounded-2xl border border-amber-300/60 bg-amber-100/15 px-4 py-3 backdrop-blur-xl shadow-[0_0_25px_rgba(251,191,36,0.32)] transition-all duration-700"
+            aria-label={`${totalMunicipios} municipios encendidos`}
+          >
+            <p className="text-3xl font-semibold leading-none text-amber-50 animate-hub-breathe">
+              {totalMunicipios}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <style jsx global>{`
         .city-light-icon-wrapper {
