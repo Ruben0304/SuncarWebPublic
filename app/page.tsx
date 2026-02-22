@@ -21,6 +21,7 @@ import FelicityPartnershipSection from "@/components/landing-sections/felicity-p
 import BrandsSection from "@/components/landing-sections/brands-section"
 import QuickContactSection from "@/components/landing-sections/quick-contact-section"
 import HeatMapSection from "@/components/landing-sections/heatmap-section"
+import BlackoutSection from "@/components/landing-sections/blackout-section"
 
 const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteractiveGame"), {
   ssr: false,
@@ -115,6 +116,9 @@ export default function HomePage() {
 
       {/* Solar Heatmap Section */}
       <HeatMapSection />
+
+      {/* Blackout / Con Suncar Interactive Section */}
+      <BlackoutSection />
 
       {/* Interactive Suncar Game Section */}
       <SuncarInteractiveGame />
