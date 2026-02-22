@@ -2,8 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+
+interface Cliente {
+  cliente_numero: string | null;
+  kw_total: number;
+}
 
 interface MunicipioStatApiItem {
   provincia: string;
@@ -12,18 +17,25 @@ interface MunicipioStatApiItem {
   potencia_inversores_kw: number;
   potencia_paneles_kw: number;
   total_kw_instalados: number;
+  promedio_kw_por_cliente: number;
+  clientes: Cliente[];
 }
 
 interface MunicipioStatsApiResponse {
   success: boolean;
   message?: string;
   data?: MunicipioStatApiItem[];
+  promedio_kw_por_cliente?: number;
+  total_municipios?: number;
 }
 
 interface HeatPoint {
   lat: number;
   lng: number;
   intensity: number;
+  provincia: string;
+  municipio: string;
+  totalKw: number;
 }
 
 interface SolarHeatMapProps {
@@ -75,6 +87,41 @@ function getFeatureCentroid(feature: Feature): [number, number] | null {
     return getPolygonCentroid(maxRing);
   }
   return null;
+}
+
+function TooltipMarkers({ points }: { points: HeatPoint[] }) {
+  if (points.length === 0) return null;
+
+  // Create invisible icon
+  const invisibleIcon = typeof window !== 'undefined' ? L.divIcon({
+    className: '',
+    html: '<div style="width:30px;height:30px;background:transparent;cursor:pointer"></div>',
+    iconSize: [30, 30],
+  }) : undefined;
+
+  if (!invisibleIcon) return null;
+
+  return (
+    <>
+      {points.map((point, idx) => (
+        <Marker
+          key={idx}
+          position={[point.lat, point.lng]}
+          icon={invisibleIcon}
+        >
+          <Popup className="custom-popup">
+            <div className="text-xs">
+              <p className="font-bold text-blue-500">{point.municipio}</p>
+              <p className="text-gray-600 text-[10px]">{point.provincia}</p>
+              <p className="text-gray-900 font-semibold mt-1">
+                {point.totalKw.toFixed(1)} kW
+              </p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+    </>
+  );
 }
 
 function HeatLayer({ points }: { points: HeatPoint[] }) {
@@ -201,14 +248,40 @@ export default function SolarHeatMap({
     )
       return [];
 
-    const statsMap = new Map<string, number>();
+    // Build map with adjusted kW (using promedio for -1 clients)
+    const statsMap = new Map<string, { kw: number; provincia: string; municipio: string }>();
+
+    // Get global average from response (will be set when we parse stats)
+    let globalAverage = 0;
+
     for (const item of stats) {
       const key = normalizeText(item.municipio);
-      const current = statsMap.get(key) ?? 0;
-      statsMap.set(key, current + Number(item.total_kw_instalados || 0));
+      const municipioAverage = item.promedio_kw_por_cliente || 0;
+
+      // Calculate adjusted total kW for this municipio
+      let adjustedTotalKw = 0;
+      for (const cliente of item.clientes) {
+        if (cliente.kw_total === -1) {
+          // Use municipio average, or global if municipio is 0
+          adjustedTotalKw += municipioAverage > 0 ? municipioAverage : globalAverage;
+        } else if (cliente.kw_total >= 0) {
+          adjustedTotalKw += cliente.kw_total;
+        }
+      }
+
+      const current = statsMap.get(key);
+      if (current) {
+        current.kw += adjustedTotalKw;
+      } else {
+        statsMap.set(key, {
+          kw: adjustedTotalKw,
+          provincia: item.provincia,
+          municipio: item.municipio,
+        });
+      }
     }
 
-    const maxValue = Math.max(...Array.from(statsMap.values()), 1);
+    const maxValue = Math.max(...Array.from(statsMap.values()).map(v => v.kw), 1);
     const features = (geoJsonData as GeoJSON.FeatureCollection).features;
     const points: HeatPoint[] = [];
 
@@ -216,17 +289,20 @@ export default function SolarHeatMap({
       const shapeName = String(
         (feature.properties as Record<string, unknown>)?.shapeName ?? ""
       );
-      const value = statsMap.get(normalizeText(shapeName)) ?? 0;
-      if (value <= 0) continue;
+      const data = statsMap.get(normalizeText(shapeName));
+      if (!data || data.kw <= 0) continue;
 
       const centroid = getFeatureCentroid(feature);
       if (!centroid) continue;
 
-      const intensity = Math.sqrt(value / maxValue);
+      const intensity = Math.sqrt(data.kw / maxValue);
       points.push({
         lat: centroid[0],
         lng: centroid[1],
         intensity: Math.max(intensity, 0.1),
+        provincia: data.provincia,
+        municipio: data.municipio,
+        totalKw: data.kw,
       });
     }
 
@@ -287,6 +363,7 @@ export default function SolarHeatMap({
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
           />
           <HeatLayer points={heatPoints} />
+          <TooltipMarkers points={heatPoints} />
         </MapContainer>
 
         {/* Bottom gradient for visual depth */}
