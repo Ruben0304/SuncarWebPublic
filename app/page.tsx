@@ -114,9 +114,6 @@ export default function HomePage() {
       {/* Brands We Sell Section */}
       <BrandsSection />
 
-      {/* Solar Heatmap Section */}
-      <HeatMapSection />
-
       {/* Blackout / Con Suncar Interactive Section */}
       <BlackoutSection />
 

@@ -372,6 +372,12 @@ const config: Config = {
         "secondary-gradient": "linear-gradient(90deg, #F26729 0%, #FDB813 100%)",
         "hero-fade": "linear-gradient(to right, transparent 0%, rgba(15, 43, 102, 0.1) 100%)",
       },
+      dropShadow: {
+        glow: [
+          "0 0 10px rgba(251, 191, 36, 0.7)",
+          "0 0 20px rgba(251, 191, 36, 0.5)",
+        ],
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

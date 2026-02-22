@@ -22,10 +22,19 @@ const NightLightsMap = dynamic(() => import("@/components/NightLightsMap"), {
 export default function BlackoutSection() {
   const [lightsOn, setLightsOn] = useState(false)
   const [municipios, setMunicipios] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
 
   const handleStatsLoaded = useCallback((count: number) => {
     setMunicipios(count)
   }, [])
+
+  const handleToggle = () => {
+    setIsAnimating(true)
+    setTimeout(() => {
+      setLightsOn(!lightsOn)
+      setTimeout(() => setIsAnimating(false), 1000)
+    }, 200)
+  }
 
   return (
     <section className="py-16 lg:py-24 bg-black relative overflow-hidden">
@@ -70,48 +79,60 @@ export default function BlackoutSection() {
 
           {/* Power switch */}
           <div className="flex items-center justify-center gap-4">
-            <ZapOff className={`w-5 h-5 transition-colors duration-500 ${lightsOn ? "text-gray-700" : "text-gray-400"}`} />
+            <ZapOff className={`w-5 h-5 transition-all duration-500 ${lightsOn ? "text-gray-700 opacity-30" : "text-gray-400 opacity-100 scale-110"}`} />
 
             <button
-              onClick={() => setLightsOn(!lightsOn)}
-              className="relative group focus:outline-none"
+              onClick={handleToggle}
+              disabled={isAnimating}
+              className="relative group focus:outline-none disabled:cursor-not-allowed"
               aria-label={lightsOn ? "Apagar luces" : "Encender luces"}
             >
+              {/* Pulsing glow when turning on */}
+              {isAnimating && !lightsOn && (
+                <div className="absolute -inset-4 rounded-full bg-amber-400/30 animate-ping" />
+              )}
+
               {/* Glow behind switch when on */}
               <div
-                className="absolute -inset-2 rounded-full transition-opacity duration-500"
+                className="absolute -inset-3 rounded-full transition-all duration-700"
                 style={{
                   opacity: lightsOn ? 1 : 0,
-                  background: "radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)",
+                  background: "radial-gradient(circle, rgba(251,191,36,0.4) 0%, rgba(251,191,36,0.1) 50%, transparent 70%)",
+                  filter: "blur(8px)",
                 }}
               />
 
               {/* Switch track */}
               <div
-                className={`relative w-20 h-10 rounded-full transition-all duration-500 border-2 ${
+                className={`relative w-20 h-10 rounded-full transition-all duration-700 border-2 ${
                   lightsOn
-                    ? "bg-amber-500 border-amber-400 shadow-lg shadow-amber-500/40"
-                    : "bg-gray-800 border-gray-600"
-                }`}
+                    ? "bg-gradient-to-r from-amber-500 to-amber-400 border-amber-300 shadow-xl shadow-amber-500/50"
+                    : "bg-gray-800 border-gray-600 shadow-inner"
+                } ${isAnimating ? "scale-105" : "scale-100"}`}
               >
+                {/* Shimmer effect when on */}
+                {lightsOn && (
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                )}
+
                 {/* Switch knob */}
                 <div
-                  className={`absolute top-0.5 w-8 h-8 rounded-full transition-all duration-500 flex items-center justify-center ${
+                  className={`absolute top-0.5 w-8 h-8 rounded-full transition-all duration-700 flex items-center justify-center ${
                     lightsOn
-                      ? "left-[calc(100%-2.25rem)] bg-white shadow-lg"
-                      : "left-0.5 bg-gray-500"
-                  }`}
+                      ? "left-[calc(100%-2.25rem)] bg-white shadow-2xl shadow-amber-500/50"
+                      : "left-0.5 bg-gray-500 shadow-inner"
+                  } ${isAnimating ? "scale-110" : "scale-100"}`}
                 >
                   <Zap
-                    className={`w-4 h-4 transition-colors duration-500 ${
-                      lightsOn ? "text-amber-500" : "text-gray-700"
-                    }`}
+                    className={`w-4 h-4 transition-all duration-700 ${
+                      lightsOn ? "text-amber-500 drop-shadow-glow" : "text-gray-700"
+                    } ${isAnimating && !lightsOn ? "animate-pulse" : ""}`}
                   />
                 </div>
               </div>
             </button>
 
-            <Zap className={`w-5 h-5 transition-colors duration-500 ${lightsOn ? "text-amber-400" : "text-gray-700"}`} />
+            <Zap className={`w-5 h-5 transition-all duration-500 ${lightsOn ? "text-amber-400 opacity-100 scale-110 drop-shadow-glow" : "text-gray-700 opacity-30"}`} />
           </div>
         </div>
 
