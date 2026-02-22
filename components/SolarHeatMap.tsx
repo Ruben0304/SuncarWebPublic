@@ -5,11 +5,6 @@ import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-interface Cliente {
-  cliente_numero: string | null;
-  kw_total: number;
-}
-
 interface MunicipioStatApiItem {
   provincia: string;
   municipio: string;
@@ -17,15 +12,12 @@ interface MunicipioStatApiItem {
   potencia_inversores_kw: number;
   potencia_paneles_kw: number;
   total_kw_instalados: number;
-  promedio_kw_por_cliente: number;
-  clientes: Cliente[];
 }
 
 interface MunicipioStatsApiResponse {
   success: boolean;
   message?: string;
   data?: MunicipioStatApiItem[];
-  promedio_kw_por_cliente?: number;
   total_municipios?: number;
 }
 
@@ -248,33 +240,19 @@ export default function SolarHeatMap({
     )
       return [];
 
-    // Build map with adjusted kW (using promedio for -1 clients)
+    // Build map with backend-processed totals per municipio
     const statsMap = new Map<string, { kw: number; provincia: string; municipio: string }>();
-
-    // Get global average from response (will be set when we parse stats)
-    let globalAverage = 0;
 
     for (const item of stats) {
       const key = normalizeText(item.municipio);
-      const municipioAverage = item.promedio_kw_por_cliente || 0;
-
-      // Calculate adjusted total kW for this municipio
-      let adjustedTotalKw = 0;
-      for (const cliente of item.clientes) {
-        if (cliente.kw_total === -1) {
-          // Use municipio average, or global if municipio is 0
-          adjustedTotalKw += municipioAverage > 0 ? municipioAverage : globalAverage;
-        } else if (cliente.kw_total >= 0) {
-          adjustedTotalKw += cliente.kw_total;
-        }
-      }
+      const totalKw = Number(item.total_kw_instalados || 0);
 
       const current = statsMap.get(key);
       if (current) {
-        current.kw += adjustedTotalKw;
+        current.kw += totalKw;
       } else {
         statsMap.set(key, {
-          kw: adjustedTotalKw,
+          kw: totalKw,
           provincia: item.provincia,
           municipio: item.municipio,
         });
