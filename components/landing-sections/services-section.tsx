@@ -4,7 +4,7 @@ import dynamic from "next/dynamic"
 import Link from "next/link"
 import { ShoppingCart, Package, Store, ArrowRight, Sparkles } from "lucide-react"
 
-const LottieAnimation = dynamic(() => import("@/components/lottie-animation"), {
+const BuildingSolarAnimation = dynamic(() => import("@/components/BuildingSolarAnimation"), {
     ssr: false,
     loading: () => (
         <div className="w-full min-h-[400px] sm:min-h-[500px] lg:min-h-[700px] xl:min-h-[800px] flex items-center justify-center">
@@ -22,9 +22,9 @@ export default function ServicesSection() {
 
             <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-                    {/* Left Column - Lottie Animation */}
+                    {/* Left Column - Building Solar Animation */}
                     <div className="order-2 lg:order-1">
-                        <LottieAnimation />
+                        <BuildingSolarAnimation />
                     </div>
 
                     {/* Right Column - Content */}

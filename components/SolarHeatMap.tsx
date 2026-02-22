@@ -303,14 +303,6 @@ export default function SolarHeatMap({
     return points;
   }, [geoJsonData, stats]);
 
-  // Total kW for display
-  const totalKw = useMemo(() => {
-    return stats.reduce(
-      (sum, item) => sum + Number(item.total_kw_instalados || 0),
-      0
-    );
-  }, [stats]);
-
   const totalMunicipios = useMemo(() => {
     const unique = new Set(stats.map((s) => normalizeText(s.municipio)));
     return unique.size;
@@ -357,8 +349,8 @@ export default function SolarHeatMap({
           attributionControl={false}
         >
           <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
+            url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
           />
           {isVisible && <HeatLayer points={heatPoints} animate={true} />}
         </MapContainer>
@@ -370,26 +362,13 @@ export default function SolarHeatMap({
         {!isLoading && !error && (
           <div className="absolute bottom-0 left-0 right-0 z-10 p-4 sm:p-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="flex gap-4 sm:gap-8">
-                <div>
-                  <p className="text-white/60 text-[10px] sm:text-xs uppercase tracking-wider font-medium">
-                    kW Instalados
-                  </p>
-                  <p className="text-white text-xl sm:text-3xl font-bold">
-                    {totalKw.toLocaleString("es-CU")}
-                    <span className="text-sm sm:text-base font-normal text-white/70 ml-1">
-                      kW
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <p className="text-white/60 text-[10px] sm:text-xs uppercase tracking-wider font-medium">
-                    Municipios
-                  </p>
-                  <p className="text-white text-xl sm:text-3xl font-bold">
-                    {totalMunicipios}
-                  </p>
-                </div>
+              <div>
+                <p className="text-white/60 text-[10px] sm:text-xs uppercase tracking-wider font-medium">
+                  Municipios con instalaciones
+                </p>
+                <p className="text-white text-xl sm:text-3xl font-bold">
+                  {totalMunicipios}
+                </p>
               </div>
 
               {/* Legend */}
