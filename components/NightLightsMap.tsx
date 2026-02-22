@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
 import L, { type Layer, type PathOptions } from "leaflet";
-import { GeoJSON, MapContainer, Marker, TileLayer } from "react-leaflet";
+import { GeoJSON, MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface MunicipioStatApiItem {
@@ -367,7 +367,7 @@ export default function NightLightsMap({
           doubleClickZoom
           touchZoom
           keyboard
-          zoomControl
+          zoomControl={false}
           attributionControl={false}
         >
           <TileLayer
@@ -390,6 +390,7 @@ export default function NightLightsMap({
               interactive={false}
             />
           ))}
+          <ZoomControl position="bottomright" />
         </MapContainer>
 
         <div
