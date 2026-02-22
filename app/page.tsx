@@ -20,6 +20,7 @@ import ServicesSection from "@/components/landing-sections/services-section"
 import FelicityPartnershipSection from "@/components/landing-sections/felicity-partnership-section"
 import BrandsSection from "@/components/landing-sections/brands-section"
 import QuickContactSection from "@/components/landing-sections/quick-contact-section"
+import HeatMapSection from "@/components/landing-sections/heatmap-section"
 
 const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteractiveGame"), {
   ssr: false,
@@ -111,6 +112,9 @@ export default function HomePage() {
 
       {/* Brands We Sell Section */}
       <BrandsSection />
+
+      {/* Solar Heatmap Section */}
+      <HeatMapSection />
 
       {/* Interactive Suncar Game Section */}
       <SuncarInteractiveGame />
