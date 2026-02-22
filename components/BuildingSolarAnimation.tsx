@@ -9,7 +9,7 @@ export default function BuildingSolarAnimation() {
         src="https://s3.suncarsrl.com/lottie/building-solar.lottie"
         loop
         autoplay
-        className="w-full h-auto max-w-none"
+        className="w-full h-auto max-w-none scale-150 sm:scale-110 lg:scale-125 xl:scale-150"
       />
     </div>
   )

@@ -1,23 +1,31 @@
 "use client"
 
+import { useState, useCallback } from "react"
 import dynamic from "next/dynamic"
 import { MapPin, Zap, TrendingUp } from "lucide-react"
 
 const SolarHeatMap = dynamic(() => import("@/components/SolarHeatMap"), {
   ssr: false,
   loading: () => (
-    <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-2xl border border-white/10 bg-slate-900"
+    <div
+      className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-2xl border border-white/10 bg-slate-900"
       style={{ height: "550px" }}
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-400 border-t-transparent mb-3" />
-        <p className="text-white/60 text-sm font-medium">Cargando mapa satelital...</p>
+        <p className="text-white/60 text-sm font-medium">Cargando mapa...</p>
       </div>
     </div>
-  )
+  ),
 })
 
 export default function HeatMapSection() {
+  const [municipios, setMunicipios] = useState(0)
+
+  const handleStatsLoaded = useCallback((count: number) => {
+    setMunicipios(count)
+  }, [])
+
   return (
     <section className="py-16 lg:py-24 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 relative overflow-hidden">
       {/* Decorative background elements */}
@@ -42,14 +50,37 @@ export default function HeatMapSection() {
 
           <p className="text-base lg:text-lg text-blue-200/70 max-w-2xl mx-auto leading-relaxed">
             Mapa en tiempo real de las instalaciones solares que hemos realizado
-            a lo largo del país. Cada zona de calor representa la potencia instalada
-            en cada municipio.
+            a lo largo del país. Cada zona de calor representa la potencia
+            instalada en cada municipio.
           </p>
         </div>
 
-        {/* Map */}
-        <div className="max-w-6xl mx-auto">
-          <SolarHeatMap />
+        {/* Map with floating stat hub */}
+        <div className="max-w-6xl mx-auto relative">
+          <SolarHeatMap onStatsLoaded={handleStatsLoaded} />
+
+          {/* Floating municipios hub */}
+          {municipios > 0 && (
+            <div className="absolute -top-5 -right-3 sm:-top-6 sm:-right-4 lg:-top-7 lg:-right-5 z-30">
+              <div className="relative group">
+                {/* Pulsing ring */}
+                <div className="absolute inset-0 rounded-2xl bg-orange-500/30 animate-ping" style={{ animationDuration: "2s" }} />
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-orange-500 to-yellow-400 opacity-60 blur-sm group-hover:opacity-80 transition-opacity" />
+
+                {/* Hub card */}
+                <div className="relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-2xl shadow-orange-500/30 border border-orange-400/40">
+                  <div className="text-center">
+                    <p className="text-white/80 text-[9px] sm:text-[10px] uppercase tracking-widest font-semibold leading-none mb-1">
+                      Municipios
+                    </p>
+                    <p className="text-white text-2xl sm:text-3xl lg:text-4xl font-black leading-none">
+                      {municipios}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Feature highlights below map */}
@@ -58,12 +89,14 @@ export default function HeatMapSection() {
             {
               icon: <Zap className="w-5 h-5" />,
               title: "Energía Limpia",
-              description: "Cada kW instalado reduce la dependencia de combustibles fósiles",
+              description:
+                "Cada kW instalado reduce la dependencia de combustibles fósiles",
             },
             {
               icon: <MapPin className="w-5 h-5" />,
               title: "Alcance Nacional",
-              description: "Instalaciones en múltiples provincias de la isla",
+              description:
+                "Instalaciones en múltiples provincias de la isla",
             },
             {
               icon: <TrendingUp className="w-5 h-5" />,

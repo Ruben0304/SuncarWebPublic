@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -29,9 +29,11 @@ interface HeatPoint {
 interface SolarHeatMapProps {
   endpoint?: string;
   height?: string;
+  onStatsLoaded?: (municipios: number) => void;
 }
 
-const DEFAULT_ENDPOINT = "/api/clientes/estadisticas/kw-instalados-por-municipio";
+const DEFAULT_ENDPOINT =
+  "/api/clientes/estadisticas/kw-instalados-por-municipio";
 const MAP_CENTER: [number, number] = [21.5218, -77.7812];
 
 function normalizeText(value: string): string {
@@ -62,7 +64,6 @@ function getFeatureCentroid(feature: Feature): [number, number] | null {
   }
   if (geometry.type === "MultiPolygon") {
     const coords = (geometry as MultiPolygon).coordinates;
-    // Use the largest polygon
     let maxLen = 0;
     let maxRing: number[][][] = coords[0];
     for (const poly of coords) {
@@ -76,29 +77,15 @@ function getFeatureCentroid(feature: Feature): [number, number] | null {
   return null;
 }
 
-/**
- * Inner component that manages the L.heatLayer on the Leaflet map.
- * Uses progressive animation to reveal heat points.
- */
-function HeatLayer({
-  points,
-  animate,
-}: {
-  points: HeatPoint[];
-  animate: boolean;
-}) {
+function HeatLayer({ points }: { points: HeatPoint[] }) {
   const map = useMap();
   const heatLayerRef = useRef<ReturnType<typeof L.heatLayer> | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const hasAnimated = useRef(false);
 
   useEffect(() => {
     if (points.length === 0) return;
 
-    // Import leaflet.heat side-effect (attaches L.heatLayer)
     require("leaflet.heat");
 
-    // Remove existing layer
     if (heatLayerRef.current) {
       map.removeLayer(heatLayerRef.current);
       heatLayerRef.current = null;
@@ -110,7 +97,7 @@ function HeatLayer({
       p.intensity,
     ]);
 
-    const layer = L.heatLayer([], {
+    const layer = L.heatLayer(heatData, {
       radius: 30,
       blur: 25,
       maxZoom: 10,
@@ -131,44 +118,13 @@ function HeatLayer({
     layer.addTo(map);
     heatLayerRef.current = layer;
 
-    if (animate && !hasAnimated.current) {
-      hasAnimated.current = true;
-      // Animate: add points in progressive batches
-      const batchSize = Math.max(1, Math.ceil(heatData.length / 20));
-      let currentIndex = 0;
-
-      function addBatch() {
-        if (!heatLayerRef.current) return;
-        const end = Math.min(currentIndex + batchSize, heatData.length);
-        const currentBatch = heatData.slice(0, end);
-        heatLayerRef.current.setLatLngs(currentBatch);
-        currentIndex = end;
-        if (currentIndex < heatData.length) {
-          animationRef.current = requestAnimationFrame(() => {
-            setTimeout(addBatch, 80);
-          });
-        }
-      }
-
-      // Start animation after a short delay
-      const timeout = setTimeout(addBatch, 300);
-      return () => {
-        clearTimeout(timeout);
-        if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      };
-    } else {
-      // No animation, show all points immediately
-      layer.setLatLngs(heatData);
-    }
-
     return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
       if (heatLayerRef.current) {
         map.removeLayer(heatLayerRef.current);
         heatLayerRef.current = null;
       }
     };
-  }, [points, map, animate]);
+  }, [points, map]);
 
   return null;
 }
@@ -176,30 +132,12 @@ function HeatLayer({
 export default function SolarHeatMap({
   endpoint = DEFAULT_ENDPOINT,
   height = "550px",
+  onStatsLoaded,
 }: SolarHeatMapProps) {
   const [geoJsonData, setGeoJsonData] = useState<GeoJsonObject | null>(null);
   const [stats, setStats] = useState<MunicipioStatApiItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  // Intersection Observer - start animation when visible
-  useEffect(() => {
-    const node = sectionRef.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
 
   // Load data
   useEffect(() => {
@@ -215,12 +153,10 @@ export default function SolarHeatMap({
           fetch(endpoint, { cache: "no-store" }),
         ]);
 
-        if (!geoJsonResponse.ok) {
+        if (!geoJsonResponse.ok)
           throw new Error("No se pudo cargar el mapa de municipios");
-        }
-        if (!statsResponse.ok) {
+        if (!statsResponse.ok)
           throw new Error("No se pudieron cargar las estadísticas");
-        }
 
         const geoJson = (await geoJsonResponse.json()) as GeoJsonObject;
         const statsPayload =
@@ -246,9 +182,7 @@ export default function SolarHeatMap({
           );
         }
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        if (!cancelled) setIsLoading(false);
       }
     }
 
@@ -258,7 +192,7 @@ export default function SolarHeatMap({
     };
   }, [endpoint]);
 
-  // Build heat points from GeoJSON + stats
+  // Build heat points
   const heatPoints = useMemo<HeatPoint[]>(() => {
     if (
       !geoJsonData ||
@@ -267,7 +201,6 @@ export default function SolarHeatMap({
     )
       return [];
 
-    // Build stats lookup by normalized municipio name
     const statsMap = new Map<string, number>();
     for (const item of stats) {
       const key = normalizeText(item.municipio);
@@ -276,7 +209,6 @@ export default function SolarHeatMap({
     }
 
     const maxValue = Math.max(...Array.from(statsMap.values()), 1);
-
     const features = (geoJsonData as GeoJSON.FeatureCollection).features;
     const points: HeatPoint[] = [];
 
@@ -290,9 +222,7 @@ export default function SolarHeatMap({
       const centroid = getFeatureCentroid(feature);
       if (!centroid) continue;
 
-      // Normalize intensity using sqrt for better distribution
       const intensity = Math.sqrt(value / maxValue);
-
       points.push({
         lat: centroid[0],
         lng: centroid[1],
@@ -303,16 +233,21 @@ export default function SolarHeatMap({
     return points;
   }, [geoJsonData, stats]);
 
+  // Notify parent of municipios count
   const totalMunicipios = useMemo(() => {
     const unique = new Set(stats.map((s) => normalizeText(s.municipio)));
     return unique.size;
   }, [stats]);
 
+  useEffect(() => {
+    if (totalMunicipios > 0 && onStatsLoaded) {
+      onStatsLoaded(totalMunicipios);
+    }
+  }, [totalMunicipios, onStatsLoaded]);
+
   return (
-    <div ref={sectionRef} className="relative">
-      {/* Map container */}
+    <div className="relative">
       <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20">
-        {/* Loading overlay */}
         {isLoading && (
           <div
             className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm"
@@ -325,7 +260,6 @@ export default function SolarHeatMap({
           </div>
         )}
 
-        {/* Error overlay */}
         {error && (
           <div
             className="absolute inset-0 z-20 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4"
@@ -352,35 +286,19 @@ export default function SolarHeatMap({
             url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
           />
-          {isVisible && <HeatLayer points={heatPoints} animate={true} />}
+          <HeatLayer points={heatPoints} />
         </MapContainer>
 
-        {/* Gradient overlay at bottom for stats readability */}
-        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10 pointer-events-none rounded-b-2xl lg:rounded-b-3xl" />
+        {/* Bottom gradient for visual depth */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/40 to-transparent z-10 pointer-events-none rounded-b-2xl lg:rounded-b-3xl" />
 
-        {/* Stats overlay at bottom */}
+        {/* Legend overlay */}
         {!isLoading && !error && (
-          <div className="absolute bottom-0 left-0 right-0 z-10 p-4 sm:p-6">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-white/60 text-[10px] sm:text-xs uppercase tracking-wider font-medium">
-                  Municipios con instalaciones
-                </p>
-                <p className="text-white text-xl sm:text-3xl font-bold">
-                  {totalMunicipios}
-                </p>
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center gap-2">
-                <span className="text-white/50 text-[10px] sm:text-xs">
-                  Menor
-                </span>
-                <div className="h-2 w-20 sm:w-28 rounded-full bg-gradient-to-r from-[#238b45] via-[#fee08b] to-[#a50026]" />
-                <span className="text-white/50 text-[10px] sm:text-xs">
-                  Mayor
-                </span>
-              </div>
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10">
+            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5">
+              <span className="text-white/50 text-[10px]">Menor</span>
+              <div className="h-1.5 w-16 sm:w-20 rounded-full bg-gradient-to-r from-[#238b45] via-[#fee08b] to-[#a50026]" />
+              <span className="text-white/50 text-[10px]">Mayor</span>
             </div>
           </div>
         )}
