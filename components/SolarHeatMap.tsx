@@ -34,7 +34,7 @@ interface SolarHeatMapProps {
 
 const DEFAULT_ENDPOINT =
   "/api/clientes/estadisticas/kw-instalados-por-municipio";
-const MAP_CENTER: [number, number] = [21.5218, -77.7812];
+const MAP_CENTER: [number, number] = [21.6, -78.8];
 
 function normalizeText(value: string): string {
   return value
@@ -271,7 +271,7 @@ export default function SolarHeatMap({
 
         <MapContainer
           center={MAP_CENTER}
-          zoom={7}
+          zoom={7.5}
           minZoom={6}
           maxZoom={10}
           style={{ height, width: "100%" }}

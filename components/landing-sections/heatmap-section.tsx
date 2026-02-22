@@ -11,9 +11,9 @@ const SolarHeatMap = dynamic(() => import("@/components/SolarHeatMap"), {
       className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-2xl border border-white/10 bg-slate-900"
       style={{ height: "550px" }}
     >
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-400 border-t-transparent mb-3" />
-        <p className="text-white/60 text-sm font-medium">Cargando mapa...</p>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-400 border-t-transparent" />
+        <p className="text-white/70 text-sm font-medium">Cargando mapa</p>
       </div>
     </div>
   ),
@@ -59,9 +59,12 @@ export default function HeatMapSection() {
         <div className="max-w-6xl mx-auto relative">
           <SolarHeatMap onStatsLoaded={handleStatsLoaded} />
 
-          {/* Floating municipios hub */}
+          {/* Floating municipios hub - uses inline z-index to beat Leaflet's z-index */}
           {municipios > 0 && (
-            <div className="absolute -top-5 -right-3 sm:-top-6 sm:-right-4 lg:-top-7 lg:-right-5 z-30">
+            <div
+              className="absolute -top-5 -right-3 sm:-top-6 sm:-right-4 lg:-top-7 lg:-right-5"
+              style={{ zIndex: 1000 }}
+            >
               <div className="relative group">
                 {/* Pulsing ring */}
                 <div className="absolute inset-0 rounded-2xl bg-orange-500/30 animate-ping" style={{ animationDuration: "2s" }} />
