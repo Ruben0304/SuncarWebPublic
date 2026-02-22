@@ -271,7 +271,7 @@ export default function SolarHeatMap({
 
         <MapContainer
           center={MAP_CENTER}
-          zoom={7.5}
+          zoom={7}
           minZoom={6}
           maxZoom={10}
           style={{ height, width: "100%" }}
