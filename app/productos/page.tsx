@@ -20,20 +20,13 @@ import {
   X,
   Shield,
   Info,
-  Plus,
-  Minus,
-  ShoppingCart,
-  Eye,
 } from "lucide-react";
 import Image from "next/image";
 import { ArticuloTienda } from "@/types/tienda";
 import { useAOS } from "@/hooks/useAOS";
-import ProductDetailModal from "@/components/ProductDetailModal";
 import { isChristmasSeason } from "@/lib/christmas-utils";
-import ShoppingCartComponent from "@/components/ShoppingCart";
-import { useCart } from "@/hooks/useCart";
 
-const SHOW_PRODUCTS_MAINTENANCE = true;
+const SHOW_PRODUCTS_MAINTENANCE = false;
 
 export default function TiendaPage() {
   const [filteredProductos, setFilteredProductos] = useState<ArticuloTienda[]>(
@@ -48,28 +41,10 @@ export default function TiendaPage() {
     null,
   );
 
-  const [selectedProduct, setSelectedProduct] = useState<ArticuloTienda | null>(
-    null,
-  );
   const scrollersRef = useRef<Record<string, HTMLDivElement | null>>({});
   const [scrollPositions, setScrollPositions] = useState<
     Record<string, number>
   >({});
-  const [showToast, setShowToast] = useState(false);
-
-  const { addItem, items, updateQuantity } = useCart();
-
-  // Función para obtener la cantidad de un producto en el carrito
-  const getProductQuantityInCart = (productoId: string) => {
-    const item = items.find((i) => i.producto.id === productoId);
-    return item ? item.cantidad : 0;
-  };
-
-  // Función para mostrar notificación cuando se agrega al carrito
-  const showAddToCartNotification = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
-  };
 
   useAOS({ duration: 600, once: true, easing: "ease-out" });
 
@@ -441,8 +416,7 @@ export default function TiendaPage() {
                               data-aos-delay={Math.min(200, index * 60)}
                             >
                               <div
-                                className="cursor-pointer"
-                                onClick={() => setSelectedProduct(producto)}
+                                className="cursor-default"
                               >
                                 <div className="relative h-36 sm:h-40 md:h-48 bg-gradient-to-br from-slate-50 via-white to-primary/5 overflow-hidden">
                                   {producto.foto ? (
@@ -461,11 +435,6 @@ export default function TiendaPage() {
                                     {producto.categoria}
                                   </Badge>
                                   <div className="absolute top-2 right-2 md:top-3 md:right-3 flex flex-col items-end gap-1">
-                                    {producto.precio_por_cantidad && (
-                                      <span className="px-2 py-0.5 md:px-3 md:py-1 text-[9px] md:text-xs font-semibold text-amber-900 bg-gradient-to-r from-amber-100 via-amber-50 to-white rounded-full border border-amber-200 shadow-sm">
-                                        Descuento
-                                      </span>
-                                    )}
                                     {producto.marca_nombre && (
                                       <Badge className="bg-blue-600/90 text-white border-none text-[9px] md:text-[10px] px-1.5 py-0.5 shadow-sm">
                                         {producto.marca_nombre}
@@ -494,104 +463,36 @@ export default function TiendaPage() {
 
                                   <div className="space-y-1.5 md:space-y-2">
                                     <div className="flex items-end justify-between gap-2">
-                                      <div>
-                                        <div className="text-lg md:text-2xl font-bold text-slate-900">
-                                          ${producto.precio.toLocaleString()}
-                                        </div>
-                                        <div
-                                          className={
-                                            producto.precio_por_cantidad
-                                              ? "text-primary underline decoration-primary/60 decoration-2 underline-offset-4 font-semibold text-xs md:text-sm"
-                                              : "text-gray-500 text-xs md:text-sm"
-                                          }
-                                        >
-                                          Por {producto.unidad}
-                                        </div>
+                                      <div className="text-gray-500 text-xs md:text-sm">
+                                        Unidad: {producto.unidad}
                                       </div>
                                     </div>
 
-                                    {producto.precio_por_cantidad && (
-                                      <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 md:px-3 py-1.5 md:py-2 shadow-inner">
-                                        <Zap className="w-3 h-3 md:w-4 md:h-4" />
-                                        <span>Mejor precio por volumen</span>
-                                      </div>
-                                    )}
+                                    <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded-lg px-2 md:px-3 py-1.5 md:py-2 shadow-inner">
+                                      <Info className="w-3 h-3 md:w-4 md:h-4" />
+                                      <span>Precio disponible por consulta</span>
+                                    </div>
                                   </div>
                                 </CardContent>
                               </div>
 
                               {/* Botones de acción */}
-                              <div className="p-3 md:p-4 pt-0 grid grid-cols-2 gap-1.5 md:gap-2">
+                              <div className="p-3 md:p-4 pt-0 grid grid-cols-1 gap-1.5 md:gap-2">
                                 <Button
                                   size="sm"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedProduct(producto);
+                                  onClick={() => {
+                                    const mensaje = encodeURIComponent(
+                                      `Hola, me interesa este producto: ${producto.modelo}. ¿Me confirman disponibilidad y precio actual?`,
+                                    );
+                                    window.open(
+                                      `https://wa.me/5363962417?text=${mensaje}`,
+                                      "_blank",
+                                    );
                                   }}
-                                  className="border-slate-300 text-slate-700 hover:bg-slate-50 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
+                                  className="bg-secondary-gradient text-white shadow-md hover:shadow-lg relative overflow-hidden h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                                 >
-                                  <Eye className="w-3.5 h-3.5 md:mr-1.5" />
-                                  <span className="hidden md:inline">
-                                    Ver más
-                                  </span>
+                                  Consultar por WhatsApp
                                 </Button>
-
-                                {(() => {
-                                  const quantityInCart =
-                                    getProductQuantityInCart(producto.id);
-
-                                  if (quantityInCart > 0) {
-                                    return (
-                                      <div className="flex items-center gap-0.5 md:gap-1 bg-white rounded-lg border-2 border-primary h-8 md:h-9">
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            updateQuantity(
-                                              producto.id,
-                                              quantityInCart - 1,
-                                            );
-                                          }}
-                                          className="h-full px-1.5 md:px-2 hover:bg-primary/10 rounded-l-lg"
-                                        >
-                                          <Minus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
-                                        </Button>
-                                        <span className="flex-1 text-center font-bold text-primary text-xs md:text-sm">
-                                          {quantityInCart}
-                                        </span>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            showAddToCartNotification();
-                                            addItem(producto);
-                                          }}
-                                          className="h-full px-1.5 md:px-2 hover:bg-primary/10 rounded-r-lg"
-                                        >
-                                          <Plus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
-                                        </Button>
-                                      </div>
-                                    );
-                                  } else {
-                                    return (
-                                      <Button
-                                        size="sm"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          showAddToCartNotification();
-                                          addItem(producto);
-                                        }}
-                                        className="bg-secondary-gradient text-white shadow-md hover:shadow-lg relative overflow-hidden h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
-                                      >
-                                        <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                                        Agregar
-                                      </Button>
-                                    );
-                                  }
-                                })()}
                               </div>
                             </Card>
                           ))}
@@ -690,45 +591,10 @@ export default function TiendaPage() {
               </div>
             </div>
           </div>
-          <div className="mt-6 text-center text-xs text-slate-500">
-            <p>
-              * Los precios están sujetos a cambios sin previo aviso. Consulte
-              disponibilidad y precios actualizados por WhatsApp.
-            </p>
-          </div>
         </div>
       </section>
 
       {isChristmas ? <FooterChristmas /> : <Footer />}
-
-      {selectedProduct && (
-        <ProductDetailModal
-          producto={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
-      )}
-
-      {/* Carrito de compras flotante */}
-      <ShoppingCartComponent />
-
-      {/* Notificación Toast cuando se agrega al carrito */}
-      {showToast && (
-        <div className="fixed top-24 right-4 z-[100] animate-in slide-in-from-right duration-300">
-          <div className="bg-white border-2 border-green-500 rounded-xl shadow-2xl px-6 py-4 flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-              <ShoppingCart className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-900">
-                ¡Agregado al carrito!
-              </p>
-              <p className="text-sm text-gray-600">
-                Producto añadido exitosamente
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
