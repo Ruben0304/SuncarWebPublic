@@ -189,24 +189,26 @@ export default function ShoppingCartComponent() {
           {/* Drawer lateral derecho */}
           <div className="fixed inset-y-0 right-0 z-[80] w-full sm:w-[480px] md:w-[520px] bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
 
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-slate-200 bg-white">
-              <div className="flex items-center gap-3">
-                <ShoppingCart className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-bold text-slate-900">
-                  Carrito
+            {/* Header - compacto en móvil */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-white">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <ShoppingCart className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-[15px] font-bold text-slate-900 leading-tight">Mi Carrito</h2>
                   {totalItems > 0 && (
-                    <span className="text-sm font-normal text-slate-500 ml-2">
-                      ({totalItems} {totalItems === 1 ? 'producto' : 'productos'})
-                    </span>
+                    <p className="text-[11px] text-slate-400">
+                      {totalItems} {totalItems === 1 ? 'producto' : 'productos'}
+                    </p>
                   )}
-                </h2>
+                </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                className="w-9 h-9 flex items-center justify-center hover:bg-slate-100 active:bg-slate-200 rounded-full transition-colors"
               >
-                <X className="w-5 h-5 text-slate-500" />
+                <X className="w-5 h-5 text-slate-400" />
               </button>
             </div>
 
@@ -214,79 +216,82 @@ export default function ShoppingCartComponent() {
             <div className="flex-1 overflow-y-auto">
               {items.length === 0 ? (
                 /* Estado vacío */
-                <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
-                  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-5">
-                    <Package className="w-10 h-10 text-slate-300" />
+                <div className="flex flex-col items-center justify-center h-full text-center px-8 py-16">
+                  <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+                    <ShoppingCart className="w-8 h-8 text-slate-300" />
                   </div>
-                  <p className="text-slate-800 text-lg font-semibold mb-1">Tu carrito está vacío</p>
-                  <p className="text-slate-500 text-sm mb-6">Explora nuestro catálogo y agrega productos</p>
+                  <p className="text-slate-800 text-base font-semibold mb-1">Tu carrito está vacío</p>
+                  <p className="text-slate-400 text-[13px] mb-5 max-w-[220px]">Agrega productos del catálogo para comenzar</p>
                   <Button
                     onClick={() => setIsOpen(false)}
-                    className="bg-secondary-gradient text-white"
+                    className="bg-secondary-gradient text-white h-11 px-6 rounded-xl text-[13px] font-semibold active:scale-[0.98] transition-all"
                   >
-                    Ver productos
+                    Explorar productos
                   </Button>
                 </div>
               ) : (
                 <>
                   {/* Lista de items */}
                   <div className="divide-y divide-slate-100">
-                    {items.map((item) => (
+                    {items.map((item, index) => (
                       <div
                         key={item.producto.id}
-                        className="flex gap-3 md:gap-4 px-4 md:px-6 py-4 hover:bg-slate-50/50 transition-colors"
+                        className="flex gap-3 px-4 py-3.5 active:bg-slate-50 transition-colors"
                       >
-                        {/* Imagen */}
-                        <div className="relative w-20 h-20 md:w-24 md:h-24 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
+                        {/* Imagen - tamaño touch-friendly */}
+                        <div className="relative w-[72px] h-[72px] bg-slate-50 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
                           {item.producto.foto ? (
                             <Image
                               src={item.producto.foto}
                               alt={item.producto.modelo}
                               fill
-                              className="object-contain p-2"
+                              sizes="72px"
+                              className="object-contain p-1.5"
+                              priority={index < 3}
+                              loading={index < 3 ? 'eager' : 'lazy'}
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-slate-300">
-                              <Package className="w-8 h-8" />
+                              <Package className="w-7 h-7" />
                             </div>
                           )}
                         </div>
 
                         {/* Info del producto */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide">
-                                {item.producto.categoria}
-                              </p>
-                              <h3 className="text-sm font-semibold text-slate-900 line-clamp-2 mt-0.5 leading-snug">
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          <div className="flex items-start justify-between gap-1.5">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-[13px] font-semibold text-slate-900 line-clamp-2 leading-tight">
                                 {item.producto.modelo}
                               </h3>
+                              <p className="text-[11px] text-slate-400 mt-0.5">
+                                {item.producto.categoria}
+                              </p>
                             </div>
                             <button
                               onClick={() => removeItem(item.producto.id)}
-                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors flex-shrink-0"
+                              className="p-1.5 -mr-1.5 -mt-0.5 text-slate-300 hover:text-red-500 active:text-red-600 active:bg-red-50 rounded-full transition-colors flex-shrink-0"
                               title="Eliminar"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-[15px] h-[15px]" />
                             </button>
                           </div>
 
-                          <div className="flex items-end justify-between mt-2.5 gap-2">
-                            {/* Controles de cantidad */}
-                            <div className="flex items-center border border-slate-300 rounded-lg overflow-hidden">
+                          <div className="flex items-center justify-between mt-2 gap-2">
+                            {/* Controles de cantidad - touch targets 44px */}
+                            <div className="flex items-center border border-slate-200 rounded-full overflow-hidden bg-white">
                               <button
                                 onClick={() => updateQuantity(item.producto.id, item.cantidad - 1)}
-                                className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors"
+                                className="w-9 h-9 flex items-center justify-center text-slate-500 active:bg-slate-100 transition-colors"
                               >
                                 <Minus className="w-3.5 h-3.5" />
                               </button>
-                              <span className="w-10 h-8 flex items-center justify-center text-sm font-semibold text-slate-900 border-x border-slate-300 bg-white">
+                              <span className="w-8 text-center text-[13px] font-bold text-slate-900 tabular-nums">
                                 {item.cantidad}
                               </span>
                               <button
                                 onClick={() => updateQuantity(item.producto.id, item.cantidad + 1)}
-                                className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors"
+                                className="w-9 h-9 flex items-center justify-center text-slate-500 active:bg-slate-100 transition-colors"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -294,12 +299,12 @@ export default function ShoppingCartComponent() {
 
                             {/* Precio */}
                             <div className="text-right flex-shrink-0">
-                              <p className="text-sm font-bold text-slate-900">
+                              <p className="text-[15px] font-bold text-slate-900 tabular-nums">
                                 ${(item.producto.precio * item.cantidad).toLocaleString()}
                               </p>
                               {item.cantidad > 1 && (
-                                <p className="text-[11px] text-slate-500">
-                                  ${item.producto.precio.toLocaleString()} / {item.producto.unidad}
+                                <p className="text-[10px] text-slate-400 tabular-nums">
+                                  ${item.producto.precio.toLocaleString()}/{item.producto.unidad}
                                 </p>
                               )}
                             </div>
@@ -310,18 +315,18 @@ export default function ShoppingCartComponent() {
                   </div>
 
                   {/* Nota de precios */}
-                  <div className="mx-4 md:mx-6 my-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <p className="text-xs text-amber-800 leading-relaxed">
-                      Los precios mostrados son referenciales. El precio final se ajusta según cantidad, descuentos por volumen y configuración técnica.
+                  <div className="mx-4 my-2.5 px-3 py-2.5 bg-amber-50/80 border border-amber-200/60 rounded-xl">
+                    <p className="text-[11px] text-amber-700 leading-relaxed">
+                      Precios referenciales. El valor final varía según cantidad, volumen y configuración técnica.
                     </p>
                   </div>
 
                   {/* Sección de recomendados */}
-                  <div className="px-4 md:px-6 py-4 border-t border-slate-100">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="w-4 h-4 text-primary" />
-                      <h3 className="text-sm font-semibold text-slate-800">
-                        Recomendados y comprados juntos
+                  <div className="px-4 py-3 border-t border-slate-100">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                      <h3 className="text-[13px] font-semibold text-slate-800">
+                        Comprados juntos
                       </h3>
                     </div>
 
@@ -332,49 +337,51 @@ export default function ShoppingCartComponent() {
                       </div>
                     ) : recomendados.length > 0 ? (
                       <div
-                        className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide"
-                        style={{ scrollbarWidth: 'none' }}
+                        className="flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide"
+                        style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
                       >
-                        {recomendados.map((producto) => (
+                        {recomendados.map((producto, recIndex) => (
                           <div
                             key={producto.id}
-                            className="min-w-[180px] max-w-[180px] rounded-lg border border-slate-200 bg-white p-2.5 flex-shrink-0 hover:shadow-md transition-shadow"
+                            className="min-w-[150px] max-w-[150px] rounded-xl border border-slate-200 bg-white p-2 flex-shrink-0 snap-start active:scale-[0.98] transition-transform"
                           >
-                            <div className="relative w-full h-28 rounded-md overflow-hidden bg-slate-50 border border-slate-100 mb-2">
+                            <div className="relative w-full h-24 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 mb-1.5">
                               {producto.foto ? (
                                 <Image
                                   src={producto.foto}
                                   alt={producto.modelo}
                                   fill
+                                  sizes="150px"
                                   className="object-contain p-1.5"
+                                  loading={recIndex < 2 ? 'eager' : 'lazy'}
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                  <Package className="w-6 h-6" />
+                                  <Package className="w-5 h-5" />
                                 </div>
                               )}
                             </div>
 
-                            <p className="text-xs font-medium text-slate-800 line-clamp-2 leading-snug min-h-[2rem]">
+                            <p className="text-[11px] font-medium text-slate-800 line-clamp-2 leading-tight min-h-[1.75rem]">
                               {producto.modelo}
                             </p>
-                            <p className="text-[10px] text-slate-500 mt-0.5">
+                            <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                               {producto.categoria}
                             </p>
                             {producto.potenciaKW != null && (
-                              <p className="text-[10px] text-primary font-medium mt-0.5">
+                              <p className="text-[10px] text-primary font-semibold mt-0.5">
                                 {producto.potenciaKW} kW
                               </p>
                             )}
 
-                            <div className="mt-2">
+                            <div className="mt-1.5">
                               {producto.vendible ? (
-                                <Button asChild size="sm" className="w-full h-7 text-[11px] bg-secondary-gradient text-white">
+                                <Button asChild size="sm" className="w-full h-7 text-[10px] bg-secondary-gradient text-white rounded-lg">
                                   <Link href="/productos">Ver producto</Link>
                                 </Button>
                               ) : (
-                                <div className="w-full h-7 rounded-md border border-amber-200 bg-amber-50 text-[10px] text-amber-800 flex items-center justify-center px-1 text-center leading-tight">
-                                  No se vende por separado
+                                <div className="w-full h-7 rounded-lg border border-amber-200 bg-amber-50 text-[9px] text-amber-700 flex items-center justify-center px-1 text-center leading-tight font-medium">
+                                  No se vende suelto
                                 </div>
                               )}
                             </div>
@@ -389,22 +396,21 @@ export default function ShoppingCartComponent() {
                   </div>
 
                   {/* Sección de oferta de instalación */}
-                  <div className="px-4 md:px-6 py-4 border-t border-slate-100">
+                  <div className="px-4 py-3 border-t border-slate-100">
                     <div className="flex items-center gap-2 mb-2">
-                      <Wrench className="w-4 h-4 text-primary" />
-                      <h3 className="text-sm font-semibold text-slate-800">
+                      <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                        <Wrench className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <h3 className="text-[13px] font-semibold text-slate-800">
                         Oferta de instalación
                       </h3>
                     </div>
-                    <p className="text-xs text-slate-600 mb-3">
-                      Incluye todos los materiales necesarios para el sistema completo.
-                    </p>
 
                     {precioOferta != null ? (
-                      <div className="flex items-center justify-between bg-primary/5 border border-primary/15 rounded-lg p-3">
+                      <div className="flex items-center justify-between bg-primary/5 border border-primary/10 rounded-xl p-3">
                         <div>
-                          <p className="text-xs text-slate-600">Desde</p>
-                          <p className="text-lg font-bold text-primary">
+                          <p className="text-[10px] text-slate-500 uppercase tracking-wide">Desde</p>
+                          <p className="text-base font-bold text-primary tabular-nums">
                             ${precioOferta.toLocaleString()}
                           </p>
                         </div>
@@ -414,78 +420,80 @@ export default function ShoppingCartComponent() {
                           }}
                           disabled={!ofertaId}
                           size="sm"
-                          className="bg-secondary-gradient text-white text-xs"
+                          className="bg-secondary-gradient text-white text-[11px] h-8 rounded-lg active:scale-[0.97]"
                         >
                           Ver oferta
-                          <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                          <ChevronRight className="w-3 h-3 ml-0.5" />
                         </Button>
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-500">
-                        No encontramos una oferta para esta selección todavía.
+                      <p className="text-[11px] text-slate-400 py-1">
+                        Sin oferta disponible para esta selección.
                       </p>
                     )}
                   </div>
 
                   {/* Vaciar carrito */}
-                  <div className="px-4 md:px-6 py-3 border-t border-slate-100">
+                  <div className="px-4 py-3 border-t border-slate-100">
                     <button
                       onClick={clearCart}
-                      className="text-xs text-red-500 hover:text-red-600 hover:underline transition-colors"
+                      className="text-[11px] text-slate-400 active:text-red-500 transition-colors"
                     >
                       Vaciar carrito
                     </button>
                   </div>
+
+                  {/* Spacer para que el contenido no quede oculto por el footer */}
+                  <div className="h-2" />
                 </>
               )}
             </div>
 
-            {/* Footer fijo con resumen y checkout */}
+            {/* Footer fijo con resumen y checkout - safe area para iOS */}
             {items.length > 0 && (
-              <div className="border-t border-slate-200 bg-white px-4 md:px-6 py-4 space-y-3">
-                {/* Resumen */}
+              <div className="border-t border-slate-200 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] space-y-2.5">
+                {/* Resumen en línea */}
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-slate-500">Subtotal referencial</p>
-                    <p className="text-xl font-bold text-slate-900">
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-[11px] text-slate-400 uppercase tracking-wide">Subtotal ref.</p>
+                    <p className="text-lg font-bold text-slate-900 tabular-nums">
                       ${totalPrice.toLocaleString()}
                     </p>
                   </div>
-                  <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-xs">
+                  <span className="text-[11px] text-slate-400">
                     {totalItems} {totalItems === 1 ? 'artículo' : 'artículos'}
-                  </Badge>
+                  </span>
                 </div>
 
-                {/* Botones de acción */}
-                <div className="space-y-2">
-                  <Button
-                    onClick={handleWhatsAppCheckout}
-                    className="w-full h-12 bg-secondary-gradient text-white font-semibold shadow-lg hover:shadow-xl transition-all text-sm"
-                  >
-                    <MessageCircle className="w-5 h-5 mr-2" />
-                    Solicitar cotización por WhatsApp
-                  </Button>
+                {/* CTA principal - altura 48px para mobile touch */}
+                <Button
+                  onClick={handleWhatsAppCheckout}
+                  className="w-full h-12 bg-secondary-gradient text-white font-semibold shadow-lg active:scale-[0.98] transition-all text-[13px] rounded-xl"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Solicitar cotización por WhatsApp
+                </Button>
 
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="block w-full">
-                          <Button
-                            disabled
-                            variant="outline"
-                            className="w-full h-10 border-slate-300 text-slate-400 cursor-not-allowed text-sm"
-                          >
-                            <CreditCard className="w-4 h-4 mr-2" />
-                            Pago en línea — Próximamente
-                          </Button>
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        El pago en línea estará disponible pronto
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+                {/* Pago online - secundario y compacto */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="block w-full">
+                        <Button
+                          disabled
+                          variant="ghost"
+                          className="w-full h-9 text-slate-400 cursor-not-allowed text-xs"
+                        >
+                          <CreditCard className="w-3.5 h-3.5 mr-1.5" />
+                          Pago en línea — Próximamente
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      El pago en línea estará disponible pronto
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             )}
           </div>
