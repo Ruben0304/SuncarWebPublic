@@ -322,8 +322,8 @@ export default function ShoppingCartComponent() {
                   </div>
 
                   {/* Sección de recomendados */}
-                  <div className="px-4 py-3 border-t border-slate-100">
-                    <div className="flex items-center gap-2 mb-2.5">
+                  <div className="py-3 border-t border-slate-100">
+                    <div className="flex items-center gap-2 mb-2.5 px-4">
                       <Sparkles className="w-3.5 h-3.5 text-primary" />
                       <h3 className="text-[13px] font-semibold text-slate-800">
                         Comprados juntos
@@ -331,38 +331,38 @@ export default function ShoppingCartComponent() {
                     </div>
 
                     {recomendadorLoading ? (
-                      <div className="flex items-center gap-2 text-slate-500 text-xs py-3">
+                      <div className="flex items-center gap-2 text-slate-500 text-xs py-3 px-4">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         Buscando recomendaciones...
                       </div>
                     ) : recomendados.length > 0 ? (
                       <div
-                        className="flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide"
+                        className="flex gap-2.5 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide"
                         style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
                       >
                         {recomendados.map((producto, recIndex) => (
                           <div
                             key={producto.id}
-                            className="min-w-[150px] max-w-[150px] rounded-xl border border-slate-200 bg-white p-2 flex-shrink-0 snap-start active:scale-[0.98] transition-transform"
+                            className="w-[calc(50%-6px)] min-w-[calc(50%-6px)] rounded-xl border border-slate-200 bg-white p-2.5 flex-shrink-0 snap-start active:scale-[0.98] transition-transform"
                           >
-                            <div className="relative w-full h-24 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 mb-1.5">
+                            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-50 border border-slate-100 mb-2">
                               {producto.foto ? (
                                 <Image
                                   src={producto.foto}
                                   alt={producto.modelo}
                                   fill
-                                  sizes="150px"
-                                  className="object-contain p-1.5"
+                                  sizes="(max-width: 480px) 45vw, 200px"
+                                  className="object-contain p-2"
                                   loading={recIndex < 2 ? 'eager' : 'lazy'}
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                  <Package className="w-5 h-5" />
+                                  <Package className="w-6 h-6" />
                                 </div>
                               )}
                             </div>
 
-                            <p className="text-[11px] font-medium text-slate-800 line-clamp-2 leading-tight min-h-[1.75rem]">
+                            <p className="text-xs font-medium text-slate-800 line-clamp-2 leading-snug min-h-[2rem]">
                               {producto.modelo}
                             </p>
                             <p className="text-[10px] text-slate-400 mt-0.5 truncate">
@@ -374,22 +374,24 @@ export default function ShoppingCartComponent() {
                               </p>
                             )}
 
-                            <div className="mt-1.5">
+                            <div className="mt-2">
                               {producto.vendible ? (
-                                <Button asChild size="sm" className="w-full h-7 text-[10px] bg-secondary-gradient text-white rounded-lg">
+                                <Button asChild size="sm" className="w-full h-8 text-[11px] bg-secondary-gradient text-white rounded-lg">
                                   <Link href="/productos">Ver producto</Link>
                                 </Button>
                               ) : (
-                                <div className="w-full h-7 rounded-lg border border-amber-200 bg-amber-50 text-[9px] text-amber-700 flex items-center justify-center px-1 text-center leading-tight font-medium">
+                                <div className="w-full h-8 rounded-lg border border-amber-200 bg-amber-50 text-[10px] text-amber-700 flex items-center justify-center px-1.5 text-center leading-tight font-medium">
                                   No se vende suelto
                                 </div>
                               )}
                             </div>
                           </div>
                         ))}
+                        {/* Spacer para que el último card no quede pegado al borde */}
+                        <div className="min-w-[1px] flex-shrink-0" />
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-500 py-2">
+                      <p className="text-xs text-slate-500 py-2 px-4">
                         Aún no hay sugerencias para esta combinación.
                       </p>
                     )}

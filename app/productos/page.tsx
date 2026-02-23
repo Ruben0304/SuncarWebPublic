@@ -248,28 +248,8 @@ export default function TiendaPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
-      <main className="pt-36 pb-16">
-        <section className="px-4">
-          <div
-            className="max-w-7xl mx-auto space-y-4 text-center items-center flex flex-col"
-            data-aos="fade-down"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-primary">
-              ¡Encuentra tu equipo solar ideal!
-            </h1>
-            <p className="text-lg text-slate-700 max-w-3xl font-medium">
-              Explora nuestro catálogo completo de inversores, paneles, baterías
-              y más. Calidad garantizada para tu instalación solar.
-            </p>
-            <p className="text-sm md:text-base text-slate-600 max-w-4xl">
-              No publicamos precios fijos por equipo porque la cotización final
-              depende de la cantidad, combinaciones de productos, descuentos por
-              volumen y recomendaciones técnicas según tu necesidad.
-            </p>
-          </div>
-        </section>
-
-        <section className="px-4 mt-10" data-aos="fade-up">
+      <main className="pt-28 pb-16">
+        <section className="px-4" data-aos="fade-up">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Barra de búsqueda mejorada */}
             <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 p-6 shadow-sm">
@@ -477,7 +457,7 @@ export default function TiendaPage() {
                                 </div>
 
                                 <CardContent className="p-3 md:p-4 space-y-2 md:space-y-3 flex-1 min-h-0 flex flex-col">
-                                  <div className="space-y-1 md:space-y-1.5 min-h-[86px] md:min-h-[108px]">
+                                  <div className="space-y-1 md:space-y-1.5 min-h-[50px] md:min-h-[108px]">
                                     <h3 className="font-bold text-sm md:text-lg text-slate-900 mb-1 line-clamp-2 min-h-[2.5rem] md:min-h-[3.25rem] group-hover:text-primary transition-colors">
                                       {producto.modelo}
                                     </h3>
@@ -489,7 +469,7 @@ export default function TiendaPage() {
                                         </span>
                                       )}
                                     </div>
-                                    <p className="text-xs md:text-sm text-slate-600 line-clamp-2 min-h-[2rem] md:min-h-[2.5rem]">
+                                    <p className="hidden md:block text-sm text-slate-600 line-clamp-2 min-h-[2.5rem]">
                                       {producto.descripcion_uso || ""}
                                     </p>
                                   </div>
