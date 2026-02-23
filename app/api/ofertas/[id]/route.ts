@@ -66,15 +66,47 @@ interface TerminosCondicionesData {
   texto: string | null;
 }
 
+const OFERTA_DETAIL_CACHE_CONTROL =
+  "public, max-age=60, s-maxage=120, stale-while-revalidate=600";
+const MATERIALES_CACHE_TTL_MS = 10 * 60 * 1000;
+const TERMINOS_CACHE_TTL_MS = 10 * 60 * 1000;
+
+const isDev = process.env.NODE_ENV !== "production";
+
+type MaterialesCacheEntry = {
+  timestamp: number;
+  data: Map<string, string>;
+};
+
+type TerminosCacheEntry = {
+  timestamp: number;
+  data: TerminosCondicionesData;
+};
+
+let materialesCache: MaterialesCacheEntry | null = null;
+let terminosCache: TerminosCacheEntry | null = null;
+
+function debugLog(...args: unknown[]) {
+  if (isDev) {
+    console.log(...args);
+  }
+}
+
 function extractMarcaFromItems(items?: OfertaConfeccionItem[]): string | null {
   if (!items || items.length === 0) return null;
 
-  const inversor = items.find((item) => item.categoria?.toUpperCase() === "INVERSORES");
+  const inversor = items.find(
+    (item) => item.categoria?.toUpperCase() === "INVERSORES",
+  );
   if (!inversor || !inversor.descripcion) return null;
 
   const palabras = inversor.descripcion.split(" ");
   const marcaPosibles = palabras.filter((palabra, index) => {
-    if (index === 0 && (palabra.toLowerCase() === "inversor" || palabra.toLowerCase() === "inversores")) {
+    if (
+      index === 0 &&
+      (palabra.toLowerCase() === "inversor" ||
+        palabra.toLowerCase() === "inversores")
+    ) {
       return false;
     }
     if (/^\d+/.test(palabra) || /^(kw|w|v|a|kwh)$/i.test(palabra)) {
@@ -92,7 +124,10 @@ function normalizeCode(value: unknown): string | null {
   return text.length > 0 ? text : null;
 }
 
-function normalizeImageUrl(url: string | null | undefined, backendUrl: string): string | null {
+function normalizeImageUrl(
+  url: string | null | undefined,
+  backendUrl: string,
+): string | null {
   if (!url) return null;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   return `${backendUrl}${url.startsWith("/") ? "" : "/"}${url}`;
@@ -109,7 +144,10 @@ function getTokenCandidates(): string[] {
   return [...new Set(raw)];
 }
 
-function getCredentialCandidates(): Array<{ usuario: string; contrasena: string }> {
+function getCredentialCandidates(): Array<{
+  usuario: string;
+  contrasena: string;
+}> {
   const pairs = [
     [process.env.BACKEND_AUTH_USER, process.env.BACKEND_AUTH_PASSWORD],
     [process.env.BACKEND_ADMIN_USER, process.env.BACKEND_ADMIN_PASSWORD],
@@ -126,13 +164,18 @@ function getCredentialCandidates(): Array<{ usuario: string; contrasena: string 
     }));
 }
 
-function mapFotosFromProductos(data: ProductosResponse, backendUrl: string): Map<string, string> {
+function mapFotosFromProductos(
+  data: ProductosResponse,
+  backendUrl: string,
+): Map<string, string> {
   const fotosMap = new Map<string, string>();
   const categorias = Array.isArray(data.data) ? data.data : [];
 
   categorias.forEach((categoria) => {
     const fotoCategoria = normalizeImageUrl(categoria.foto ?? null, backendUrl);
-    const materiales = Array.isArray(categoria.materiales) ? categoria.materiales : [];
+    const materiales = Array.isArray(categoria.materiales)
+      ? categoria.materiales
+      : [];
 
     materiales.forEach((material) => {
       const codigo = normalizeCode(material.codigo);
@@ -151,7 +194,10 @@ function mapFotosFromProductos(data: ProductosResponse, backendUrl: string): Map
   return fotosMap;
 }
 
-async function fetchProductosWithToken(backendUrl: string, token?: string): Promise<Response> {
+async function fetchProductosWithToken(
+  backendUrl: string,
+  token?: string,
+): Promise<Response> {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -195,7 +241,17 @@ async function tryLoginToken(backendUrl: string): Promise<string | null> {
   return null;
 }
 
-async function fetchMateriales(backendUrl: string): Promise<Map<string, string>> {
+async function fetchMateriales(
+  backendUrl: string,
+): Promise<Map<string, string>> {
+  const now = Date.now();
+  if (
+    materialesCache &&
+    now - materialesCache.timestamp <= MATERIALES_CACHE_TTL_MS
+  ) {
+    return new Map(materialesCache.data);
+  }
+
   const tokenCandidates = getTokenCandidates();
 
   for (const token of tokenCandidates) {
@@ -205,42 +261,68 @@ async function fetchMateriales(backendUrl: string): Promise<Map<string, string>>
         continue;
       }
       if (!response.ok) {
-        console.error(`Error en /api/productos/ con token candidato (${response.status})`);
+        console.error(
+          `Error en /api/productos/ con token candidato (${response.status})`,
+        );
         continue;
       }
 
       const data: ProductosResponse = await response.json();
       const fotosMap = mapFotosFromProductos(data, backendUrl);
       if (fotosMap.size > 0) {
-        console.log(`Mapa de fotos creado desde /api/productos/: ${fotosMap.size}`);
+        materialesCache = {
+          timestamp: Date.now(),
+          data: new Map(fotosMap),
+        };
+        debugLog(
+          `Mapa de fotos creado desde /api/productos/: ${fotosMap.size}`,
+        );
         return fotosMap;
       }
     } catch (error) {
-      console.error("Error consultando /api/productos/ con token candidato:", error);
+      console.error(
+        "Error consultando /api/productos/ con token candidato:",
+        error,
+      );
     }
   }
 
   const tokenFromLogin = await tryLoginToken(backendUrl);
   if (tokenFromLogin) {
     try {
-      const response = await fetchProductosWithToken(backendUrl, tokenFromLogin);
+      const response = await fetchProductosWithToken(
+        backendUrl,
+        tokenFromLogin,
+      );
       if (response.ok) {
         const data: ProductosResponse = await response.json();
         const fotosMap = mapFotosFromProductos(data, backendUrl);
         if (fotosMap.size > 0) {
-          console.log(`Mapa de fotos creado desde /api/productos/ con login-token: ${fotosMap.size}`);
+          materialesCache = {
+            timestamp: Date.now(),
+            data: new Map(fotosMap),
+          };
+          debugLog(
+            `Mapa de fotos creado desde /api/productos/ con login-token: ${fotosMap.size}`,
+          );
           return fotosMap;
         }
       }
     } catch (error) {
-      console.error("Error consultando /api/productos/ con login-token:", error);
+      console.error(
+        "Error consultando /api/productos/ con login-token:",
+        error,
+      );
     }
   }
 
   console.error(
     "No se pudieron obtener materiales con foto. /api/productos/ requiere token valido. " +
-      "Configura BACKEND_AUTH_TOKEN o BACKEND_AUTH_USER/BACKEND_AUTH_PASSWORD en .env."
+      "Configura BACKEND_AUTH_TOKEN o BACKEND_AUTH_USER/BACKEND_AUTH_PASSWORD en .env.",
   );
+  if (materialesCache) {
+    return new Map(materialesCache.data);
+  }
   return new Map();
 }
 
@@ -280,15 +362,27 @@ function extractGarantiaSection(texto: string): string | null {
   return text.length > 0 ? text : null;
 }
 
-async function fetchTerminosCondiciones(backendUrl: string): Promise<TerminosCondicionesData> {
+async function fetchTerminosCondiciones(
+  backendUrl: string,
+): Promise<TerminosCondicionesData> {
+  const now = Date.now();
+  if (terminosCache && now - terminosCache.timestamp <= TERMINOS_CACHE_TTL_MS) {
+    return terminosCache.data;
+  }
+
   try {
-    const response = await fetch(`${backendUrl}/api/terminos-condiciones/activo`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${backendUrl}/api/terminos-condiciones/activo`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        next: {
+          revalidate: 600,
+        },
       },
-      cache: "no-store",
-    });
+    );
 
     if (!response.ok) {
       console.error("Error al obtener terminos y condiciones");
@@ -299,19 +393,27 @@ async function fetchTerminosCondiciones(backendUrl: string): Promise<TerminosCon
     if (!data.success || !data.data?.texto) return { lineas: [], texto: null };
 
     const garantiaTexto = extractGarantiaSection(data.data.texto);
-    return {
+    const result = {
       lineas: garantiaTexto ? [garantiaTexto] : [],
       texto: garantiaTexto,
     };
+    terminosCache = {
+      timestamp: Date.now(),
+      data: result,
+    };
+    return result;
   } catch (error) {
     console.error("Error fetching terminos y condiciones:", error);
+    if (terminosCache) {
+      return terminosCache.data;
+    }
     return { lineas: [], texto: null };
   }
 }
 
 export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -322,7 +424,7 @@ export async function GET(
           success: false,
           message: "Error de configuracion del servidor",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -330,28 +432,33 @@ export async function GET(
     const ofertaId = resolvedParams.id;
     const targetUrl = `${backendUrl}/api/ofertas/confeccion/${ofertaId}`;
 
-    console.log("=== DEBUG BACKEND CALL ===");
-    console.log(`Target URL: ${targetUrl}`);
-    console.log(`Obteniendo oferta con ID: ${ofertaId}`);
-    console.log("=== END DEBUG ===");
+    debugLog(`Target URL: ${targetUrl}`);
+    debugLog(`Obteniendo oferta con ID: ${ofertaId}`);
 
     const backendResponse = await fetch(targetUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "no-store",
+      next: {
+        revalidate: 120,
+      },
     });
 
     if (!backendResponse.ok) {
       const errorText = await backendResponse.text();
-      console.error(`Error del backend: ${backendResponse.status} - ${errorText}`);
+      console.error(
+        `Error del backend: ${backendResponse.status} - ${errorText}`,
+      );
       return NextResponse.json(
         {
           success: false,
-          message: backendResponse.status === 404 ? "Oferta no encontrada" : "Error al obtener oferta",
+          message:
+            backendResponse.status === 404
+              ? "Oferta no encontrada"
+              : "Error al obtener oferta",
         },
-        { status: backendResponse.status }
+        { status: backendResponse.status },
       );
     }
 
@@ -362,7 +469,7 @@ export async function GET(
           success: false,
           message: backendData.message || "Oferta no encontrada",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -374,30 +481,19 @@ export async function GET(
 
     const materialesArray = oferta.materiales || oferta.items || [];
 
-    console.log("=== ITEMS/MATERIALES DE LA OFERTA ===");
-    console.log("Tiene materiales:", !!oferta.materiales);
-    console.log("Tiene items:", !!oferta.items);
-    console.log("Total elementos:", materialesArray.length);
-    console.log("Tamano del mapa de fotos:", fotosMap.size);
-    console.log("Codigos en el mapa:", Array.from(fotosMap.keys()));
+    debugLog("Detalle oferta", {
+      id: ofertaId,
+      totalElementos: materialesArray.length,
+      fotosDisponibles: fotosMap.size,
+    });
 
-    const elementos = materialesArray.map((item, index) => {
+    const elementos = materialesArray.map((item) => {
       const codigoNormalizado = normalizeCode(item.material_codigo);
-      const fotoCatalogo = codigoNormalizado ? fotosMap.get(codigoNormalizado) || null : null;
+      const fotoCatalogo = codigoNormalizado
+        ? fotosMap.get(codigoNormalizado) || null
+        : null;
       const fotoItem = normalizeImageUrl(item.foto ?? null, backendUrl);
       const fotoFinal = fotoCatalogo || fotoItem || null;
-
-      console.log(`Elemento ${index + 1}:`, {
-        material_codigo: item.material_codigo,
-        codigo_normalizado: codigoNormalizado,
-        descripcion: item.descripcion,
-        categoria: item.categoria,
-        foto_original_item: item.foto,
-        foto_item_procesada: fotoItem,
-        foto_desde_catalogo: fotoCatalogo,
-        foto_final: fotoFinal,
-        encontrado_en_mapa: !!fotoCatalogo,
-      });
 
       return {
         categoria: item.categoria || null,
@@ -407,11 +503,10 @@ export async function GET(
       };
     });
 
-    console.log("=== FIN ITEMS/MATERIALES ===");
-
     const ofertaDetallada = {
       id: oferta._id,
-      descripcion: oferta.nombre_completo || oferta.nombre_oferta || "Oferta sin nombre",
+      descripcion:
+        oferta.nombre_completo || oferta.nombre_oferta || "Oferta sin nombre",
       descripcion_detallada: oferta.nombre_completo || null,
       marca: extractMarcaFromItems(materialesArray),
       precio: oferta.precio_final,
@@ -424,14 +519,23 @@ export async function GET(
       terminos_condiciones_texto: terminosCondiciones.texto,
       garantias: terminosCondiciones.lineas,
       elementos,
-      is_active: oferta.tipo_oferta === "generica" && oferta.estado === "aprobada_para_enviar",
+      is_active:
+        oferta.tipo_oferta === "generica" &&
+        oferta.estado === "aprobada_para_enviar",
     };
 
-    return NextResponse.json({
-      success: true,
-      message: "Oferta obtenida exitosamente",
-      data: ofertaDetallada,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Oferta obtenida exitosamente",
+        data: ofertaDetallada,
+      },
+      {
+        headers: {
+          "Cache-Control": OFERTA_DETAIL_CACHE_CONTROL,
+        },
+      },
+    );
   } catch (error) {
     console.error("Error en obtener oferta por ID:", error);
     return NextResponse.json(
@@ -439,7 +543,7 @@ export async function GET(
         success: false,
         message: "Error interno del servidor",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

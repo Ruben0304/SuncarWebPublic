@@ -1,153 +1,282 @@
-"use client"
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { ChevronLeft, ChevronRight, Play, Pause, X, ZoomIn } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import Navigation from "@/components/navigation"
-import NavigationChristmas from "@/components/navigation-christmas"
-import Footer from "@/components/footer"
-import FooterChristmas from "@/components/footer-christmas"
-import { isChristmasSeason } from "@/lib/christmas-utils"
+"use client";
+import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+  X,
+  ZoomIn,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import Navigation from "@/components/navigation";
+import NavigationChristmas from "@/components/navigation-christmas";
+import Footer from "@/components/footer";
+import FooterChristmas from "@/components/footer-christmas";
+import { isChristmasSeason } from "@/lib/christmas-utils";
 
 interface FotoGaleria {
-  nombre_archivo: string
-  url: string
-  carpeta: string
-  tamano: number
-  fecha_subida: string
+  nombre_archivo: string;
+  url: string;
+  carpeta: string;
+  tamano: number;
+  fecha_subida: string;
 }
 
 interface GalleryImages {
-  exterior: string[]
-  interior: string[]
-  nosotros: string[]
+  exterior: string[];
+  interior: string[];
+  nosotros: string[];
+}
+
+const EMPTY_GALLERY_DATA: GalleryImages = {
+  exterior: [],
+  interior: [],
+  nosotros: [],
+};
+
+const GALERIA_CACHE_KEY = "suncar_galeria_cache_v1";
+const GALERIA_CACHE_TTL_MS = 10 * 60 * 1000;
+
+type GaleriaCacheEntry = {
+  data: GalleryImages;
+  timestamp: number;
+};
+
+let galeriaMemoryCache: GaleriaCacheEntry | null = null;
+
+function readGaleriaCache(): GaleriaCacheEntry | null {
+  if (galeriaMemoryCache) {
+    return galeriaMemoryCache;
+  }
+
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(GALERIA_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as GaleriaCacheEntry;
+    if (
+      !parsed ||
+      typeof parsed.timestamp !== "number" ||
+      !parsed.data ||
+      !Array.isArray(parsed.data.exterior) ||
+      !Array.isArray(parsed.data.interior) ||
+      !Array.isArray(parsed.data.nosotros)
+    ) {
+      return null;
+    }
+
+    galeriaMemoryCache = parsed;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeGaleriaCache(data: GalleryImages): void {
+  const entry: GaleriaCacheEntry = {
+    data,
+    timestamp: Date.now(),
+  };
+
+  galeriaMemoryCache = entry;
+
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(GALERIA_CACHE_KEY, JSON.stringify(entry));
+  } catch {
+    // Ignorar errores de storage para no afectar la carga.
+  }
+}
+
+function getCachedGaleriaData(
+  options: { allowStale?: boolean } = {},
+): GalleryImages | null {
+  const { allowStale = false } = options;
+  const cache = readGaleriaCache();
+  if (!cache) {
+    return null;
+  }
+
+  const isFresh = Date.now() - cache.timestamp <= GALERIA_CACHE_TTL_MS;
+  if (!isFresh && !allowStale) {
+    return null;
+  }
+
+  return cache.data;
 }
 
 const categoryTitles = {
   exterior: "Instalaciones de Exterior",
-  interior: "Instalaciones de Interior", 
-  nosotros: "Nosotros"
-}
+  interior: "Instalaciones de Interior",
+  nosotros: "Nosotros",
+};
 
 const categoryDescriptions = {
-  exterior: "Nuestras instalaciones solares residenciales y comerciales en exteriores",
+  exterior:
+    "Nuestras instalaciones solares residenciales y comerciales en exteriores",
   interior: "Sistemas de energía solar y equipos instalados en interiores",
-  nosotros: "Conoce a nuestro equipo de profesionales"
-}
+  nosotros: "Conoce a nuestro equipo de profesionales",
+};
 
 export default function GaleriaPage() {
-  const [activeCategory, setActiveCategory] = useState<keyof GalleryImages>("exterior")
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isAutoPlay, setIsAutoPlay] = useState(true)
-  const [isZoomed, setIsZoomed] = useState(false)
-  const [galleryData, setGalleryData] = useState<GalleryImages>({
-    exterior: [],
-    interior: [],
-    nosotros: []
-  })
-  const [isLoading, setIsLoading] = useState(true)
-  const [isChristmas, setIsChristmas] = useState(false)
+  const [activeCategory, setActiveCategory] =
+    useState<keyof GalleryImages>("exterior");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [galleryData, setGalleryData] =
+    useState<GalleryImages>(EMPTY_GALLERY_DATA);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isChristmas, setIsChristmas] = useState(false);
 
   // Check if it's Christmas season
   useEffect(() => {
-    setIsChristmas(isChristmasSeason())
-  }, [])
+    setIsChristmas(isChristmasSeason());
+  }, []);
+
+  const fetchGalleryImages = useCallback(
+    async ({ silent = false }: { silent?: boolean } = {}) => {
+      try {
+        if (!silent) {
+          setIsLoading(true);
+        }
+
+        // Fetch photos for each category through Next.js API routes
+        const [exteriorRes, interiorRes, nosotrosRes] = await Promise.all([
+          fetch("/api/galeriaweb/instalaciones_exterior", {
+            cache: "force-cache",
+          }),
+          fetch("/api/galeriaweb/instalaciones_interior", {
+            cache: "force-cache",
+          }),
+          fetch("/api/galeriaweb/nosotros", {
+            cache: "force-cache",
+          }),
+        ]);
+
+        if (!exteriorRes.ok || !interiorRes.ok || !nosotrosRes.ok) {
+          console.error("Error fetching gallery images:", {
+            exterior: exteriorRes.status,
+            interior: interiorRes.status,
+            nosotros: nosotrosRes.status,
+          });
+        }
+
+        const exteriorData = await exteriorRes.json();
+        const interiorData = await interiorRes.json();
+        const nosotrosData = await nosotrosRes.json();
+
+        const mappedData: GalleryImages = {
+          exterior:
+            exteriorData.success && exteriorData.data
+              ? exteriorData.data.map((foto: FotoGaleria) => foto.url)
+              : [],
+          interior:
+            interiorData.success && interiorData.data
+              ? interiorData.data.map((foto: FotoGaleria) => foto.url)
+              : [],
+          nosotros:
+            nosotrosData.success && nosotrosData.data
+              ? nosotrosData.data.map((foto: FotoGaleria) => foto.url)
+              : [],
+        };
+
+        setGalleryData(mappedData);
+        writeGaleriaCache(mappedData);
+      } catch (error) {
+        console.error("Error fetching gallery images:", error);
+      } finally {
+        if (!silent) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [],
+  );
 
   // Fetch gallery images from API
   useEffect(() => {
-    const fetchGalleryImages = async () => {
-      setIsLoading(true)
-      try {
-        // Fetch photos for each category through Next.js API routes
-        const [exteriorRes, interiorRes, nosotrosRes] = await Promise.all([
-          fetch('/api/galeriaweb/instalaciones_exterior'),
-          fetch('/api/galeriaweb/instalaciones_interior'),
-          fetch('/api/galeriaweb/nosotros')
-        ])
-
-        // Check if responses are ok
-        if (!exteriorRes.ok || !interiorRes.ok || !nosotrosRes.ok) {
-          console.error('Error fetching gallery images:', {
-            exterior: exteriorRes.status,
-            interior: interiorRes.status,
-            nosotros: nosotrosRes.status
-          })
-        }
-
-        const exteriorData = await exteriorRes.json()
-        const interiorData = await interiorRes.json()
-        const nosotrosData = await nosotrosRes.json()
-
-        console.log('Gallery data received:', { exteriorData, interiorData, nosotrosData })
-
-        setGalleryData({
-          exterior: exteriorData.success && exteriorData.data ? exteriorData.data.map((foto: FotoGaleria) => foto.url) : [],
-          interior: interiorData.success && interiorData.data ? interiorData.data.map((foto: FotoGaleria) => foto.url) : [],
-          nosotros: nosotrosData.success && nosotrosData.data ? nosotrosData.data.map((foto: FotoGaleria) => foto.url) : []
-        })
-      } catch (error) {
-        console.error('Error fetching gallery images:', error)
-      } finally {
-        setIsLoading(false)
-      }
+    const cachedFresh = getCachedGaleriaData();
+    if (cachedFresh) {
+      setGalleryData(cachedFresh);
+      setIsLoading(false);
+      return;
     }
 
-    fetchGalleryImages()
-  }, [])
+    const cachedStale = getCachedGaleriaData({ allowStale: true });
+    if (cachedStale) {
+      setGalleryData(cachedStale);
+      setIsLoading(false);
+      void fetchGalleryImages({ silent: true });
+      return;
+    }
 
-  const currentImages = galleryData[activeCategory]
+    void fetchGalleryImages();
+  }, [fetchGalleryImages]);
+
+  const currentImages = galleryData[activeCategory];
 
   useEffect(() => {
-    setCurrentImageIndex(0)
-  }, [activeCategory])
+    setCurrentImageIndex(0);
+  }, [activeCategory]);
 
   useEffect(() => {
-    if (!isAutoPlay || isLoading || currentImages.length === 0) return
+    if (!isAutoPlay || isLoading || currentImages.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) =>
-        prevIndex === currentImages.length - 1 ? 0 : prevIndex + 1
-      )
-    }, 4000)
+        prevIndex === currentImages.length - 1 ? 0 : prevIndex + 1,
+      );
+    }, 4000);
 
-    return () => clearInterval(interval)
-  }, [currentImages.length, isAutoPlay, isLoading])
+    return () => clearInterval(interval);
+  }, [currentImages.length, isAutoPlay, isLoading]);
 
   // Handle keyboard events for zoom modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isZoomed) {
-        setIsZoomed(false)
+      if (event.key === "Escape" && isZoomed) {
+        setIsZoomed(false);
       }
-    }
+    };
 
     if (isZoomed) {
-      document.addEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = 'hidden'
+      document.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = 'unset'
-    }
-  }, [isZoomed])
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "unset";
+    };
+  }, [isZoomed]);
 
   const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => 
-      prevIndex === currentImages.length - 1 ? 0 : prevIndex + 1
-    )
-  }
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === currentImages.length - 1 ? 0 : prevIndex + 1,
+    );
+  };
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => 
-      prevIndex === 0 ? currentImages.length - 1 : prevIndex - 1
-    )
-  }
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? currentImages.length - 1 : prevIndex - 1,
+    );
+  };
 
   const goToImage = (index: number) => {
-    setCurrentImageIndex(index)
-  }
+    setCurrentImageIndex(index);
+  };
 
   return (
     <>
@@ -157,168 +286,184 @@ export default function GaleriaPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-100/30"></div>
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-gradient-to-tr from-blue-200/30 to-transparent rounded-full blur-2xl animate-pulse delay-1000"></div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-            Galería de Proyectos
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Descubre nuestros proyectos de energía solar, instalaciones y conoce a nuestro equipo profesional
-          </p>
-        </div>
 
-        {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          {Object.keys(galleryData).map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category as keyof GalleryImages)}
-              className={`
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+              Galería de Proyectos
+            </h1>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Descubre nuestros proyectos de energía solar, instalaciones y
+              conoce a nuestro equipo profesional
+            </p>
+          </div>
+
+          {/* Category Tabs */}
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {Object.keys(galleryData).map((category) => (
+              <button
+                key={category}
+                onClick={() =>
+                  setActiveCategory(category as keyof GalleryImages)
+                }
+                className={`
                 px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105
-                ${activeCategory === category 
-                  ? "bg-secondary-gradient text-white shadow-lg" 
-                  : "bg-white text-gray-700 border border-gray-200 hover:border-primary hover:text-primary"
+                ${
+                  activeCategory === category
+                    ? "bg-secondary-gradient text-white shadow-lg"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-primary hover:text-primary"
                 }
               `}
-            >
-              {categoryTitles[category as keyof typeof categoryTitles]}
-              <Badge className="ml-2 bg-primary/10 text-primary">
-                {galleryData[category as keyof GalleryImages].length}
-              </Badge>
-            </button>
-          ))}
-        </div>
-
-        {/* Category Description */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-primary mb-2">
-            {categoryTitles[activeCategory]}
-          </h2>
-          <p className="text-gray-600">
-            {categoryDescriptions[activeCategory]}
-          </p>
-        </div>
-
-        {/* Main Gallery Display */}
-        <div className="mb-8">
-          <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
-            {/* Main Image */}
-            <div className="relative h-96 md:h-[500px] lg:h-[600px] bg-gray-100 flex items-center justify-center">
-              {isLoading || currentImages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                  <p className="text-gray-600">Cargando imágenes...</p>
-                </div>
-              ) : (
-                <img
-                  src={currentImages[currentImageIndex]}
-                  alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
-                  loading="lazy"
-                  className="object-contain transition-all duration-500"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                />
-              )}
-
-              {/* Controls - only show when images are loaded */}
-              {!isLoading && currentImages.length > 0 && (
-                <>
-                  {/* Zoom Button */}
-                  <button
-                    onClick={() => setIsZoomed(true)}
-                    className="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 z-10"
-                  >
-                    <ZoomIn size={20} />
-                  </button>
-
-                  {/* Navigation Arrows */}
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-                  >
-                    <ChevronRight size={24} />
-                  </button>
-
-                  {/* Auto-play Control */}
-                  <button
-                    onClick={() => setIsAutoPlay(!isAutoPlay)}
-                    className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300"
-                  >
-                    {isAutoPlay ? <Pause size={20} /> : <Play size={20} />}
-                  </button>
-
-                  {/* Image Counter */}
-                  <div className="absolute bottom-4 left-4 bg-black/50 text-white px-4 py-2 rounded-full">
-                    {currentImageIndex + 1} / {currentImages.length}
-                  </div>
-                </>
-              )}
-            </div>
+              >
+                {categoryTitles[category as keyof typeof categoryTitles]}
+                <Badge className="ml-2 bg-primary/10 text-primary">
+                  {galleryData[category as keyof GalleryImages].length}
+                </Badge>
+              </button>
+            ))}
           </div>
-        </div>
 
-        {/* Thumbnail Gallery - only show when loaded */}
-        {!isLoading && currentImages.length > 0 && (
-          <>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 mb-8">
-              {currentImages.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToImage(index)}
-                  className={`
-                    relative aspect-square rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105
-                    ${index === currentImageIndex
-                      ? "ring-4 ring-primary shadow-lg"
-                      : "hover:ring-2 hover:ring-primary/50"
-                    }
-                  `}
-                >
-                  <img
-                    src={image}
-                    alt={`Miniatura ${index + 1}`}
-                    loading="lazy"
-                    className="object-cover"
-                  />
-                  {index === currentImageIndex && (
-                    <div className="absolute inset-0 bg-primary/20" />
-                  )}
-                </button>
-              ))}
-            </div>
+          {/* Category Description */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-primary mb-2">
+              {categoryTitles[activeCategory]}
+            </h2>
+            <p className="text-gray-600">
+              {categoryDescriptions[activeCategory]}
+            </p>
+          </div>
 
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-              <div
-                className="bg-secondary-gradient h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentImageIndex + 1) / currentImages.length) * 100}%` }}
-              />
-            </div>
-
-            {/* Auto-play Status */}
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg">
-                {isAutoPlay ? (
-                  <>
-                    <Play size={16} className="text-green-600" />
-                    <span className="text-sm text-gray-700">Reproducción automática activa</span>
-                  </>
+          {/* Main Gallery Display */}
+          <div className="mb-8">
+            <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
+              {/* Main Image */}
+              <div className="relative h-96 md:h-[500px] lg:h-[600px] bg-gray-100 flex items-center justify-center">
+                {isLoading || currentImages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <p className="text-gray-600">Cargando imágenes...</p>
+                  </div>
                 ) : (
+                  <Image
+                    src={currentImages[currentImageIndex]}
+                    alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                    quality={75}
+                    priority={currentImageIndex === 0}
+                    fetchPriority={currentImageIndex === 0 ? "high" : "auto"}
+                    className="object-contain transition-all duration-500"
+                  />
+                )}
+
+                {/* Controls - only show when images are loaded */}
+                {!isLoading && currentImages.length > 0 && (
                   <>
-                    <Pause size={16} className="text-gray-600" />
-                    <span className="text-sm text-gray-700">Reproducción automática pausada</span>
+                    {/* Zoom Button */}
+                    <button
+                      onClick={() => setIsZoomed(true)}
+                      className="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+                    >
+                      <ZoomIn size={20} />
+                    </button>
+
+                    {/* Navigation Arrows */}
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+                    >
+                      <ChevronRight size={24} />
+                    </button>
+
+                    {/* Auto-play Control */}
+                    <button
+                      onClick={() => setIsAutoPlay(!isAutoPlay)}
+                      className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-all duration-300"
+                    >
+                      {isAutoPlay ? <Pause size={20} /> : <Play size={20} />}
+                    </button>
+
+                    {/* Image Counter */}
+                    <div className="absolute bottom-4 left-4 bg-black/50 text-white px-4 py-2 rounded-full">
+                      {currentImageIndex + 1} / {currentImages.length}
+                    </div>
                   </>
                 )}
               </div>
             </div>
-          </>
-        )}
+          </div>
+
+          {/* Thumbnail Gallery - only show when loaded */}
+          {!isLoading && currentImages.length > 0 && (
+            <>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 mb-8">
+                {currentImages.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToImage(index)}
+                    className={`
+                    relative aspect-square rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105
+                    ${
+                      index === currentImageIndex
+                        ? "ring-4 ring-primary shadow-lg"
+                        : "hover:ring-2 hover:ring-primary/50"
+                    }
+                  `}
+                  >
+                    <Image
+                      src={image}
+                      alt={`Miniatura ${index + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 33vw, (max-width: 1280px) 12vw, 8vw"
+                      quality={55}
+                      className="object-cover"
+                    />
+                    {index === currentImageIndex && (
+                      <div className="absolute inset-0 bg-primary/20" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+                <div
+                  className="bg-secondary-gradient h-2 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${((currentImageIndex + 1) / currentImages.length) * 100}%`,
+                  }}
+                />
+              </div>
+
+              {/* Auto-play Status */}
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg">
+                  {isAutoPlay ? (
+                    <>
+                      <Play size={16} className="text-green-600" />
+                      <span className="text-sm text-gray-700">
+                        Reproducción automática activa
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Pause size={16} className="text-gray-600" />
+                      <span className="text-sm text-gray-700">
+                        Reproducción automática pausada
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -326,13 +471,17 @@ export default function GaleriaPage() {
       {isZoomed && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
           <div className="relative w-full h-full flex items-center justify-center">
-            <img
+            <Image
               src={currentImages[currentImageIndex]}
               alt={`${categoryTitles[activeCategory]} - Imagen ${currentImageIndex + 1}`}
-              loading="lazy"
+              fill
+              sizes="100vw"
+              quality={85}
+              priority
+              fetchPriority="high"
               className="object-contain"
             />
-            
+
             {/* Close Button */}
             <button
               onClick={() => setIsZoomed(false)}
@@ -365,5 +514,5 @@ export default function GaleriaPage() {
 
       {isChristmas ? <FooterChristmas /> : <Footer />}
     </>
-  )
+  );
 }

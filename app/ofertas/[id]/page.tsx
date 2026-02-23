@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Navigation from '@/components/navigation';
-import NavigationChristmas from '@/components/navigation-christmas';
-import Footer from '@/components/footer';
-import { isChristmasSeason } from '@/lib/christmas-utils';
+import { useCallback, useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Navigation from "@/components/navigation";
+import NavigationChristmas from "@/components/navigation-christmas";
+import Footer from "@/components/footer";
+import { isChristmasSeason } from "@/lib/christmas-utils";
 import {
   ArrowLeft,
   Star,
@@ -27,15 +27,101 @@ import {
   Tag,
   Info,
   FileText,
-  Download
-} from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Oferta, OfertaResponse } from '@/types/ofertas';
-import { useClient } from '@/hooks/useClient';
-import CurrencySelector from '@/components/CurrencySelector';
-import { Currency } from '@/hooks/useCurrencyExchange';
-import { useAOS } from '@/hooks/useAOS';
+  Download,
+} from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { Oferta, OfertaResponse } from "@/types/ofertas";
+import { useClient } from "@/hooks/useClient";
+import CurrencySelector from "@/components/CurrencySelector";
+import { Currency } from "@/hooks/useCurrencyExchange";
+import { useAOS } from "@/hooks/useAOS";
+
+const OFERTA_DETAIL_CACHE_PREFIX = "suncar_oferta_detail_cache_v1";
+const OFERTA_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
+
+type OfertaDetailCacheEntry = {
+  data: Oferta;
+  timestamp: number;
+};
+
+const ofertaDetailMemoryCache = new Map<string, OfertaDetailCacheEntry>();
+
+function getOfertaDetailCacheKey(ofertaId: string): string {
+  return `${OFERTA_DETAIL_CACHE_PREFIX}:${ofertaId}`;
+}
+
+function readOfertaDetailCache(
+  ofertaId: string,
+): OfertaDetailCacheEntry | null {
+  const memoryEntry = ofertaDetailMemoryCache.get(ofertaId);
+  if (memoryEntry) {
+    return memoryEntry;
+  }
+
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(
+      getOfertaDetailCacheKey(ofertaId),
+    );
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as OfertaDetailCacheEntry;
+    if (!parsed || typeof parsed.timestamp !== "number" || !parsed.data) {
+      return null;
+    }
+
+    ofertaDetailMemoryCache.set(ofertaId, parsed);
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeOfertaDetailCache(ofertaId: string, oferta: Oferta): void {
+  const entry: OfertaDetailCacheEntry = {
+    data: oferta,
+    timestamp: Date.now(),
+  };
+
+  ofertaDetailMemoryCache.set(ofertaId, entry);
+
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      getOfertaDetailCacheKey(ofertaId),
+      JSON.stringify(entry),
+    );
+  } catch {
+    // Ignorar errores de storage para no afectar la carga.
+  }
+}
+
+function getCachedOfertaDetail(
+  ofertaId: string,
+  options: { allowStale?: boolean } = {},
+): Oferta | null {
+  const { allowStale = false } = options;
+  const cache = readOfertaDetailCache(ofertaId);
+  if (!cache) {
+    return null;
+  }
+
+  const isFresh = Date.now() - cache.timestamp <= OFERTA_DETAIL_CACHE_TTL_MS;
+  if (!isFresh && !allowStale) {
+    return null;
+  }
+
+  return cache.data;
+}
 
 export default function OfertaDetailPage() {
   const params = useParams();
@@ -43,18 +129,12 @@ export default function OfertaDetailPage() {
   const [oferta, setOferta] = useState<Oferta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [failedElementImages, setFailedElementImages] = useState<Record<string, boolean>>({});
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency>('EUR');
+  const [failedElementImages, setFailedElementImages] = useState<
+    Record<string, boolean>
+  >({});
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>("EUR");
   const [isChristmas, setIsChristmas] = useState(false);
   const { isClient } = useClient();
-
-  // Debug: ver qué contiene params
-  console.log('=== DEBUG PARAMS ===');
-  console.log('params:', params);
-  console.log('params.id:', params.id);
-  console.log('typeof params.id:', typeof params.id);
-  console.log('=== END DEBUG ===');
-
   const ofertaId = params.id as string;
 
   // Check if it's Christmas season
@@ -63,50 +143,81 @@ export default function OfertaDetailPage() {
   }, []);
 
   // Initialize AOS with global hook
-  useAOS({ duration: 800, once: true, easing: 'ease-out-cubic' });
+  useAOS({ duration: 500, once: true, easing: "ease-out" });
+  const applyOfertaData = useCallback((data: Oferta) => {
+    setOferta(data);
+    setFailedElementImages({});
+    setSelectedCurrency(data.moneda.toUpperCase() as Currency);
+  }, []);
+
+  const fetchOferta = useCallback(
+    async ({ silent = false }: { silent?: boolean } = {}) => {
+      try {
+        if (!silent) {
+          setLoading(true);
+          setError(null);
+        }
+
+        if (!ofertaId) {
+          if (!silent) {
+            setError("ID de oferta no vÃ¡lido");
+            setLoading(false);
+          }
+          return;
+        }
+
+        const response = await fetch(`/api/ofertas/${ofertaId}`, {
+          cache: "force-cache",
+        });
+        const data: OfertaResponse = await response.json();
+
+        if (data.success && data.data) {
+          applyOfertaData(data.data);
+          writeOfertaDetailCache(ofertaId, data.data);
+        } else if (!silent) {
+          setError(data.message || "Oferta no encontrada");
+        }
+      } catch (err) {
+        console.error("Error fetching oferta:", err);
+        if (!silent) {
+          setError("Error de conexiÃ³n al cargar la oferta");
+        }
+      } finally {
+        if (!silent) {
+          setLoading(false);
+        }
+      }
+    },
+    [applyOfertaData, ofertaId],
+  );
 
   useEffect(() => {
-    if (ofertaId) {
-      fetchOferta();
+    if (!ofertaId) {
+      return;
     }
-  }, [ofertaId]);
 
-  const fetchOferta = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (!ofertaId) {
-        setError('ID de oferta no válido');
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(`/api/ofertas/${ofertaId}`);
-      const data: OfertaResponse = await response.json();
-
-      if (data.success && data.data) {
-        setOferta(data.data);
-        setFailedElementImages({});
-        // Inicializar la moneda seleccionada con la moneda base de la oferta
-        setSelectedCurrency(data.data.moneda.toUpperCase() as Currency);
-      } else {
-        setError(data.message || 'Oferta no encontrada');
-      }
-    } catch (err) {
-      console.error('Error fetching oferta:', err);
-      setError('Error de conexión al cargar la oferta');
-    } finally {
+    const cachedFresh = getCachedOfertaDetail(ofertaId);
+    if (cachedFresh) {
+      applyOfertaData(cachedFresh);
       setLoading(false);
+      return;
     }
-  };
 
+    const cachedStale = getCachedOfertaDetail(ofertaId, { allowStale: true });
+    if (cachedStale) {
+      applyOfertaData(cachedStale);
+      setLoading(false);
+      void fetchOferta({ silent: true });
+      return;
+    }
+
+    void fetchOferta();
+  }, [applyOfertaData, fetchOferta, ofertaId]);
   const formatCurrency = (moneda: string) => {
-    if (moneda.toLowerCase() === 'eur') return 'EUR';
-    if (moneda.toLowerCase() === 'usd') return 'USD';
+    if (moneda.toLowerCase() === "eur") return "EUR";
+    if (moneda.toLowerCase() === "usd") return "USD";
     return moneda.toUpperCase();
   };
-
 
   return (
     <>
@@ -127,10 +238,15 @@ export default function OfertaDetailPage() {
 
           {/* Loading State */}
           {loading && (
-            <div className="flex items-center justify-center py-20" data-aos="fade-up">
+            <div
+              className="flex items-center justify-center py-20"
+              data-aos="fade-up"
+            >
               <div className="text-center">
                 <Loader2 className="w-16 h-16 animate-spin text-[#F26729] mx-auto mb-4" />
-                <p className="text-lg text-gray-600">Cargando detalles de la oferta...</p>
+                <p className="text-lg text-gray-600">
+                  Cargando detalles de la oferta...
+                </p>
               </div>
             </div>
           )}
@@ -143,17 +259,18 @@ export default function OfertaDetailPage() {
                   <div className="text-red-500 mb-4">
                     <Star className="w-16 h-16 mx-auto" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Oferta no encontrada</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                    Oferta no encontrada
+                  </h2>
                   <p className="text-gray-600 mb-6">{error}</p>
                   <div className="flex gap-3 justify-center">
-                    <Button
-                      variant="outline"
-                      onClick={() => router.back()}
-                    >
-                      Volver atrás
+                    <Button variant="outline" onClick={() => router.back()}>
+                      Volver atrÃƒÂ¡s
                     </Button>
                     <Button
-                      onClick={fetchOferta}
+                      onClick={() => {
+                        void fetchOferta();
+                      }}
                       className="bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white"
                     >
                       Intentar de nuevo
@@ -175,6 +292,9 @@ export default function OfertaDetailPage() {
                     src={oferta.imagen || "/placeholder.svg"}
                     alt={oferta.descripcion}
                     fill
+                    sizes="100vw"
+                    quality={75}
+                    fetchPriority="high"
                     className="object-cover"
                     priority
                   />
@@ -188,7 +308,7 @@ export default function OfertaDetailPage() {
                     )}
 
                     {/* Discount or Special Offer Badge */}
-                    {oferta.descuentos && oferta.descuentos.trim() !== '' ? (
+                    {oferta.descuentos && oferta.descuentos.trim() !== "" ? (
                       <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold px-4 py-2 shadow-xl border-2 border-white flex items-center gap-2">
                         <Percent className="w-4 h-4" />
                         CON DESCUENTO
@@ -224,23 +344,29 @@ export default function OfertaDetailPage() {
                           Marca aliada
                         </div>
                         <p className="text-sm sm:text-base text-[#0F2B66] opacity-80">
-                          {oferta.marca} respalda este sistema con componentes seleccionados y certificaciones vigentes.
+                          {oferta.marca} respalda este sistema con componentes
+                          seleccionados y certificaciones vigentes.
                         </p>
                       </div>
                     </div>
                   )}
 
                   <div className="space-y-6">
-                    {/* Price Display - Sin conversión de moneda (API agotada) */}
+                    {/* Price Display - Sin conversiÃƒÂ³n de moneda (API agotada) */}
                     <div className="flex items-baseline gap-4 flex-wrap">
                       <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#F26729]">
-                        {(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}
+                        {(isClient && oferta.precio_cliente
+                          ? oferta.precio_cliente
+                          : oferta.precio
+                        ).toLocaleString()}{" "}
+                        {formatCurrency(oferta.moneda)}
                       </div>
 
                       {/* Show original price if there's a client discount */}
                       {isClient && oferta.precio_cliente && (
                         <div className="text-xl sm:text-2xl md:text-3xl text-gray-500 line-through">
-                          {oferta.precio.toLocaleString()} {formatCurrency(oferta.moneda)}
+                          {oferta.precio.toLocaleString()}{" "}
+                          {formatCurrency(oferta.moneda)}
                         </div>
                       )}
                     </div>
@@ -251,10 +377,10 @@ export default function OfertaDetailPage() {
                       <div className="pt-4 border-t border-gray-200">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-gray-700">
                           <span className="text-base sm:text-lg">o desde</span>
-                          <span className="text-xl sm:text-2xl font-bold text-[#0F2B66]">78 €/mes</span>
+                          <span className="text-xl sm:text-2xl font-bold text-[#0F2B66]">78 Ã¢â€šÂ¬/mes</span>
                           <div className="flex items-center gap-2 text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full w-fit">
                             <MapPin className="w-4 h-4" />
-                            <span>solo desde España</span>
+                            <span>solo desde EspaÃƒÂ±a</span>
                           </div>
                         </div>
                       </div>
@@ -265,8 +391,12 @@ export default function OfertaDetailPage() {
               </Card>
 
               {/* Discount Information Section */}
-              {oferta.descuentos && oferta.descuentos.trim() !== '' && (
-                <Card className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 border-2 border-orange-200 shadow-xl overflow-hidden relative" data-aos="fade-up" data-aos-delay="50">
+              {oferta.descuentos && oferta.descuentos.trim() !== "" && (
+                <Card
+                  className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 border-2 border-orange-200 shadow-xl overflow-hidden relative"
+                  data-aos="fade-up"
+                  data-aos-delay="40"
+                >
                   <div className="absolute top-0 right-0 w-40 h-40 bg-orange-100/30 rounded-full -translate-y-20 translate-x-20"></div>
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-100/30 rounded-full translate-y-16 -translate-x-16"></div>
 
@@ -275,7 +405,7 @@ export default function OfertaDetailPage() {
                       <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg">
                         <Percent className="w-6 h-6 text-white" />
                       </div>
-                      ¡Descuentos Especiales Disponibles!
+                      Ã‚Â¡Descuentos Especiales Disponibles!
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="relative z-10">
@@ -291,7 +421,8 @@ export default function OfertaDetailPage() {
                       <div className="mt-4 pt-4 border-t border-orange-100">
                         <p className="text-sm text-gray-600 flex items-center gap-2">
                           <Info className="w-4 h-4 text-orange-500" />
-                          Contacta con nosotros para más detalles sobre estos descuentos y cómo aplicarlos.
+                          Contacta con nosotros para mÃƒÂ¡s detalles sobre estos
+                          descuentos y cÃƒÂ³mo aplicarlos.
                         </p>
                       </div>
                     </div>
@@ -300,7 +431,7 @@ export default function OfertaDetailPage() {
               )}
 
               {/* Currency Selector Section - COMENTADO: API agotada */}
-              {/* <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg" data-aos="fade-up" data-aos-delay="75">
+              {/* <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg" data-aos="fade-up" data-aos-delay="60">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex-1">
@@ -327,16 +458,16 @@ export default function OfertaDetailPage() {
               </Card> */}
 
               <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
-                {/* Garantías */}
+                {/* GarantÃƒÂ­as */}
                 <Card
                   data-aos="fade-up"
-                  data-aos-delay="75"
+                  data-aos-delay="60"
                   className="lg:sticky lg:top-28 lg:self-start"
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <Shield className="w-6 h-6 text-[#F26729]" />
-                      Garantías Incluidas
+                      GarantÃƒÂ­as Incluidas
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -344,7 +475,10 @@ export default function OfertaDetailPage() {
                       <div className="space-y-4">
                         <div className="space-y-3">
                           {oferta.garantias.map((garantia, index) => (
-                            <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+                            <div
+                              key={index}
+                              className="flex items-start gap-3 p-3 bg-green-50 rounded-lg"
+                            >
                               <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                               <span className="text-gray-700">{garantia}</span>
                             </div>
@@ -355,19 +489,24 @@ export default function OfertaDetailPage() {
                           <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
                             <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                             <p className="text-xs text-gray-700 leading-relaxed">
-                              Cualquier intervención de terceros anulará automáticamente la cobertura de garantía realizada por nuestro equipo de profesionales certificados de SUNCAR.
+                              Cualquier intervenciÃƒÂ³n de terceros anularÃƒÂ¡
+                              automÃƒÂ¡ticamente la cobertura de garantÃƒÂ­a
+                              realizada por nuestro equipo de profesionales
+                              certificados de SUNCAR.
                             </p>
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-gray-500 italic">No hay garantías especificadas para esta oferta.</p>
+                      <p className="text-gray-500 italic">
+                        No hay garantÃƒÂ­as especificadas para esta oferta.
+                      </p>
                     )}
                   </CardContent>
                 </Card>
 
                 {/* Elementos/Componentes */}
-                <Card data-aos="fade-up" data-aos-delay="100">
+                <Card data-aos="fade-up" data-aos-delay="80">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <Package className="w-6 h-6 text-[#F26729]" />
@@ -378,19 +517,25 @@ export default function OfertaDetailPage() {
                     {oferta.elementos && oferta.elementos.length > 0 ? (
                       <div className="space-y-4">
                         {oferta.elementos.map((elemento, index) => (
-                          <div key={index} className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
+                          <div
+                            key={index}
+                            className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+                          >
                             <div className="flex items-start gap-4">
                               {(() => {
-                                const imageKey = `${index}-${elemento.categoria || ''}-${elemento.descripcion || ''}`;
-                                const showImage = Boolean(elemento.foto) && !failedElementImages[imageKey];
+                                const imageKey = `${index}-${elemento.categoria || ""}-${elemento.descripcion || ""}`;
+                                const showImage =
+                                  Boolean(elemento.foto) &&
+                                  !failedElementImages[imageKey];
                                 return showImage ? (
                                   <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-white border border-gray-200">
                                     <Image
                                       src={elemento.foto as string}
-                                      alt={elemento.descripcion || 'Elemento'}
+                                      alt={elemento.descripcion || "Elemento"}
                                       fill
                                       className="object-contain p-1"
                                       sizes="64px"
+                                      quality={60}
                                       onError={() =>
                                         setFailedElementImages((prev) => ({
                                           ...prev,
@@ -407,7 +552,10 @@ export default function OfertaDetailPage() {
                               })()}
                               <div className="flex-1">
                                 {elemento.categoria && (
-                                  <Badge variant="outline" className="mb-2 text-xs">
+                                  <Badge
+                                    variant="outline"
+                                    className="mb-2 text-xs"
+                                  >
                                     {elemento.categoria}
                                   </Badge>
                                 )}
@@ -418,7 +566,10 @@ export default function OfertaDetailPage() {
                                 )}
                                 {elemento.cantidad && (
                                   <p className="text-sm text-gray-600">
-                                    Cantidad: <span className="font-medium">{elemento.cantidad}</span>
+                                    Cantidad:{" "}
+                                    <span className="font-medium">
+                                      {elemento.cantidad}
+                                    </span>
                                   </p>
                                 )}
                               </div>
@@ -427,18 +578,20 @@ export default function OfertaDetailPage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-gray-500 italic">No hay elementos especificados para esta oferta.</p>
+                      <p className="text-gray-500 italic">
+                        No hay elementos especificados para esta oferta.
+                      </p>
                     )}
                   </CardContent>
                 </Card>
               </div>
 
-              {/* PDF Ficha Técnica Section */}
-              {oferta.pdf && oferta.pdf.trim() !== '' && (
+              {/* PDF Ficha TÃƒÂ©cnica Section */}
+              {oferta.pdf && oferta.pdf.trim() !== "" && (
                 <Card
                   className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-lg overflow-hidden relative"
                   data-aos="fade-up"
-                  data-aos-delay="125"
+                  data-aos-delay="100"
                 >
                   <div className="absolute top-0 right-0 w-40 h-40 bg-blue-100/30 rounded-full -translate-y-20 translate-x-20"></div>
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-100/30 rounded-full translate-y-16 -translate-x-16"></div>
@@ -452,9 +605,14 @@ export default function OfertaDetailPage() {
                           </div>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-blue-800 mb-2">Ficha Técnica Completa</h3>
+                          <h3 className="text-xl font-bold text-blue-800 mb-2">
+                            Ficha TÃƒÂ©cnica Completa
+                          </h3>
                           <p className="text-gray-700 leading-relaxed">
-                            Descarga el documento PDF con toda la información técnica detallada de esta oferta, incluyendo especificaciones, características y certificaciones.
+                            Descarga el documento PDF con toda la informaciÃƒÂ³n
+                            tÃƒÂ©cnica detallada de esta oferta, incluyendo
+                            especificaciones, caracterÃƒÂ­sticas y
+                            certificaciones.
                           </p>
                         </div>
                       </div>
@@ -484,7 +642,7 @@ export default function OfertaDetailPage() {
               <Card
                 className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 shadow-lg overflow-hidden relative"
                 data-aos="fade-up"
-                data-aos-delay="150"
+                data-aos-delay="120"
               >
                 <div className="absolute top-0 right-0 w-40 h-40 bg-green-100/30 rounded-full -translate-y-20 translate-x-20"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-100/30 rounded-full translate-y-16 -translate-x-16"></div>
@@ -497,13 +655,25 @@ export default function OfertaDetailPage() {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-green-800 mb-3">Cobertura de Servicio</h3>
+                      <h3 className="text-xl font-bold text-green-800 mb-3">
+                        Cobertura de Servicio
+                      </h3>
                       <div className="space-y-3 text-gray-700">
                         <p className="leading-relaxed">
-                          <span className="font-semibold text-green-700">Servicio garantizado en La Habana:</span> Ofrecemos cobertura completa en todos los municipios de la capital.
+                          <span className="font-semibold text-green-700">
+                            Servicio garantizado en La Habana:
+                          </span>{" "}
+                          Ofrecemos cobertura completa en todos los municipios
+                          de la capital.
                         </p>
                         <p className="leading-relaxed text-gray-600">
-                          <span className="font-medium text-gray-700">Otras provincias:</span> Evaluamos cada caso de forma individual. Por favor, contáctenos indicando su provincia para coordinar las opciones disponibles y brindarle la mejor solución para su proyecto de energía solar.
+                          <span className="font-medium text-gray-700">
+                            Otras provincias:
+                          </span>{" "}
+                          Evaluamos cada caso de forma individual. Por favor,
+                          contÃƒÂ¡ctenos indicando su provincia para coordinar
+                          las opciones disponibles y brindarle la mejor
+                          soluciÃƒÂ³n para su proyecto de energÃƒÂ­a solar.
                         </p>
                       </div>
                     </div>
@@ -515,7 +685,7 @@ export default function OfertaDetailPage() {
               <Card
                 className="bg-white border-2 border-gray-100 overflow-hidden relative shadow-xl"
                 data-aos="fade-up"
-                data-aos-delay="175"
+                data-aos-delay="140"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full -translate-y-16 translate-x-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-50 rounded-full translate-y-12 -translate-x-12"></div>
@@ -530,11 +700,15 @@ export default function OfertaDetailPage() {
                       />
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-                      ¿Te interesa esta oferta?
+                      Ã‚Â¿Te interesa esta oferta?
                     </h2>
                     <p className="text-gray-600 text-lg mb-6 max-w-2xl mx-auto">
-                      Envíanos un mensaje por <span className="font-semibold text-[#25D366]">WhatsApp</span> y te atenderemos de inmediato.
-                      Tu mensaje estará prellenado con los detalles de esta oferta.
+                      EnvÃƒÂ­anos un mensaje por{" "}
+                      <span className="font-semibold text-[#25D366]">
+                        WhatsApp
+                      </span>{" "}
+                      y te atenderemos de inmediato. Tu mensaje estarÃƒÂ¡
+                      prellenado con los detalles de esta oferta.
                     </p>
                   </div>
 
@@ -550,15 +724,31 @@ export default function OfertaDetailPage() {
                           />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm text-gray-600 mb-2 font-medium">Vista previa del mensaje:</p>
+                          <p className="text-sm text-gray-600 mb-2 font-medium">
+                            Vista previa del mensaje:
+                          </p>
                           <div className="bg-[#DCF8C6] rounded-lg rounded-bl-none p-4 text-sm text-gray-800 shadow-sm border-l-4 border-[#25D366]">
-                            Hola! Me interesa la oferta: <span className="font-semibold">{oferta.descripcion}</span> por <span className="font-semibold">{(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} {formatCurrency(oferta.moneda)}</span>. ¿Podrían darme más información?
+                            Hola! Me interesa la oferta:{" "}
+                            <span className="font-semibold">
+                              {oferta.descripcion}
+                            </span>{" "}
+                            por{" "}
+                            <span className="font-semibold">
+                              {(isClient && oferta.precio_cliente
+                                ? oferta.precio_cliente
+                                : oferta.precio
+                              ).toLocaleString()}{" "}
+                              {formatCurrency(oferta.moneda)}
+                            </span>
+                            . Ã‚Â¿PodrÃƒÂ­an darme mÃƒÂ¡s informaciÃƒÂ³n?
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
                         <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                        <span>Podrás editar este mensaje antes de enviarlo</span>
+                        <span>
+                          PodrÃƒÂ¡s editar este mensaje antes de enviarlo
+                        </span>
                         <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                       </div>
                     </div>
@@ -569,7 +759,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} ¿Podrían darme más información?`)}`}
+                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} Ã‚Â¿PodrÃƒÂ­an darme mÃƒÂ¡s informaciÃƒÂ³n?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"
@@ -590,9 +780,7 @@ export default function OfertaDetailPage() {
                         variant="ghost"
                         className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full"
                       >
-                        <Link href="/ofertas">
-                          Ver Más Ofertas
-                        </Link>
+                        <Link href="/ofertas">Ver MÃƒÂ¡s Ofertas</Link>
                       </Button>
                     </div>
                   </div>
@@ -606,4 +794,3 @@ export default function OfertaDetailPage() {
     </>
   );
 }
-
