@@ -340,8 +340,8 @@ export default function TiendaPage() {
           </div>
         </section>
 
-        <section className="px-4 mt-10">
-          <div className="max-w-7xl mx-auto space-y-10">
+        <section className="px-3 md:px-4 mt-6 md:mt-10">
+          <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
             {filteredProductos.length === 0 ? (
               <div className="text-center py-20" data-aos="fade-up">
                 <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -378,7 +378,10 @@ export default function TiendaPage() {
                       </div>
                     </div>
 
-                    <div className="relative px-12">
+                    {/* Mobile: grid 2 columnas | Desktop: carrusel horizontal */}
+
+                    {/* Flechas de navegación - solo desktop */}
+                    <div className="relative md:px-12">
                       {productosDeCategoria.length > 2 && (
                         <>
                           <Button
@@ -402,7 +405,121 @@ export default function TiendaPage() {
                         </>
                       )}
 
-                      <div className="relative">
+                      {/* ===== MOBILE: Grid 2 columnas ===== */}
+                      <div className="grid grid-cols-2 gap-2.5 md:hidden">
+                        {productosDeCategoria.map((producto, index) => {
+                          const quantityInCart = getProductQuantityInCart(producto.id);
+                          return (
+                            <div
+                              key={producto.id}
+                              className="group bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col active:scale-[0.98] transition-transform"
+                              data-aos="fade-up"
+                              data-aos-delay={Math.min(150, index * 40)}
+                            >
+                              <div
+                                className="cursor-pointer flex flex-col flex-1"
+                                onClick={() => setSelectedProduct(producto)}
+                              >
+                                {/* Imagen */}
+                                <div className="relative aspect-square bg-slate-50 overflow-hidden">
+                                  {producto.foto ? (
+                                    <Image
+                                      src={producto.foto}
+                                      alt={producto.modelo}
+                                      fill
+                                      sizes="(max-width: 768px) 45vw, 200px"
+                                      className="object-contain p-3"
+                                      loading={index < 4 ? 'eager' : 'lazy'}
+                                      priority={index < 2}
+                                    />
+                                  ) : (
+                                    <div className="flex items-center justify-center h-full">
+                                      <Package className="w-10 h-10 text-slate-200" />
+                                    </div>
+                                  )}
+                                  {producto.marca_nombre && (
+                                    <Badge className="absolute top-1.5 left-1.5 bg-blue-600/90 text-white border-none text-[8px] px-1.5 py-0.5">
+                                      {producto.marca_nombre}
+                                    </Badge>
+                                  )}
+                                  {producto.precio_por_cantidad && (
+                                    <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 text-[8px] font-semibold text-amber-900 bg-amber-100 rounded-full border border-amber-200">
+                                      Dto. volumen
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Info */}
+                                <div className="p-2.5 flex flex-col flex-1">
+                                  <h3 className="font-semibold text-[12px] text-slate-900 line-clamp-2 leading-tight min-h-[2rem]">
+                                    {producto.modelo}
+                                  </h3>
+                                  {producto.potenciaKW != null && (
+                                    <span className="inline-flex items-center gap-0.5 text-[10px] text-primary font-semibold mt-0.5">
+                                      <Zap className="w-2.5 h-2.5" />
+                                      {producto.potenciaKW} kW
+                                    </span>
+                                  )}
+                                  <div className="mt-auto pt-1.5">
+                                    <div className="text-base font-bold text-slate-900 tabular-nums">
+                                      ${producto.precio.toLocaleString()}
+                                    </div>
+                                    <div className="text-[10px] text-slate-400">
+                                      Por {producto.unidad}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Botón de acción */}
+                              <div className="px-2.5 pb-2.5">
+                                {quantityInCart > 0 ? (
+                                  <div className="flex items-center border-2 border-primary rounded-lg overflow-hidden h-9">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        updateQuantity(producto.id, quantityInCart - 1);
+                                      }}
+                                      className="w-10 h-full flex items-center justify-center active:bg-primary/10"
+                                    >
+                                      <Minus className="w-3.5 h-3.5 text-primary" />
+                                    </button>
+                                    <span className="flex-1 text-center font-bold text-primary text-sm tabular-nums">
+                                      {quantityInCart}
+                                    </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        showAddToCartNotification();
+                                        addItem(producto);
+                                      }}
+                                      className="w-10 h-full flex items-center justify-center active:bg-primary/10"
+                                    >
+                                      <Plus className="w-3.5 h-3.5 text-primary" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      showAddToCartNotification();
+                                      addItem(producto);
+                                    }}
+                                    className="w-full bg-secondary-gradient text-white h-9 text-[12px] font-semibold rounded-lg active:scale-[0.97]"
+                                  >
+                                    <Plus className="w-3.5 h-3.5 mr-1" />
+                                    Agregar
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* ===== DESKTOP: Carrusel horizontal ===== */}
+                      <div className="relative hidden md:block">
                         <div
                           ref={(el) => {
                             if (el) scrollersRef.current[categoria] = el;
@@ -418,7 +535,7 @@ export default function TiendaPage() {
                             <Card
                               key={producto.id}
                               data-product-card
-                              className="group min-w-[200px] max-w-[240px] sm:min-w-[240px] sm:max-w-[280px] md:min-w-[260px] md:max-w-[320px] min-h-[360px] sm:min-h-[390px] md:min-h-[430px] snap-start border border-slate-200/70 bg-white/90 backdrop-blur shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                              className="group min-w-[260px] max-w-[320px] min-h-[430px] snap-start border border-slate-200/70 bg-white/90 backdrop-blur shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
                               data-aos="fade-up"
                               data-aos-delay={Math.min(200, index * 60)}
                             >
@@ -426,7 +543,7 @@ export default function TiendaPage() {
                                 className="cursor-pointer flex flex-col flex-1 min-h-0"
                                 onClick={() => setSelectedProduct(producto)}
                               >
-                                <div className="relative h-36 sm:h-40 md:h-48 bg-gradient-to-br from-slate-50 via-white to-primary/5 overflow-hidden">
+                                <div className="relative h-48 bg-gradient-to-br from-slate-50 via-white to-primary/5 overflow-hidden">
                                   {producto.foto ? (
                                     <Image
                                       src={producto.foto}
@@ -439,52 +556,52 @@ export default function TiendaPage() {
                                       <Package className="w-16 h-16 text-gray-300" />
                                     </div>
                                   )}
-                                  <Badge className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 text-primary border border-primary/10 shadow-sm text-[10px] md:text-xs px-2 py-0.5">
+                                  <Badge className="absolute top-3 left-3 bg-white/90 text-primary border border-primary/10 shadow-sm text-xs px-2 py-0.5">
                                     {producto.categoria}
                                   </Badge>
-                                  <div className="absolute top-2 right-2 md:top-3 md:right-3 flex flex-col items-end gap-1">
+                                  <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                                     {producto.precio_por_cantidad && (
-                                      <span className="px-2 py-0.5 md:px-3 md:py-1 text-[9px] md:text-xs font-semibold text-amber-900 bg-gradient-to-r from-amber-100 via-amber-50 to-white rounded-full border border-amber-200 shadow-sm">
+                                      <span className="px-3 py-1 text-xs font-semibold text-amber-900 bg-gradient-to-r from-amber-100 via-amber-50 to-white rounded-full border border-amber-200 shadow-sm">
                                         Descuento
                                       </span>
                                     )}
                                     {producto.marca_nombre && (
-                                      <Badge className="bg-blue-600/90 text-white border-none text-[9px] md:text-[10px] px-1.5 py-0.5 shadow-sm">
+                                      <Badge className="bg-blue-600/90 text-white border-none text-[10px] px-1.5 py-0.5 shadow-sm">
                                         {producto.marca_nombre}
                                       </Badge>
                                     )}
                                   </div>
                                 </div>
 
-                                <CardContent className="p-3 md:p-4 space-y-2 md:space-y-3 flex-1 min-h-0 flex flex-col">
-                                  <div className="space-y-1 md:space-y-1.5 min-h-[50px] md:min-h-[108px]">
-                                    <h3 className="font-bold text-sm md:text-lg text-slate-900 mb-1 line-clamp-2 min-h-[2.5rem] md:min-h-[3.25rem] group-hover:text-primary transition-colors">
+                                <CardContent className="p-4 space-y-3 flex-1 min-h-0 flex flex-col">
+                                  <div className="space-y-1.5 min-h-[108px]">
+                                    <h3 className="font-bold text-lg text-slate-900 mb-1 line-clamp-2 min-h-[3.25rem] group-hover:text-primary transition-colors">
                                       {producto.modelo}
                                     </h3>
-                                    <div className="h-[14px] md:h-[20px]">
+                                    <div className="h-[20px]">
                                       {producto.potenciaKW != null && (
-                                        <span className="inline-flex items-center gap-1 text-[10px] md:text-xs text-primary font-semibold">
+                                        <span className="inline-flex items-center gap-1 text-xs text-primary font-semibold">
                                           <Zap className="w-3 h-3" />
                                           {producto.potenciaKW} kW
                                         </span>
                                       )}
                                     </div>
-                                    <p className="hidden md:block text-sm text-slate-600 line-clamp-2 min-h-[2.5rem]">
+                                    <p className="text-sm text-slate-600 line-clamp-2 min-h-[2.5rem]">
                                       {producto.descripcion_uso || ""}
                                     </p>
                                   </div>
 
-                                  <div className="space-y-1.5 md:space-y-2">
+                                  <div className="space-y-2">
                                     <div className="flex items-end justify-between gap-2">
                                       <div>
-                                        <div className="text-lg md:text-2xl font-bold text-slate-900">
+                                        <div className="text-2xl font-bold text-slate-900">
                                           ${producto.precio.toLocaleString()}
                                         </div>
                                         <div
                                           className={
                                             producto.precio_por_cantidad
-                                              ? "text-primary underline decoration-primary/60 decoration-2 underline-offset-4 font-semibold text-xs md:text-sm"
-                                              : "text-gray-500 text-xs md:text-sm"
+                                              ? "text-primary underline decoration-primary/60 decoration-2 underline-offset-4 font-semibold text-sm"
+                                              : "text-gray-500 text-sm"
                                           }
                                         >
                                           Por {producto.unidad}
@@ -493,8 +610,8 @@ export default function TiendaPage() {
                                     </div>
 
                                     {producto.precio_por_cantidad && (
-                                      <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 md:px-3 py-1.5 md:py-2 shadow-inner">
-                                        <Zap className="w-3 h-3 md:w-4 md:h-4" />
+                                      <div className="flex items-center gap-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 shadow-inner">
+                                        <Zap className="w-4 h-4" />
                                         <span>Mejor precio por volumen</span>
                                       </div>
                                     )}
@@ -503,7 +620,7 @@ export default function TiendaPage() {
                               </div>
 
                               {/* Botones de acción */}
-                              <div className="p-3 md:p-4 pt-0 grid grid-cols-2 gap-1.5 md:gap-2 shrink-0">
+                              <div className="p-4 pt-0 grid grid-cols-2 gap-2 shrink-0">
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -511,12 +628,10 @@ export default function TiendaPage() {
                                     e.stopPropagation();
                                     setSelectedProduct(producto);
                                   }}
-                                  className="border-slate-300 text-slate-700 hover:bg-slate-50 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
+                                  className="border-slate-300 text-slate-700 hover:bg-slate-50 h-9 text-sm px-3"
                                 >
-                                  <Eye className="w-3.5 h-3.5 md:mr-1.5" />
-                                  <span className="hidden md:inline">
-                                    Ver más
-                                  </span>
+                                  <Eye className="w-3.5 h-3.5 mr-1.5" />
+                                  Ver más
                                 </Button>
 
                                 {(() => {
@@ -525,7 +640,7 @@ export default function TiendaPage() {
 
                                   if (quantityInCart > 0) {
                                     return (
-                                      <div className="flex items-center gap-0.5 md:gap-1 bg-white rounded-lg border-2 border-primary h-8 md:h-9">
+                                      <div className="flex items-center gap-1 bg-white rounded-lg border-2 border-primary h-9">
                                         <Button
                                           size="sm"
                                           variant="ghost"
@@ -536,11 +651,11 @@ export default function TiendaPage() {
                                               quantityInCart - 1,
                                             );
                                           }}
-                                          className="h-full px-1.5 md:px-2 hover:bg-primary/10 rounded-l-lg"
+                                          className="h-full px-2 hover:bg-primary/10 rounded-l-lg"
                                         >
-                                          <Minus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
+                                          <Minus className="w-4 h-4 text-primary" />
                                         </Button>
-                                        <span className="flex-1 text-center font-bold text-primary text-xs md:text-sm">
+                                        <span className="flex-1 text-center font-bold text-primary text-sm">
                                           {quantityInCart}
                                         </span>
                                         <Button
@@ -551,9 +666,9 @@ export default function TiendaPage() {
                                             showAddToCartNotification();
                                             addItem(producto);
                                           }}
-                                          className="h-full px-1.5 md:px-2 hover:bg-primary/10 rounded-r-lg"
+                                          className="h-full px-2 hover:bg-primary/10 rounded-r-lg"
                                         >
-                                          <Plus className="w-3 h-3 md:w-4 md:h-4 text-primary" />
+                                          <Plus className="w-4 h-4 text-primary" />
                                         </Button>
                                       </div>
                                     );
@@ -567,9 +682,9 @@ export default function TiendaPage() {
                                         showAddToCartNotification();
                                         addItem(producto);
                                       }}
-                                      className="bg-secondary-gradient text-white shadow-md hover:shadow-lg relative overflow-hidden h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
+                                      className="bg-secondary-gradient text-white shadow-md hover:shadow-lg relative overflow-hidden h-9 text-sm px-3"
                                     >
-                                      <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                                      <Plus className="w-4 h-4 mr-1" />
                                       Agregar
                                     </Button>
                                   );
@@ -579,10 +694,9 @@ export default function TiendaPage() {
                           ))}
                         </div>
 
-                        {/* Indicador de scroll mejorado - Oculto en móvil */}
+                        {/* Indicador de scroll */}
                         {productosDeCategoria.length > 3 && (
-                          <div className="hidden md:flex items-center justify-center mt-6 gap-3">
-                            {/* Barra de progreso */}
+                          <div className="flex items-center justify-center mt-6 gap-3">
                             <div className="relative w-full max-w-xs h-2 bg-slate-200 rounded-full overflow-hidden">
                               <div
                                 className="absolute top-0 left-0 h-full bg-secondary-gradient rounded-full transition-all duration-300 shadow-md"
@@ -591,8 +705,6 @@ export default function TiendaPage() {
                                 }}
                               />
                             </div>
-
-                            {/* Indicador visual de dirección */}
                             <div className="flex gap-1">
                               <div
                                 className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${(scrollPositions[categoria] || 0) > 10 ? "bg-primary scale-125" : "bg-slate-300"}`}
