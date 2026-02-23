@@ -62,9 +62,10 @@ const nextConfig = {
     ];
   },
 
-  // Disable Next.js image optimization (not using <Image> component)
+  // Next.js image optimization
   images: {
-    unoptimized: true, // Disable image optimization to save RAM
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: "https",
@@ -76,6 +77,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "s3.suncarsrl.com",
         port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "s3.suncarsrl.com",
+        port: "443",
         pathname: "/**",
       },
     ],
