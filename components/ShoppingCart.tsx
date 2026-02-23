@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ArticuloTienda } from '@/types/tienda';
+import Link from 'next/link';
 import {
   ShoppingCart,
   X,
@@ -12,6 +14,11 @@ import {
   Trash2,
   CreditCard,
   MessageCircle,
+  Loader2,
+  Sparkles,
+  Wrench,
+  ChevronRight,
+  Package,
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -25,28 +32,130 @@ import {
 let cartOpenState = false;
 export const getCartOpenState = () => cartOpenState;
 
+interface RecomendadorCarritoResponse {
+  success: boolean;
+  message: string;
+  data: {
+    oferta_id: string | null;
+    precio_oferta: number | null;
+    productos: ArticuloTienda[];
+    productos_no_vendibles_extra: ArticuloTienda[];
+    coincidencias_carrito: number;
+  };
+}
+
+const MAX_PRODUCTOS_RECOMENDADOS = 5;
+type ProductoRecomendado = ArticuloTienda & { vendible: boolean };
+
 export default function ShoppingCartComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart } = useCart();
+  const [recomendados, setRecomendados] = useState<ProductoRecomendado[]>([]);
+  const [ofertaId, setOfertaId] = useState<string | null>(null);
+  const [precioOferta, setPrecioOferta] = useState<number | null>(null);
+  const [recomendadorLoading, setRecomendadorLoading] = useState(false);
 
   // Actualizar el estado global cuando cambie
   useEffect(() => {
     cartOpenState = isOpen;
   }, [isOpen]);
 
+  // Bloquear scroll del body cuando el drawer está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || items.length === 0) {
+      setRecomendados([]);
+      setOfertaId(null);
+      setPrecioOferta(null);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    const fetchRecomendaciones = async () => {
+      setRecomendadorLoading(true);
+      try {
+        const idsUnicos = Array.from(
+          new Set(items.map((item) => item.producto.id).filter(Boolean)),
+        );
+
+        const response = await fetch('/api/ofertas/confeccion/recomendador-carrito', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productos: idsUnicos.map((id) => ({ id })),
+            max_productos: MAX_PRODUCTOS_RECOMENDADOS,
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error('No se pudieron obtener recomendaciones del carrito');
+        }
+
+        const payload = (await response.json()) as RecomendadorCarritoResponse;
+        const data = payload?.data;
+        const productos = Array.isArray(data?.productos) ? data.productos : [];
+        const noVendiblesExtra = Array.isArray(data?.productos_no_vendibles_extra)
+          ? data.productos_no_vendibles_extra
+          : [];
+        const noVendiblesIds = new Set(noVendiblesExtra.map((p) => p.id));
+
+        const recomendadosConEstado: ProductoRecomendado[] = productos.map((p) => ({
+          ...p,
+          vendible: !noVendiblesIds.has(p.id),
+        }));
+
+        noVendiblesExtra.forEach((p) => {
+          if (!recomendadosConEstado.some((item) => item.id === p.id)) {
+            recomendadosConEstado.push({ ...p, vendible: false });
+          }
+        });
+
+        setRecomendados(recomendadosConEstado);
+        setOfertaId(data?.oferta_id ?? null);
+        setPrecioOferta(
+          typeof data?.precio_oferta === 'number' ? data.precio_oferta : null,
+        );
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          setRecomendados([]);
+          setOfertaId(null);
+          setPrecioOferta(null);
+        }
+      } finally {
+        setRecomendadorLoading(false);
+      }
+    };
+
+    fetchRecomendaciones();
+
+    return () => controller.abort();
+  }, [items, isOpen]);
+
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
 
   const handleWhatsAppCheckout = () => {
     const productList = items.map((item, index) =>
-      `${index + 1}. ${item.producto.modelo} - ${item.cantidad} ${item.producto.unidad}${item.cantidad > 1 ? 's' : ''} x $${item.producto.precio.toLocaleString()} = $${(item.producto.precio * item.cantidad).toLocaleString()}`
+      `${index + 1}. ${item.producto.modelo} - ${item.cantidad} ${item.producto.unidad}${item.cantidad > 1 ? 's' : ''}`
     ).join('\n');
 
     const finalMessage =
-      `Hola! Quiero realizar la siguiente compra:\n\n` +
+      `Hola! Quiero cotizar la siguiente compra:\n\n` +
       productList +
-      `\n\nTOTAL: $${totalPrice.toLocaleString()}\n\n` +
-      `Podrian confirmar disponibilidad y coordinar la entrega?\n\nGracias!`;
+      `\n\nEntiendo que el precio final depende de la cantidad, descuentos por volumen y recomendaciones técnicas del equipo.\n\n` +
+      `¿Podrían confirmarme disponibilidad y enviarme una cotización personalizada?\n\nGracias!`;
 
     const whatsappUrl = `https://wa.me/5363962417?text=${encodeURIComponent(finalMessage)}`;
     window.open(whatsappUrl, '_blank');
@@ -68,125 +177,131 @@ export default function ShoppingCartComponent() {
         )}
       </button>
 
-      {/* Panel del carrito a pantalla completa */}
+      {/* Overlay + Drawer */}
       {isOpen && (
         <>
-          {/* Panel del carrito */}
-          <div className="fixed inset-0 bg-white z-50 flex flex-col animate-in fade-in duration-200">
-            {/* Header con navegación */}
-            <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-3 md:px-4 py-3 md:py-4 flex items-center gap-3 md:gap-4 shadow-lg">
-              <Button
-                onClick={() => setIsOpen(false)}
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20 rounded-full h-9 w-9 md:h-10 md:w-10"
-              >
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </Button>
-              <div className="flex-1">
-                <h2 className="text-xl md:text-2xl font-bold">Mi Carrito</h2>
-                <p className="text-xs md:text-sm text-white/90">{totalItems} {totalItems === 1 ? 'producto' : 'productos'}</p>
+          {/* Backdrop oscuro */}
+          <div
+            className="fixed inset-0 bg-black/50 z-[70] transition-opacity duration-300"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Drawer lateral derecho */}
+          <div className="fixed inset-y-0 right-0 z-[80] w-full sm:w-[480px] md:w-[520px] bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-slate-200 bg-white">
+              <div className="flex items-center gap-3">
+                <ShoppingCart className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-bold text-slate-900">
+                  Carrito
+                  {totalItems > 0 && (
+                    <span className="text-sm font-normal text-slate-500 ml-2">
+                      ({totalItems} {totalItems === 1 ? 'producto' : 'productos'})
+                    </span>
+                  )}
+                </h2>
               </div>
-              <ShoppingCart className="w-6 h-6 md:w-8 md:h-8" />
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
             </div>
 
-            {/* Lista de productos */}
-            <div className="flex-1 overflow-y-auto p-3 md:p-6 bg-slate-50">
+            {/* Contenido scrolleable */}
+            <div className="flex-1 overflow-y-auto">
               {items.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                  <div className="w-24 h-24 md:w-32 md:h-32 bg-slate-200 rounded-full flex items-center justify-center mb-4 md:mb-6">
-                    <ShoppingCart className="w-12 h-12 md:w-16 md:h-16 text-slate-400" />
+                /* Estado vacío */
+                <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
+                  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-5">
+                    <Package className="w-10 h-10 text-slate-300" />
                   </div>
-                  <p className="text-slate-700 text-xl md:text-2xl font-bold mb-2">Tu carrito está vacío</p>
-                  <p className="text-slate-500 text-sm md:text-base">Agrega productos desde la tienda</p>
+                  <p className="text-slate-800 text-lg font-semibold mb-1">Tu carrito está vacío</p>
+                  <p className="text-slate-500 text-sm mb-6">Explora nuestro catálogo y agrega productos</p>
                   <Button
                     onClick={() => setIsOpen(false)}
-                    className="mt-4 md:mt-6 bg-secondary-gradient text-white"
-                    size="lg"
+                    className="bg-secondary-gradient text-white"
                   >
-                    Ir a la tienda
+                    Ver productos
                   </Button>
                 </div>
               ) : (
                 <>
-                  <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                  {/* Lista de items */}
+                  <div className="divide-y divide-slate-100">
                     {items.map((item) => (
                       <div
                         key={item.producto.id}
-                        className="bg-white rounded-xl p-3 md:p-4 border border-slate-200 shadow-sm hover:shadow-lg transition-all"
+                        className="flex gap-3 md:gap-4 px-4 md:px-6 py-4 hover:bg-slate-50/50 transition-colors"
                       >
-                        <div className="flex gap-2 md:gap-3">
-                          {/* Imagen */}
-                          <div className="relative w-20 h-20 md:w-24 md:h-24 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0 border border-slate-100">
-                            {item.producto.foto ? (
-                              <Image
-                                src={item.producto.foto}
-                                alt={item.producto.modelo}
-                                fill
-                                className="object-contain p-1.5 md:p-2"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                <ShoppingCart className="w-6 h-6 md:w-8 md:h-8" />
-                              </div>
-                            )}
+                        {/* Imagen */}
+                        <div className="relative w-20 h-20 md:w-24 md:h-24 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
+                          {item.producto.foto ? (
+                            <Image
+                              src={item.producto.foto}
+                              alt={item.producto.modelo}
+                              fill
+                              className="object-contain p-2"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                              <Package className="w-8 h-8" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Info del producto */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide">
+                                {item.producto.categoria}
+                              </p>
+                              <h3 className="text-sm font-semibold text-slate-900 line-clamp-2 mt-0.5 leading-snug">
+                                {item.producto.modelo}
+                              </h3>
+                            </div>
+                            <button
+                              onClick={() => removeItem(item.producto.id)}
+                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors flex-shrink-0"
+                              title="Eliminar"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
 
-                          {/* Info */}
-                          <div className="flex-1 min-w-0 flex flex-col">
-                            <Badge className="text-[9px] md:text-[10px] mb-1 bg-primary/10 text-primary border-primary/20 px-1.5 md:px-2 py-0.5 w-fit">
-                              {item.producto.categoria}
-                            </Badge>
-                            <h3 className="font-semibold text-xs md:text-sm text-slate-900 line-clamp-2 mb-1">
-                              {item.producto.modelo}
-                            </h3>
-                            <p className="text-primary font-bold text-sm md:text-base mb-1.5 md:mb-2">
-                              ${item.producto.precio.toLocaleString()}
-                              <span className="text-slate-500 text-[10px] md:text-xs font-normal ml-1">/ {item.producto.unidad}</span>
-                            </p>
+                          <div className="flex items-end justify-between mt-2.5 gap-2">
+                            {/* Controles de cantidad */}
+                            <div className="flex items-center border border-slate-300 rounded-lg overflow-hidden">
+                              <button
+                                onClick={() => updateQuantity(item.producto.id, item.cantidad - 1)}
+                                className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors"
+                              >
+                                <Minus className="w-3.5 h-3.5" />
+                              </button>
+                              <span className="w-10 h-8 flex items-center justify-center text-sm font-semibold text-slate-900 border-x border-slate-300 bg-white">
+                                {item.cantidad}
+                              </span>
+                              <button
+                                onClick={() => updateQuantity(item.producto.id, item.cantidad + 1)}
+                                className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
 
-                            <div className="mt-auto space-y-1.5 md:space-y-2">
-                              {/* Controles de cantidad */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-0.5 md:gap-1 bg-slate-50 rounded-lg border border-slate-300">
-                                  <Button
-                                    onClick={() => updateQuantity(item.producto.id, item.cantidad - 1)}
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 md:h-8 md:w-8 hover:bg-slate-200 rounded-lg"
-                                  >
-                                    <Minus className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                                  </Button>
-                                  <span className="w-8 md:w-10 text-center font-bold text-xs md:text-sm">{item.cantidad}</span>
-                                  <Button
-                                    onClick={() => updateQuantity(item.producto.id, item.cantidad + 1)}
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 md:h-8 md:w-8 hover:bg-slate-200 rounded-lg"
-                                  >
-                                    <Plus className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                                  </Button>
-                                </div>
-
-                                <Button
-                                  onClick={() => removeItem(item.producto.id)}
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 md:h-8 md:w-8 text-red-500 hover:bg-red-50 rounded-lg"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                </Button>
-                              </div>
-
-                              {/* Subtotal */}
-                              <div className="bg-slate-50 rounded-lg px-2 md:px-3 py-1.5 md:py-2 border border-slate-200">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[10px] md:text-xs text-slate-600">Subtotal:</span>
-                                  <span className="font-bold text-slate-900 text-xs md:text-sm">
-                                    ${(item.producto.precio * item.cantidad).toLocaleString()}
-                                  </span>
-                                </div>
-                              </div>
+                            {/* Precio */}
+                            <div className="text-right flex-shrink-0">
+                              <p className="text-sm font-bold text-slate-900">
+                                ${(item.producto.precio * item.cantidad).toLocaleString()}
+                              </p>
+                              {item.cantidad > 1 && (
+                                <p className="text-[11px] text-slate-500">
+                                  ${item.producto.precio.toLocaleString()} / {item.producto.unidad}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -194,65 +309,185 @@ export default function ShoppingCartComponent() {
                     ))}
                   </div>
 
-                  {/* Totales y acciones */}
-                  <div className="max-w-5xl mx-auto mt-4 md:mt-8 space-y-3 md:space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 items-start">
-                      <div className="bg-white rounded-xl p-3 md:p-4 border border-slate-200 shadow-sm space-y-3 md:space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="text-xs md:text-sm text-slate-600">Cant. de productos</div>
-                          <div className="text-xl md:text-2xl font-bold text-slate-900">{totalItems}</div>
-                        </div>
-                        <div className="h-px bg-slate-200" />
-                        <div className="flex items-center justify-between">
-                          <div className="text-base md:text-lg font-semibold text-slate-800">Total</div>
-                          <div className="text-2xl md:text-3xl font-black text-primary">
-                            ${totalPrice.toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
+                  {/* Nota de precios */}
+                  <div className="mx-4 md:mx-6 my-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-xs text-amber-800 leading-relaxed">
+                      Los precios mostrados son referenciales. El precio final se ajusta según cantidad, descuentos por volumen y configuración técnica.
+                    </p>
+                  </div>
 
-                      <div className="flex flex-col gap-2 md:gap-3">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="block w-full">
-                                <Button
-                                  disabled
-                                  className="w-full h-10 md:h-12 border border-dashed border-slate-300 bg-slate-100 text-slate-500 cursor-not-allowed font-semibold text-xs md:text-base"
-                                >
-                                  <CreditCard className="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2" />
-                                  Pago en línea
-                                </Button>
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Próximamente
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-
-                        <Button
-                          onClick={handleWhatsAppCheckout}
-                          className="w-full h-10 md:h-12 bg-secondary-gradient text-white font-semibold shadow-lg hover:shadow-xl transition-all text-sm md:text-base"
-                        >
-                          <MessageCircle className="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2" />
-                          Comprar por WhatsApp
-                        </Button>
-                      </div>
+                  {/* Sección de recomendados */}
+                  <div className="px-4 md:px-6 py-4 border-t border-slate-100">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <h3 className="text-sm font-semibold text-slate-800">
+                        Recomendados y comprados juntos
+                      </h3>
                     </div>
 
-                    <Button
+                    {recomendadorLoading ? (
+                      <div className="flex items-center gap-2 text-slate-500 text-xs py-3">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Buscando recomendaciones...
+                      </div>
+                    ) : recomendados.length > 0 ? (
+                      <div
+                        className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide"
+                        style={{ scrollbarWidth: 'none' }}
+                      >
+                        {recomendados.map((producto) => (
+                          <div
+                            key={producto.id}
+                            className="min-w-[180px] max-w-[180px] rounded-lg border border-slate-200 bg-white p-2.5 flex-shrink-0 hover:shadow-md transition-shadow"
+                          >
+                            <div className="relative w-full h-28 rounded-md overflow-hidden bg-slate-50 border border-slate-100 mb-2">
+                              {producto.foto ? (
+                                <Image
+                                  src={producto.foto}
+                                  alt={producto.modelo}
+                                  fill
+                                  className="object-contain p-1.5"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                  <Package className="w-6 h-6" />
+                                </div>
+                              )}
+                            </div>
+
+                            <p className="text-xs font-medium text-slate-800 line-clamp-2 leading-snug min-h-[2rem]">
+                              {producto.modelo}
+                            </p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">
+                              {producto.categoria}
+                            </p>
+                            {producto.potenciaKW != null && (
+                              <p className="text-[10px] text-primary font-medium mt-0.5">
+                                {producto.potenciaKW} kW
+                              </p>
+                            )}
+
+                            <div className="mt-2">
+                              {producto.vendible ? (
+                                <Button asChild size="sm" className="w-full h-7 text-[11px] bg-secondary-gradient text-white">
+                                  <Link href="/productos">Ver producto</Link>
+                                </Button>
+                              ) : (
+                                <div className="w-full h-7 rounded-md border border-amber-200 bg-amber-50 text-[10px] text-amber-800 flex items-center justify-center px-1 text-center leading-tight">
+                                  No se vende por separado
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-500 py-2">
+                        Aún no hay sugerencias para esta combinación.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Sección de oferta de instalación */}
+                  <div className="px-4 md:px-6 py-4 border-t border-slate-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Wrench className="w-4 h-4 text-primary" />
+                      <h3 className="text-sm font-semibold text-slate-800">
+                        Oferta de instalación
+                      </h3>
+                    </div>
+                    <p className="text-xs text-slate-600 mb-3">
+                      Incluye todos los materiales necesarios para el sistema completo.
+                    </p>
+
+                    {precioOferta != null ? (
+                      <div className="flex items-center justify-between bg-primary/5 border border-primary/15 rounded-lg p-3">
+                        <div>
+                          <p className="text-xs text-slate-600">Desde</p>
+                          <p className="text-lg font-bold text-primary">
+                            ${precioOferta.toLocaleString()}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => {
+                            if (ofertaId) window.location.href = `/ofertas/${ofertaId}`;
+                          }}
+                          disabled={!ofertaId}
+                          size="sm"
+                          className="bg-secondary-gradient text-white text-xs"
+                        >
+                          Ver oferta
+                          <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-500">
+                        No encontramos una oferta para esta selección todavía.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Vaciar carrito */}
+                  <div className="px-4 md:px-6 py-3 border-t border-slate-100">
+                    <button
                       onClick={clearCart}
-                      variant="outline"
-                      className="w-full h-9 md:h-11 text-red-500 hover:bg-red-50 border-red-200 text-xs md:text-base"
+                      className="text-xs text-red-500 hover:text-red-600 hover:underline transition-colors"
                     >
-                      <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
                       Vaciar carrito
-                    </Button>
+                    </button>
                   </div>
                 </>
               )}
             </div>
+
+            {/* Footer fijo con resumen y checkout */}
+            {items.length > 0 && (
+              <div className="border-t border-slate-200 bg-white px-4 md:px-6 py-4 space-y-3">
+                {/* Resumen */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500">Subtotal referencial</p>
+                    <p className="text-xl font-bold text-slate-900">
+                      ${totalPrice.toLocaleString()}
+                    </p>
+                  </div>
+                  <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-xs">
+                    {totalItems} {totalItems === 1 ? 'artículo' : 'artículos'}
+                  </Badge>
+                </div>
+
+                {/* Botones de acción */}
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleWhatsAppCheckout}
+                    className="w-full h-12 bg-secondary-gradient text-white font-semibold shadow-lg hover:shadow-xl transition-all text-sm"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Solicitar cotización por WhatsApp
+                  </Button>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="block w-full">
+                          <Button
+                            disabled
+                            variant="outline"
+                            className="w-full h-10 border-slate-300 text-slate-400 cursor-not-allowed text-sm"
+                          >
+                            <CreditCard className="w-4 h-4 mr-2" />
+                            Pago en línea — Próximamente
+                          </Button>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        El pago en línea estará disponible pronto
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
