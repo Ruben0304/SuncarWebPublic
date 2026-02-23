@@ -36,7 +36,6 @@ import { useCart } from "@/hooks/useCart";
 const SHOW_PRODUCTS_MAINTENANCE = true;
 
 export default function TiendaPage() {
-  const [productos, setProductos] = useState<ArticuloTienda[]>([]);
   const [filteredProductos, setFilteredProductos] = useState<ArticuloTienda[]>(
     [],
   );
@@ -89,15 +88,20 @@ export default function TiendaPage() {
     setIsChristmas(isChristmasSeason());
   }, []);
 
-  useEffect(() => {
-    fetchProductos();
-  }, []);
-
-  const fetchProductos = async () => {
+  const fetchProductos = async (
+    filters?: { q?: string; categoria?: string | null },
+  ) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/productos-catalogo");
+      const params = new URLSearchParams();
+      if (filters?.q) params.set("q", filters.q);
+      if (filters?.categoria) params.set("categoria", filters.categoria);
+      const query = params.toString();
+      const endpoint = query
+        ? `/api/productos/catalogo-web?${query}`
+        : "/api/productos/catalogo-web";
+      const response = await fetch(endpoint);
 
       if (!response.ok) {
         throw new Error("Error al cargar los productos");
@@ -106,7 +110,6 @@ export default function TiendaPage() {
       const data = await response.json();
 
       if (data.success && Array.isArray(data.data)) {
-        setProductos(data.data);
         setFilteredProductos(data.data);
       } else {
         throw new Error(data.message || "Error al procesar los productos");
@@ -119,34 +122,24 @@ export default function TiendaPage() {
     }
   };
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      fetchProductos({
+        q: searchTerm.trim(),
+        categoria: selectedCategoria,
+      });
+    }, 250);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm, selectedCategoria]);
+
   const categorias = useMemo(() => {
     const categoriasSet = new Set<string>();
-    productos.forEach((p) => {
+    filteredProductos.forEach((p) => {
       if (p.categoria) categoriasSet.add(p.categoria);
     });
     return Array.from(categoriasSet).sort();
-  }, [productos]);
-
-  useEffect(() => {
-    let result = [...productos];
-
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.modelo.toLowerCase().includes(lowerSearch) ||
-          p.categoria.toLowerCase().includes(lowerSearch) ||
-          p.descripcion_uso?.toLowerCase().includes(lowerSearch) ||
-          p.marca_nombre?.toLowerCase().includes(lowerSearch),
-      );
-    }
-
-    if (selectedCategoria) {
-      result = result.filter((p) => p.categoria === selectedCategoria);
-    }
-
-    setFilteredProductos(result);
-  }, [productos, searchTerm, selectedCategoria]);
+  }, [filteredProductos]);
 
   const categoriasVisibles = useMemo(() => {
     const base = selectedCategoria ? [selectedCategoria] : categorias;
@@ -235,7 +228,12 @@ export default function TiendaPage() {
                 </p>
                 <p className="text-red-600 text-sm mb-4">{error}</p>
                 <Button
-                  onClick={fetchProductos}
+                  onClick={() =>
+                    fetchProductos({
+                      q: searchTerm.trim(),
+                      categoria: selectedCategoria,
+                    })
+                  }
                   className="bg-primary hover:bg-primary/90"
                 >
                   Reintentar
