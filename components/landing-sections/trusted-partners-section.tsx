@@ -12,9 +12,9 @@ const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
         src={src}
         alt={alt}
         fill
+        unoptimized
         sizes="(max-width: 640px) 240px, (max-width: 1024px) 280px, 320px"
         className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
-        quality={60}
       />
     </div>
   </div>
@@ -28,13 +28,13 @@ const PartnerItemGrid = ({ src, alt, visible }: { src: string; alt: string; visi
         src={src}
         alt={alt}
         fill
+        unoptimized
         sizes="33vw"
         className="w-full h-full object-contain filter grayscale-[20%]"
         style={{
           opacity: visible ? 0.85 : 0,
           transition: "opacity 0.8s ease-in-out",
         }}
-        quality={55}
       />
     </div>
   </div>
