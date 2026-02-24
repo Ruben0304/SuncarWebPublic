@@ -85,11 +85,14 @@ function TooltipMarkers({ points }: { points: HeatPoint[] }) {
   if (points.length === 0) return null;
 
   // Create invisible icon
-  const invisibleIcon = typeof window !== 'undefined' ? L.divIcon({
-    className: '',
-    html: '<div style="width:30px;height:30px;background:transparent;cursor:pointer"></div>',
-    iconSize: [30, 30],
-  }) : undefined;
+  const invisibleIcon =
+    typeof window !== "undefined"
+      ? L.divIcon({
+          className: "",
+          html: '<div style="width:30px;height:30px;background:transparent;cursor:pointer"></div>',
+          iconSize: [30, 30],
+        })
+      : undefined;
 
   if (!invisibleIcon) return null;
 
@@ -189,7 +192,7 @@ export default function SolarHeatMap({
       try {
         const [geoJsonResponse, statsResponse] = await Promise.all([
           fetch("/data/cuba-municipios.geojson", { cache: "force-cache" }),
-          fetch(endpoint, { cache: "no-store" }),
+          fetch(endpoint, { cache: "force-cache" }),
         ]);
 
         if (!geoJsonResponse.ok)
@@ -204,7 +207,7 @@ export default function SolarHeatMap({
         if (!statsPayload.success || !Array.isArray(statsPayload.data)) {
           throw new Error(
             statsPayload.message ||
-              "Formato inválido en la respuesta de estadísticas"
+              "Formato inválido en la respuesta de estadísticas",
           );
         }
 
@@ -217,7 +220,7 @@ export default function SolarHeatMap({
           setError(
             err instanceof Error
               ? err.message
-              : "Error desconocido al cargar el mapa"
+              : "Error desconocido al cargar el mapa",
           );
         }
       } finally {
@@ -241,7 +244,10 @@ export default function SolarHeatMap({
       return [];
 
     // Build map with backend-processed totals per municipio
-    const statsMap = new Map<string, { kw: number; provincia: string; municipio: string }>();
+    const statsMap = new Map<
+      string,
+      { kw: number; provincia: string; municipio: string }
+    >();
 
     for (const item of stats) {
       const key = normalizeText(item.municipio);
@@ -259,13 +265,16 @@ export default function SolarHeatMap({
       }
     }
 
-    const maxValue = Math.max(...Array.from(statsMap.values()).map(v => v.kw), 1);
+    const maxValue = Math.max(
+      ...Array.from(statsMap.values()).map((v) => v.kw),
+      1,
+    );
     const features = (geoJsonData as GeoJSON.FeatureCollection).features;
     const points: HeatPoint[] = [];
 
     for (const feature of features) {
       const shapeName = String(
-        (feature.properties as Record<string, unknown>)?.shapeName ?? ""
+        (feature.properties as Record<string, unknown>)?.shapeName ?? "",
       );
       const data = statsMap.get(normalizeText(shapeName));
       if (!data || data.kw <= 0) continue;

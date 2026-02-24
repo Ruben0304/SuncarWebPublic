@@ -59,6 +59,15 @@ type OfertasCacheEntry = {
 };
 
 let ofertasMemoryCache: OfertasCacheEntry | null = null;
+const OFERTAS_FETCH_RETRY_DELAYS_MS = [0, 400] as const;
+
+async function readJsonSafely<T>(response: Response): Promise<T | null> {
+  try {
+    return (await response.json()) as T;
+  } catch {
+    return null;
+  }
+}
 
 function readOfertasCache(): OfertasCacheEntry | null {
   if (ofertasMemoryCache) {
@@ -353,18 +362,41 @@ function OfertasContent() {
           setError(null);
         }
 
-        const response = await fetch("/api/ofertas/simplified", {
-          cache: "force-cache",
-        });
-        const data: OfertasResponse = await response.json();
+        let lastErrorMessage = "Error de conexión al cargar ofertas";
+        let loaded = false;
 
-        if (data.success) {
-          setOfertas(data.data);
-          writeOfertasCache(data.data);
-        } else {
-          if (!silent) {
-            setError(data.message || "Error al cargar ofertas");
+        for (const delayMs of OFERTAS_FETCH_RETRY_DELAYS_MS) {
+          if (delayMs > 0) {
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
           }
+
+          try {
+            const response = await fetch("/api/ofertas/simplified", {
+              cache: "force-cache",
+            });
+            const data = await readJsonSafely<OfertasResponse>(response);
+
+            if (!response.ok || !data) {
+              lastErrorMessage =
+                data?.message || `Error al cargar ofertas (${response.status})`;
+              continue;
+            }
+
+            if (data.success) {
+              setOfertas(data.data);
+              writeOfertasCache(data.data);
+              loaded = true;
+              break;
+            }
+
+            lastErrorMessage = data.message || "Error al cargar ofertas";
+          } catch {
+            lastErrorMessage = "Error de conexión al cargar ofertas";
+          }
+        }
+
+        if (!loaded && !silent) {
+          setError(lastErrorMessage);
         }
       } catch (err) {
         console.error("Error fetching ofertas:", err);

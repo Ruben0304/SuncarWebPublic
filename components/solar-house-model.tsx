@@ -18,7 +18,6 @@ export default function SolarHouseModel() {
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
 
         if (!gl) {
-            console.warn('WebGL no está disponible en este navegador')
             setWebGLError(true)
             setIsLoading(false)
             return
@@ -29,7 +28,6 @@ export default function SolarHouseModel() {
 
         if (modelViewer) {
             modelViewer.addEventListener('load', () => {
-                console.log('3D model loaded successfully')
                 setIsLoading(false)
             })
 
@@ -111,7 +109,7 @@ export default function SolarHouseModel() {
                     '--poster-color': 'transparent',
                     '--progress-bar-color': 'transparent'
                 } as any}
-                loading="eager"
+                loading="lazy"
                 reveal="auto"
                 ar
                 ar-modes="webxr scene-viewer quick-look"
@@ -180,3 +178,4 @@ export default function SolarHouseModel() {
         </div>
     )
 }
+

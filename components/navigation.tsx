@@ -1,146 +1,154 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { Menu, X, ChevronDown } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import { useClient } from "@/hooks/useClient"
+import { useState, useEffect, useRef } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { useClient } from "@/hooks/useClient";
 import GlassSurface from "@/components/GlassSurface";
-import { cn } from "@/lib/utils"
-import { CATEGORIAS_INFO } from "@/components/blog"
+import { cn } from "@/lib/utils";
+import { CATEGORIAS_INFO } from "@/components/blog";
 
 type NavItem = {
-  name: string
-  href: string
-  hasDropdown?: boolean
-  dropdownType?: "blog" | "precios" | "nosotro" | "apps"
-  matchHrefs?: string[]
-  badge?: string
-}
+  name: string;
+  href: string;
+  hasDropdown?: boolean;
+  dropdownType?: "blog" | "precios" | "nosotro" | "apps";
+  matchHrefs?: string[];
+  badge?: string;
+};
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const [hoveredHref, setHoveredHref] = useState<string | null>(null)
-  const [showBlogDropdown, setShowBlogDropdown] = useState(false)
-  const [showPreciosDropdown, setShowPreciosDropdown] = useState(false)
-  const [showNosotroDropdown, setShowNosotroDropdown] = useState(false)
-  const [showAppsDropdown, setShowAppsDropdown] = useState(false)
-  const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const blogDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const preciosDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const nosotroDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const appsDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const { isClient, isLoading } = useClient()
-  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
+  const [showBlogDropdown, setShowBlogDropdown] = useState(false);
+  const [showPreciosDropdown, setShowPreciosDropdown] = useState(false);
+  const [showNosotroDropdown, setShowNosotroDropdown] = useState(false);
+  const [showAppsDropdown, setShowAppsDropdown] = useState(false);
+  const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const blogDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const preciosDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const nosotroDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const appsDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const { isClient, isLoading } = useClient();
+  const pathname = usePathname();
 
   const isActive = (href: string, matchHrefs?: string[]) => {
-    if (!pathname) return false
-    const targets = matchHrefs && matchHrefs.length > 0 ? matchHrefs : [href]
+    if (!pathname) return false;
+    const targets = matchHrefs && matchHrefs.length > 0 ? matchHrefs : [href];
     return targets.some((target) => {
-      if (target === "/") return pathname === "/"
-      return pathname.startsWith(target)
-    })
-  }
+      if (target === "/") return pathname === "/";
+      return pathname.startsWith(target);
+    });
+  };
 
   const clearHoverReset = () => {
     if (hoverResetTimeout.current) {
-      clearTimeout(hoverResetTimeout.current)
-      hoverResetTimeout.current = null
+      clearTimeout(hoverResetTimeout.current);
+      hoverResetTimeout.current = null;
     }
-  }
+  };
 
   const handleHover = (href: string) => {
-    clearHoverReset()
-    setHoveredHref(href)
-  }
+    clearHoverReset();
+    setHoveredHref(href);
+  };
 
   const scheduleHoverReset = () => {
-    clearHoverReset()
+    clearHoverReset();
     hoverResetTimeout.current = setTimeout(() => {
-      setHoveredHref(null)
-    }, 160)
-  }
+      setHoveredHref(null);
+    }, 160);
+  };
 
   const handleBlogMouseEnter = () => {
     if (blogDropdownTimeout.current) {
-      clearTimeout(blogDropdownTimeout.current)
+      clearTimeout(blogDropdownTimeout.current);
     }
-    setShowBlogDropdown(true)
-  }
+    setShowBlogDropdown(true);
+  };
 
   const handleBlogMouseLeave = () => {
     blogDropdownTimeout.current = setTimeout(() => {
-      setShowBlogDropdown(false)
-    }, 200)
-  }
+      setShowBlogDropdown(false);
+    }, 200);
+  };
 
   const handlePreciosMouseEnter = () => {
     if (preciosDropdownTimeout.current) {
-      clearTimeout(preciosDropdownTimeout.current)
+      clearTimeout(preciosDropdownTimeout.current);
     }
-    setShowPreciosDropdown(true)
-  }
+    setShowPreciosDropdown(true);
+  };
 
   const handlePreciosMouseLeave = () => {
     preciosDropdownTimeout.current = setTimeout(() => {
-      setShowPreciosDropdown(false)
-    }, 200)
-  }
+      setShowPreciosDropdown(false);
+    }, 200);
+  };
 
   const handleNosotroMouseEnter = () => {
     if (nosotroDropdownTimeout.current) {
-      clearTimeout(nosotroDropdownTimeout.current)
+      clearTimeout(nosotroDropdownTimeout.current);
     }
-    setShowNosotroDropdown(true)
-  }
+    setShowNosotroDropdown(true);
+  };
 
   const handleNosotroMouseLeave = () => {
     nosotroDropdownTimeout.current = setTimeout(() => {
-      setShowNosotroDropdown(false)
-    }, 200)
-  }
+      setShowNosotroDropdown(false);
+    }, 200);
+  };
 
   const handleAppsMouseEnter = () => {
     if (appsDropdownTimeout.current) {
-      clearTimeout(appsDropdownTimeout.current)
+      clearTimeout(appsDropdownTimeout.current);
     }
-    setShowAppsDropdown(true)
-  }
+    setShowAppsDropdown(true);
+  };
 
   const handleAppsMouseLeave = () => {
     appsDropdownTimeout.current = setTimeout(() => {
-      setShowAppsDropdown(false)
-    }, 200)
-  }
+      setShowAppsDropdown(false);
+    }, 200);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     return () => {
-      clearHoverReset()
+      clearHoverReset();
       if (blogDropdownTimeout.current) {
-        clearTimeout(blogDropdownTimeout.current)
+        clearTimeout(blogDropdownTimeout.current);
       }
       if (preciosDropdownTimeout.current) {
-        clearTimeout(preciosDropdownTimeout.current)
+        clearTimeout(preciosDropdownTimeout.current);
       }
       if (nosotroDropdownTimeout.current) {
-        clearTimeout(nosotroDropdownTimeout.current)
+        clearTimeout(nosotroDropdownTimeout.current);
       }
       if (appsDropdownTimeout.current) {
-        clearTimeout(appsDropdownTimeout.current)
+        clearTimeout(appsDropdownTimeout.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const desktopNavItems: NavItem[] = [
     { name: "Inicio", href: "/" },
@@ -169,7 +177,7 @@ export default function Navigation() {
       matchHrefs: ["/sobre-nosotros", "/contacto"],
     },
     { name: "Galeria", href: "/galeria" },
-  ]
+  ];
 
   const mobileNavItems: NavItem[] = [
     { name: "Inicio", href: "/" },
@@ -185,9 +193,7 @@ export default function Navigation() {
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Galeria", href: "/galeria" },
     { name: "Contacto", href: "/contacto" },
-  ]
-
-
+  ];
 
   return (
     <nav className="fixed top-2 lg:top-4 left-2 lg:left-4 right-2 lg:right-4 z-50">
@@ -213,44 +219,57 @@ export default function Navigation() {
               {/* Logo */}
               <div className="flex items-center space-x-3">
                 <div className="relative w-8 h-8 lg:w-10 lg:h-10">
-                  <img src="/images/suncar-logo.jpeg" alt="Suncar Logo" className="object-contain rounded-lg" />
+                  <Image
+                    src="/images/suncar-logo.jpeg"
+                    alt="Suncar Logo"
+                    fill
+                    sizes="(min-width: 1024px) 40px, 32px"
+                    className="object-contain rounded-lg"
+                    priority
+                  />
                 </div>
-                <span className="text-lg lg:text-xl font-bold text-primary font-[family-name:var(--font-cinzel)]">SUNCAR</span>
+                <span className="text-lg lg:text-xl font-bold text-primary font-[family-name:var(--font-cinzel)]">
+                  SUNCAR
+                </span>
               </div>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-3 lg:space-x-4" onMouseLeave={scheduleHoverReset}>
+              <div
+                className="hidden md:flex items-center space-x-3 lg:space-x-4"
+                onMouseLeave={scheduleHoverReset}
+              >
                 {desktopNavItems.map((item) => {
-                  const matchHrefs = item.matchHrefs
+                  const matchHrefs = item.matchHrefs;
                   const isHighlighted =
-                    hoveredHref === item.href || (!hoveredHref && isActive(item.href, matchHrefs))
+                    hoveredHref === item.href ||
+                    (!hoveredHref && isActive(item.href, matchHrefs));
 
                   if (item.hasDropdown) {
-                    const isBlog = item.dropdownType === "blog"
-                    const isPrecios = item.dropdownType === "precios"
-                    const isNosotro = item.dropdownType === "nosotro"
-                    const isApps = item.dropdownType === "apps"
+                    const isBlog = item.dropdownType === "blog";
+                    const isPrecios = item.dropdownType === "precios";
+                    const isNosotro = item.dropdownType === "nosotro";
+                    const isApps = item.dropdownType === "apps";
                     const showDropdown = isBlog
                       ? showBlogDropdown
                       : isPrecios
                         ? showPreciosDropdown
                         : isNosotro
                           ? showNosotroDropdown
-                          : showAppsDropdown
+                          : showAppsDropdown;
                     const handleMouseEnter = isBlog
                       ? handleBlogMouseEnter
                       : isPrecios
                         ? handlePreciosMouseEnter
                         : isNosotro
                           ? handleNosotroMouseEnter
-                          : handleAppsMouseEnter
+                          : handleAppsMouseEnter;
                     const handleMouseLeave = isBlog
                       ? handleBlogMouseLeave
                       : isPrecios
                         ? handlePreciosMouseLeave
                         : isNosotro
                           ? handleNosotroMouseLeave
-                          : handleAppsMouseLeave
+                          : handleAppsMouseLeave;
 
                     return (
                       <div
@@ -263,9 +282,13 @@ export default function Navigation() {
                           href={item.href}
                           className={cn(
                             "group relative flex items-center gap-1 px-4 py-1.5 text-sm font-medium transition-all duration-300",
-                            isHighlighted ? "text-primary" : "text-gray-700 hover:text-primary"
+                            isHighlighted
+                              ? "text-primary"
+                              : "text-gray-700 hover:text-primary",
                           )}
-                          aria-current={isActive(item.href, matchHrefs) ? "page" : undefined}
+                          aria-current={
+                            isActive(item.href, matchHrefs) ? "page" : undefined
+                          }
                           onMouseEnter={() => handleHover(item.href)}
                           onMouseLeave={scheduleHoverReset}
                           onFocus={() => handleHover(item.href)}
@@ -275,7 +298,7 @@ export default function Navigation() {
                           <ChevronDown
                             className={cn(
                               "w-4 h-4 transition-transform duration-300",
-                              showDropdown && "rotate-180"
+                              showDropdown && "rotate-180",
                             )}
                           />
                           <span
@@ -284,7 +307,7 @@ export default function Navigation() {
                               "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#F26729] via-[#FDB813] to-[#F26729] opacity-0 transition-all duration-300",
                               isHighlighted
                                 ? "opacity-100 translate-y-0"
-                                : "group-hover:opacity-100 group-hover:translate-y-0.5"
+                                : "group-hover:opacity-100 group-hover:translate-y-0.5",
                             )}
                           />
                         </Link>
@@ -306,42 +329,52 @@ export default function Navigation() {
                                     </div>
                                   </Link>
                                   <div className="border-t border-gray-200 my-2"></div>
-                                  {Object.entries(CATEGORIAS_INFO).map(([key, info]) => (
-                                    <Link
-                                      key={key}
-                                      href={`/blog?categoria=${key}`}
-                                      className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                      onClick={() => setShowBlogDropdown(false)}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <span>{info.icon}</span>
-                                        <span>{info.label}</span>
-                                      </div>
-                                    </Link>
-                                  ))}
+                                  {Object.entries(CATEGORIAS_INFO).map(
+                                    ([key, info]) => (
+                                      <Link
+                                        key={key}
+                                        href={`/blog?categoria=${key}`}
+                                        className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                        onClick={() =>
+                                          setShowBlogDropdown(false)
+                                        }
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <span>{info.icon}</span>
+                                          <span>{info.label}</span>
+                                        </div>
+                                      </Link>
+                                    ),
+                                  )}
                                 </>
                               ) : isPrecios ? (
                                 <>
                                   <Link
-                                      href="/ofertas"
-                                      className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                      onClick={() => setShowPreciosDropdown(false)}
+                                    href="/ofertas"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() =>
+                                      setShowPreciosDropdown(false)
+                                    }
                                   >
                                     Kits Completos (instalación)
                                   </Link>
                                   <div className="border-t border-gray-200 my-2"></div>
                                   <Link
-                                      href="/productos"
-                                      className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                      onClick={() => setShowPreciosDropdown(false)}
+                                    href="/productos"
+                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() =>
+                                      setShowPreciosDropdown(false)
+                                    }
                                   >
                                     Productos Online
                                   </Link>
                                   <div className="border-t border-gray-200 my-2"></div>
                                   <Link
-                                      href="/tienda"
-                                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                      onClick={() => setShowPreciosDropdown(false)}
+                                    href="/tienda"
+                                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
+                                    onClick={() =>
+                                      setShowPreciosDropdown(false)
+                                    }
                                   >
                                     <span>Tienda</span>
                                     <Badge className="bg-primary text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
@@ -354,7 +387,9 @@ export default function Navigation() {
                                   <Link
                                     href="/sobre-nosotros"
                                     className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() => setShowNosotroDropdown(false)}
+                                    onClick={() =>
+                                      setShowNosotroDropdown(false)
+                                    }
                                   >
                                     Conócenos
                                   </Link>
@@ -362,7 +397,9 @@ export default function Navigation() {
                                   <Link
                                     href="/contacto"
                                     className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() => setShowNosotroDropdown(false)}
+                                    onClick={() =>
+                                      setShowNosotroDropdown(false)
+                                    }
                                   >
                                     Contacto
                                   </Link>
@@ -401,7 +438,7 @@ export default function Navigation() {
                           </div>
                         )}
                       </div>
-                    )
+                    );
                   }
 
                   return (
@@ -410,9 +447,13 @@ export default function Navigation() {
                         href={item.href}
                         className={cn(
                           "group relative flex items-center gap-2 px-4 py-1.5 text-sm font-medium transition-all duration-300",
-                          isHighlighted ? "text-primary" : "text-gray-700 hover:text-primary"
+                          isHighlighted
+                            ? "text-primary"
+                            : "text-gray-700 hover:text-primary",
                         )}
-                        aria-current={isActive(item.href, matchHrefs) ? "page" : undefined}
+                        aria-current={
+                          isActive(item.href, matchHrefs) ? "page" : undefined
+                        }
                         onMouseEnter={() => handleHover(item.href)}
                         onMouseLeave={scheduleHoverReset}
                         onFocus={() => handleHover(item.href)}
@@ -430,18 +471,21 @@ export default function Navigation() {
                             "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#F26729] via-[#FDB813] to-[#F26729] opacity-0 transition-all duration-300",
                             isHighlighted
                               ? "opacity-100 translate-y-0"
-                              : "group-hover:opacity-100 group-hover:translate-y-0.5"
+                              : "group-hover:opacity-100 group-hover:translate-y-0.5",
                           )}
                         />
                       </Link>
                     </div>
-                  )
+                  );
                 })}
               </div>
 
               {/* CTA Button */}
               <div className="hidden md:block">
-                <Link href="/cotizacion" className="px-4 py-2 lg:px-6 lg:py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
+                <Link
+                  href="/cotizacion"
+                  className="px-4 py-2 lg:px-6 lg:py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base"
+                >
                   Cotizar
                 </Link>
               </div>
@@ -467,9 +511,13 @@ export default function Navigation() {
                         "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
                         isActive(item.href, item.matchHrefs)
                           ? "bg-white/80 text-primary shadow-sm ring-1 ring-primary/20"
-                          : "text-gray-700 hover:text-primary hover:bg-white/60"
+                          : "text-gray-700 hover:text-primary hover:bg-white/60",
                       )}
-                      aria-current={isActive(item.href, item.matchHrefs) ? "page" : undefined}
+                      aria-current={
+                        isActive(item.href, item.matchHrefs)
+                          ? "page"
+                          : undefined
+                      }
                       onClick={() => setIsOpen(false)}
                     >
                       {item.name}
@@ -485,7 +533,11 @@ export default function Navigation() {
                       )}
                     </Link>
                   ))}
-                  <Link href="/cotizacion" className="mt-3 px-4 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm text-center block" onClick={() => setIsOpen(false)}>
+                  <Link
+                    href="/cotizacion"
+                    className="mt-3 px-4 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm text-center block"
+                    onClick={() => setIsOpen(false)}
+                  >
                     Cotizar
                   </Link>
                 </div>
@@ -496,5 +548,5 @@ export default function Navigation() {
         {/*</GlassSurface>*/}
       </div>
     </nav>
-  )
+  );
 }

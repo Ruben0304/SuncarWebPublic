@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
 import L, { type Layer, type PathOptions } from "leaflet";
-import { GeoJSON, MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
+import {
+  GeoJSON,
+  MapContainer,
+  Marker,
+  TileLayer,
+  ZoomControl,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface MunicipioStatApiItem {
@@ -92,7 +98,11 @@ function getFeatureCentroid(feature: Feature): [number, number] | null {
   return null;
 }
 
-function buildGlowIcon(point: HeatPoint, index: number, lightsOn: boolean): L.DivIcon {
+function buildGlowIcon(
+  point: HeatPoint,
+  index: number,
+  lightsOn: boolean,
+): L.DivIcon {
   const glowSize = 16 + point.intensity * 36;
   const coreSize = 4 + point.intensity * 8;
   const glowOpacity = lightsOn ? 0.2 + point.intensity * 0.7 : 0;
@@ -130,7 +140,7 @@ export default function NightLightsMap({
       try {
         const [geoRes, statsRes] = await Promise.all([
           fetch("/data/cuba-municipios.geojson", { cache: "force-cache" }),
-          fetch(ENDPOINT, { cache: "no-store" }),
+          fetch(ENDPOINT, { cache: "force-cache" }),
         ]);
 
         if (!geoRes.ok) throw new Error("No se pudo cargar el mapa");
@@ -157,7 +167,9 @@ export default function NightLightsMap({
     }
 
     loadData();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const municipioAggregates = useMemo(() => {
@@ -238,7 +250,8 @@ export default function NightLightsMap({
 
   const getMunicipioStyle = (feature?: Feature): PathOptions => {
     const shapeName = String(
-      (feature?.properties as Record<string, unknown> | undefined)?.shapeName ?? "",
+      (feature?.properties as Record<string, unknown> | undefined)?.shapeName ??
+        "",
     );
     const point = pointByMunicipio.get(normalizeText(shapeName));
     const ratio = point?.intensity ?? 0;
@@ -273,7 +286,8 @@ export default function NightLightsMap({
     if (!("bindTooltip" in layer)) return;
 
     const shapeName = String(
-      (feature.properties as Record<string, unknown> | undefined)?.shapeName ?? "",
+      (feature.properties as Record<string, unknown> | undefined)?.shapeName ??
+        "",
     );
     const point = pointByMunicipio.get(normalizeText(shapeName));
 
@@ -310,7 +324,9 @@ export default function NightLightsMap({
         interactiveLayer.setStyle?.({
           weight: 1.8,
           color: lightsOn ? "#fde68a" : "#94a3b8",
-          fillOpacity: lightsOn ? Math.min((point?.intensity ?? 0.2) + 0.35, 0.8) : 0.12,
+          fillOpacity: lightsOn
+            ? Math.min((point?.intensity ?? 0.2) + 0.35, 0.8)
+            : 0.12,
         });
         interactiveLayer.bringToFront?.();
       },
@@ -352,9 +368,13 @@ export default function NightLightsMap({
         </div>
       )}
 
-      <div className={`relative transition-[filter] duration-1000 ${
-        lightsOn ? "brightness-100 saturate-[1.1]" : "brightness-[0.46] saturate-[0.8]"
-      }`}>
+      <div
+        className={`relative transition-[filter] duration-1000 ${
+          lightsOn
+            ? "brightness-100 saturate-[1.1]"
+            : "brightness-[0.46] saturate-[0.8]"
+        }`}
+      >
         <MapContainer
           center={MAP_CENTER}
           zoom={7}
@@ -379,7 +399,9 @@ export default function NightLightsMap({
               key={`${lightsOn}-${heatPoints.length}`}
               data={geoJsonData}
               style={(feature) => getMunicipioStyle(feature as Feature)}
-              onEachFeature={(feature, layer) => onEachMunicipio(feature as Feature, layer)}
+              onEachFeature={(feature, layer) =>
+                onEachMunicipio(feature as Feature, layer)
+              }
             />
           )}
           {glowMarkers.map((point) => (
@@ -431,7 +453,9 @@ export default function NightLightsMap({
           border-radius: 9999px;
           position: relative;
           transform: translateZ(0);
-          transition: opacity 600ms ease, transform 600ms ease;
+          transition:
+            opacity 600ms ease,
+            transform 600ms ease;
           opacity: 0;
         }
 
@@ -448,7 +472,13 @@ export default function NightLightsMap({
         .city-light-icon::before {
           width: 100%;
           height: 100%;
-          background: radial-gradient(circle, rgba(254,243,199,0.9) 0%, rgba(251,191,36,var(--glow-opacity)) 36%, rgba(251,146,60,0.06) 72%, transparent 100%);
+          background: radial-gradient(
+            circle,
+            rgba(254, 243, 199, 0.9) 0%,
+            rgba(251, 191, 36, var(--glow-opacity)) 36%,
+            rgba(251, 146, 60, 0.06) 72%,
+            transparent 100%
+          );
           filter: blur(1px);
           animation: cityGlowPulse var(--pulse-duration) ease-in-out infinite;
           animation-delay: var(--pulse-delay);
@@ -458,7 +488,9 @@ export default function NightLightsMap({
           width: var(--core-size);
           height: var(--core-size);
           background: #fff7db;
-          box-shadow: 0 0 14px rgba(252,211,77,0.95), 0 0 28px rgba(251,191,36,0.65);
+          box-shadow:
+            0 0 14px rgba(252, 211, 77, 0.95),
+            0 0 28px rgba(251, 191, 36, 0.65);
         }
 
         .city-light-icon.is-on {
@@ -520,7 +552,8 @@ export default function NightLightsMap({
         }
 
         @keyframes cityGlowPulse {
-          0%, 100% {
+          0%,
+          100% {
             transform: translate(-50%, -50%) scale(0.86);
             opacity: 0.8;
           }
@@ -531,8 +564,9 @@ export default function NightLightsMap({
         }
 
         @keyframes hubBreathe {
-          0%, 100% {
-            text-shadow: 0 0 0 rgba(252, 211, 77, 0.0);
+          0%,
+          100% {
+            text-shadow: 0 0 0 rgba(252, 211, 77, 0);
           }
           50% {
             text-shadow: 0 0 18px rgba(252, 211, 77, 0.45);

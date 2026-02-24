@@ -10,18 +10,37 @@ import { useTypewriter } from "@/hooks/useTypewriter"
 import { useLoadingContext } from "@/hooks/useLoadingContext"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { isChristmasSeason } from "@/lib/christmas-utils"
+import LazySection from "@/components/LazySection"
 
-// Import landing sections
 import HeroSection from "@/components/landing-sections/hero-section"
 import HeroSectionChristmas from "@/components/landing-sections/hero-section-christmas"
 import ChristmasInstagramSection from "@/components/landing-sections/christmas-instagram-section"
-import TrustedPartnersSection from "@/components/landing-sections/trusted-partners-section"
-import ServicesSection from "@/components/landing-sections/services-section"
-import FelicityPartnershipSection from "@/components/landing-sections/felicity-partnership-section"
-import BrandsSection from "@/components/landing-sections/brands-section"
 import QuickContactSection from "@/components/landing-sections/quick-contact-section"
-import HeatMapSection from "@/components/landing-sections/heatmap-section"
-import BlackoutSection from "@/components/landing-sections/blackout-section"
+
+const TrustedPartnersSection = dynamic(() => import("@/components/landing-sections/trusted-partners-section"), {
+  ssr: false,
+  loading: () => null
+})
+
+const ServicesSection = dynamic(() => import("@/components/landing-sections/services-section"), {
+  ssr: false,
+  loading: () => null
+})
+
+const FelicityPartnershipSection = dynamic(() => import("@/components/landing-sections/felicity-partnership-section"), {
+  ssr: false,
+  loading: () => null
+})
+
+const BrandsSection = dynamic(() => import("@/components/landing-sections/brands-section"), {
+  ssr: false,
+  loading: () => null
+})
+
+const BlackoutSection = dynamic(() => import("@/components/landing-sections/blackout-section"), {
+  ssr: false,
+  loading: () => null
+})
 
 const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteractiveGame"), {
   ssr: false,
@@ -35,7 +54,6 @@ const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteracti
 })
 
 export default function HomePage() {
-  const [count, setCount] = useState(0)
   const [isChristmas, setIsChristmas] = useState(false)
   const { isLoadingComplete } = useLoadingContext()
 
@@ -48,7 +66,7 @@ export default function HomePage() {
   const blueText = useTypewriter({
     text: "Energía Solar",
     speed: 120,
-    delay: 300, // Inicia casi inmediatamente después del loader
+    delay: 300,
     waitForLoading: true,
     isLoadingComplete
   })
@@ -57,73 +75,49 @@ export default function HomePage() {
     text: "Para Tu Futuro",
     speed: 120,
     delay: blueText.isComplete ? 200 : 999999,
-    waitForLoading: false, // No necesita esperar al loader ya que depende del blueText
+    waitForLoading: false,
     isLoadingComplete: true
   })
 
-  useEffect(() => {
-    // Solo iniciar el contador cuando el loading haya terminado y el typewriter esté completo
-    if (!isLoadingComplete || !orangeText.isComplete) return
-
-    const startDelay = setTimeout(() => {
-      let start = 0
-      const end = 1200
-      const incrementTime = 20 // ms
-      const step = Math.ceil(end / 100) // velocidad
-
-      const timer = setInterval(() => {
-        start += step
-        if (start >= end) {
-          start = end
-          clearInterval(timer)
-        }
-        setCount(start)
-      }, incrementTime)
-
-      return () => clearInterval(timer)
-    }, 500) // Pequeño delay después de que termine el typewriter
-
-    return () => clearTimeout(startDelay)
-  }, [isLoadingComplete, orangeText.isComplete])
-
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      {/* Conditional Navigation - Christmas or Regular */}
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       <ScrollProgress />
 
-      {/* Hero Section - Christmas or Regular */}
       {isChristmas ? (
         <HeroSectionChristmas blueText={blueText} orangeText={orangeText} />
       ) : (
         <HeroSection blueText={blueText} orangeText={orangeText} />
       )}
 
-      {/* Christmas Instagram Section - Only during Christmas season */}
       {isChristmas && <ChristmasInstagramSection />}
 
-      {/* Trusted Partners Section */}
-      <TrustedPartnersSection />
+      <LazySection minHeight={420} rootMargin="220px">
+        <TrustedPartnersSection />
+      </LazySection>
 
-      {/* Services Section */}
-      <ServicesSection />
+      <LazySection minHeight={760} rootMargin="240px">
+        <ServicesSection />
+      </LazySection>
 
-      {/* Felicity Solar Partnership Section */}
-      <FelicityPartnershipSection />
+      <LazySection minHeight={560} rootMargin="240px">
+        <FelicityPartnershipSection />
+      </LazySection>
 
-      {/* Brands We Sell Section */}
-      <BrandsSection />
+      <LazySection minHeight={520} rootMargin="240px">
+        <BrandsSection />
+      </LazySection>
 
-      {/* Blackout / Con Suncar Interactive Section */}
-      <BlackoutSection />
+      <LazySection minHeight={720} rootMargin="300px">
+        <BlackoutSection />
+      </LazySection>
 
-      {/* Interactive Suncar Game Section */}
-      <SuncarInteractiveGame />
+      <LazySection minHeight={640} rootMargin="280px">
+        <SuncarInteractiveGame />
+      </LazySection>
 
-      {/* Quick Contact Section */}
       <QuickContactSection />
 
-      {/* Footer - Christmas or Regular */}
       {isChristmas ? <FooterChristmas /> : <Footer />}
     </div>
   )

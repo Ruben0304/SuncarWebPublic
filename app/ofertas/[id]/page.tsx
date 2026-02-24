@@ -39,6 +39,7 @@ import { useAOS } from "@/hooks/useAOS";
 
 const OFERTA_DETAIL_CACHE_PREFIX = "suncar_oferta_detail_cache_v1";
 const OFERTA_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
+const OFERTA_DETAIL_FETCH_RETRY_DELAYS_MS = [0, 400] as const;
 
 type OfertaDetailCacheEntry = {
   data: Oferta;
@@ -46,6 +47,14 @@ type OfertaDetailCacheEntry = {
 };
 
 const ofertaDetailMemoryCache = new Map<string, OfertaDetailCacheEntry>();
+
+async function readJsonSafely<T>(response: Response): Promise<T | null> {
+  try {
+    return (await response.json()) as T;
+  } catch {
+    return null;
+  }
+}
 
 function getOfertaDetailCacheKey(ofertaId: string): string {
   return `${OFERTA_DETAIL_CACHE_PREFIX}:${ofertaId}`;
@@ -160,27 +169,53 @@ export default function OfertaDetailPage() {
 
         if (!ofertaId) {
           if (!silent) {
-            setError("ID de oferta no vÃ¡lido");
+            setError("ID de oferta no válido");
             setLoading(false);
           }
           return;
         }
 
-        const response = await fetch(`/api/ofertas/${ofertaId}`, {
-          cache: "force-cache",
-        });
-        const data: OfertaResponse = await response.json();
+        let lastErrorMessage = "Error de conexión al cargar la oferta";
+        let loaded = false;
 
-        if (data.success && data.data) {
-          applyOfertaData(data.data);
-          writeOfertaDetailCache(ofertaId, data.data);
-        } else if (!silent) {
-          setError(data.message || "Oferta no encontrada");
+        for (const delayMs of OFERTA_DETAIL_FETCH_RETRY_DELAYS_MS) {
+          if (delayMs > 0) {
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+          }
+
+          try {
+            const response = await fetch(`/api/ofertas/${ofertaId}`, {
+              cache: "force-cache",
+            });
+            const data = await readJsonSafely<OfertaResponse>(response);
+
+            if (!response.ok || !data) {
+              lastErrorMessage =
+                data?.message ||
+                `Error al cargar la oferta (${response.status})`;
+              continue;
+            }
+
+            if (data.success && data.data) {
+              applyOfertaData(data.data);
+              writeOfertaDetailCache(ofertaId, data.data);
+              loaded = true;
+              break;
+            }
+
+            lastErrorMessage = data.message || "Oferta no encontrada";
+          } catch {
+            lastErrorMessage = "Error de conexión al cargar la oferta";
+          }
+        }
+
+        if (!loaded && !silent) {
+          setError(lastErrorMessage);
         }
       } catch (err) {
         console.error("Error fetching oferta:", err);
         if (!silent) {
-          setError("Error de conexiÃ³n al cargar la oferta");
+          setError("Error de conexión al cargar la oferta");
         }
       } finally {
         if (!silent) {
@@ -265,7 +300,7 @@ export default function OfertaDetailPage() {
                   <p className="text-gray-600 mb-6">{error}</p>
                   <div className="flex gap-3 justify-center">
                     <Button variant="outline" onClick={() => router.back()}>
-                      Volver atrÃƒÂ¡s
+                      Volver atrás
                     </Button>
                     <Button
                       onClick={() => {
@@ -352,7 +387,7 @@ export default function OfertaDetailPage() {
                   )}
 
                   <div className="space-y-6">
-                    {/* Price Display - Sin conversiÃƒÂ³n de moneda (API agotada) */}
+                    {/* Price Display - Sin conversión de moneda (API agotada) */}
                     <div className="flex items-baseline gap-4 flex-wrap">
                       <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#F26729]">
                         {(isClient && oferta.precio_cliente
@@ -377,10 +412,10 @@ export default function OfertaDetailPage() {
                       <div className="pt-4 border-t border-gray-200">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-gray-700">
                           <span className="text-base sm:text-lg">o desde</span>
-                          <span className="text-xl sm:text-2xl font-bold text-[#0F2B66]">78 Ã¢â€šÂ¬/mes</span>
+                          <span className="text-xl sm:text-2xl font-bold text-[#0F2B66]">78 €/mes</span>
                           <div className="flex items-center gap-2 text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full w-fit">
                             <MapPin className="w-4 h-4" />
-                            <span>solo desde EspaÃƒÂ±a</span>
+                            <span>solo desde España</span>
                           </div>
                         </div>
                       </div>
@@ -405,7 +440,7 @@ export default function OfertaDetailPage() {
                       <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg">
                         <Percent className="w-6 h-6 text-white" />
                       </div>
-                      Ã‚Â¡Descuentos Especiales Disponibles!
+                      ¡Descuentos Especiales Disponibles!
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="relative z-10">
@@ -421,8 +456,8 @@ export default function OfertaDetailPage() {
                       <div className="mt-4 pt-4 border-t border-orange-100">
                         <p className="text-sm text-gray-600 flex items-center gap-2">
                           <Info className="w-4 h-4 text-orange-500" />
-                          Contacta con nosotros para mÃƒÂ¡s detalles sobre estos
-                          descuentos y cÃƒÂ³mo aplicarlos.
+                          Contacta con nosotros para más detalles sobre estos
+                          descuentos y cómo aplicarlos.
                         </p>
                       </div>
                     </div>
@@ -458,7 +493,7 @@ export default function OfertaDetailPage() {
               </Card> */}
 
               <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
-                {/* GarantÃƒÂ­as */}
+                {/* Garantías */}
                 <Card
                   data-aos="fade-up"
                   data-aos-delay="60"
@@ -467,7 +502,7 @@ export default function OfertaDetailPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <Shield className="w-6 h-6 text-[#F26729]" />
-                      GarantÃƒÂ­as Incluidas
+                      Garantías Incluidas
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -489,8 +524,8 @@ export default function OfertaDetailPage() {
                           <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
                             <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                             <p className="text-xs text-gray-700 leading-relaxed">
-                              Cualquier intervenciÃƒÂ³n de terceros anularÃƒÂ¡
-                              automÃƒÂ¡ticamente la cobertura de garantÃƒÂ­a
+                              Cualquier intervención de terceros anulará
+                              automáticamente la cobertura de garantía
                               realizada por nuestro equipo de profesionales
                               certificados de SUNCAR.
                             </p>
@@ -499,7 +534,7 @@ export default function OfertaDetailPage() {
                       </div>
                     ) : (
                       <p className="text-gray-500 italic">
-                        No hay garantÃƒÂ­as especificadas para esta oferta.
+                        No hay garantías especificadas para esta oferta.
                       </p>
                     )}
                   </CardContent>
@@ -586,7 +621,7 @@ export default function OfertaDetailPage() {
                 </Card>
               </div>
 
-              {/* PDF Ficha TÃƒÂ©cnica Section */}
+              {/* PDF Ficha Técnica Section */}
               {oferta.pdf && oferta.pdf.trim() !== "" && (
                 <Card
                   className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-lg overflow-hidden relative"
@@ -606,12 +641,12 @@ export default function OfertaDetailPage() {
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-blue-800 mb-2">
-                            Ficha TÃƒÂ©cnica Completa
+                            Ficha Técnica Completa
                           </h3>
                           <p className="text-gray-700 leading-relaxed">
-                            Descarga el documento PDF con toda la informaciÃƒÂ³n
-                            tÃƒÂ©cnica detallada de esta oferta, incluyendo
-                            especificaciones, caracterÃƒÂ­sticas y
+                            Descarga el documento PDF con toda la información
+                            técnica detallada de esta oferta, incluyendo
+                            especificaciones, características y
                             certificaciones.
                           </p>
                         </div>
@@ -671,9 +706,9 @@ export default function OfertaDetailPage() {
                             Otras provincias:
                           </span>{" "}
                           Evaluamos cada caso de forma individual. Por favor,
-                          contÃƒÂ¡ctenos indicando su provincia para coordinar
+                          contáctenos indicando su provincia para coordinar
                           las opciones disponibles y brindarle la mejor
-                          soluciÃƒÂ³n para su proyecto de energÃƒÂ­a solar.
+                          solución para su proyecto de energía solar.
                         </p>
                       </div>
                     </div>
@@ -700,14 +735,14 @@ export default function OfertaDetailPage() {
                       />
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-                      Ã‚Â¿Te interesa esta oferta?
+                      ¿Te interesa esta oferta?
                     </h2>
                     <p className="text-gray-600 text-lg mb-6 max-w-2xl mx-auto">
-                      EnvÃƒÂ­anos un mensaje por{" "}
+                      Envíanos un mensaje por{" "}
                       <span className="font-semibold text-[#25D366]">
                         WhatsApp
                       </span>{" "}
-                      y te atenderemos de inmediato. Tu mensaje estarÃƒÂ¡
+                      y te atenderemos de inmediato. Tu mensaje estará
                       prellenado con los detalles de esta oferta.
                     </p>
                   </div>
@@ -740,14 +775,14 @@ export default function OfertaDetailPage() {
                               ).toLocaleString()}{" "}
                               {formatCurrency(oferta.moneda)}
                             </span>
-                            . Ã‚Â¿PodrÃƒÂ­an darme mÃƒÂ¡s informaciÃƒÂ³n?
+                            . ¿Podrían darme más información?
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
                         <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                         <span>
-                          PodrÃƒÂ¡s editar este mensaje antes de enviarlo
+                          Podrás editar este mensaje antes de enviarlo
                         </span>
                         <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                       </div>
@@ -759,7 +794,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} Ã‚Â¿PodrÃƒÂ­an darme mÃƒÂ¡s informaciÃƒÂ³n?`)}`}
+                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} ¿Podrían darme más información?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"
@@ -780,7 +815,7 @@ export default function OfertaDetailPage() {
                         variant="ghost"
                         className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full"
                       >
-                        <Link href="/ofertas">Ver MÃƒÂ¡s Ofertas</Link>
+                        <Link href="/ofertas">Ver Más Ofertas</Link>
                       </Button>
                     </div>
                   </div>

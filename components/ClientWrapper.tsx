@@ -1,32 +1,60 @@
-"use client"
+"use client";
 
-import dynamic from "next/dynamic"
-import { useState, useEffect } from "react"
-import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext"
-import { ClientProvider } from "@/hooks/useClient"
+import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
+import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext";
+import { ClientProvider } from "@/hooks/useClient";
 
 const UnifiedChatAssistant = dynamic(() => import("./UnifiedChatAssistant"), {
   ssr: false,
-  loading: () => null
-})
+  loading: () => null,
+});
 
 interface ClientWrapperProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 function ClientWrapperContent({ children }: ClientWrapperProps) {
-  const [shouldRenderChat, setShouldRenderChat] = useState(false)
-  const { setLoadingComplete } = useLoadingContext()
+  const [shouldRenderChat, setShouldRenderChat] = useState(false);
+  const { setLoadingComplete } = useLoadingContext();
 
   useEffect(() => {
     // Ensure components waiting on the loader can proceed immediately
-    setLoadingComplete(true)
-  }, [setLoadingComplete])
+    setLoadingComplete(true);
+  }, [setLoadingComplete]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShouldRenderChat(true), 2000)
-    return () => clearTimeout(timer)
-  }, [])
+    if (shouldRenderChat) return;
+
+    const showChat = () => {
+      setShouldRenderChat(true);
+      cleanup();
+    };
+
+    const events: Array<keyof WindowEventMap> = [
+      "pointerdown",
+      "keydown",
+      "touchstart",
+      "scroll",
+    ];
+    const timer = setTimeout(showChat, 12000);
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      events.forEach((eventName) => {
+        window.removeEventListener(eventName, showChat);
+      });
+    };
+
+    events.forEach((eventName) => {
+      window.addEventListener(eventName, showChat, {
+        passive: true,
+        once: true,
+      });
+    });
+
+    return cleanup;
+  }, []);
 
   return (
     <>
@@ -35,7 +63,7 @@ function ClientWrapperContent({ children }: ClientWrapperProps) {
       </div>
       {shouldRenderChat && <UnifiedChatAssistant />}
     </>
-  )
+  );
 }
 
 export default function ClientWrapper({ children }: ClientWrapperProps) {
@@ -45,5 +73,5 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
         <ClientWrapperContent>{children}</ClientWrapperContent>
       </ClientProvider>
     </LoadingProvider>
-  )
+  );
 }
