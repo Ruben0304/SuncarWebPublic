@@ -197,19 +197,36 @@ export default function SolarSurvivorPage() {
                 conecta electrodomésticos estratégicamente y mantén el confort de tu familia.
               </p>
 
-              {/* Download Button */}
-              <button
-                onClick={downloadAPK}
-                className="group relative px-6 sm:px-8 md:px-12 py-4 md:py-6 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 text-white text-lg sm:text-xl md:text-2xl font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-orange-500/50 transition-all duration-500 transform hover:scale-105 overflow-hidden animate-fade-in-up animation-delay-1500"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              {/* Download Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-1500">
+                {/* Android APK */}
+                <button
+                  onClick={downloadAPK}
+                  className="group relative px-6 sm:px-8 md:px-12 py-4 md:py-6 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 text-white text-lg sm:text-xl md:text-2xl font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-orange-500/50 transition-all duration-500 transform hover:scale-105 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                    <Download className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:animate-bounce" />
+                    <span>Descargar APK</span>
+                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:rotate-12 transition-transform" />
+                  </div>
+                </button>
 
-                <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
-                  <Download className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:animate-bounce" />
-                  <span>Descargar APK</span>
-                  <Zap className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:rotate-12 transition-transform" />
-                </div>
-              </button>
+                {/* iOS App Store */}
+                <Link
+                  href="https://apps.apple.com/tr/app/solarsurvivor/id6755047736"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative px-6 sm:px-8 md:px-12 py-4 md:py-6 bg-white/10 backdrop-blur-md border border-white/20 text-white text-lg sm:text-xl md:text-2xl font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-white/20 hover:bg-white/20 transition-all duration-500 transform hover:scale-105 overflow-hidden"
+                >
+                  <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <span>App Store</span>
+                  </div>
+                </Link>
+              </div>
             </div>
 
             {/* Scroll Indicator */}
@@ -518,18 +535,35 @@ export default function SolarSurvivorPage() {
                   a cualquier apagón con energía solar inteligente.
                 </p>
 
-                <button
-                  onClick={downloadAPK}
-                  className="group relative px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-7 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 text-white text-lg sm:text-xl md:text-2xl font-black rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all duration-500 transform hover:scale-110 overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  {/* Android APK */}
+                  <button
+                    onClick={downloadAPK}
+                    className="group relative px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-7 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 text-white text-lg sm:text-xl md:text-2xl font-black rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all duration-500 transform hover:scale-110 overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                      <Download className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 group-hover:animate-bounce" />
+                      <span>DESCARGAR APK</span>
+                      <Play className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 group-hover:scale-125 transition-transform" />
+                    </div>
+                  </button>
 
-                  <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
-                    <Download className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 group-hover:animate-bounce" />
-                    <span>DESCARGAR AHORA</span>
-                    <Play className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 group-hover:scale-125 transition-transform" />
-                  </div>
-                </button>
+                  {/* iOS App Store */}
+                  <Link
+                    href="https://apps.apple.com/tr/app/solarsurvivor/id6755047736"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-7 bg-white/10 backdrop-blur-md border border-white/30 text-white text-lg sm:text-xl md:text-2xl font-black rounded-full shadow-2xl hover:bg-white/20 hover:shadow-white/20 transition-all duration-500 transform hover:scale-110 overflow-hidden"
+                  >
+                    <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                      <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                      </svg>
+                      <span>APP STORE</span>
+                    </div>
+                  </Link>
+                </div>
 
                 <p className="text-xs sm:text-sm text-blue-200/60 mt-4 md:mt-6 px-4">
                   Compatible con Android 5.0 o superior • Tamaño: ~10MB
