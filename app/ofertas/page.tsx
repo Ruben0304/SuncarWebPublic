@@ -49,7 +49,7 @@ import OfertasRecommendationInput from "@/components/OfertasRecommendationInput"
 import { recomendadorService } from "@/services/api/recomendadorService";
 import { useAOS } from "@/hooks/useAOS";
 
-const OFERTAS_CACHE_KEY = "suncar_ofertas_simplified_cache_v1";
+const OFERTAS_CACHE_KEY = "suncar_ofertas_simplified_cache_v2";
 const OFERTAS_CACHE_TTL_MS = 5 * 60 * 1000;
 const OFERTAS_SCROLL_RESTORE_KEY = "suncar_ofertas_scroll_restore_v1";
 
@@ -372,7 +372,7 @@ function OfertasContent() {
 
           try {
             const response = await fetch("/api/ofertas/simplified", {
-              cache: "force-cache",
+              cache: "no-cache",
             });
             const data = await readJsonSafely<OfertasResponse>(response);
 
