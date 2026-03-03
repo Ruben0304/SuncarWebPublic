@@ -92,9 +92,7 @@ export async function GET() {
       headers: {
         "Content-Type": "application/json",
       },
-      next: {
-        revalidate: 120,
-      },
+      cache: "no-store",
     });
 
     if (!backendResponse.ok) {
