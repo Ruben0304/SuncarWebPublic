@@ -15,14 +15,13 @@ import "leaflet/dist/leaflet.css";
 interface MunicipioStatApiItem {
   provincia: string;
   municipio: string;
-  total_clientes_instalados: number;
-  potencia_inversores_kw: number;
-  potencia_paneles_kw: number;
-  total_kw_instalados: number;
+  total_kw_paneles: number;
+  total_kw_inversores: number;
+  total_kw_baterias: number;
 }
 
 interface MunicipioStatsApiResponse {
-  success: boolean;
+  success?: boolean;
   message?: string;
   data?: MunicipioStatApiItem[];
   total_municipios?: number;
@@ -38,6 +37,7 @@ interface HeatPoint {
   totalKw: number;
   panelesKw: number;
   inversoresKw: number;
+  bateriasKw: number;
 }
 
 interface MunicipioAggregate {
@@ -46,6 +46,7 @@ interface MunicipioAggregate {
   totalKw: number;
   panelesKw: number;
   inversoresKw: number;
+  bateriasKw: number;
 }
 
 interface NightLightsMapProps {
@@ -54,7 +55,7 @@ interface NightLightsMapProps {
   onStatsLoaded?: (municipios: number) => void;
 }
 
-const ENDPOINT = "/api/clientes/estadisticas/kw-instalados-por-municipio";
+const ENDPOINT = "/api/clientes/estadisticas/kw-equipos-por-municipio-publico";
 const MAP_CENTER: [number, number] = [21.6, -78.8];
 
 function normalizeText(value: string): string {
@@ -128,6 +129,9 @@ export default function NightLightsMap({
 }: NightLightsMapProps) {
   const [geoJsonData, setGeoJsonData] = useState<GeoJsonObject | null>(null);
   const [stats, setStats] = useState<MunicipioStatApiItem[]>([]);
+  const [apiTotalMunicipios, setApiTotalMunicipios] = useState<number | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -149,13 +153,18 @@ export default function NightLightsMap({
         const geoJson = (await geoRes.json()) as GeoJsonObject;
         const payload = (await statsRes.json()) as MunicipioStatsApiResponse;
 
-        if (!payload.success || !Array.isArray(payload.data)) {
+        if (payload.success === false || !Array.isArray(payload.data)) {
           throw new Error(payload.message || "Error en datos");
         }
 
         if (!cancelled) {
           setGeoJsonData(geoJson);
           setStats(payload.data);
+          setApiTotalMunicipios(
+            Number.isFinite(payload.total_municipios)
+              ? Number(payload.total_municipios)
+              : null,
+          );
         }
       } catch (err) {
         if (!cancelled) {
@@ -183,11 +192,17 @@ export default function NightLightsMap({
         totalKw: 0,
         panelesKw: 0,
         inversoresKw: 0,
+        bateriasKw: 0,
       };
 
-      current.totalKw += Number(item.total_kw_instalados || 0);
-      current.panelesKw += Number(item.potencia_paneles_kw || 0);
-      current.inversoresKw += Number(item.potencia_inversores_kw || 0);
+      const panelesKw = Number(item.total_kw_paneles || 0);
+      const inversoresKw = Number(item.total_kw_inversores || 0);
+      const bateriasKw = Number(item.total_kw_baterias || 0);
+
+      current.panelesKw += panelesKw;
+      current.inversoresKw += inversoresKw;
+      current.bateriasKw += bateriasKw;
+      current.totalKw += panelesKw + inversoresKw + bateriasKw;
       map.set(key, current);
     }
 
@@ -225,6 +240,7 @@ export default function NightLightsMap({
         totalKw: data.totalKw,
         panelesKw: data.panelesKw,
         inversoresKw: data.inversoresKw,
+        bateriasKw: data.bateriasKw,
       });
     }
 
@@ -297,7 +313,8 @@ export default function NightLightsMap({
         <p class="municipio-tooltip-title">${point.municipio}</p>
         <p class="municipio-tooltip-subtitle">${point.provincia}</p>
         <p><span>Paneles:</span> ${point.panelesKw.toFixed(1)} kW</p>
-        <p><span>Potencia:</span> ${point.inversoresKw.toFixed(1)} kW</p>
+        <p><span>Inversores:</span> ${point.inversoresKw.toFixed(1)} kW</p>
+        <p><span>Baterias:</span> ${point.bateriasKw.toFixed(1)} kW</p>
       </div>`
       : `
       <div class="municipio-tooltip-content">
@@ -337,9 +354,12 @@ export default function NightLightsMap({
   };
 
   const totalMunicipios = useMemo(() => {
+    if (typeof apiTotalMunicipios === "number" && apiTotalMunicipios >= 0) {
+      return apiTotalMunicipios;
+    }
     const unique = new Set(stats.map((s) => normalizeText(s.municipio)));
     return unique.size;
-  }, [stats]);
+  }, [apiTotalMunicipios, stats]);
 
   useEffect(() => {
     if (totalMunicipios > 0 && onStatsLoaded) {
