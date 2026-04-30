@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
+const NO_STORE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+  Pragma: "no-cache",
+  Expires: "0",
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +16,7 @@ export async function GET(request: NextRequest) {
         {
           message: "NEXT_PUBLIC_BACKEND_URL no esta configurada",
         },
-        { status: 500 },
+        { status: 500, headers: NO_STORE_HEADERS },
       );
     }
 
@@ -44,10 +49,7 @@ export async function GET(request: NextRequest) {
         },
         {
           status: backendResponse.status,
-          headers: {
-            "Cache-Control":
-              "public, max-age=30, s-maxage=30, stale-while-revalidate=60",
-          },
+          headers: NO_STORE_HEADERS,
         },
       );
     }
@@ -55,10 +57,7 @@ export async function GET(request: NextRequest) {
     const data = await backendResponse.json();
     return NextResponse.json(data, {
       status: 200,
-      headers: {
-        "Cache-Control":
-          "public, max-age=60, s-maxage=300, stale-while-revalidate=900",
-      },
+      headers: NO_STORE_HEADERS,
     });
   } catch (error) {
     return NextResponse.json(
@@ -69,10 +68,7 @@ export async function GET(request: NextRequest) {
       },
       {
         status: 500,
-        headers: {
-          "Cache-Control":
-            "public, max-age=15, s-maxage=15, stale-while-revalidate=30",
-        },
+        headers: NO_STORE_HEADERS,
       },
     );
   }

@@ -144,7 +144,7 @@ export default function NightLightsMap({
       try {
         const [geoRes, statsRes] = await Promise.all([
           fetch("/data/cuba-municipios.geojson", { cache: "force-cache" }),
-          fetch(ENDPOINT, { cache: "force-cache" }),
+          fetch(ENDPOINT, { cache: "no-store" }),
         ]);
 
         if (!geoRes.ok) throw new Error("No se pudo cargar el mapa");
