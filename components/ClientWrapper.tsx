@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext";
 import { ClientProvider } from "@/hooks/useClient";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const UnifiedChatAssistant = dynamic(() => import("./UnifiedChatAssistant"), {
   ssr: false,
@@ -68,10 +69,12 @@ function ClientWrapperContent({ children }: ClientWrapperProps) {
 
 export default function ClientWrapper({ children }: ClientWrapperProps) {
   return (
-    <LoadingProvider>
-      <ClientProvider>
-        <ClientWrapperContent>{children}</ClientWrapperContent>
-      </ClientProvider>
-    </LoadingProvider>
+    <ErrorBoundary>
+      <LoadingProvider>
+        <ClientProvider>
+          <ClientWrapperContent>{children}</ClientWrapperContent>
+        </ClientProvider>
+      </LoadingProvider>
+    </ErrorBoundary>
   );
 }
