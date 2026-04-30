@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getBackendUrl } from "@/lib/backend-url";
 
 interface OfertaConfeccionItem {
   material_codigo?: string;
@@ -94,20 +95,7 @@ function buildDescripcionDetallada(oferta: OfertaConfeccion): string {
 
 export async function POST(request: Request) {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!backendUrl) {
-      console.error(
-        "NEXT_PUBLIC_BACKEND_URL no estÃ¡ definida en variables de entorno",
-      );
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Error de configuraciÃ³n del servidor",
-        },
-        { status: 500 },
-      );
-    }
+    const backendUrl = getBackendUrl();
 
     const body = await request.json();
     const { texto } = body;

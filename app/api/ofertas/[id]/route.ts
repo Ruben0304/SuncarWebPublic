@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getBackendUrl } from "@/lib/backend-url";
 
 interface OfertaConfeccionItem {
   material_codigo?: string;
@@ -416,17 +417,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!backendUrl) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Error de configuracion del servidor",
-        },
-        { status: 500 },
-      );
-    }
+    const backendUrl = getBackendUrl();
 
     const resolvedParams = await params;
     const ofertaId = resolvedParams.id;

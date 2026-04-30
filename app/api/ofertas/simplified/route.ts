@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getBackendUrl } from "@/lib/backend-url";
 
 interface OfertaConfeccionItem {
   material_codigo?: string;
@@ -69,20 +70,7 @@ function extractMarcaFromItems(items?: OfertaConfeccionItem[]): string | null {
 
 export async function GET() {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!backendUrl) {
-      console.error(
-        "NEXT_PUBLIC_BACKEND_URL no está definida en variables de entorno",
-      );
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Error de configuración del servidor",
-        },
-        { status: 500 },
-      );
-    }
+    const backendUrl = getBackendUrl();
 
     // Llamar al endpoint de ofertas-confeccion
     const targetUrl = `${backendUrl}/api/ofertas/confeccion/?tipo_oferta=generica&estado=aprobada_para_enviar`;

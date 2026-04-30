@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getBackendUrl } from '@/lib/backend-url';
 
 export async function POST(request: NextRequest) {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!backendUrl) {
-      return NextResponse.json(
-        { success: false, message: 'Error de configuracion del servidor' },
-        { status: 500 },
-      );
-    }
+    const backendUrl = getBackendUrl();
 
     const body = await request.json();
     const targetUrl = `${backendUrl.replace(/\/+$/, '')}/api/ofertas/confeccion/recomendador-carrito`;
