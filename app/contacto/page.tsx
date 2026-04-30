@@ -8,6 +8,7 @@ import Footer from "@/components/footer"
 import FooterChristmas from "@/components/footer-christmas"
 import dynamic from "next/dynamic"
 import { isChristmasSeason } from "@/lib/christmas-utils"
+import { useContactos } from "@/hooks/useContactos"
 
 // Importar el mapa dinámicamente para evitar problemas de SSR
 const StaticLocationMap = dynamic(() => import('@/components/StaticLocationMap'), {
@@ -34,6 +35,8 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isChristmas, setIsChristmas] = useState(false)
+  const { contactos } = useContactos()
+  const contacto = contactos[0]
 
   useEffect(() => {
     setIsChristmas(isChristmasSeason())
@@ -84,24 +87,24 @@ ${formData.message}
   }
 
   const contactInfo = [
-    {
+    ...(contacto?.direccion ? [{
       icon: <MapPin className="w-6 h-6" />,
       title: "Oficina Principal",
-      content: "Calle 24 entre 1ra y 3ra, Playa\nLa Habana, Cuba",
+      content: contacto.direccion,
       color: "bg-blue-500"
-    },
-    {
+    }] : []),
+    ...(contacto?.telefono ? [{
       icon: <Phone className="w-6 h-6" />,
       title: "Teléfono",
-      content: "+5363962417",
+      content: contacto.telefono,
       color: "bg-green-500"
-    },
-    {
+    }] : []),
+    ...(contacto?.correo ? [{
       icon: <Mail className="w-6 h-6" />,
       title: "Email",
-      content: "info@suncarsrl.com",
+      content: contacto.correo,
       color: "bg-purple-500"
-    },
+    }] : []),
     {
       icon: <Clock className="w-6 h-6" />,
       title: "Horarios",

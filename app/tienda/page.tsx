@@ -19,16 +19,10 @@ export default function ProductosPage() {
     setIsChristmas(isChristmasSeason())
   }, [])
 
-  // Obtener el número de WhatsApp del primer contacto
-  const defaultPhone = "+53 6 396 2417"
-  const whatsappNumber = contactos.length > 0 ? contactos[0].telefono : defaultPhone
-
-  // Limpiar el número de WhatsApp (quitar espacios y caracteres especiales)
-  const cleanWhatsappNumber = whatsappNumber.replace(/\D/g, '')
-
-  // Mensaje predefinido para WhatsApp
+  const whatsappNumber = contactos[0]?.telefono
+  const cleanWhatsappNumber = whatsappNumber?.replace(/\D/g, '')
   const whatsappMessage = encodeURIComponent("Hola, quiero enterarme cuando abran la tienda de productos fotovoltaicos")
-  const whatsappLink = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage}`
+  const whatsappLink = cleanWhatsappNumber ? `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage}` : null
 
   return (
       <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100">
@@ -60,14 +54,16 @@ export default function ProductosPage() {
                 Si deseas recibir una notificación apenas abramos, escríbenos y con gusto te mantendremos al tanto.
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a
-                    href={whatsappLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto rounded-2xl bg-secondary-gradient text-white font-semibold px-8 py-3 shadow-lg shadow-orange-200/60 transition-transform hover:scale-[1.02] text-center"
-                >
-                  Avísame cuando esté listo
-                </a>
+                {whatsappLink && (
+                  <a
+                      href={whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto rounded-2xl bg-secondary-gradient text-white font-semibold px-8 py-3 shadow-lg shadow-orange-200/60 transition-transform hover:scale-[1.02] text-center"
+                  >
+                    Avísame cuando esté listo
+                  </a>
+                )}
                 <Link
                     href="/ofertas"
                     className="w-full sm:w-auto rounded-2xl border border-primary/30 text-primary font-semibold px-8 py-3 hover:border-primary hover:bg-primary/5 transition-colors"

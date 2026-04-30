@@ -22,7 +22,7 @@ export async function GET() {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer suncar-token-2025',
       },
-      next: { revalidate: 3600 },
+      next: { revalidate: 300 },
     });
 
     if (!backendResponse.ok) {
@@ -40,7 +40,7 @@ export async function GET() {
     // Retornar la respuesta del backend
     return NextResponse.json(backendData, {
       headers: {
-        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
       },
     });
 

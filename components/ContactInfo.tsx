@@ -10,15 +10,7 @@ interface ContactInfoProps {
 export default function ContactInfo({ className = "" }: ContactInfoProps) {
   const { contactos, loading, error } = useContactos();
 
-  // Datos por defecto en caso de error o loading
-  const defaultContact = {
-    telefono: "+53 6 396 2417",
-    correo: "enelido.calero@suncarsrl.com",
-    direccion: "Calle 24 #109 e/ 1ra y 3ra, Playa\nLa Habana, Cuba"
-  };
-
-  // Usar el primer contacto del array o datos por defecto
-  const contacto = contactos.length > 0 ? contactos[0] : defaultContact;
+  const contacto = contactos[0];
 
   if (loading) {
     return (
@@ -45,9 +37,8 @@ export default function ContactInfo({ className = "" }: ContactInfoProps) {
     );
   }
 
-  if (error) {
-    console.warn('Error loading contact info:', error);
-    // Continuar con datos por defecto en caso de error
+  if (error || !contacto) {
+    return null;
   }
 
   return (
