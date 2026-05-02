@@ -31,8 +31,6 @@ interface OfertaConfeccionResponse {
   data?: OfertaConfeccion[];
 }
 
-const OFERTAS_CACHE_CONTROL =
-  "public, max-age=30, s-maxage=30, stale-while-revalidate=60";
 
 // Función para extraer la marca del inversor
 function extractMarcaFromItems(items?: OfertaConfeccionItem[]): string | null {
@@ -141,18 +139,11 @@ export async function GET() {
       },
     );
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Ofertas obtenidas exitosamente",
-        data: ofertasSimplificadas,
-      },
-      {
-        headers: {
-          "Cache-Control": OFERTAS_CACHE_CONTROL,
-        },
-      },
-    );
+    return NextResponse.json({
+      success: true,
+      message: "Ofertas obtenidas exitosamente",
+      data: ofertasSimplificadas,
+    });
   } catch (error) {
     console.error("Error en obtener ofertas simplificadas:", error);
 

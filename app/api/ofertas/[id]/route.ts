@@ -67,8 +67,6 @@ interface TerminosCondicionesData {
   texto: string | null;
 }
 
-const OFERTA_DETAIL_CACHE_CONTROL =
-  "public, max-age=60, s-maxage=120, stale-while-revalidate=600";
 const MATERIALES_CACHE_TTL_MS = 10 * 60 * 1000;
 const TERMINOS_CACHE_TTL_MS = 10 * 60 * 1000;
 
@@ -379,9 +377,7 @@ async function fetchTerminosCondiciones(
         headers: {
           "Content-Type": "application/json",
         },
-        next: {
-          revalidate: 600,
-        },
+        cache: "no-store",
       },
     );
 
@@ -431,9 +427,7 @@ export async function GET(
       headers: {
         "Content-Type": "application/json",
       },
-      next: {
-        revalidate: 120,
-      },
+      cache: "no-store",
     });
 
     if (!backendResponse.ok) {
@@ -515,18 +509,11 @@ export async function GET(
         oferta.estado === "aprobada_para_enviar",
     };
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Oferta obtenida exitosamente",
-        data: ofertaDetallada,
-      },
-      {
-        headers: {
-          "Cache-Control": OFERTA_DETAIL_CACHE_CONTROL,
-        },
-      },
-    );
+    return NextResponse.json({
+      success: true,
+      message: "Oferta obtenida exitosamente",
+      data: ofertaDetallada,
+    });
   } catch (error) {
     console.error("Error en obtener oferta por ID:", error);
     return NextResponse.json(

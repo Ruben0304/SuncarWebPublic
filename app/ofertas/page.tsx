@@ -49,92 +49,7 @@ import OfertasRecommendationInput from "@/components/OfertasRecommendationInput"
 import { recomendadorService } from "@/services/api/recomendadorService";
 import { useAOS } from "@/hooks/useAOS";
 
-const OFERTAS_CACHE_KEY = "suncar_ofertas_simplified_cache_v3";
-const OFERTAS_CACHE_TTL_MS = 5 * 60 * 1000;
 const OFERTAS_SCROLL_RESTORE_KEY = "suncar_ofertas_scroll_restore_v1";
-
-type OfertasCacheEntry = {
-  data: OfertaSimplificada[];
-  timestamp: number;
-};
-
-let ofertasMemoryCache: OfertasCacheEntry | null = null;
-const OFERTAS_FETCH_RETRY_DELAYS_MS = [0, 400] as const;
-
-async function readJsonSafely<T>(response: Response): Promise<T | null> {
-  try {
-    return (await response.json()) as T;
-  } catch {
-    return null;
-  }
-}
-
-function readOfertasCache(): OfertasCacheEntry | null {
-  if (ofertasMemoryCache) {
-    return ofertasMemoryCache;
-  }
-
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  try {
-    const raw = window.sessionStorage.getItem(OFERTAS_CACHE_KEY);
-    if (!raw) {
-      return null;
-    }
-
-    const parsed = JSON.parse(raw) as OfertasCacheEntry;
-    if (
-      !parsed ||
-      !Array.isArray(parsed.data) ||
-      typeof parsed.timestamp !== "number"
-    ) {
-      return null;
-    }
-
-    ofertasMemoryCache = parsed;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-function writeOfertasCache(data: OfertaSimplificada[]): void {
-  const entry: OfertasCacheEntry = {
-    data,
-    timestamp: Date.now(),
-  };
-
-  ofertasMemoryCache = entry;
-
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    window.sessionStorage.setItem(OFERTAS_CACHE_KEY, JSON.stringify(entry));
-  } catch {
-    // Ignorar errores de storage para no afectar la carga de la vista.
-  }
-}
-
-function getCachedOfertas(
-  options: { allowStale?: boolean } = {},
-): OfertaSimplificada[] | null {
-  const { allowStale = false } = options;
-  const cache = readOfertasCache();
-  if (!cache) {
-    return null;
-  }
-
-  const isFresh = Date.now() - cache.timestamp <= OFERTAS_CACHE_TTL_MS;
-  if (!isFresh && !allowStale) {
-    return null;
-  }
-
-  return cache.data;
-}
 
 function saveOfertasScrollPosition(): void {
   if (typeof window === "undefined") {
@@ -354,63 +269,30 @@ function OfertasContent() {
     selectedBrandKey,
   ]);
 
-  const fetchOfertas = useCallback(
-    async ({ silent = false }: { silent?: boolean } = {}) => {
-      try {
-        if (!silent) {
-          setLoading(true);
-          setError(null);
-        }
+  const fetchOfertas = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        let lastErrorMessage = "Error de conexión al cargar ofertas";
-        let loaded = false;
-
-        for (const delayMs of OFERTAS_FETCH_RETRY_DELAYS_MS) {
-          if (delayMs > 0) {
-            await new Promise((resolve) => setTimeout(resolve, delayMs));
-          }
-
-          try {
-            const response = await fetch("/api/ofertas/simplified", {
-              cache: "no-cache",
-            });
-            const data = await readJsonSafely<OfertasResponse>(response);
-
-            if (!response.ok || !data) {
-              lastErrorMessage =
-                data?.message || `Error al cargar ofertas (${response.status})`;
-              continue;
-            }
-
-            if (data.success) {
-              setOfertas(data.data);
-              writeOfertasCache(data.data);
-              loaded = true;
-              break;
-            }
-
-            lastErrorMessage = data.message || "Error al cargar ofertas";
-          } catch {
-            lastErrorMessage = "Error de conexión al cargar ofertas";
-          }
-        }
-
-        if (!loaded && !silent) {
-          setError(lastErrorMessage);
-        }
-      } catch (err) {
-        console.error("Error fetching ofertas:", err);
-        if (!silent) {
-          setError("Error de conexión al cargar ofertas");
-        }
-      } finally {
-        if (!silent) {
-          setLoading(false);
-        }
+      const response = await fetch("/api/ofertas/simplified");
+      if (!response.ok) {
+        setError(`Error al cargar ofertas (${response.status})`);
+        return;
       }
-    },
-    [],
-  );
+
+      const data: OfertasResponse = await response.json();
+      if (data.success) {
+        setOfertas(data.data);
+      } else {
+        setError(data.message || "Error al cargar ofertas");
+      }
+    } catch (err) {
+      console.error("Error fetching ofertas:", err);
+      setError("Error de conexión al cargar ofertas");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useLayoutEffect(() => {
     const targetY = consumeOfertasScrollPosition();
@@ -437,21 +319,6 @@ function OfertasContent() {
   }, []);
 
   useEffect(() => {
-    const cachedFresh = getCachedOfertas();
-    if (cachedFresh) {
-      setOfertas(cachedFresh);
-      setLoading(false);
-      return;
-    }
-
-    const cachedStale = getCachedOfertas({ allowStale: true });
-    if (cachedStale) {
-      setOfertas(cachedStale);
-      setLoading(false);
-      void fetchOfertas({ silent: true });
-      return;
-    }
-
     void fetchOfertas();
   }, [fetchOfertas]);
 
