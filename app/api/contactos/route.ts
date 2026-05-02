@@ -22,7 +22,7 @@ export async function GET() {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer suncar-token-2025',
       },
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
 
     if (!backendResponse.ok) {
@@ -38,11 +38,7 @@ export async function GET() {
     const backendData = await backendResponse.json();
 
     // Retornar la respuesta del backend
-    return NextResponse.json(backendData, {
-      headers: {
-        'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
-      },
-    });
+    return NextResponse.json(backendData);
 
   } catch (error) {
     console.error('Error al obtener contacto:', error);

@@ -44,24 +44,12 @@ export async function GET(request: NextRequest) {
           status: backendResponse.status,
           details: errorBody || backendResponse.statusText,
         },
-        {
-          status: backendResponse.status,
-          headers: {
-            "Cache-Control":
-              "public, max-age=30, s-maxage=30, stale-while-revalidate=60",
-          },
-        },
+        { status: backendResponse.status },
       );
     }
 
     const data = await backendResponse.json();
-    return NextResponse.json(data, {
-      status: 200,
-      headers: {
-        "Cache-Control":
-          "public, max-age=60, s-maxage=300, stale-while-revalidate=900",
-      },
-    });
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       {
@@ -69,13 +57,7 @@ export async function GET(request: NextRequest) {
         message: "Error inesperado al consultar estadísticas por municipio",
         error: error instanceof Error ? error.message : "Error desconocido",
       },
-      {
-        status: 500,
-        headers: {
-          "Cache-Control":
-            "public, max-age=15, s-maxage=15, stale-while-revalidate=30",
-        },
-      },
+      { status: 500 },
     );
   }
 }
