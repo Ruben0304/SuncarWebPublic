@@ -31,105 +31,50 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Oferta, OfertaResponse } from "@/types/ofertas";
+import { Oferta } from "@/types/ofertas";
 import { useClient } from "@/hooks/useClient";
 import CurrencySelector from "@/components/CurrencySelector";
 import { Currency } from "@/hooks/useCurrencyExchange";
 import { useAOS } from "@/hooks/useAOS";
 
-const OFERTA_DETAIL_CACHE_PREFIX = "suncar_oferta_detail_cache_v1";
-const OFERTA_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
-const OFERTA_DETAIL_FETCH_RETRY_DELAYS_MS = [0, 400] as const;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
-type OfertaDetailCacheEntry = {
-  data: Oferta;
-  timestamp: number;
-};
-
-const ofertaDetailMemoryCache = new Map<string, OfertaDetailCacheEntry>();
-
-async function readJsonSafely<T>(response: Response): Promise<T | null> {
-  try {
-    return (await response.json()) as T;
-  } catch {
-    return null;
-  }
+function normalizeImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${BACKEND_URL}${url.startsWith("/") ? "" : "/"}${url}`;
 }
 
-function getOfertaDetailCacheKey(ofertaId: string): string {
-  return `${OFERTA_DETAIL_CACHE_PREFIX}:${ofertaId}`;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractMarcaFromItems(items: any[]): string | null {
+  if (!items || items.length === 0) return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const inv = items.find((i: any) => i.categoria?.toUpperCase() === "INVERSORES");
+  if (!inv?.descripcion) return null;
+  const words = inv.descripcion.split(" ");
+  const marca = words.filter((w: string, idx: number) => {
+    if (idx === 0 && /^inversores?$/i.test(w)) return false;
+    if (/^\d+/.test(w) || /^(kw|w|v|a|kwh)$/i.test(w)) return false;
+    return /^[A-Z]/.test(w);
+  });
+  return marca.length > 0 ? marca.join(" ") : null;
 }
 
-function readOfertaDetailCache(
-  ofertaId: string,
-): OfertaDetailCacheEntry | null {
-  const memoryEntry = ofertaDetailMemoryCache.get(ofertaId);
-  if (memoryEntry) {
-    return memoryEntry;
+function extractGarantiaSection(texto: string): string | null {
+  const normalized = texto.replace(/\r\n/g, "\n").trim();
+  const headerMatch = /(?:^|\n)\s*GARANT[ÍI]A\s*(?:\n+|:\s*)/i.exec(normalized);
+  if (!headerMatch) return null;
+  const remaining = normalized.slice(headerMatch.index + headerMatch[0].length);
+  const sectionLines: string[] = [];
+  for (const rawLine of remaining.split("\n")) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    const letters = line.replace(/[0-9.,:%()\-•]/g, "").replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, "");
+    if (letters.length >= 3 && letters === letters.toUpperCase()) break;
+    sectionLines.push(line.replace(/^[•\-*]\s*/, ""));
   }
-
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  try {
-    const raw = window.sessionStorage.getItem(
-      getOfertaDetailCacheKey(ofertaId),
-    );
-    if (!raw) {
-      return null;
-    }
-
-    const parsed = JSON.parse(raw) as OfertaDetailCacheEntry;
-    if (!parsed || typeof parsed.timestamp !== "number" || !parsed.data) {
-      return null;
-    }
-
-    ofertaDetailMemoryCache.set(ofertaId, parsed);
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-function writeOfertaDetailCache(ofertaId: string, oferta: Oferta): void {
-  const entry: OfertaDetailCacheEntry = {
-    data: oferta,
-    timestamp: Date.now(),
-  };
-
-  ofertaDetailMemoryCache.set(ofertaId, entry);
-
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    window.sessionStorage.setItem(
-      getOfertaDetailCacheKey(ofertaId),
-      JSON.stringify(entry),
-    );
-  } catch {
-    // Ignorar errores de storage para no afectar la carga.
-  }
-}
-
-function getCachedOfertaDetail(
-  ofertaId: string,
-  options: { allowStale?: boolean } = {},
-): Oferta | null {
-  const { allowStale = false } = options;
-  const cache = readOfertaDetailCache(ofertaId);
-  if (!cache) {
-    return null;
-  }
-
-  const isFresh = Date.now() - cache.timestamp <= OFERTA_DETAIL_CACHE_TTL_MS;
-  if (!isFresh && !allowStale) {
-    return null;
-  }
-
-  return cache.data;
+  const text = sectionLines.join(" ").replace(/\s+/g, " ").trim();
+  return text.length > 0 ? text : null;
 }
 
 export default function OfertaDetailPage() {
@@ -159,95 +104,89 @@ export default function OfertaDetailPage() {
     setSelectedCurrency(data.moneda.toUpperCase() as Currency);
   }, []);
 
-  const fetchOferta = useCallback(
-    async ({ silent = false }: { silent?: boolean } = {}) => {
-      try {
-        if (!silent) {
-          setLoading(true);
-          setError(null);
-        }
+  const fetchOferta = useCallback(async () => {
+    if (!ofertaId) {
+      setError("ID de oferta no válido");
+      setLoading(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      setError(null);
 
-        if (!ofertaId) {
-          if (!silent) {
-            setError("ID de oferta no válido");
-            setLoading(false);
-          }
-          return;
-        }
+      const [ofertaRes, terminosRes] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/ofertas/confeccion/${ofertaId}`),
+        fetch(`${BACKEND_URL}/api/terminos-condiciones/activo`),
+      ]);
 
-        let lastErrorMessage = "Error de conexión al cargar la oferta";
-        let loaded = false;
-
-        for (const delayMs of OFERTA_DETAIL_FETCH_RETRY_DELAYS_MS) {
-          if (delayMs > 0) {
-            await new Promise((resolve) => setTimeout(resolve, delayMs));
-          }
-
-          try {
-            const response = await fetch(`/api/ofertas/${ofertaId}`, {
-              cache: "force-cache",
-            });
-            const data = await readJsonSafely<OfertaResponse>(response);
-
-            if (!response.ok || !data) {
-              lastErrorMessage =
-                data?.message ||
-                `Error al cargar la oferta (${response.status})`;
-              continue;
-            }
-
-            if (data.success && data.data) {
-              applyOfertaData(data.data);
-              writeOfertaDetailCache(ofertaId, data.data);
-              loaded = true;
-              break;
-            }
-
-            lastErrorMessage = data.message || "Oferta no encontrada";
-          } catch {
-            lastErrorMessage = "Error de conexión al cargar la oferta";
-          }
-        }
-
-        if (!loaded && !silent) {
-          setError(lastErrorMessage);
-        }
-      } catch (err) {
-        console.error("Error fetching oferta:", err);
-        if (!silent) {
-          setError("Error de conexión al cargar la oferta");
-        }
-      } finally {
-        if (!silent) {
-          setLoading(false);
-        }
+      if (!ofertaRes.ok) {
+        setError(
+          ofertaRes.status === 404
+            ? "Oferta no encontrada"
+            : `Error al cargar la oferta (${ofertaRes.status})`,
+        );
+        return;
       }
-    },
-    [applyOfertaData, ofertaId],
-  );
+
+      const ofertaData = await ofertaRes.json();
+      if (!ofertaData.success || !ofertaData.data) {
+        setError(ofertaData.message || "Oferta no encontrada");
+        return;
+      }
+
+      let garantias: string[] = [];
+      let terminos_texto: string | null = null;
+      if (terminosRes.ok) {
+        try {
+          const terminosData = await terminosRes.json();
+          if (terminosData.success && terminosData.data?.texto) {
+            const g = extractGarantiaSection(terminosData.data.texto);
+            garantias = g ? [g] : [];
+            terminos_texto = g;
+          }
+        } catch { /* no terminos disponibles */ }
+      }
+
+      const o = ofertaData.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const materiales: any[] = o.materiales || o.items || [];
+
+      const mapped: Oferta = {
+        id: o.id || o._id || null,
+        descripcion: o.nombre_completo || o.nombre_oferta || "Oferta sin nombre",
+        descripcion_detallada: o.nombre_completo || null,
+        marca: extractMarcaFromItems(materiales),
+        precio: o.precio_final,
+        precio_cliente: null,
+        imagen: normalizeImageUrl(o.foto_portada),
+        moneda: o.moneda_pago,
+        financiamiento: true,
+        descuentos: null,
+        pdf: null,
+        terminos_condiciones_texto: terminos_texto,
+        garantias,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        elementos: materiales.map((item: any) => ({
+          categoria: item.categoria || null,
+          foto: normalizeImageUrl(item.foto),
+          descripcion: item.descripcion || null,
+          cantidad: item.cantidad || null,
+        })),
+        is_active: o.tipo_oferta === "generica" && o.estado === "aprobada_para_enviar",
+      };
+
+      applyOfertaData(mapped);
+    } catch (err) {
+      console.error("Error fetching oferta:", err);
+      setError("Error de conexión al cargar la oferta");
+    } finally {
+      setLoading(false);
+    }
+  }, [applyOfertaData, ofertaId]);
 
   useEffect(() => {
-    if (!ofertaId) {
-      return;
-    }
-
-    const cachedFresh = getCachedOfertaDetail(ofertaId);
-    if (cachedFresh) {
-      applyOfertaData(cachedFresh);
-      setLoading(false);
-      return;
-    }
-
-    const cachedStale = getCachedOfertaDetail(ofertaId, { allowStale: true });
-    if (cachedStale) {
-      applyOfertaData(cachedStale);
-      setLoading(false);
-      void fetchOferta({ silent: true });
-      return;
-    }
-
     void fetchOferta();
-  }, [applyOfertaData, fetchOferta, ofertaId]);
+  }, [fetchOferta]);
   const formatCurrency = (moneda: string) => {
     if (moneda.toLowerCase() === "eur") return "EUR";
     if (moneda.toLowerCase() === "usd") return "USD";

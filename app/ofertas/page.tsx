@@ -40,7 +40,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   OfertaSimplificada,
-  OfertasResponse,
   RecomendadorData,
 } from "@/types/ofertas";
 import { useClient } from "@/hooks/useClient";
@@ -48,6 +47,43 @@ import { Currency } from "@/hooks/useCurrencyExchange";
 import OfertasRecommendationInput from "@/components/OfertasRecommendationInput";
 import { recomendadorService } from "@/services/api/recomendadorService";
 import { useAOS } from "@/hooks/useAOS";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+
+// Mapea la respuesta del backend al formato OfertaSimplificada
+function extractMarca(items?: Array<{ categoria?: string; descripcion?: string }>): string | null {
+  if (!items || items.length === 0) return null;
+  const inv = items.find((i) => i.categoria?.toUpperCase() === "INVERSORES");
+  if (!inv?.descripcion) return null;
+  const words = inv.descripcion.split(" ");
+  const marca = words.filter((w, idx) => {
+    if (idx === 0 && /^inversores?$/i.test(w)) return false;
+    if (/^\d+/.test(w) || /^(kw|w|v|a|kwh)$/i.test(w)) return false;
+    return /^[A-Z]/.test(w);
+  });
+  return marca.length > 0 ? marca.join(" ") : null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapBackendOferta(o: any): OfertaSimplificada {
+  return {
+    id: o.numero_oferta || o.id || o._id || null,
+    descripcion: o.nombre_completo || o.nombre_oferta || "Oferta sin nombre",
+    descripcion_detallada: o.nombre_completo || null,
+    marca: extractMarca(o.items),
+    precio: o.precio_final,
+    precio_cliente: null,
+    imagen: o.foto_portada || null,
+    moneda: o.moneda_pago,
+    financiamiento: true,
+    descuentos:
+      o.descuento_porcentaje && o.descuento_porcentaje > 0
+        ? `${o.descuento_porcentaje}% de descuento`
+        : null,
+    pdf: null,
+    is_active: o.tipo_oferta === "generica" && o.estado === "aprobada_para_enviar",
+  };
+}
 
 const OFERTAS_SCROLL_RESTORE_KEY = "suncar_ofertas_scroll_restore_v1";
 
@@ -274,15 +310,17 @@ function OfertasContent() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("/api/ofertas/simplified");
+      const response = await fetch(
+        `${BACKEND_URL}/api/ofertas/confeccion/?tipo_oferta=generica&estado=aprobada_para_enviar`,
+      );
       if (!response.ok) {
         setError(`Error al cargar ofertas (${response.status})`);
         return;
       }
 
-      const data: OfertasResponse = await response.json();
-      if (data.success) {
-        setOfertas(data.data);
+      const data = await response.json();
+      if (data.success && Array.isArray(data.data)) {
+        setOfertas(data.data.map(mapBackendOferta));
       } else {
         setError(data.message || "Error al cargar ofertas");
       }
