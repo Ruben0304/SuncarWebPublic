@@ -36,8 +36,7 @@ interface SolarHeatMapProps {
   onStatsLoaded?: (municipios: number) => void;
 }
 
-const DEFAULT_ENDPOINT =
-  "/api/clientes/estadisticas/kw-instalados-por-municipio";
+const DEFAULT_ENDPOINT = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/clientes/estadisticas/kw-instalados-por-municipio`;
 const MAP_CENTER: [number, number] = [21.6, -78.8];
 
 function normalizeText(value: string): string {

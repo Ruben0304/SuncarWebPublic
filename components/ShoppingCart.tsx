@@ -89,7 +89,7 @@ export default function ShoppingCartComponent() {
           new Set(items.map((item) => item.producto.id).filter(Boolean)),
         );
 
-        const response = await fetch('/api/ofertas/confeccion/recomendador-carrito', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ofertas/confeccion/recomendador-carrito`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

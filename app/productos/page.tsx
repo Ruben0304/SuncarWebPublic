@@ -95,9 +95,8 @@ export default function TiendaPage() {
       if (filters?.q) params.set("q", filters.q);
       if (filters?.categoria) params.set("categoria", filters.categoria);
       const query = params.toString();
-      const endpoint = query
-        ? `/api/productos/catalogo-web?${query}`
-        : "/api/productos/catalogo-web";
+      const base = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/productos/catalogo-web`;
+      const endpoint = query ? `${base}?${query}` : base;
       const response = await fetch(endpoint);
 
       if (!response.ok) {

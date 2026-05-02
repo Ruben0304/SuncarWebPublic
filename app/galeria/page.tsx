@@ -152,17 +152,11 @@ export default function GaleriaPage() {
           setIsLoading(true);
         }
 
-        // Fetch photos for each category through Next.js API routes
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
         const [exteriorRes, interiorRes, nosotrosRes] = await Promise.all([
-          fetch("/api/galeriaweb/instalaciones_exterior", {
-            cache: "force-cache",
-          }),
-          fetch("/api/galeriaweb/instalaciones_interior", {
-            cache: "force-cache",
-          }),
-          fetch("/api/galeriaweb/nosotros", {
-            cache: "force-cache",
-          }),
+          fetch(`${backendUrl}/api/galeriaweb/instalaciones_exterior`),
+          fetch(`${backendUrl}/api/galeriaweb/instalaciones_interior`),
+          fetch(`${backendUrl}/api/galeriaweb/nosotros`),
         ]);
 
         if (!exteriorRes.ok || !interiorRes.ok || !nosotrosRes.ok) {

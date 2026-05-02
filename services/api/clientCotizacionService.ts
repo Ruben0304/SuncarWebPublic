@@ -4,7 +4,7 @@ export class ClientCotizacionService {
   
   async enviarCotizacion(cotizacionData: CotizacionData): Promise<CotizacionResponse> {
     try {
-      const response = await fetch('/api/cotizacion', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cotizacion`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

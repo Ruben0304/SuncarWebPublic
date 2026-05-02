@@ -55,7 +55,7 @@ interface NightLightsMapProps {
   onStatsLoaded?: (municipios: number) => void;
 }
 
-const ENDPOINT = "/api/clientes/estadisticas/kw-equipos-por-municipio-publico";
+const ENDPOINT = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/clientes/estadisticas/kw-equipos-por-municipio-publico`;
 const MAP_CENTER: [number, number] = [21.6, -78.8];
 
 function normalizeText(value: string): string {

@@ -17,8 +17,7 @@ class ContactoService {
   private baseUrl: string;
 
   constructor() {
-    // Usar rutas API internas de Next.js
-    this.baseUrl = '/api';
+    this.baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`;
   }
 
   private async apiRequest(endpoint: string, options: RequestInit = {}): Promise<any> {

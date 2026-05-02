@@ -28,7 +28,7 @@ interface FuturisticMunicipioHeatMapProps {
 
 type MetricKey = "paneles" | "inversores";
 
-const DEFAULT_ENDPOINT = "/api/clientes/estadisticas/kw-instalados-por-municipio";
+const DEFAULT_ENDPOINT = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/clientes/estadisticas/kw-instalados-por-municipio`;
 const mapCenter: [number, number] = [21.5218, -77.7812];
 
 const METRIC_CONFIG: Record<
