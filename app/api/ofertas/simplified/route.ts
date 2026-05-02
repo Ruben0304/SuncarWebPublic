@@ -11,6 +11,7 @@ interface OfertaConfeccionItem {
 
 interface OfertaConfeccion {
   _id?: string;
+  id?: string;
   numero_oferta?: string;
   nombre_completo?: string;
   nombre_oferta?: string;
@@ -21,6 +22,7 @@ interface OfertaConfeccion {
   tipo_oferta: string;
   items?: OfertaConfeccionItem[];
   descuento_porcentaje?: number;
+  monto_descuento?: number;
 }
 
 interface OfertaConfeccionResponse {
@@ -30,7 +32,7 @@ interface OfertaConfeccionResponse {
 }
 
 const OFERTAS_CACHE_CONTROL =
-  "public, max-age=60, s-maxage=120, stale-while-revalidate=600";
+  "public, max-age=30, s-maxage=30, stale-while-revalidate=60";
 
 // Función para extraer la marca del inversor
 function extractMarcaFromItems(items?: OfertaConfeccionItem[]): string | null {
@@ -113,8 +115,7 @@ export async function GET() {
     // Mapear ofertas de confección al formato simplificado esperado por el frontend
     const ofertasSimplificadas = backendData.data.map(
       (oferta: OfertaConfeccion) => {
-        // Usar numero_oferta o _id como identificador
-        const id = oferta.numero_oferta || oferta._id;
+        const id = oferta.numero_oferta || oferta.id || oferta._id;
 
         return {
           id: id,
@@ -128,8 +129,10 @@ export async function GET() {
           precio_cliente: null, // No disponible en ofertas de confección
           imagen: oferta.foto_portada || null,
           moneda: oferta.moneda_pago,
-          financiamiento: true, // Por defecto todas tienen financiamiento
-          descuentos: null, // Las ofertas actuales no tienen descuentos
+          financiamiento: true,
+          descuentos: oferta.descuento_porcentaje && oferta.descuento_porcentaje > 0
+            ? `${oferta.descuento_porcentaje}% de descuento`
+            : null,
           pdf: null, // No disponible
           is_active:
             oferta.tipo_oferta === "generica" &&
