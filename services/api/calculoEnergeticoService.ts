@@ -28,22 +28,25 @@ class CalculoEnergeticoServiceClass {
   private baseUrl: string;
 
   constructor() {
-    // Usar rutas API internas de Next.js
-    this.baseUrl = '/api';
+    // Llamar directo a FastAPI para evitar el 403 de Vercel Deployment Protection en /api/*
+    this.baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`;
   }
 
-  private async apiRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
+  private async apiRequest(endpoint: string, options: RequestInit = {}, requireAuth: boolean = false): Promise<any> {
     try {
-      // Usar token estático directamente
-      const token = 'suncar-token-2025';
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(options.headers as Record<string, string> | undefined),
+      };
+
+      // El GET público no debe enviar Authorization: rompe CORS si FastAPI hace 307 sin la barra final.
+      if (requireAuth) {
+        headers['Authorization'] = `Bearer suncar-token-2025`;
+      }
 
       const config: RequestInit = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          ...options.headers,
-        },
         ...options,
+        headers,
       };
 
       const response = await fetch(`${this.baseUrl}${endpoint}`, config);
@@ -51,14 +54,11 @@ class CalculoEnergeticoServiceClass {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
 
-        // Si es error de autenticación, intentar re-autenticar
-        if (response.status === 401) {
+        // Si es error de autenticación en endpoint protegido, intentar re-autenticar
+        if (response.status === 401 && requireAuth) {
           authService.logout();
           const newToken = await authService.ensureAuthenticated();
-          config.headers = {
-            ...config.headers,
-            'Authorization': `Bearer ${newToken}`,
-          };
+          (config.headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`;
 
           const retryResponse = await fetch(`${this.baseUrl}${endpoint}`, config);
           if (!retryResponse.ok) {
@@ -89,7 +89,7 @@ class CalculoEnergeticoServiceClass {
 
   async getCategoriaById(categoriaId: string): Promise<CalculoEnergeticoCategoria | null> {
     try {
-      const response: CategoriaGetResponse = await this.apiRequest(`/calculo-energetico/${categoriaId}`);
+      const response: CategoriaGetResponse = await this.apiRequest(`/calculo-energetico/${categoriaId}/`);
       return response.data || null;
     } catch (error) {
       console.error('Error fetching categoria:', error);
