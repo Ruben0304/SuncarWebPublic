@@ -118,7 +118,7 @@ ${formData.message}
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">
+      <section className="relative py-20 lg:py-24 bg-primary overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center text-white space-y-6" style={{ marginTop: '100px' }}>
             {/* <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold mb-4">
@@ -130,7 +130,7 @@ ${formData.message}
                 Tu Proyecto Solar
               </span>
             </h1>
-            <p className="text-lg lg:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed animate-fade-in-up animation-delay-400">
+            <p className="text-lg lg:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed animate-fade-in-up animation-delay-400">
               Nuestro equipo de expertos está listo para ayudarte a transformar tu hogar con energía solar limpia y renovable
             </p>
           </div>

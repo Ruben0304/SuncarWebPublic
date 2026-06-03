@@ -109,7 +109,7 @@ export default function SobreNosotrosPage() {
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">
+      <section className="relative py-20 lg:py-24 bg-primary overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center text-white space-y-6" style={{ marginTop: '100px' }}>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -118,7 +118,7 @@ export default function SobreNosotrosPage() {
                 SUNCAR
               </span>
             </h1>
-            <p className="text-lg lg:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600">
+            <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600">
               Instala el futuro. Somos una empresa cubana líder en soluciones de energía solar, descendiente de una compañía española con más de 5 años transformando hogares y negocios cubanos.
             </p>
           </div>
