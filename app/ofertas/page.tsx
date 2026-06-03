@@ -666,7 +666,7 @@ function OfertasContent() {
                         {ofertasConDescuento.map((oferta, index) => (
                           <Card
                             key={oferta.id || index}
-                            className="group bg-white border-2 border-[#AFEB17]/25 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#AFEB17] focus-visible:ring-offset-2"
+                            className="group bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#012928] focus-visible:ring-offset-2"
                             data-aos="fade-up"
                             data-aos-delay={getCardAosDelay(index)}
                             role={oferta.id ? "link" : undefined}
@@ -713,7 +713,7 @@ function OfertasContent() {
                               {oferta.marca && (
                                 <div className="absolute bottom-4 left-4">
                                   <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#AFEB17]" />
+                                    <Sparkles className="h-3 w-3 text-[#F2C300]" />
                                     {oferta.marca}
                                   </div>
                                 </div>
@@ -721,7 +721,7 @@ function OfertasContent() {
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
-                              <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words group-hover:text-[#AFEB17] transition-colors duration-300">
+                              <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                                 {oferta.descripcion}
                               </h3>
 
@@ -749,7 +749,7 @@ function OfertasContent() {
 
                                 {/* Mostrar precio simple sin conversión */}
                                 <div className="space-y-3">
-                                  <div className="text-3xl font-bold text-[#AFEB17]">
+                                  <div className="text-3xl font-bold text-[#F2C300]">
                                     {(isClient && oferta.precio_cliente
                                       ? oferta.precio_cliente
                                       : oferta.precio
@@ -807,7 +807,7 @@ function OfertasContent() {
                         {ofertasSinDescuento.map((oferta, index) => (
                           <Card
                             key={oferta.id || index}
-                            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#AFEB17] focus-visible:ring-offset-2"
+                            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#012928] focus-visible:ring-offset-2"
                             data-aos="fade-up"
                             data-aos-delay={getCardAosDelay(index)}
                             role={oferta.id ? "link" : undefined}
@@ -858,7 +858,7 @@ function OfertasContent() {
                               {oferta.marca && (
                                 <div className="absolute bottom-4 left-4">
                                   <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#AFEB17]" />
+                                    <Sparkles className="h-3 w-3 text-[#F2C300]" />
                                     {oferta.marca}
                                   </div>
                                 </div>
@@ -866,7 +866,7 @@ function OfertasContent() {
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
-                              <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words group-hover:text-[#AFEB17] transition-colors duration-300">
+                              <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                                 {oferta.descripcion}
                               </h3>
 
@@ -894,7 +894,7 @@ function OfertasContent() {
 
                                 {/* Mostrar precio simple sin conversión */}
                                 <div className="space-y-3">
-                                  <div className="text-3xl font-bold text-[#AFEB17]">
+                                  <div className="text-3xl font-bold text-[#F2C300]">
                                     {(isClient && oferta.precio_cliente
                                       ? oferta.precio_cliente
                                       : oferta.precio
@@ -957,7 +957,7 @@ function OfertasContent() {
                     {filteredOfertas.map((oferta, index) => (
                       <Card
                         key={oferta.id || index}
-                        className="group bg-white border-2 border-[#AFEB17]/25 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#AFEB17] focus-visible:ring-offset-2"
+                        className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#012928] focus-visible:ring-offset-2"
                         data-aos="fade-up"
                         data-aos-delay={getCardAosDelay(index)}
                         role={oferta.id ? "link" : undefined}
@@ -1011,7 +1011,7 @@ function OfertasContent() {
                           {oferta.marca && (
                             <div className="absolute bottom-4 left-4">
                               <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                <Sparkles className="h-3 w-3 text-[#AFEB17]" />
+                                <Sparkles className="h-3 w-3 text-[#F2C300]" />
                                 {oferta.marca}
                               </div>
                             </div>
@@ -1019,14 +1019,14 @@ function OfertasContent() {
                         </div>
 
                         <CardContent className="p-6 flex flex-col">
-                          <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words group-hover:text-[#AFEB17] transition-colors duration-300">
+                          <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                             {oferta.descripcion}
                           </h3>
 
                           <div className="mb-6 flex-1">
                             {/* Mostrar precio simple sin conversión */}
                             <div className="space-y-3">
-                              <div className="text-3xl font-bold text-[#AFEB17]">
+                              <div className="text-3xl font-bold text-[#F2C300]">
                                 {(isClient && oferta.precio_cliente
                                   ? oferta.precio_cliente
                                   : oferta.precio
