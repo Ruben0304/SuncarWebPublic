@@ -441,31 +441,30 @@ export default function CalculadoraPage() {
     toast({ title: "Equipo eliminado", description: "El equipo personalizado fue eliminado." })
   }
 
-  const BackButton = () => (
-    <Link
-      href="/"
-      className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-[#AFEB17]/25 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
-    >
-      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-      <span className="text-sm font-semibold">Volver</span>
-    </Link>
-  )
-
   const Header = () => (
     <header className="bg-white border-b border-[#AFEB17]/25 sticky top-0 z-20 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#012928]/20 flex-shrink-0 bg-white flex items-center justify-center p-1">
-              <img src="/images/logo-icon.png" alt="Suncar Logo" className="w-full h-full object-contain" />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Calculator className="h-5 w-5 text-[#012928]" />
-                Calculadora Solar
-              </h1>
-            </div>
-          </Link>
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#AFEB17]/25 text-gray-700 hover:bg-[#AFEB17]/5 transition-all duration-300 group flex-shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <span className="hidden sm:inline text-sm font-semibold">Volver</span>
+            </Link>
+            <Link href="/" className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#012928]/20 flex-shrink-0 bg-white flex items-center justify-center p-1">
+                <img src="/images/logo-icon.png" alt="Suncar Logo" className="w-full h-full object-contain" />
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Calculator className="h-5 w-5 text-[#012928]" />
+                  Calculadora Solar
+                </h1>
+              </div>
+            </Link>
+          </div>
 
           <div className="flex items-center gap-2">
             {loadingCategorias && (
@@ -501,7 +500,6 @@ export default function CalculadoraPage() {
   if (initialLoading) {
     return (
       <>
-        <BackButton />
         <div className="min-h-screen bg-[#F2F2EF]">
           <Header />
           <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 60px)" }}>
@@ -521,8 +519,6 @@ export default function CalculadoraPage() {
 
   return (
     <>
-      <BackButton />
-
       <div className="min-h-screen bg-[#F2F2EF]">
         <Header />
 
