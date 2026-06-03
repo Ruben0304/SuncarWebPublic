@@ -15,7 +15,6 @@ export default function BrandsSection() {
     <section className="py-16 lg:py-24 bg-[#F2F2EF] relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-1/4 left-0 w-96 h-96 bg-[#012928]/5 rounded-full blur-3xl -translate-x-1/2"></div>
-      <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-[#F2C300]/15 rounded-full blur-3xl translate-x-1/2"></div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
         {/* Mobile Header - Centered */}

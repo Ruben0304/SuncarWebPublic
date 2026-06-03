@@ -205,7 +205,7 @@ export default function QuotationPage() {
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">
+      <section className="relative py-20 lg:py-24 bg-primary overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center text-white space-y-6" style={{ marginTop: '100px' }}>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">

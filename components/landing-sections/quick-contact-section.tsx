@@ -5,7 +5,6 @@ export default function QuickContactSection() {
     return (
         <section className="py-16 lg:py-20 bg-[#F2F2EF] relative overflow-hidden">
             {/* Decorative background elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#F2C300]/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 left-0 w-56 h-56 bg-[#012928]/8 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
 
             <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
