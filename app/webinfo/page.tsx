@@ -22,7 +22,7 @@ export default function WebInfoPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
@@ -34,7 +34,7 @@ export default function WebInfoPage() {
         
         <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
           <div className="text-center text-white space-y-6" style={{ marginTop: '100px' }}>
-            <div className="inline-block px-6 py-3 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-6 animate-fade-in-up glow-on-hover">
+            <div className="inline-block px-6 py-3 bg-[#012928] text-white text-sm font-semibold rounded-full mb-6 animate-fade-in-up glow-on-hover">
               Sobre el Sitio Web
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -56,7 +56,7 @@ export default function WebInfoPage() {
       </section>
 
       {/* Technical Information and Team */}
-      <section className="py-16 lg:py-20 bg-white">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="items-center">
@@ -135,7 +135,7 @@ export default function WebInfoPage() {
       </section>
 
       {/* Final Message */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto space-y-8">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary">

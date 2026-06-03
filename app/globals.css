@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-host-grotesk), 'Host Grotesk', sans-serif;
 }
 
 @layer utilities {
@@ -157,10 +157,10 @@ body {
 /* Scrollytelling specific animations */
 @keyframes solar-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(253, 184, 19, 0.3), 0 0 40px rgba(253, 184, 19, 0.1);
+    box-shadow: 0 0 20px rgba(242, 195, 0, 0.3), 0 0 40px rgba(242, 195, 0, 0.1);
   }
   50% {
-    box-shadow: 0 0 30px rgba(253, 184, 19, 0.6), 0 0 60px rgba(253, 184, 19, 0.3), 0 0 80px rgba(242, 103, 41, 0.2);
+    box-shadow: 0 0 30px rgba(242, 195, 0, 0.6), 0 0 60px rgba(242, 195, 0, 0.3), 0 0 80px rgba(1, 41, 40, 0.2);
   }
 }
 
@@ -275,11 +275,11 @@ html {
 
 @keyframes timeline-pulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(253, 184, 19, 0.4);
+    box-shadow: 0 0 20px rgba(242, 195, 0, 0.4);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 40px rgba(253, 184, 19, 0.8), 0 0 60px rgba(242, 103, 41, 0.4);
+    box-shadow: 0 0 40px rgba(242, 195, 0, 0.8), 0 0 60px rgba(1, 41, 40, 0.4);
     transform: scale(1.1);
   }
 }
@@ -287,15 +287,15 @@ html {
 @keyframes floating-glow {
   0%, 100% {
     transform: translateY(0px) rotateZ(0deg);
-    filter: drop-shadow(0 0 20px rgba(253, 184, 19, 0.3));
+    filter: drop-shadow(0 0 20px rgba(242, 195, 0, 0.3));
   }
   33% {
     transform: translateY(-15px) rotateZ(2deg);
-    filter: drop-shadow(0 0 30px rgba(253, 184, 19, 0.5));
+    filter: drop-shadow(0 0 30px rgba(242, 195, 0, 0.5));
   }
   66% {
     transform: translateY(-8px) rotateZ(-1deg);
-    filter: drop-shadow(0 0 25px rgba(242, 103, 41, 0.4));
+    filter: drop-shadow(0 0 25px rgba(1, 41, 40, 0.4));
   }
 }
 
@@ -316,10 +316,10 @@ html {
 
 @keyframes progress-glow {
   0%, 100% {
-    box-shadow: 0 0 10px rgba(242, 103, 41, 0.5);
+    box-shadow: 0 0 10px rgba(1, 41, 40, 0.5);
   }
   50% {
-    box-shadow: 0 0 20px rgba(242, 103, 41, 0.8), 0 0 30px rgba(253, 184, 19, 0.3);
+    box-shadow: 0 0 20px rgba(1, 41, 40, 0.8), 0 0 30px rgba(242, 195, 0, 0.3);
   }
 }
 
@@ -396,7 +396,7 @@ html {
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  background: linear-gradient(135deg, #F26729, #FDB813);
+  background: linear-gradient(135deg, #AFEB17, #F2C300);
   height: 20px;
   width: 20px;
   border-radius: 50%;
@@ -418,7 +418,7 @@ html {
 }
 
 .slider::-moz-range-thumb {
-  background: linear-gradient(135deg, #F26729, #FDB813);
+  background: linear-gradient(135deg, #AFEB17, #F2C300);
   height: 20px;
   width: 20px;
   border-radius: 50%;

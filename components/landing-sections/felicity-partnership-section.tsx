@@ -2,10 +2,10 @@ import Image from "next/image"
 
 export default function FelicityPartnershipSection() {
   return (
-    <section className="py-16 lg:py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 relative overflow-hidden">
+    <section className="py-16 lg:py-24 bg-[#F2F2EF] relative overflow-hidden">
       {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-100/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-100/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+      <div className="absolute top-0 left-0 w-72 h-72 bg-[#012928]/8 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#F2C300]/15 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
@@ -33,7 +33,7 @@ export default function FelicityPartnershipSection() {
             {/* Floating badge */}
             <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl shadow-xl p-4 transform rotate-3 hover:rotate-0 transition-transform duration-300 hidden sm:block">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-secondary-gradient rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#012928] rounded-full flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -71,7 +71,7 @@ export default function FelicityPartnershipSection() {
                   href="https://felicitysolar.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-primary hover:text-orange-600 font-semibold text-base transition-colors duration-300 group"
+                  className="inline-flex items-center gap-2 text-primary hover:text-[#012928] font-semibold text-base transition-colors duration-300 group"
                 >
                   <span>Conocer más sobre Felicity Solar</span>
                   <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ export default function FelicityPartnershipSection() {
                   href="https://felicitysolar.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-primary hover:text-orange-600 font-semibold text-base lg:text-lg transition-colors duration-300 group"
+                  className="inline-flex items-center gap-2 text-primary hover:text-[#012928] font-semibold text-base lg:text-lg transition-colors duration-300 group"
                 >
                   <span>Conocer más sobre Felicity Solar</span>
                   <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

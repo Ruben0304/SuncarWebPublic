@@ -481,7 +481,7 @@ function OfertasContent() {
         aria-hidden={isRestoringScroll}
       >
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
+        <div className="min-h-screen bg-[#F2F2EF] pt-32 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* AI Recommendation Input */}
             {!loading && !error && ofertas.length > 0 && (
@@ -495,31 +495,31 @@ function OfertasContent() {
             {/* Recommendation Results Banner */}
             {showRecommendations && recommendationData && (
               <div className="mb-8 px-4" data-aos="fade-up">
-                <div className="bg-gradient-to-r from-orange-50 via-yellow-50 to-orange-50 border-2 border-orange-200 rounded-2xl p-4 sm:p-6 shadow-xl">
+                <div className="bg-gradient-to-r from-[#AFEB17]/5 via-[#F2C300]/5 to-[#AFEB17]/5 border-2 border-[#AFEB17]/25 rounded-2xl p-4 sm:p-6 shadow-xl">
                   <div className="flex flex-col sm:flex-row items-start gap-4">
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-[#AFEB17] to-[#F2C300] rounded-full flex items-center justify-center">
                         <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
                     </div>
                     <div className="flex-1 w-full">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <h3 className="text-base sm:text-lg font-bold text-orange-700">
+                        <h3 className="text-base sm:text-lg font-bold text-[#012928]">
                           Resultados de búsqueda
                         </h3>
-                        <div className="flex items-center gap-1 bg-orange-100 px-2 py-1 rounded-full w-fit">
-                          <Trophy className="w-3 h-3 text-orange-600" />
-                          <span className="text-xs font-medium text-orange-700 hidden sm:inline">
+                        <div className="flex items-center gap-1 bg-[#AFEB17]/15 px-2 py-1 rounded-full w-fit">
+                          <Trophy className="w-3 h-3 text-[#012928]" />
+                          <span className="text-xs font-medium text-[#012928] hidden sm:inline">
                             Ordenadas por relevancia
                           </span>
-                          <span className="text-xs font-medium text-orange-700 sm:hidden">
+                          <span className="text-xs font-medium text-[#012928] sm:hidden">
                             Por relevancia
                           </span>
                         </div>
                       </div>
-                      <div className="bg-white/70 rounded-lg p-3 sm:p-4 border border-orange-100">
+                      <div className="bg-white/70 rounded-lg p-3 sm:p-4 border border-[#AFEB17]/15">
                         <div className="flex items-start gap-2">
-                          <MessageCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                          <MessageCircle className="w-4 h-4 text-[#012928] mt-0.5 flex-shrink-0" />
                           <div className="text-gray-700 text-xs sm:text-sm leading-relaxed prose prose-sm max-w-none">
                             <ReactMarkdown>
                               {recommendationData.texto}
@@ -542,7 +542,7 @@ function OfertasContent() {
             {/* Recommendation Error */}
             {recommendationError && (
               <div className="mb-8 px-4" data-aos="fade-up">
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-6">
+                <div className="bg-red-50 border border-[#AFEB17]/20 rounded-2xl p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-red-600 font-bold text-sm">!</span>
@@ -582,7 +582,7 @@ function OfertasContent() {
                 data-aos="fade-up"
               >
                 <div className="text-center">
-                  <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-[#0F2B66] mx-auto mb-4" />
+                  <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-[#012928] mx-auto mb-4" />
                   <p className="text-sm sm:text-base text-gray-600">
                     Cargando ofertas...
                   </p>
@@ -601,7 +601,7 @@ function OfertasContent() {
                     <div className="text-red-500 mb-4">
                       <Star className="w-10 h-10 sm:w-12 sm:h-12 mx-auto" />
                     </div>
-                    <h3 className="text-base sm:text-lg font-semibold text-[#0F2B66] mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-[#012928] mb-2">
                       Error al cargar ofertas
                     </h3>
                     <p className="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed">
@@ -609,7 +609,7 @@ function OfertasContent() {
                     </p>
                     <Button
                       onClick={fetchOfertas}
-                      className="bg-secondary-gradient hover:opacity-90 text-white text-sm sm:text-base px-4 sm:px-6"
+                      className="bg-[#012928] hover:opacity-90 text-white text-sm sm:text-base px-4 sm:px-6"
                     >
                       Intentar de nuevo
                     </Button>
@@ -629,7 +629,7 @@ function OfertasContent() {
                     <>
                       {/* Promotional Banner for Discounted Offers */}
                       <div className="mb-10 px-4" data-aos="fade-up">
-                        <div className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+                        <div className="bg-gradient-to-r from-[#AFEB17]/50 via-red-500 to-pink-500 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
                           <div className="absolute inset-0 bg-black/10"></div>
                           <div className="absolute top-0 left-0 w-40 h-40 bg-white/10 rounded-full -translate-x-20 -translate-y-20"></div>
                           <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-16 translate-y-16"></div>
@@ -637,7 +637,7 @@ function OfertasContent() {
                           <div className="relative z-10">
                             <div className="flex justify-center mb-4">
                               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                                <Percent className="w-8 h-8 text-orange-600" />
+                                <Percent className="w-8 h-8 text-[#012928]" />
                               </div>
                             </div>
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
@@ -666,7 +666,7 @@ function OfertasContent() {
                         {ofertasConDescuento.map((oferta, index) => (
                           <Card
                             key={oferta.id || index}
-                            className="group bg-white border-2 border-orange-200 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F26729] focus-visible:ring-offset-2"
+                            className="group bg-white border-2 border-[#AFEB17]/25 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#AFEB17] focus-visible:ring-offset-2"
                             data-aos="fade-up"
                             data-aos-delay={getCardAosDelay(index)}
                             role={oferta.id ? "link" : undefined}
@@ -704,7 +704,7 @@ function OfertasContent() {
                                 )}
 
                                 {/* Discount Badge */}
-                                <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 text-sm font-bold shadow-xl border-2 border-white flex items-center gap-2">
+                                <Badge className="bg-gradient-to-r from-[#AFEB17]/50 to-red-500 text-white px-4 py-2 text-sm font-bold shadow-xl border-2 border-white flex items-center gap-2">
                                   <Percent className="w-4 h-4" />
                                   DESCUENTO
                                 </Badge>
@@ -712,8 +712,8 @@ function OfertasContent() {
 
                               {oferta.marca && (
                                 <div className="absolute bottom-4 left-4">
-                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#F26729]" />
+                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
+                                    <Sparkles className="h-3 w-3 text-[#AFEB17]" />
                                     {oferta.marca}
                                   </div>
                                 </div>
@@ -721,7 +721,7 @@ function OfertasContent() {
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
-                              <h3 className="text-lg font-bold text-[#0F2B66] mb-3 leading-snug break-words group-hover:text-[#F26729] transition-colors duration-300">
+                              <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words group-hover:text-[#AFEB17] transition-colors duration-300">
                                 {oferta.descripcion}
                               </h3>
 
@@ -749,7 +749,7 @@ function OfertasContent() {
 
                                 {/* Mostrar precio simple sin conversión */}
                                 <div className="space-y-3">
-                                  <div className="text-3xl font-bold text-[#F26729]">
+                                  <div className="text-3xl font-bold text-[#AFEB17]">
                                     {(isClient && oferta.precio_cliente
                                       ? oferta.precio_cliente
                                       : oferta.precio
@@ -787,7 +787,7 @@ function OfertasContent() {
                               <Button
                                 type="button"
                                 tabIndex={-1}
-                                className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
+                                className="w-full bg-[#012928] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
                               >
                                 <Eye className="w-4 h-4 mr-2" />
                                 Ver Detalles
@@ -807,7 +807,7 @@ function OfertasContent() {
                         {ofertasSinDescuento.map((oferta, index) => (
                           <Card
                             key={oferta.id || index}
-                            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F26729] focus-visible:ring-offset-2"
+                            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#AFEB17] focus-visible:ring-offset-2"
                             data-aos="fade-up"
                             data-aos-delay={getCardAosDelay(index)}
                             role={oferta.id ? "link" : undefined}
@@ -849,7 +849,7 @@ function OfertasContent() {
                                     AGOTADA
                                   </Badge>
                                 ) : (
-                                  <Badge className="bg-[#0F2B66] text-white px-3 py-1 text-sm font-medium">
+                                  <Badge className="bg-[#012928] text-white px-3 py-1 text-sm font-medium">
                                     Oferta
                                   </Badge>
                                 )}
@@ -857,8 +857,8 @@ function OfertasContent() {
 
                               {oferta.marca && (
                                 <div className="absolute bottom-4 left-4">
-                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#F26729]" />
+                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
+                                    <Sparkles className="h-3 w-3 text-[#AFEB17]" />
                                     {oferta.marca}
                                   </div>
                                 </div>
@@ -866,7 +866,7 @@ function OfertasContent() {
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
-                              <h3 className="text-lg font-bold text-[#0F2B66] mb-3 leading-snug break-words group-hover:text-[#F26729] transition-colors duration-300">
+                              <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words group-hover:text-[#AFEB17] transition-colors duration-300">
                                 {oferta.descripcion}
                               </h3>
 
@@ -894,7 +894,7 @@ function OfertasContent() {
 
                                 {/* Mostrar precio simple sin conversión */}
                                 <div className="space-y-3">
-                                  <div className="text-3xl font-bold text-[#F26729]">
+                                  <div className="text-3xl font-bold text-[#AFEB17]">
                                     {(isClient && oferta.precio_cliente
                                       ? oferta.precio_cliente
                                       : oferta.precio
@@ -932,7 +932,7 @@ function OfertasContent() {
                               <Button
                                 type="button"
                                 tabIndex={-1}
-                                className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
+                                className="w-full bg-[#012928] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
                               >
                                 <Eye className="w-4 h-4 mr-2" />
                                 Ver Detalles
@@ -957,7 +957,7 @@ function OfertasContent() {
                     {filteredOfertas.map((oferta, index) => (
                       <Card
                         key={oferta.id || index}
-                        className="group bg-white border-2 border-orange-200 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F26729] focus-visible:ring-offset-2"
+                        className="group bg-white border-2 border-[#AFEB17]/25 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-full flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#AFEB17] focus-visible:ring-offset-2"
                         data-aos="fade-up"
                         data-aos-delay={getCardAosDelay(index)}
                         role={oferta.id ? "link" : undefined}
@@ -993,7 +993,7 @@ function OfertasContent() {
                               </Badge>
                             )}
                             {index === 0 && oferta.is_active !== false && (
-                              <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white px-3 py-1 text-sm font-medium shadow-lg">
+                              <Badge className="bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-white px-3 py-1 text-sm font-medium shadow-lg">
                                 Más recomendada
                               </Badge>
                             )}
@@ -1001,7 +1001,7 @@ function OfertasContent() {
 
                           {/* Ranking Badge - moved to top right */}
                           <div className="absolute top-4 right-4">
-                            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full shadow-lg border-2 border-white">
+                            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#AFEB17] to-[#F2C300] rounded-full shadow-lg border-2 border-white">
                               <span className="text-white font-bold text-lg">
                                 #{index + 1}
                               </span>
@@ -1010,8 +1010,8 @@ function OfertasContent() {
 
                           {oferta.marca && (
                             <div className="absolute bottom-4 left-4">
-                              <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow-lg">
-                                <Sparkles className="h-3 w-3 text-[#F26729]" />
+                              <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
+                                <Sparkles className="h-3 w-3 text-[#AFEB17]" />
                                 {oferta.marca}
                               </div>
                             </div>
@@ -1019,14 +1019,14 @@ function OfertasContent() {
                         </div>
 
                         <CardContent className="p-6 flex flex-col">
-                          <h3 className="text-lg font-bold text-[#0F2B66] mb-3 leading-snug break-words group-hover:text-[#F26729] transition-colors duration-300">
+                          <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words group-hover:text-[#AFEB17] transition-colors duration-300">
                             {oferta.descripcion}
                           </h3>
 
                           <div className="mb-6 flex-1">
                             {/* Mostrar precio simple sin conversión */}
                             <div className="space-y-3">
-                              <div className="text-3xl font-bold text-[#F26729]">
+                              <div className="text-3xl font-bold text-[#AFEB17]">
                                 {(isClient && oferta.precio_cliente
                                   ? oferta.precio_cliente
                                   : oferta.precio
@@ -1064,7 +1064,7 @@ function OfertasContent() {
                           <Button
                             type="button"
                             tabIndex={-1}
-                            className="w-full bg-secondary-gradient hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
+                            className="w-full bg-[#012928] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             Ver Detalles
@@ -1085,10 +1085,10 @@ function OfertasContent() {
               >
                 <div className="max-w-3xl mx-auto space-y-3">
                   {/* Nota Legal sobre Monedas */}
-                  <div className="flex items-start gap-3 bg-gradient-to-r from-amber-50 to-yellow-50 backdrop-blur border-2 border-amber-300 px-4 py-3 rounded-xl shadow-md text-xs sm:text-sm text-gray-800">
-                    <DollarSign className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-3 bg-gradient-to-r from-[#F2C300]/5 to-[#F2C300]/5 backdrop-blur border-2 border-[#F2C300]/40 px-4 py-3 rounded-xl shadow-md text-xs sm:text-sm text-gray-800">
+                    <DollarSign className="w-5 h-5 text-[#F2C300] mt-0.5 flex-shrink-0" />
                     <div className="leading-relaxed">
-                      <p className="font-semibold text-amber-800 mb-1">
+                      <p className="font-semibold text-[#012928] mb-1">
                         Precios en Moneda Extranjera:
                       </p>
                       <p>
@@ -1121,10 +1121,10 @@ function OfertasContent() {
                       con antelación si aplica algún ajuste.
                     </p>
                   </div>
-                  <div className="flex items-start gap-3 bg-gradient-to-r from-orange-50 to-yellow-50 backdrop-blur border border-orange-200 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
-                    <MessageCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-3 bg-gradient-to-r from-[#AFEB17]/5 to-[#F2C300]/5 backdrop-blur border border-[#AFEB17]/25 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
+                    <MessageCircle className="w-4 h-4 text-[#012928] mt-0.5 flex-shrink-0" />
                     <p className="leading-relaxed">
-                      <span className="font-semibold text-orange-700">
+                      <span className="font-semibold text-[#012928]">
                         Importante:
                       </span>{" "}
                       La información aquí presentada es solo referencial. Le
@@ -1215,7 +1215,7 @@ function OfertasContent() {
                     <div className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4 flex items-center justify-center">
                       <Eye className="w-12 h-12 sm:w-16 sm:h-16" />
                     </div>
-                    <h3 className="text-base sm:text-lg font-semibold text-[#0F2B66] mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-[#012928] mb-2">
                       No hay ofertas disponibles
                     </h3>
                     <p className="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed">
@@ -1224,7 +1224,7 @@ function OfertasContent() {
                     </p>
                     <Button
                       asChild
-                      className="bg-secondary-gradient hover:opacity-90 text-white text-sm sm:text-base px-4 sm:px-6"
+                      className="bg-[#012928] hover:opacity-90 text-white text-sm sm:text-base px-4 sm:px-6"
                     >
                       <Link href="/servicios">
                         <ArrowRight className="w-4 h-4 mr-2" />
@@ -1243,14 +1243,14 @@ function OfertasContent() {
               data-aos="fade-up"
             >
               <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-blue-50 to-transparent rounded-full -translate-y-20 translate-x-20"></div>
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-orange-50 to-transparent rounded-full translate-y-16 -translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#AFEB17]/5 to-transparent rounded-full translate-y-16 -translate-x-16"></div>
 
               <CardContent className="p-8 md:p-12 relative z-10">
                 <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#F26729] to-[#FDB813] rounded-full mb-6 shadow-lg">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#AFEB17] to-[#F2C300] rounded-full mb-6 shadow-lg">
                     <Info className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-[#0F2B66] mb-4">
+                  <h3 className="text-2xl md:text-3xl font-bold text-[#012928] mb-4">
                     Opciones de Pago Flexibles
                   </h3>
                   <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-8">
@@ -1260,12 +1260,12 @@ function OfertasContent() {
 
                 <div className="max-w-2xl mx-auto">
 
-                   <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-100">
+                   <div className="bg-gradient-to-br from-[#AFEB17]/5 to-[#F2C300]/5 rounded-2xl p-6 border border-[#AFEB17]/15">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full">
-                        <CreditCard className="w-6 h-6 text-orange-600" />
+                      <div className="flex items-center justify-center w-12 h-12 bg-[#AFEB17]/15 rounded-full">
+                        <CreditCard className="w-6 h-6 text-[#012928]" />
                       </div>
-                      <h4 className="text-xl font-bold text-[#0F2B66]">Métodos de Pago</h4>
+                      <h4 className="text-xl font-bold text-[#012928]">Métodos de Pago</h4>
                     </div>
                     <p className="text-gray-700 mb-4">
                       Ofrecemos diversas formas de pago para tu comodidad:
@@ -1298,7 +1298,7 @@ function OfertasContent() {
 
             {/* Contact CTA */}
             <Card
-              className="bg-secondary-gradient text-white text-center shadow-xl"
+              className="bg-[#012928] text-white text-center shadow-xl"
               data-aos="fade-up"
             >
               <CardContent className="py-12">
@@ -1314,7 +1314,7 @@ function OfertasContent() {
                   asChild
                   variant="secondary"
                   size="lg"
-                  className="bg-white text-[#F26729] hover:bg-gray-100 font-semibold px-8 py-3"
+                  className="bg-white text-[#AFEB17] hover:bg-gray-100 font-semibold px-8 py-3"
                 >
                   <Link href="/contacto">
                     <Phone className="w-4 h-4 mr-2" />
@@ -1330,7 +1330,7 @@ function OfertasContent() {
       {isRestoringScroll && (
         <div className="fixed inset-0 z-[70] bg-white flex items-center justify-center">
           <div className="flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700 shadow-sm">
-            <Loader2 className="w-4 h-4 animate-spin text-[#F26729]" />
+            <Loader2 className="w-4 h-4 animate-spin text-[#AFEB17]" />
             Restaurando posicion...
           </div>
         </div>
@@ -1349,11 +1349,11 @@ export default function OfertasPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pt-32 pb-16">
+        <div className="min-h-screen bg-[#F2F2EF] pt-32 pb-16">
           {isChristmas ? <NavigationChristmas /> : <Navigation />}
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <Loader2 className="w-8 h-8 animate-spin text-[#F26729] mx-auto mb-4" />
+              <Loader2 className="w-8 h-8 animate-spin text-[#AFEB17] mx-auto mb-4" />
               <p className="text-gray-600">Cargando ofertas...</p>
             </div>
           </div>

@@ -78,7 +78,7 @@ export default function BlogCard({
 
         {/* Title */}
         <Link href={`/blog/${slug}`}>
-          <h3 className="text-xl font-bold text-primary group-hover:text-orange-600 transition-colors duration-300 line-clamp-2">
+          <h3 className="text-xl font-bold text-primary group-hover:text-[#012928] transition-colors duration-300 line-clamp-2">
             {titulo}
           </h3>
         </Link>
@@ -104,7 +104,7 @@ export default function BlogCard({
         {/* Read More */}
         <Link
           href={`/blog/${slug}`}
-          className="inline-flex items-center gap-2 text-primary font-semibold text-sm group-hover:text-orange-600 transition-colors duration-300"
+          className="inline-flex items-center gap-2 text-primary font-semibold text-sm group-hover:text-[#012928] transition-colors duration-300"
         >
           Leer más
           <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />

@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from "react"
 const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
   <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
     <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-orange-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-[#AFEB17]/5/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
       <Image
         src={src}
         alt={alt}
@@ -259,19 +259,19 @@ export default function TrustedPartnersSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-white relative overflow-hidden">
+    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-[#F2F2EF] relative overflow-hidden">
       {/* Background decorative elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-orange-50/40 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#012928]/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#F2C300]/15 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 lg:mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#012928] mb-3 lg:mb-4">
             Confían en Nosotros
           </h2>
           <div className="h-1 w-20 bg-secondary-gradient rounded-full mx-auto mb-3"></div>
-          <p className="text-sm lg:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm lg:text-base text-[#012928]/70 max-w-2xl mx-auto leading-relaxed">
             Empresas líderes que han confiado en nuestra experiencia y tecnología solar de vanguardia
           </p>
         </div>
@@ -296,10 +296,10 @@ export default function TrustedPartnersSection() {
         {/* Desktop Carousel - Two Rows - Hidden on mobile */}
         <div className="hidden md:block relative max-w-7xl mx-auto space-y-4 md:space-y-6">
           {/* Gradient fade left */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#F2F2EF] via-[#F2F2EF]/80 to-transparent z-10 pointer-events-none"></div>
 
           {/* Gradient fade right */}
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#F2F2EF] via-[#F2F2EF]/80 to-transparent z-10 pointer-events-none"></div>
 
           {/* Primera fila - Se mueve hacia la derecha */}
           <div

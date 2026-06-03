@@ -120,7 +120,7 @@ export default function BlogDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[#F2F2EF]">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <div className="container mx-auto px-4 py-24">
           <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
@@ -141,7 +141,7 @@ export default function BlogDetailPage() {
 
   if (error || !blog) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[#F2F2EF]">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <div className="container mx-auto px-4 py-24">
           <div className="max-w-4xl mx-auto text-center">
@@ -151,7 +151,7 @@ export default function BlogDetailPage() {
               </h2>
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Volver al blog
@@ -165,7 +165,7 @@ export default function BlogDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       {/* Clean Article Header - Medium Style */}
@@ -253,7 +253,7 @@ export default function BlogDetailPage() {
                 prose-h3:text-3xl prose-h3:mb-5 prose-h3:mt-12 prose-h3:leading-tight
                 prose-h4:text-2xl prose-h4:mb-4 prose-h4:mt-10
                 prose-p:text-gray-700 prose-p:leading-[1.9] prose-p:mb-8 prose-p:text-[1.125rem] prose-p:font-normal
-                prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline hover:prose-a:text-orange-600
+                prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#012928]
                 prose-strong:text-gray-900 prose-strong:font-bold
                 prose-em:text-gray-600 prose-em:italic
                 prose-ul:my-8 prose-ul:list-disc prose-ul:pl-8 prose-ul:space-y-3
@@ -285,7 +285,7 @@ export default function BlogDetailPage() {
                   hr: ({ node, ...props }) => <hr className="border-gray-200 my-16" {...props} />,
                   strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
                   em: ({ node, ...props }) => <em className="italic text-gray-600" {...props} />,
-                  a: ({ node, ...props }) => <a className="text-primary font-medium no-underline hover:underline hover:text-orange-600" {...props} />,
+                  a: ({ node, ...props }) => <a className="text-primary font-medium no-underline hover:underline hover:text-[#012928]" {...props} />,
                   code: ({ node, inline, ...props }) =>
                     inline ? (
                       <code className="bg-gray-100 text-gray-900 px-2 py-1 rounded text-base font-mono" {...props} />

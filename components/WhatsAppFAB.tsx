@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { MessageCircle, X, Send } from 'lucide-react'
+import { X, Send } from 'lucide-react'
+import { SiWhatsapp } from "@icons-pack/react-simple-icons"
 import { usePathname } from 'next/navigation'
 import { getCartOpenState } from '@/components/ShoppingCart'
 
@@ -130,9 +131,9 @@ const WhatsAppFAB = () => {
         aria-label={isOpen ? "Cerrar chat de WhatsApp" : "Abrir chat de WhatsApp"}
       >
         {isOpen ? (
-          <X size={24} className="md:w-7 md:h-7" />
+          <X size={24} />
         ) : (
-          <MessageCircle size={24} className="md:w-7 md:h-7" />
+          <SiWhatsapp size={26} color="currentColor" />
         )}
       </button>
 

@@ -100,7 +100,7 @@ export default function SolarSurvivorPage() {
           style={{ opacity: 1 - scrollY / 1000 }}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-tr from-orange-900/30 via-transparent to-yellow-900/30"
+          className="absolute inset-0 bg-gradient-to-tr from-[#012928]/40 via-transparent to-[#012928]/30"
           style={{ opacity: Math.min(1, scrollY / 500) }}
         />
 
@@ -128,7 +128,7 @@ export default function SolarSurvivorPage() {
           style={{ opacity: 0.5 - scrollY / 2000 }}
         />
         <div
-          className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-3xl transition-opacity duration-1000"
+          className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-[#AFEB17]/10 rounded-full blur-3xl transition-opacity duration-1000"
           style={{ opacity: Math.min(0.5, scrollY / 1000) }}
         />
       </div>
@@ -170,7 +170,7 @@ export default function SolarSurvivorPage() {
                 />
 
                 {/* Elegant glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#AFEB17]/15 to-[#F2C300]/15 rounded-full blur-3xl animate-pulse" />
               </div>
             </div>
 
@@ -192,7 +192,7 @@ export default function SolarSurvivorPage() {
                 Sobrevive a los apagones. Domina la energía solar.
               </p>
 
-              <p className="text-base sm:text-lg md:text-xl text-yellow-300/80 mb-8 md:mb-12 max-w-3xl mx-auto animate-fade-in-up animation-delay-1000 px-4">
+              <p className="text-base sm:text-lg md:text-xl text-[#AFEB17]/70 mb-8 md:mb-12 max-w-3xl mx-auto animate-fade-in-up animation-delay-1000 px-4">
                 Un simulador de apagones donde cada decisión cuenta. Gestiona tus paneles solares,
                 conecta electrodomésticos estratégicamente y mantén el confort de tu familia.
               </p>
@@ -202,7 +202,7 @@ export default function SolarSurvivorPage() {
                 {/* Android APK */}
                 <button
                   onClick={downloadAPK}
-                  className="group relative px-6 sm:px-8 md:px-12 py-4 md:py-6 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 text-white text-lg sm:text-xl md:text-2xl font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-orange-500/50 transition-all duration-500 transform hover:scale-105 overflow-hidden"
+                  className="group relative px-6 sm:px-8 md:px-12 py-4 md:py-6 bg-gradient-to-r from-[#012928] via-[#AFEB17] to-[#012928] text-white text-lg sm:text-xl md:text-2xl font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-[#AFEB17]/40 transition-all duration-500 transform hover:scale-105 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
@@ -249,7 +249,7 @@ export default function SolarSurvivorPage() {
                 opacity: Math.min(1, (scrollY - 200) / 400)
               }}
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-12 md:mb-20 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 px-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-12 md:mb-20 text-transparent bg-clip-text bg-gradient-to-r from-[#F2C300] to-[#AFEB17] px-4">
                 Características del Juego
               </h2>
             </div>
@@ -260,14 +260,14 @@ export default function SolarSurvivorPage() {
                   icon: <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />,
                   title: "Simulador de Apagones",
                   description: "Enfrenta situaciones reales de cortes eléctricos y toma decisiones críticas para mantener tu hogar funcionando.",
-                  color: "from-red-500 to-orange-500",
+                  color: "from-[#012928] to-[#AFEB17]",
                   delay: 0
                 },
                 {
                   icon: <Sun className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />,
                   title: "Gestión Solar",
                   description: "Administra tus paneles solares y baterías. Decide cuándo almacenar energía y cuándo usarla estratégicamente.",
-                  color: "from-yellow-400 to-orange-400",
+                  color: "from-[#F2C300] to-[#AFEB17]",
                   delay: 100
                 },
                 {
@@ -347,9 +347,9 @@ export default function SolarSurvivorPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto">
               {[
                 { icon: <Droplet className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Higiene", color: "from-blue-400 to-cyan-400", value: 85 },
-                { icon: <Home className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Alimentos", color: "from-orange-400 to-red-400", value: 92 },
+                { icon: <Home className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Alimentos", color: "from-[#AFEB17] to-[#F2C300]", value: 92 },
                 { icon: <Wifi className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Internet", color: "from-purple-400 to-pink-400", value: 78 },
-                { icon: <Users className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Familia", color: "from-yellow-400 to-orange-400", value: 88 }
+                { icon: <Users className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Familia", color: "from-[#F2C300] to-[#AFEB17]", value: 88 }
               ].map((metric, index) => (
                 <div
                   key={index}
@@ -391,7 +391,7 @@ export default function SolarSurvivorPage() {
                 opacity: Math.min(1, (scrollY - 2200) / 400)
               }}
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-12 md:mb-20 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-500 px-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-12 md:mb-20 text-transparent bg-clip-text bg-gradient-to-r from-[#AFEB17] to-[#F2C300] px-4">
                 Jugabilidad Épica
               </h2>
             </div>
@@ -407,7 +407,7 @@ export default function SolarSurvivorPage() {
               >
                 <div>
                   <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 md:mb-6 flex items-center gap-3 md:gap-4">
-                    <Sun className="w-8 h-8 md:w-10 md:h-10 text-yellow-400" />
+                    <Sun className="w-8 h-8 md:w-10 md:h-10 text-[#F2C300]" />
                     Ciclo Día/Noche
                   </h3>
                   <p className="text-base sm:text-lg text-blue-200 leading-relaxed mb-4 md:mb-6">
@@ -415,7 +415,7 @@ export default function SolarSurvivorPage() {
                     Cuando cae la noche o hay un apagón, dependerás de tu energía almacenada.
                   </p>
                   <div className="flex gap-3 md:gap-4">
-                    <div className="flex-1 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg md:rounded-xl p-3 md:p-4 text-white transform hover:scale-105 transition-transform duration-500">
+                    <div className="flex-1 bg-gradient-to-br from-[#F2C300] to-[#AFEB17] rounded-lg md:rounded-xl p-3 md:p-4 text-white transform hover:scale-105 transition-transform duration-500">
                       <Sun className="w-6 h-6 md:w-8 md:h-8 mb-2" />
                       <div className="text-xs sm:text-sm font-semibold">Día</div>
                       <div className="text-[10px] sm:text-xs opacity-80">Generar energía</div>
@@ -428,10 +428,10 @@ export default function SolarSurvivorPage() {
                   </div>
                 </div>
 
-                <div className="relative h-64 md:h-80 bg-gradient-to-b from-yellow-400/10 to-blue-900/10 rounded-xl md:rounded-2xl overflow-hidden border border-white/10">
+                <div className="relative h-64 md:h-80 bg-gradient-to-b from-[#AFEB17]/10 to-blue-900/10 rounded-xl md:rounded-2xl overflow-hidden border border-white/10">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="relative w-32 h-32 md:w-40 md:h-40">
-                      <Sun className="absolute inset-0 w-full h-full text-yellow-400/50 animate-spin-slow" />
+                      <Sun className="absolute inset-0 w-full h-full text-[#AFEB17]/50 animate-spin-slow" />
                       <Moon className="absolute inset-0 w-full h-full text-blue-300/50 animate-spin-reverse" />
                     </div>
                   </div>
@@ -485,8 +485,8 @@ export default function SolarSurvivorPage() {
                       >
                         <span className="text-sm sm:text-base text-white font-semibold">{item}</span>
                         <div className="flex items-center gap-1.5 md:gap-2">
-                          <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 text-yellow-400" />
-                          <span className="text-yellow-400 text-xs sm:text-sm">{50 + i * 30}W</span>
+                          <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#F2C300]" />
+                          <span className="text-[#F2C300] text-xs sm:text-sm">{50 + i * 30}W</span>
                         </div>
                       </div>
                     ))}
@@ -506,12 +506,12 @@ export default function SolarSurvivorPage() {
               opacity: Math.min(1, (scrollY - 3400) / 400)
             }}
           >
-            <div className="relative bg-gradient-to-br from-orange-600/20 via-yellow-600/20 to-orange-600/20 backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 border border-orange-500/30 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-[#012928]/20 via-[#AFEB17]/15 to-[#012928]/20 backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 border border-[#AFEB17]/30 overflow-hidden">
               <div className="absolute inset-0 opacity-10">
                 {ctaParticles.map((particle, i) => (
                   <Zap
                     key={i}
-                    className="absolute text-yellow-400 animate-float-particle"
+                    className="absolute text-[#F2C300] animate-float-particle"
                     style={{
                       left: `${particle.left}%`,
                       top: `${particle.top}%`,
@@ -524,7 +524,7 @@ export default function SolarSurvivorPage() {
               </div>
 
               <div className="relative z-10">
-                <Star className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-yellow-400 mx-auto mb-4 md:mb-6 animate-spin-slow" />
+                <Star className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-[#F2C300] mx-auto mb-4 md:mb-6 animate-spin-slow" />
 
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 md:mb-6 px-4">
                   ¿Listo para el Desafío?
@@ -539,7 +539,7 @@ export default function SolarSurvivorPage() {
                   {/* Android APK */}
                   <button
                     onClick={downloadAPK}
-                    className="group relative px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-7 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 text-white text-lg sm:text-xl md:text-2xl font-black rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all duration-500 transform hover:scale-110 overflow-hidden"
+                    className="group relative px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-7 bg-gradient-to-r from-[#012928] via-[#AFEB17] to-[#012928] text-white text-lg sm:text-xl md:text-2xl font-black rounded-full shadow-2xl hover:shadow-[#AFEB17]/40 transition-all duration-500 transform hover:scale-110 overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">

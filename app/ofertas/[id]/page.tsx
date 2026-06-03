@@ -196,7 +196,7 @@ export default function OfertaDetailPage() {
   return (
     <>
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
+      <div className="min-h-screen bg-[#F2F2EF] pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <div className="mb-6" data-aos="fade-right">
@@ -217,7 +217,7 @@ export default function OfertaDetailPage() {
               data-aos="fade-up"
             >
               <div className="text-center">
-                <Loader2 className="w-16 h-16 animate-spin text-[#F26729] mx-auto mb-4" />
+                <Loader2 className="w-16 h-16 animate-spin text-[#AFEB17] mx-auto mb-4" />
                 <p className="text-lg text-gray-600">
                   Cargando detalles de la oferta...
                 </p>
@@ -245,7 +245,7 @@ export default function OfertaDetailPage() {
                       onClick={() => {
                         void fetchOferta();
                       }}
-                      className="bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white"
+                      className="bg-gradient-to-r from-[#AFEB17] to-[#F2C300] hover:from-[#e55a1f] hover:to-[#e6a610] text-white"
                     >
                       Intentar de nuevo
                     </Button>
@@ -283,7 +283,7 @@ export default function OfertaDetailPage() {
 
                     {/* Discount or Special Offer Badge */}
                     {oferta.descuentos && oferta.descuentos.trim() !== "" ? (
-                      <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold px-4 py-2 shadow-xl border-2 border-white flex items-center gap-2">
+                      <Badge className="bg-gradient-to-r from-[#AFEB17]/50 to-red-500 text-white font-bold px-4 py-2 shadow-xl border-2 border-white flex items-center gap-2">
                         <Percent className="w-4 h-4" />
                         CON DESCUENTO
                       </Badge>
@@ -296,8 +296,8 @@ export default function OfertaDetailPage() {
 
                   {oferta.marca && (
                     <div className="absolute bottom-4 left-4">
-                      <div className="inline-flex items-center gap-3 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-[#0F2B66] shadow-lg">
-                        <Sparkles className="h-5 w-5 text-[#F26729]" />
+                      <div className="inline-flex items-center gap-3 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-[#012928] shadow-lg">
+                        <Sparkles className="h-5 w-5 text-[#AFEB17]" />
                         Marca certificada: {oferta.marca}
                       </div>
                     </div>
@@ -306,18 +306,18 @@ export default function OfertaDetailPage() {
 
                 {/* Content Section - Below Image */}
                 <div className="p-6 md:p-8 lg:p-10 bg-white">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F2B66] mb-6 leading-tight">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#012928] mb-6 leading-tight">
                     {oferta.descripcion}
                   </h1>
 
                   {oferta.marca && (
                     <div className="mb-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl border border-[#0F2B66] border-opacity-10 bg-gradient-to-r from-[#F4F7FF] to-[#EAF3FF] px-4 py-3 shadow-sm">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#0F2B66] shadow">
-                          <Sparkles className="h-4 w-4 text-[#F26729]" />
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl border border-[#012928] border-opacity-10 bg-gradient-to-r from-[#F4F7FF] to-[#EAF3FF] px-4 py-3 shadow-sm">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#012928] shadow">
+                          <Sparkles className="h-4 w-4 text-[#AFEB17]" />
                           Marca aliada
                         </div>
-                        <p className="text-sm sm:text-base text-[#0F2B66] opacity-80">
+                        <p className="text-sm sm:text-base text-[#012928] opacity-80">
                           {oferta.marca} respalda este sistema con componentes
                           seleccionados y certificaciones vigentes.
                         </p>
@@ -328,7 +328,7 @@ export default function OfertaDetailPage() {
                   <div className="space-y-6">
                     {/* Price Display - Sin conversión de moneda (API agotada) */}
                     <div className="flex items-baseline gap-4 flex-wrap">
-                      <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#F26729]">
+                      <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#AFEB17]">
                         {(isClient && oferta.precio_cliente
                           ? oferta.precio_cliente
                           : oferta.precio
@@ -351,7 +351,7 @@ export default function OfertaDetailPage() {
                       <div className="pt-4 border-t border-gray-200">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-gray-700">
                           <span className="text-base sm:text-lg">o desde</span>
-                          <span className="text-xl sm:text-2xl font-bold text-[#0F2B66]">78 €/mes</span>
+                          <span className="text-xl sm:text-2xl font-bold text-[#012928]">78 €/mes</span>
                           <div className="flex items-center gap-2 text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full w-fit">
                             <MapPin className="w-4 h-4" />
                             <span>solo desde España</span>
@@ -367,34 +367,34 @@ export default function OfertaDetailPage() {
               {/* Discount Information Section */}
               {oferta.descuentos && oferta.descuentos.trim() !== "" && (
                 <Card
-                  className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 border-2 border-orange-200 shadow-xl overflow-hidden relative"
+                  className="bg-gradient-to-r from-[#AFEB17]/5 via-red-50 to-pink-50 border-2 border-[#AFEB17]/25 shadow-xl overflow-hidden relative"
                   data-aos="fade-up"
                   data-aos-delay="40"
                 >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-orange-100/30 rounded-full -translate-y-20 translate-x-20"></div>
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-[#AFEB17]/10 rounded-full -translate-y-20 translate-x-20"></div>
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-100/30 rounded-full translate-y-16 -translate-x-16"></div>
 
                   <CardHeader className="relative z-10">
-                    <CardTitle className="flex items-center gap-3 text-2xl text-orange-700">
-                      <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg">
+                    <CardTitle className="flex items-center gap-3 text-2xl text-[#012928]">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#AFEB17]/50 to-red-500 rounded-full flex items-center justify-center shadow-lg">
                         <Percent className="w-6 h-6 text-white" />
                       </div>
                       ¡Descuentos Especiales Disponibles!
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="relative z-10">
-                    <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-orange-200 shadow-md">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-[#AFEB17]/25 shadow-md">
                       <div className="flex items-start gap-3 mb-3">
-                        <Tag className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
+                        <Tag className="w-5 h-5 text-[#012928] mt-1 flex-shrink-0" />
                         <div className="flex-1">
                           <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {oferta.descuentos}
                           </p>
                         </div>
                       </div>
-                      <div className="mt-4 pt-4 border-t border-orange-100">
+                      <div className="mt-4 pt-4 border-t border-[#AFEB17]/15">
                         <p className="text-sm text-gray-600 flex items-center gap-2">
-                          <Info className="w-4 h-4 text-orange-500" />
+                          <Info className="w-4 h-4 text-[#AFEB17]" />
                           Contacta con nosotros para más detalles sobre estos
                           descuentos y cómo aplicarlos.
                         </p>
@@ -440,7 +440,7 @@ export default function OfertaDetailPage() {
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
-                      <Shield className="w-6 h-6 text-[#F26729]" />
+                      <Shield className="w-6 h-6 text-[#AFEB17]" />
                       Garantías Incluidas
                     </CardTitle>
                   </CardHeader>
@@ -483,7 +483,7 @@ export default function OfertaDetailPage() {
                 <Card data-aos="fade-up" data-aos-delay="80">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
-                      <Package className="w-6 h-6 text-[#F26729]" />
+                      <Package className="w-6 h-6 text-[#AFEB17]" />
                       Elementos Incluidos
                     </CardTitle>
                   </CardHeader>
@@ -519,8 +519,8 @@ export default function OfertaDetailPage() {
                                     />
                                   </div>
                                 ) : (
-                                  <div className="w-16 h-16 flex-shrink-0 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center">
-                                    <ImageIcon className="w-6 h-6 text-amber-700" />
+                                  <div className="w-16 h-16 flex-shrink-0 rounded-lg bg-[#F2C300]/15 border border-[#F2C300]/25 flex items-center justify-center">
+                                    <ImageIcon className="w-6 h-6 text-[#F2C300]/80" />
                                   </div>
                                 );
                               })()}

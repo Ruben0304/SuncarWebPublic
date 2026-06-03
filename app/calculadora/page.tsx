@@ -416,28 +416,28 @@ export default function CalculadoraPage() {
         {/* Back Button */}
         <Link
           href="/"
-          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-orange-200 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
+          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-[#AFEB17]/25 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-semibold">Volver</span>
         </Link>
 
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+        <div className="min-h-screen bg-[#F2F2EF]">
           {/* Barra superior compacta */}
-          <header className="bg-white border-b border-orange-200 sticky top-0 z-20 shadow-sm">
+          <header className="bg-white border-b border-[#AFEB17]/25 sticky top-0 z-20 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-orange-200 flex-shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#012928]/20 flex-shrink-0 bg-white flex items-center justify-center p-1">
                   <img
-                    src="/images/suncar-logo.jpeg"
+                    src="/images/logo-icon.png"
                     alt="Suncar Logo"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <div>
                   <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Calculator className="h-5 w-5 text-orange-600" />
+                    <Calculator className="h-5 w-5 text-[#012928]" />
                     Calculadora Solar
                   </h1>
                 </div>
@@ -448,7 +448,7 @@ export default function CalculadoraPage() {
 
         <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 60px)' }}>
           <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-orange-600 mx-auto mb-4" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#012928] mx-auto mb-4" />
             <p className="text-gray-600">Cargando calculadora...</p>
           </div>
         </div>
@@ -463,28 +463,28 @@ export default function CalculadoraPage() {
       {/* Back Button */}
       <Link
         href="/"
-        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-orange-200 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-[#AFEB17]/25 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         <span className="text-sm font-semibold">Volver</span>
       </Link>
 
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+      <div className="min-h-screen bg-[#F2F2EF]">
         {/* Barra superior compacta */}
-        <header className="bg-white border-b border-orange-200 sticky top-0 z-20 shadow-sm">
+        <header className="bg-white border-b border-[#AFEB17]/25 sticky top-0 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-orange-200 flex-shrink-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#012928]/20 flex-shrink-0 bg-white flex items-center justify-center p-1">
                 <img
-                  src="/images/suncar-logo.jpeg"
+                  src="/images/logo-icon.png"
                   alt="Suncar Logo"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <Calculator className="h-5 w-5 text-orange-600" />
+                  <Calculator className="h-5 w-5 text-[#012928]" />
                   Calculadora Solar
                 </h1>
               </div>
@@ -492,7 +492,7 @@ export default function CalculadoraPage() {
 
             <div className="flex items-center gap-2">
               {loadingCategorias && (
-                <span className="hidden md:flex items-center gap-2 text-sm text-orange-700">
+                <span className="hidden md:flex items-center gap-2 text-sm text-[#012928]">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span>Actualizando</span>
                 </span>
@@ -501,16 +501,16 @@ export default function CalculadoraPage() {
                 onClick={restablecerParametros}
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2 border-orange-200 hover:bg-orange-50 hover:border-orange-300"
+                className="flex items-center gap-2 border-[#AFEB17]/25 hover:bg-[#AFEB17]/5 hover:border-[#AFEB17]/40"
                 disabled={totalEquipos === 0 && equiposLocales.size === 0}
               >
-                <RotateCcw className="h-4 w-4 text-orange-600" />
+                <RotateCcw className="h-4 w-4 text-[#012928]" />
                 <span className="hidden sm:inline">Limpiar</span>
               </Button>
               <Button
                 onClick={() => setIsCreateDialogOpen(true)}
                 size="sm"
-                className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white"
+                className="flex items-center gap-2 bg-[#012928] hover:bg-[#011818] text-white"
               >
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Crear</span>
@@ -522,8 +522,8 @@ export default function CalculadoraPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Panel de consumo total */}
-        <div className="sticky top-16 z-10 bg-gradient-to-br from-orange-50 to-yellow-50 pb-4 sm:pb-6">
-          <Card className="bg-white border-orange-200 shadow-lg">
+        <div className="sticky top-16 z-10 bg-gradient-to-br from-[#AFEB17]/5 to-[#F2C300]/5 pb-4 sm:pb-6">
+          <Card className="bg-white border-[#AFEB17]/25 shadow-lg">
             <CardContent className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
                 <div className="flex-1 w-full">
@@ -531,7 +531,7 @@ export default function CalculadoraPage() {
                     <div>
                       <p className="text-xs sm:text-sm text-gray-600 mb-1">Potencia Total (Inversor)</p>
                       <p className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                        <Cpu className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" />
+                        <Cpu className="h-6 w-6 sm:h-8 sm:w-8 text-[#012928]" />
                         {potenciaTotalKw.toFixed(2)} kW
                       </p>
                       <p className="text-xs text-gray-500 mt-1">= {(potenciaTotalKw * 1000).toFixed(0)} Watts</p>
@@ -539,7 +539,7 @@ export default function CalculadoraPage() {
                     <div>
                       <p className="text-xs sm:text-sm text-gray-600 mb-1">Consumo Real por Hora</p>
                       <p className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                        <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" />
+                        <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-[#012928]" />
                         {consumoRealKwh.toFixed(3)} kWh
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
@@ -554,10 +554,10 @@ export default function CalculadoraPage() {
               </div>
 
               {totalEquipos > 0 && (
-                <div className="border-t border-orange-200 pt-4">
+                <div className="border-t border-[#AFEB17]/25 pt-4">
                   <Button
                     onClick={handleOpenRecomendaciones}
-                    className="w-full bg-orange-600 hover:bg-orange-700 flex items-center justify-center gap-2"
+                    className="w-full bg-[#012928] hover:bg-[#011818] flex items-center justify-center gap-2"
                   >
                     <Lightbulb className="h-5 w-5" />
                     Dimensionar Sistema Solar
@@ -570,7 +570,7 @@ export default function CalculadoraPage() {
 
         {/* Buscador de equipos */}
         <div className="mb-6">
-          <Card className="border-orange-200">
+          <Card className="border-[#AFEB17]/25">
             <CardContent className="pt-4 sm:pt-6">
               <Popover open={openBuscador} onOpenChange={setOpenBuscador}>
                 <PopoverTrigger asChild>
@@ -578,9 +578,9 @@ export default function CalculadoraPage() {
                     variant="outline"
                     role="combobox"
                     aria-expanded={openBuscador}
-                    className="w-full justify-start text-left font-normal border-orange-200 hover:bg-orange-50"
+                    className="w-full justify-start text-left font-normal border-[#AFEB17]/25 hover:bg-[#AFEB17]/5"
                   >
-                    <Search className="mr-2 h-4 w-4 shrink-0 text-orange-600" />
+                    <Search className="mr-2 h-4 w-4 shrink-0 text-[#012928]" />
                     <span className="text-gray-500">Buscar equipos...</span>
                   </Button>
                 </PopoverTrigger>
@@ -684,7 +684,7 @@ export default function CalculadoraPage() {
                                         agregarDesdeBuscador(equipo.key)
                                       }}
                                       size="sm"
-                                      className="bg-orange-600 hover:bg-orange-700 h-7"
+                                      className="bg-[#012928] hover:bg-[#011818] h-7"
                                     >
                                       Agregar
                                     </Button>
@@ -704,7 +704,7 @@ export default function CalculadoraPage() {
         </div>
 
         {categoriasError && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mb-6 rounded-lg border border-[#AFEB17]/20 bg-red-50 px-4 py-3 text-sm text-red-700">
             {categoriasError}
           </div>
         )}
@@ -712,7 +712,7 @@ export default function CalculadoraPage() {
         {/* Contenido principal */}
         <div className="space-y-6">
           {noEquiposRegistrados && !loadingCategorias ? (
-            <Card className="border-dashed border-orange-200">
+            <Card className="border-dashed border-[#AFEB17]/25">
               <CardContent className="py-10 text-center">
                 <p className="text-gray-600">No hay equipos disponibles.</p>
                 <p className="text-sm text-gray-500 mt-2">
@@ -726,7 +726,7 @@ export default function CalculadoraPage() {
                 const icono = categoriaIconos[categoriaNombre] || "⚡️"
 
                 return (
-                  <Card key={categoriaNombre} className="border-orange-100">
+                  <Card key={categoriaNombre} className="border-[#AFEB17]/15">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-base sm:text-lg flex items-center gap-2">
                         <span>{icono}</span>
@@ -743,7 +743,7 @@ export default function CalculadoraPage() {
                             <div
                               key={equipo.key}
                               className={`p-3 rounded-lg border transition-colors ${
-                                seleccionado ? "border-orange-300 bg-orange-50" : "border-gray-200 bg-white"
+                                seleccionado ? "border-[#AFEB17]/40 bg-[#AFEB17]/5" : "border-gray-200 bg-white"
                               }`}
                             >
                               <div className="flex items-start justify-between mb-2">
@@ -779,7 +779,7 @@ export default function CalculadoraPage() {
                                   onClick={() => agregarEquipo(equipo.key, 1)}
                                   size="sm"
                                   variant="outline"
-                                  className="w-full border-orange-200 hover:bg-orange-100"
+                                  className="w-full border-[#AFEB17]/25 hover:bg-[#AFEB17]/15"
                                 >
                                   <Plus className="h-3 w-3 mr-1" />
                                   Agregar
@@ -915,7 +915,7 @@ export default function CalculadoraPage() {
             <Button variant="outline" onClick={() => handleCreateDialogChange(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleCreateEquipoLocal} className="bg-orange-600 hover:bg-orange-700">
+            <Button onClick={handleCreateEquipoLocal} className="bg-[#012928] hover:bg-[#011818]">
               Crear Equipo
             </Button>
           </DialogFooter>
@@ -928,24 +928,24 @@ export default function CalculadoraPage() {
           <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 pt-6 pb-4">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-orange-600" />
+                <Lightbulb className="h-5 w-5 text-[#012928]" />
                 Dimensionamiento de Sistema Solar
               </DialogTitle>
             </DialogHeader>
           </div>
           <div className="flex-1 overflow-y-auto px-6 py-4">
             <div className="space-y-6">
-              <Card className="border-orange-200">
+              <Card className="border-[#AFEB17]/25">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Cpu className="h-5 w-5 text-orange-600" />
+                    <Cpu className="h-5 w-5 text-[#012928]" />
                     Inversor Recomendado
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="bg-orange-50 p-3 sm:p-4 rounded-lg">
+                  <div className="bg-[#AFEB17]/5 p-3 sm:p-4 rounded-lg">
                     <p className="text-xs sm:text-sm text-gray-600 mb-1">Potencia del Inversor</p>
-                    <p className="text-xl sm:text-2xl font-bold text-orange-600">{inversorRecomendado.toFixed(2)} kW</p>
+                    <p className="text-xl sm:text-2xl font-bold text-[#012928]">{inversorRecomendado.toFixed(2)} kW</p>
                     <p className="text-xs text-gray-500 mt-2">
                       Potencia base: {potenciaTotalKw.toFixed(2)} kW + 25% de margen
                     </p>
@@ -957,20 +957,20 @@ export default function CalculadoraPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-orange-200">
+              <Card className="border-[#AFEB17]/25">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Battery className="h-5 w-5 text-orange-600" />
+                    <Battery className="h-5 w-5 text-[#012928]" />
                     Banco de Baterías
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="bg-orange-50 p-3 sm:p-4 rounded-lg">
+                  <div className="bg-[#AFEB17]/5 p-3 sm:p-4 rounded-lg">
                     <p className="text-xs sm:text-sm text-gray-600 mb-1">Capacidad Recomendada (5 horas)</p>
-                    <p className="text-xl sm:text-2xl font-bold text-orange-600">{bateriaRecomendada5h.toFixed(2)} kWh</p>
+                    <p className="text-xl sm:text-2xl font-bold text-[#012928]">{bateriaRecomendada5h.toFixed(2)} kWh</p>
                     <p className="text-xs text-gray-500 mt-2">{consumoRealKwh.toFixed(3)} kWh/h × 5 horas de autonomía</p>
                   </div>
-                  <div className="border-t border-orange-200 pt-4">
+                  <div className="border-t border-[#AFEB17]/25 pt-4">
                     <Label htmlFor="bateria-kwh" className="text-xs sm:text-sm font-medium">
                       Ajustar Capacidad de Batería: {bateriaKwh[0].toFixed(2)} kWh
                     </Label>

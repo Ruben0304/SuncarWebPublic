@@ -201,7 +201,7 @@ export default function QuotationPage() {
 
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
@@ -227,7 +227,7 @@ export default function QuotationPage() {
       </section>
 
       {/* Progress Bar */}
-      <div className="bg-gray-50 py-8">
+      <div className="bg-[#F2F2EF] py-8">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-4">
@@ -235,14 +235,14 @@ export default function QuotationPage() {
                 <div key={stepNumber} className="flex items-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm ${
                     step >= stepNumber 
-                      ? 'bg-secondary-gradient text-white' 
+                      ? 'bg-[#012928] text-white' 
                       : 'bg-gray-300 text-gray-600'
                   }`}>
                     {stepNumber === 4 && isSubmitted ? <CheckCircle className="w-5 h-5" /> : stepNumber}
                   </div>
                   {stepNumber < 4 && (
                     <div className={`w-16 sm:w-24 h-1 mx-2 ${
-                      step > stepNumber ? 'bg-secondary-gradient' : 'bg-gray-300'
+                      step > stepNumber ? 'bg-[#012928]' : 'bg-gray-300'
                     }`}></div>
                   )}
                 </div>
@@ -259,7 +259,7 @@ export default function QuotationPage() {
       </div>
 
       {/* Quote Form */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             
@@ -325,7 +325,7 @@ export default function QuotationPage() {
                     <button
                       onClick={nextStep}
                       disabled={!formData.homeType || !formData.roofType}
-                      className="px-8 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+                      className="px-8 py-3 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
                     >
                       Siguiente <ArrowRight className="w-5 h-5" />
                     </button>
@@ -445,7 +445,7 @@ export default function QuotationPage() {
                     <button
                       onClick={nextStep}
                       disabled={!formData.monthlyBill || !formData.familySize}
-                      className="px-8 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+                      className="px-8 py-3 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
                     >
                       Siguiente <ArrowRight className="w-5 h-5" />
                     </button>
@@ -573,7 +573,7 @@ export default function QuotationPage() {
                     <button
                       onClick={nextStep}
                       disabled={!formData.name || !formData.email || !formData.phone || !formData.address || isSubmitting}
-                      className="px-8 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+                      className="px-8 py-3 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
                     >
                       {isSubmitting ? (
                         <>
@@ -691,7 +691,7 @@ export default function QuotationPage() {
                     
                     <button 
                       onClick={resetQuote}
-                      className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 mx-auto"
+                      className="px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 mx-auto"
                     >
                       Hacer Nueva Cotización
                     </button>
@@ -702,7 +702,7 @@ export default function QuotationPage() {
 
             {/* Error State */}
             {step === 3 && submitStatus?.type === 'error' && (
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mt-6">
+              <div className="bg-red-50 border border-[#AFEB17]/20 rounded-2xl p-6 mt-6">
                 <div className="flex items-start gap-3">
                   <div className="bg-red-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-red-600 font-bold text-sm">!</span>
@@ -725,10 +725,10 @@ export default function QuotationPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-16 lg:py-20 bg-white">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">
+            <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full mb-4">
               Beneficios
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -755,7 +755,7 @@ export default function QuotationPage() {
               }
             ].map((benefit, index) => (
               <div key={index} className="bg-gray-50 rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300">
-                <div className="bg-secondary-gradient p-4 rounded-full w-16 h-16 mx-auto mb-6 text-white flex items-center justify-center">
+                <div className="bg-[#012928] p-4 rounded-full w-16 h-16 mx-auto mb-6 text-white flex items-center justify-center">
                   {benefit.icon}
                 </div>
                 <h3 className="text-xl font-bold text-primary mb-4">{benefit.title}</h3>

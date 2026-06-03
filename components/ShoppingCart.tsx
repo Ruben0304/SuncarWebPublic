@@ -166,7 +166,7 @@ export default function ShoppingCartComponent() {
       {/* Botón flotante del carrito */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[60] w-[52px] h-[52px] md:w-[60px] md:h-[60px] bg-secondary-gradient text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center group"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[60] w-[52px] h-[52px] md:w-[60px] md:h-[60px] bg-[#012928] text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center group"
         aria-label="Abrir carrito de compras"
       >
         <ShoppingCart className="w-6 h-6 md:w-7 md:h-7" />
@@ -224,7 +224,7 @@ export default function ShoppingCartComponent() {
                   <p className="text-slate-400 text-[13px] mb-5 max-w-[220px]">Agrega productos del catálogo para comenzar</p>
                   <Button
                     onClick={() => setIsOpen(false)}
-                    className="bg-secondary-gradient text-white h-11 px-6 rounded-xl text-[13px] font-semibold active:scale-[0.98] transition-all"
+                    className="bg-[#012928] text-white h-11 px-6 rounded-xl text-[13px] font-semibold active:scale-[0.98] transition-all"
                   >
                     Explorar productos
                   </Button>
@@ -315,8 +315,8 @@ export default function ShoppingCartComponent() {
                   </div>
 
                   {/* Nota de precios */}
-                  <div className="mx-4 my-2.5 px-3 py-2.5 bg-amber-50/80 border border-amber-200/60 rounded-xl">
-                    <p className="text-[11px] text-amber-700 leading-relaxed">
+                  <div className="mx-4 my-2.5 px-3 py-2.5 bg-[#F2C300]/10 border border-[#F2C300]/30 rounded-xl">
+                    <p className="text-[11px] text-[#F2C300]/80 leading-relaxed">
                       Precios referenciales. El valor final varía según cantidad, volumen y configuración técnica.
                     </p>
                   </div>
@@ -376,11 +376,11 @@ export default function ShoppingCartComponent() {
 
                             <div className="mt-2">
                               {producto.vendible ? (
-                                <Button asChild size="sm" className="w-full h-8 text-[11px] bg-secondary-gradient text-white rounded-lg">
+                                <Button asChild size="sm" className="w-full h-8 text-[11px] bg-[#012928] text-white rounded-lg">
                                   <Link href="/productos">Ver producto</Link>
                                 </Button>
                               ) : (
-                                <div className="w-full h-8 rounded-lg border border-amber-200 bg-amber-50 text-[10px] text-amber-700 flex items-center justify-center px-1.5 text-center leading-tight font-medium">
+                                <div className="w-full h-8 rounded-lg border border-[#F2C300]/25 bg-[#F2C300]/5 text-[10px] text-[#F2C300]/80 flex items-center justify-center px-1.5 text-center leading-tight font-medium">
                                   No se vende suelto
                                 </div>
                               )}
@@ -422,7 +422,7 @@ export default function ShoppingCartComponent() {
                           }}
                           disabled={!ofertaId}
                           size="sm"
-                          className="bg-secondary-gradient text-white text-[11px] h-8 rounded-lg active:scale-[0.97]"
+                          className="bg-[#012928] text-white text-[11px] h-8 rounded-lg active:scale-[0.97]"
                         >
                           Ver oferta
                           <ChevronRight className="w-3 h-3 ml-0.5" />
@@ -470,7 +470,7 @@ export default function ShoppingCartComponent() {
                 {/* CTA principal - altura 48px para mobile touch */}
                 <Button
                   onClick={handleWhatsAppCheckout}
-                  className="w-full h-12 bg-secondary-gradient text-white font-semibold shadow-lg active:scale-[0.98] transition-all text-[13px] rounded-xl"
+                  className="w-full h-12 bg-[#012928] text-white font-semibold shadow-lg active:scale-[0.98] transition-all text-[13px] rounded-xl"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Solicitar cotización por WhatsApp

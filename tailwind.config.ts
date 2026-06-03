@@ -23,12 +23,15 @@ const config: Config = {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-        primary: "#0F2B66", // Azul corporativo oscuro
+        primary: "#012928", // Emerald Circuit — verde oscuro
+        "volt-green": "#AFEB17", // Volt Green — verde brillante
+        "solar-radiance": "#F2C300", // Solar Radiance — amarillo luminoso
+        midnight: "#0A052D", // Midnight Voltage — azul/morado muy oscuro
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-          start: "#F26729", // Naranja
-          end: "#FDB813", // Amarillo/Dorado
+          start: "#012928", // Emerald Circuit
+          end: "#F2C300",  // Solar Radiance
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -135,10 +138,10 @@ const config: Config = {
         },
         "pulse-glow": {
           "0%, 100%": {
-            boxShadow: "0 0 20px rgba(253, 184, 19, 0.5)",
+            boxShadow: "0 0 20px rgba(242, 195, 0, 0.5)",
           },
           "50%": {
-            boxShadow: "0 0 40px rgba(253, 184, 19, 0.8), 0 0 60px rgba(242, 103, 41, 0.6)",
+            boxShadow: "0 0 40px rgba(242, 195, 0, 0.8), 0 0 60px rgba(1, 41, 40, 0.6)",
           },
         },
         "rotate-slow": {
@@ -369,13 +372,13 @@ const config: Config = {
         "1200": "1200ms",
       },
       backgroundImage: {
-        "secondary-gradient": "linear-gradient(90deg, #F26729 0%, #FDB813 100%)",
-        "hero-fade": "linear-gradient(to right, transparent 0%, rgba(15, 43, 102, 0.1) 100%)",
+        "secondary-gradient": "linear-gradient(90deg, #012928 0%, #F2C300 100%)",
+        "hero-fade": "linear-gradient(to right, transparent 0%, rgba(1, 41, 40, 0.1) 100%)",
       },
       dropShadow: {
         glow: [
-          "0 0 10px rgba(251, 191, 36, 0.7)",
-          "0 0 20px rgba(251, 191, 36, 0.5)",
+          "0 0 10px rgba(242, 195, 0, 0.7)",
+          "0 0 20px rgba(242, 195, 0, 0.5)",
         ],
       },
     },

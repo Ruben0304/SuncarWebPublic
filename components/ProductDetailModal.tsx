@@ -387,7 +387,7 @@ export default function ProductDetailModal({
                     )}
                     <Button
                       onClick={handleWhatsAppContact}
-                      className={`h-10 md:h-12 bg-secondary-gradient text-white font-semibold shadow-lg hover:shadow-xl transition-all text-xs md:text-base ${quantityInCart > 0 ? "col-span-2" : ""}`}
+                      className={`h-10 md:h-12 bg-[#012928] text-white font-semibold shadow-lg hover:shadow-xl transition-all text-xs md:text-base ${quantityInCart > 0 ? "col-span-2" : ""}`}
                       size="lg"
                     >
                       <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />

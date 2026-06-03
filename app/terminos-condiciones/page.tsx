@@ -7,9 +7,9 @@ export const metadata: Metadata = {
 
 export default function TermsAndConditionsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h1 className="text-4xl font-bold text-[#0F2B66] mb-8">
+        <h1 className="text-4xl font-bold text-[#012928] mb-8">
           Términos y Condiciones
         </h1>
 
@@ -19,7 +19,7 @@ export default function TermsAndConditionsPage() {
           </p>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               1. Aceptación de los Términos
             </h2>
             <p className="text-gray-700 mb-4">
@@ -34,7 +34,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               2. Descripción de los Servicios
             </h2>
             <p className="text-gray-700 mb-3">
@@ -51,7 +51,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               3. Uso del Sitio Web y Aplicación
             </h2>
             
@@ -82,7 +82,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               4. Cotizaciones y Ofertas
             </h2>
             
@@ -107,7 +107,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               5. Servicios de Instalación
             </h2>
             
@@ -144,7 +144,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               6. Garantías
             </h2>
             
@@ -182,7 +182,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               7. Pagos y Facturación
             </h2>
             
@@ -206,7 +206,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               8. Cancelaciones y Reembolsos
             </h2>
             
@@ -230,7 +230,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               9. Limitación de Responsabilidad
             </h2>
             <p className="text-gray-700 mb-3">
@@ -246,7 +246,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               10. Propiedad Intelectual
             </h2>
             <p className="text-gray-700 mb-4">
@@ -261,12 +261,12 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               11. Privacidad y Protección de Datos
             </h2>
             <p className="text-gray-700">
               El uso de nuestros servicios también está sujeto a nuestra{' '}
-              <a href="/privacidad" className="text-[#F26729] hover:underline">
+              <a href="/privacidad" className="text-[#AFEB17] hover:underline">
                 Política de Privacidad
               </a>
               , que describe cómo recopilamos, usamos y protegemos tu información personal.
@@ -274,7 +274,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               12. Fuerza Mayor
             </h2>
             <p className="text-gray-700">
@@ -286,7 +286,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               13. Resolución de Disputas
             </h2>
             <p className="text-gray-700 mb-4">
@@ -301,7 +301,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               14. Divisibilidad
             </h2>
             <p className="text-gray-700">
@@ -311,7 +311,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               15. Contacto
             </h2>
             <p className="text-gray-700 mb-4">
@@ -322,10 +322,10 @@ export default function TermsAndConditionsPage() {
                 <strong>Suncar</strong>
               </p>
               <p className="text-gray-700 mb-2">
-                Correo electrónico: <a href="mailto:info@suncar.cu" className="text-[#F26729] hover:underline">info@suncar.cu</a>
+                Correo electrónico: <a href="mailto:info@suncar.cu" className="text-[#AFEB17] hover:underline">info@suncar.cu</a>
               </p>
               <p className="text-gray-700 mb-2">
-                Teléfono: <a href="tel:+5378261062" className="text-[#F26729] hover:underline">+53 78261062</a>
+                Teléfono: <a href="tel:+5378261062" className="text-[#AFEB17] hover:underline">+53 78261062</a>
               </p>
               <p className="text-gray-700">
                 Dirección: Cuba
@@ -334,7 +334,7 @@ export default function TermsAndConditionsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               16. Aceptación
             </h2>
             <p className="text-gray-700">

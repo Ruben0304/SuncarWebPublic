@@ -42,16 +42,6 @@ const BlackoutSection = dynamic(() => import("@/components/landing-sections/blac
   loading: () => null
 })
 
-const SuncarInteractiveGame = dynamic(() => import("@/components/SuncarInteractiveGame"), {
-  ssr: false,
-  loading: () => (
-    <section className="py-16 lg:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        <div className="h-64 animate-pulse rounded-3xl bg-white/5" />
-      </div>
-    </section>
-  )
-})
 
 export default function HomePage() {
   const [isChristmas, setIsChristmas] = useState(false)
@@ -64,7 +54,7 @@ export default function HomePage() {
 
   // Typewriter effects sincronizados con el loader
   const blueText = useTypewriter({
-    text: "Energía Solar",
+    text: "Energía",
     speed: 120,
     delay: 300,
     waitForLoading: true,
@@ -72,7 +62,7 @@ export default function HomePage() {
   })
 
   const orangeText = useTypewriter({
-    text: "Para Tu Futuro",
+    text: "que transforma.",
     speed: 120,
     delay: blueText.isComplete ? 200 : 999999,
     waitForLoading: false,
@@ -80,7 +70,7 @@ export default function HomePage() {
   })
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#F2F2EF] overflow-x-hidden">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       <ScrollProgress />
 
@@ -110,10 +100,6 @@ export default function HomePage() {
 
       <LazySection minHeight={720} rootMargin="300px">
         <BlackoutSection />
-      </LazySection>
-
-      <LazySection minHeight={640} rootMargin="280px">
-        <SuncarInteractiveGame />
       </LazySection>
 
       <QuickContactSection />

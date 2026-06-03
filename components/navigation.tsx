@@ -6,42 +6,95 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { useClient } from "@/hooks/useClient";
-import GlassSurface from "@/components/GlassSurface";
 import { cn } from "@/lib/utils";
-import { CATEGORIAS_INFO } from "@/components/blog";
+
+type DropdownItem = {
+  name: string;
+  href: string;
+  badge?: string;
+  badgeVariant?: "default" | "ia";
+};
 
 type NavItem = {
   name: string;
   href: string;
-  hasDropdown?: boolean;
-  dropdownType?: "blog" | "precios" | "nosotro" | "apps";
   matchHrefs?: string[];
-  badge?: string;
+  dropdown?: DropdownItem[];
 };
+
+const navItems: NavItem[] = [
+  { name: "Inicio", href: "/" },
+  {
+    name: "Suncar Instaladora",
+    href: "/ofertas",
+    matchHrefs: ["/ofertas", "/servicios", "/calculadora"],
+    dropdown: [
+      { name: "Kits de instalación", href: "/ofertas" },
+      { name: "Servicios", href: "/servicios" },
+      { name: "Calculadora de Kw", href: "/calculadora" },
+      {
+        name: "Recomendador de ofertas",
+        href: "/ofertas",
+        badge: "IA",
+        badgeVariant: "ia",
+      },
+    ],
+  },
+  {
+    name: "Suncar Ventas",
+    href: "/productos",
+    matchHrefs: ["/productos", "/tienda"],
+    dropdown: [
+      { name: "Productos Online", href: "/productos" },
+      { name: "Tienda Física", href: "/tienda", badge: "Pronto" },
+    ],
+  },
+  {
+    name: "Instalaciones",
+    href: "/galeria",
+    matchHrefs: ["/galeria", "/testimonios"],
+    dropdown: [
+      { name: "Galería", href: "/galeria" },
+      { name: "Testimonios", href: "/testimonios" },
+    ],
+  },
+  {
+    name: "Nosotros",
+    href: "/sobre-nosotros",
+    matchHrefs: ["/sobre-nosotros", "/blog", "/contacto", "/solar-survivor"],
+    dropdown: [
+      { name: "Conócenos", href: "/sobre-nosotros" },
+      { name: "Blog", href: "/blog" },
+      { name: "Contacto", href: "/contacto" },
+      { name: "Solar Survivor", href: "/solar-survivor" },
+    ],
+  },
+];
+
+function DropdownBadge({ item }: { item: DropdownItem }) {
+  if (!item.badge) return null;
+  return (
+    <Badge
+      className={cn(
+        "text-[10px] px-2.5 py-0.5 font-semibold rounded-md",
+        item.badgeVariant === "ia"
+          ? "bg-[#0A052D] text-[#AFEB17]"
+          : "bg-primary text-white",
+      )}
+    >
+      {item.badge}
+    </Badge>
+  );
+}
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredHref, setHoveredHref] = useState<string | null>(null);
-  const [showBlogDropdown, setShowBlogDropdown] = useState(false);
-  const [showPreciosDropdown, setShowPreciosDropdown] = useState(false);
-  const [showNosotroDropdown, setShowNosotroDropdown] = useState(false);
-  const [showAppsDropdown, setShowAppsDropdown] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const hoverResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const blogDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const preciosDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const nosotroDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const appsDropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const { isClient, isLoading } = useClient();
+  const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
 
   const isActive = (href: string, matchHrefs?: string[]) => {
@@ -72,56 +125,30 @@ export default function Navigation() {
     }, 160);
   };
 
-  const handleBlogMouseEnter = () => {
-    if (blogDropdownTimeout.current) {
-      clearTimeout(blogDropdownTimeout.current);
+  const handleDropdownEnter = (name: string) => {
+    if (dropdownTimeout.current) {
+      clearTimeout(dropdownTimeout.current);
     }
-    setShowBlogDropdown(true);
+    setOpenDropdown(name);
   };
 
-  const handleBlogMouseLeave = () => {
-    blogDropdownTimeout.current = setTimeout(() => {
-      setShowBlogDropdown(false);
+  const handleDropdownLeave = () => {
+    dropdownTimeout.current = setTimeout(() => {
+      setOpenDropdown(null);
     }, 200);
   };
 
-  const handlePreciosMouseEnter = () => {
-    if (preciosDropdownTimeout.current) {
-      clearTimeout(preciosDropdownTimeout.current);
-    }
-    setShowPreciosDropdown(true);
+  const toggleSection = (name: string) => {
+    setExpandedSections((prev) =>
+      prev.includes(name)
+        ? prev.filter((n) => n !== name)
+        : [...prev, name],
+    );
   };
 
-  const handlePreciosMouseLeave = () => {
-    preciosDropdownTimeout.current = setTimeout(() => {
-      setShowPreciosDropdown(false);
-    }, 200);
-  };
-
-  const handleNosotroMouseEnter = () => {
-    if (nosotroDropdownTimeout.current) {
-      clearTimeout(nosotroDropdownTimeout.current);
-    }
-    setShowNosotroDropdown(true);
-  };
-
-  const handleNosotroMouseLeave = () => {
-    nosotroDropdownTimeout.current = setTimeout(() => {
-      setShowNosotroDropdown(false);
-    }, 200);
-  };
-
-  const handleAppsMouseEnter = () => {
-    if (appsDropdownTimeout.current) {
-      clearTimeout(appsDropdownTimeout.current);
-    }
-    setShowAppsDropdown(true);
-  };
-
-  const handleAppsMouseLeave = () => {
-    appsDropdownTimeout.current = setTimeout(() => {
-      setShowAppsDropdown(false);
-    }, 200);
+  const closeMobileMenu = () => {
+    setIsOpen(false);
+    setExpandedSections([]);
   };
 
   useEffect(() => {
@@ -135,77 +162,15 @@ export default function Navigation() {
   useEffect(() => {
     return () => {
       clearHoverReset();
-      if (blogDropdownTimeout.current) {
-        clearTimeout(blogDropdownTimeout.current);
-      }
-      if (preciosDropdownTimeout.current) {
-        clearTimeout(preciosDropdownTimeout.current);
-      }
-      if (nosotroDropdownTimeout.current) {
-        clearTimeout(nosotroDropdownTimeout.current);
-      }
-      if (appsDropdownTimeout.current) {
-        clearTimeout(appsDropdownTimeout.current);
+      if (dropdownTimeout.current) {
+        clearTimeout(dropdownTimeout.current);
       }
     };
   }, []);
 
-  const desktopNavItems: NavItem[] = [
-    { name: "Inicio", href: "/" },
-    { name: "Servicios", href: "/servicios" },
-    {
-      name: "Precios",
-      href: "/ofertas",
-      hasDropdown: true,
-      dropdownType: "precios",
-      matchHrefs: ["/ofertas", "/productos", "/tienda"],
-    },
-    { name: "Blog", href: "/blog", hasDropdown: true, dropdownType: "blog" },
-    {
-      name: "Apps",
-      href: "/calculadora",
-      hasDropdown: true,
-      dropdownType: "apps",
-      matchHrefs: ["/calculadora", "/solar-survivor"],
-    },
-    { name: "Testimonios", href: "/testimonios" },
-    {
-      name: "Nosotros",
-      href: "/sobre-nosotros",
-      hasDropdown: true,
-      dropdownType: "nosotro",
-      matchHrefs: ["/sobre-nosotros", "/contacto"],
-    },
-    { name: "Galeria", href: "/galeria" },
-  ];
-
-  const mobileNavItems: NavItem[] = [
-    { name: "Inicio", href: "/" },
-    { name: "Servicios", href: "/servicios" },
-    { name: "Kits Completos (instalación)", href: "/ofertas" },
-    { name: "Productos Online", href: "/productos" },
-    { name: "Tienda", href: "/tienda", badge: "Pronto" },
-    { name: "Blog", href: "/blog" },
-    { name: "Solar Survivor", href: "/solar-survivor" },
-    { name: "Calculadora de Kw", href: "/calculadora" },
-    { name: "Recomendador de ofertas", href: "/ofertas", badge: "IA" },
-    { name: "Testimonios", href: "/testimonios" },
-    { name: "Sobre Nosotros", href: "/sobre-nosotros" },
-    { name: "Galeria", href: "/galeria" },
-    { name: "Contacto", href: "/contacto" },
-  ];
-
   return (
     <nav className="fixed top-2 lg:top-4 left-2 lg:left-4 right-2 lg:right-4 z-50">
       <div className="max-w-6xl mx-auto">
-        {/*<GlassSurface*/}
-        {/*  width="100%"*/}
-        {/*  height={isOpen ? "auto" : 64}*/}
-        {/*  borderRadius={16}*/}
-        {/*  brightness={100}*/}
-        {/*  blur={80}*/}
-        {/*  className="transition-all duration-300"*/}
-        {/*>*/}
         <div
           className={`
               absolute inset-0 rounded-[16px] bg-white/60 backdrop-blur-md border border-white/250
@@ -217,66 +182,36 @@ export default function Navigation() {
           <div className="w-full px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <div className="flex items-center space-x-3">
-                <div className="relative w-8 h-8 lg:w-10 lg:h-10">
-                  <Image
-                    src="/images/suncar-logo.jpeg"
-                    alt="Suncar Logo"
-                    fill
-                    sizes="(min-width: 1024px) 40px, 32px"
-                    className="object-contain rounded-lg"
-                    priority
-                  />
-                </div>
-                <span className="text-lg lg:text-xl font-bold text-primary font-[family-name:var(--font-cinzel)]">
-                  SUNCAR
-                </span>
-              </div>
+              <Link href="/" className="flex items-center shrink-0">
+                <Image
+                  src="/images/logo-horizontal.png"
+                  alt="Suncar — Energía que transforma"
+                  height={40}
+                  width={146}
+                  className="h-7 lg:h-8 w-auto object-contain"
+                  priority
+                />
+              </Link>
 
               {/* Desktop Navigation */}
               <div
                 className="hidden md:flex items-center space-x-3 lg:space-x-4"
                 onMouseLeave={scheduleHoverReset}
               >
-                {desktopNavItems.map((item) => {
-                  const matchHrefs = item.matchHrefs;
+                {navItems.map((item) => {
                   const isHighlighted =
                     hoveredHref === item.href ||
-                    (!hoveredHref && isActive(item.href, matchHrefs));
+                    (!hoveredHref && isActive(item.href, item.matchHrefs));
 
-                  if (item.hasDropdown) {
-                    const isBlog = item.dropdownType === "blog";
-                    const isPrecios = item.dropdownType === "precios";
-                    const isNosotro = item.dropdownType === "nosotro";
-                    const isApps = item.dropdownType === "apps";
-                    const showDropdown = isBlog
-                      ? showBlogDropdown
-                      : isPrecios
-                        ? showPreciosDropdown
-                        : isNosotro
-                          ? showNosotroDropdown
-                          : showAppsDropdown;
-                    const handleMouseEnter = isBlog
-                      ? handleBlogMouseEnter
-                      : isPrecios
-                        ? handlePreciosMouseEnter
-                        : isNosotro
-                          ? handleNosotroMouseEnter
-                          : handleAppsMouseEnter;
-                    const handleMouseLeave = isBlog
-                      ? handleBlogMouseLeave
-                      : isPrecios
-                        ? handlePreciosMouseLeave
-                        : isNosotro
-                          ? handleNosotroMouseLeave
-                          : handleAppsMouseLeave;
+                  if (item.dropdown) {
+                    const showDropdown = openDropdown === item.name;
 
                     return (
                       <div
                         key={item.name}
                         className="relative"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
+                        onMouseEnter={() => handleDropdownEnter(item.name)}
+                        onMouseLeave={handleDropdownLeave}
                       >
                         <Link
                           href={item.href}
@@ -287,7 +222,9 @@ export default function Navigation() {
                               : "text-gray-700 hover:text-primary",
                           )}
                           aria-current={
-                            isActive(item.href, matchHrefs) ? "page" : undefined
+                            isActive(item.href, item.matchHrefs)
+                              ? "page"
+                              : undefined
                           }
                           onMouseEnter={() => handleHover(item.href)}
                           onMouseLeave={scheduleHoverReset}
@@ -304,7 +241,7 @@ export default function Navigation() {
                           <span
                             aria-hidden="true"
                             className={cn(
-                              "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#F26729] via-[#FDB813] to-[#F26729] opacity-0 transition-all duration-300",
+                              "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#012928] via-[#F2C300] to-[#012928] opacity-0 transition-all duration-300",
                               isHighlighted
                                 ? "opacity-100 translate-y-0"
                                 : "group-hover:opacity-100 group-hover:translate-y-0.5",
@@ -316,124 +253,21 @@ export default function Navigation() {
                         {showDropdown && (
                           <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
                             <div className="py-2">
-                              {isBlog ? (
-                                <>
-                                  <Link
-                                    href="/blog"
-                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() => setShowBlogDropdown(false)}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <span>📰</span>
-                                      <span>Todos los artículos</span>
-                                    </div>
-                                  </Link>
-                                  <div className="border-t border-gray-200 my-2"></div>
-                                  {Object.entries(CATEGORIAS_INFO).map(
-                                    ([key, info]) => (
-                                      <Link
-                                        key={key}
-                                        href={`/blog?categoria=${key}`}
-                                        className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                        onClick={() =>
-                                          setShowBlogDropdown(false)
-                                        }
-                                      >
-                                        <div className="flex items-center gap-2">
-                                          <span>{info.icon}</span>
-                                          <span>{info.label}</span>
-                                        </div>
-                                      </Link>
-                                    ),
+                              {item.dropdown.map((sub, index) => (
+                                <div key={`${sub.name}-${sub.href}`}>
+                                  {index > 0 && (
+                                    <div className="border-t border-gray-200 my-2"></div>
                                   )}
-                                </>
-                              ) : isPrecios ? (
-                                <>
                                   <Link
-                                    href="/ofertas"
-                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() =>
-                                      setShowPreciosDropdown(false)
-                                    }
-                                  >
-                                    Kits Completos (instalación)
-                                  </Link>
-                                  <div className="border-t border-gray-200 my-2"></div>
-                                  <Link
-                                    href="/productos"
-                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() =>
-                                      setShowPreciosDropdown(false)
-                                    }
-                                  >
-                                    Productos Online
-                                  </Link>
-                                  <div className="border-t border-gray-200 my-2"></div>
-                                  <Link
-                                    href="/tienda"
+                                    href={sub.href}
                                     className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() =>
-                                      setShowPreciosDropdown(false)
-                                    }
+                                    onClick={() => setOpenDropdown(null)}
                                   >
-                                    <span>Tienda</span>
-                                    <Badge className="bg-primary text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
-                                      Pronto
-                                    </Badge>
+                                    <span>{sub.name}</span>
+                                    <DropdownBadge item={sub} />
                                   </Link>
-                                </>
-                              ) : isNosotro ? (
-                                <>
-                                  <Link
-                                    href="/sobre-nosotros"
-                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() =>
-                                      setShowNosotroDropdown(false)
-                                    }
-                                  >
-                                    Conócenos
-                                  </Link>
-                                  <div className="border-t border-gray-200 my-2"></div>
-                                  <Link
-                                    href="/contacto"
-                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() =>
-                                      setShowNosotroDropdown(false)
-                                    }
-                                  >
-                                    Contacto
-                                  </Link>
-                                </>
-                              ) : isApps ? (
-                                <>
-                                  <Link
-                                    href="/solar-survivor"
-                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() => setShowAppsDropdown(false)}
-                                  >
-                                    Solar Survivor
-                                  </Link>
-                                  <div className="border-t border-gray-200 my-2"></div>
-                                  <Link
-                                    href="/calculadora"
-                                    className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() => setShowAppsDropdown(false)}
-                                  >
-                                    Calculadora de Kw
-                                  </Link>
-                                  <div className="border-t border-gray-200 my-2"></div>
-                                  <Link
-                                    href="/ofertas"
-                                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-200"
-                                    onClick={() => setShowAppsDropdown(false)}
-                                  >
-                                    <span>Recomendador de ofertas</span>
-                                    <Badge className="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
-                                      IA
-                                    </Badge>
-                                  </Link>
-                                </>
-                              ) : null}
+                                </div>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -452,7 +286,9 @@ export default function Navigation() {
                             : "text-gray-700 hover:text-primary",
                         )}
                         aria-current={
-                          isActive(item.href, matchHrefs) ? "page" : undefined
+                          isActive(item.href, item.matchHrefs)
+                            ? "page"
+                            : undefined
                         }
                         onMouseEnter={() => handleHover(item.href)}
                         onMouseLeave={scheduleHoverReset}
@@ -460,15 +296,10 @@ export default function Navigation() {
                         onBlur={scheduleHoverReset}
                       >
                         <span className="relative z-10">{item.name}</span>
-                        {(item as any).isClient && (
-                          <Badge className="relative z-10 bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-xs px-2 py-1 rounded-full">
-                            Cliente
-                          </Badge>
-                        )}
                         <span
                           aria-hidden="true"
                           className={cn(
-                            "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#F26729] via-[#FDB813] to-[#F26729] opacity-0 transition-all duration-300",
+                            "pointer-events-none absolute inset-x-4 -bottom-2 h-[3px] rounded-full bg-gradient-to-r from-[#012928] via-[#F2C300] to-[#012928] opacity-0 transition-all duration-300",
                             isHighlighted
                               ? "opacity-100 translate-y-0"
                               : "group-hover:opacity-100 group-hover:translate-y-0.5",
@@ -484,7 +315,7 @@ export default function Navigation() {
               <div className="hidden md:block">
                 <Link
                   href="/cotizacion"
-                  className="px-4 py-2 lg:px-6 lg:py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base"
+                  className="px-4 py-2 lg:px-6 lg:py-2 bg-[#012928] text-white font-semibold rounded-lg hover:bg-[#011818] hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base"
                 >
                   Cotizar
                 </Link>
@@ -492,7 +323,7 @@ export default function Navigation() {
 
               {/* Mobile Menu Button */}
               <button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => (isOpen ? closeMobileMenu() : setIsOpen(true))}
                 className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors"
               >
                 {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -502,41 +333,80 @@ export default function Navigation() {
             {/* Mobile Navigation */}
             {isOpen && (
               <div className="md:hidden mt-3 pt-3 border-t border-gray-200/50">
-                <div className="flex flex-col space-y-2">
-                  {mobileNavItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
-                        isActive(item.href, item.matchHrefs)
-                          ? "bg-white/80 text-primary shadow-sm ring-1 ring-primary/20"
-                          : "text-gray-700 hover:text-primary hover:bg-white/60",
-                      )}
-                      aria-current={
-                        isActive(item.href, item.matchHrefs)
-                          ? "page"
-                          : undefined
-                      }
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                      {item.badge && (
-                        <Badge className="bg-primary text-white text-[10px] px-2.5 py-0.5 font-semibold rounded-md">
-                          {item.badge}
-                        </Badge>
-                      )}
-                      {(item as any).isClient && (
-                        <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white text-xs px-2 py-1 rounded-full">
-                          Cliente
-                        </Badge>
-                      )}
-                    </Link>
-                  ))}
+                <div className="flex flex-col space-y-1">
+                  {navItems.map((item) => {
+                    if (item.dropdown) {
+                      const expanded = expandedSections.includes(item.name);
+                      return (
+                        <div key={item.name}>
+                          <button
+                            type="button"
+                            onClick={() => toggleSection(item.name)}
+                            aria-expanded={expanded}
+                            className={cn(
+                              "flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
+                              isActive(item.href, item.matchHrefs)
+                                ? "bg-white/80 text-primary shadow-sm ring-1 ring-primary/20"
+                                : "text-gray-700 hover:text-primary hover:bg-white/60",
+                            )}
+                          >
+                            <span>{item.name}</span>
+                            <ChevronDown
+                              className={cn(
+                                "w-4 h-4 transition-transform duration-300",
+                                expanded && "rotate-180",
+                              )}
+                            />
+                          </button>
+                          {expanded && (
+                            <div className="mt-1 ml-3 flex flex-col space-y-1 border-l border-gray-200/70 pl-3">
+                              {item.dropdown.map((sub) => (
+                                <Link
+                                  key={`${sub.name}-${sub.href}`}
+                                  href={sub.href}
+                                  className={cn(
+                                    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all duration-300",
+                                    isActive(sub.href)
+                                      ? "bg-white/80 text-primary shadow-sm ring-1 ring-primary/20"
+                                      : "text-gray-600 hover:text-primary hover:bg-white/60",
+                                  )}
+                                  onClick={closeMobileMenu}
+                                >
+                                  <span>{sub.name}</span>
+                                  <DropdownBadge item={sub} />
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
+                          isActive(item.href, item.matchHrefs)
+                            ? "bg-white/80 text-primary shadow-sm ring-1 ring-primary/20"
+                            : "text-gray-700 hover:text-primary hover:bg-white/60",
+                        )}
+                        aria-current={
+                          isActive(item.href, item.matchHrefs)
+                            ? "page"
+                            : undefined
+                        }
+                        onClick={closeMobileMenu}
+                      >
+                        {item.name}
+                      </Link>
+                    );
+                  })}
                   <Link
                     href="/cotizacion"
-                    className="mt-3 px-4 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm text-center block"
-                    onClick={() => setIsOpen(false)}
+                    className="mt-3 px-4 py-2 bg-[#012928] text-white font-semibold rounded-lg hover:bg-[#011818] hover:shadow-lg transition-all duration-300 w-full text-sm text-center block"
+                    onClick={closeMobileMenu}
                   >
                     Cotizar
                   </Link>
@@ -545,7 +415,6 @@ export default function Navigation() {
             )}
           </div>
         </div>
-        {/*</GlassSurface>*/}
       </div>
     </nav>
   );

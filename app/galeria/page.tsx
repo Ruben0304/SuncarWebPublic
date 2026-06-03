@@ -275,7 +275,7 @@ export default function GaleriaPage() {
   return (
     <>
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50/50 to-white pt-36 pb-16 relative overflow-hidden">
+      <div className="min-h-screen bg-[#F2F2EF] pt-36 pb-16 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-100/30"></div>
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
@@ -305,7 +305,7 @@ export default function GaleriaPage() {
                 px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105
                 ${
                   activeCategory === category
-                    ? "bg-secondary-gradient text-white shadow-lg"
+                    ? "bg-[#012928] text-white shadow-lg"
                     : "bg-white text-gray-700 border border-gray-200 hover:border-primary hover:text-primary"
                 }
               `}
@@ -429,7 +429,7 @@ export default function GaleriaPage() {
               {/* Progress Bar */}
               <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
                 <div
-                  className="bg-secondary-gradient h-2 rounded-full transition-all duration-300"
+                  className="bg-[#012928] h-2 rounded-full transition-all duration-300"
                   style={{
                     width: `${((currentImageIndex + 1) / currentImages.length) * 100}%`,
                   }}

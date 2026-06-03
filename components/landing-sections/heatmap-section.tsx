@@ -12,7 +12,7 @@ const SolarHeatMap = dynamic(() => import("@/components/SolarHeatMap"), {
       style={{ height: "550px" }}
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-400 border-t-transparent" />
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#AFEB17] border-t-transparent" />
         <p className="text-white/70 text-sm font-medium">Cargando mapa</p>
       </div>
     </div>
@@ -30,13 +30,13 @@ export default function HeatMapSection() {
     <section className="py-16 lg:py-24 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#AFEB17]/50/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-10 lg:mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-orange-300 font-semibold text-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-[#AFEB17]/70 font-semibold text-sm mb-6">
             <MapPin className="w-4 h-4" />
             <span>Cobertura Nacional</span>
           </div>
@@ -67,11 +67,11 @@ export default function HeatMapSection() {
             >
               <div className="relative group">
                 {/* Pulsing ring */}
-                <div className="absolute inset-0 rounded-2xl bg-orange-500/30 animate-ping" style={{ animationDuration: "2s" }} />
-                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-orange-500 to-yellow-400 opacity-60 blur-sm group-hover:opacity-80 transition-opacity" />
+                <div className="absolute inset-0 rounded-2xl bg-[#AFEB17]/50/30 animate-ping" style={{ animationDuration: "2s" }} />
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-[#AFEB17]/50 to-[#F2C300] opacity-60 blur-sm group-hover:opacity-80 transition-opacity" />
 
                 {/* Hub card */}
-                <div className="relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-2xl shadow-orange-500/30 border border-orange-400/40">
+                <div className="relative bg-gradient-to-br from-[#AFEB17]/50 to-[#012928] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-2xl shadow-[#AFEB17]/25 border border-[#AFEB17]/40">
                   <div className="text-center">
                     <p className="text-white/80 text-[9px] sm:text-[10px] uppercase tracking-widest font-semibold leading-none mb-1">
                       Municipios
@@ -111,7 +111,7 @@ export default function HeatMapSection() {
               key={i}
               className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm"
             >
-              <div className="flex-shrink-0 w-10 h-10 bg-secondary-gradient rounded-lg flex items-center justify-center text-white">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#012928] rounded-lg flex items-center justify-center text-white">
                 {item.icon}
               </div>
               <div>

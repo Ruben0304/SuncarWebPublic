@@ -12,10 +12,10 @@ const brandItems = [
 
 export default function BrandsSection() {
   return (
-    <section className="py-16 lg:py-24 bg-gradient-to-br from-white via-gray-50/50 to-white relative overflow-hidden">
+    <section className="py-16 lg:py-24 bg-[#F2F2EF] relative overflow-hidden">
       {/* Decorative background elements */}
-      <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl -translate-x-1/2"></div>
-      <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-orange-100/20 rounded-full blur-3xl translate-x-1/2"></div>
+      <div className="absolute top-1/4 left-0 w-96 h-96 bg-[#012928]/5 rounded-full blur-3xl -translate-x-1/2"></div>
+      <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-[#F2C300]/15 rounded-full blur-3xl translate-x-1/2"></div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
         {/* Mobile Header - Centered */}
@@ -36,7 +36,7 @@ export default function BrandsSection() {
             {brandItems.map((brand) => (
               <div
                 key={`mobile-${brand.alt}`}
-                className="flex items-center justify-center p-4 rounded-2xl border border-gray-100 shadow-sm bg-white"
+                className="flex items-center justify-center p-4 rounded-2xl border border-[#012928]/10 shadow-sm bg-white/60"
               >
                 <div className="relative w-full h-16 sm:h-20">
                   <Image
@@ -58,10 +58,10 @@ export default function BrandsSection() {
           {/* Left Content */}
           <div className="space-y-6 lg:space-y-8">
             <div className="space-y-4">
-              <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full">
+              <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full">
                 Tecnología Premium
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#012928] leading-tight">
                 Marcas que
                 <span className="block bg-secondary-gradient bg-clip-text text-transparent">
                   Instalamos
@@ -70,14 +70,14 @@ export default function BrandsSection() {
               <div className="h-1 w-20 bg-secondary-gradient rounded-full"></div>
             </div>
 
-            <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-lg">
+            <p className="text-base lg:text-lg text-[#012928]/70 leading-relaxed max-w-lg">
               Trabajamos exclusivamente con las marcas líderes mundiales en
               tecnología solar
             </p>
 
             <Link
               href="/ofertas"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-secondary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-[#012928] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
             >
               Ver Precios
               <svg

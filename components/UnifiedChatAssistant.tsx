@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { MessageCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { SiWhatsapp } from "@icons-pack/react-simple-icons";
 import { getCartOpenState } from "@/components/ShoppingCart";
 
 const UnifiedChatAssistant: React.FC = () => {
@@ -39,7 +39,7 @@ const UnifiedChatAssistant: React.FC = () => {
         aria-label="Contactar por WhatsApp"
         title="Contactar por WhatsApp"
       >
-        <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+        <SiWhatsapp size={28} color="currentColor" />
       </button>
     </div>
   );

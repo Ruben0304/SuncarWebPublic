@@ -168,13 +168,13 @@ export default function TiendaPage() {
 
   if (SHOW_PRODUCTS_MAINTENANCE) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100">
+      <div className="min-h-screen bg-[#F2F2EF]">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
         <main className="pt-28 pb-20 px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center bg-white/80 backdrop-blur rounded-3xl shadow-xl border border-white/50 p-10 md:p-16">
-              <Badge className="mx-auto mb-6 bg-secondary-gradient text-white px-4 py-1 text-sm">
+              <Badge className="mx-auto mb-6 bg-[#012928] text-white px-4 py-1 text-sm">
                 En mantenimiento
               </Badge>
 
@@ -198,7 +198,7 @@ export default function TiendaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100">
+      <div className="min-h-screen bg-[#F2F2EF]">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <main className="pt-28 pb-20 px-4">
           <div className="max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[60vh]">
@@ -213,11 +213,11 @@ export default function TiendaPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100">
+      <div className="min-h-screen bg-[#F2F2EF]">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <main className="pt-28 pb-20 px-4">
           <div className="max-w-7xl mx-auto">
-            <Card className="bg-red-50 border-red-200">
+            <Card className="bg-red-50 border-[#AFEB17]/20">
               <CardContent className="p-8 text-center">
                 <p className="text-red-800 font-semibold mb-2">
                   Error al cargar productos
@@ -244,7 +244,7 @@ export default function TiendaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       <main className="pt-28 pb-16">
@@ -254,7 +254,7 @@ export default function TiendaPage() {
             <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 p-6 shadow-sm">
               <div className="flex flex-col lg:flex-row gap-4">
                 <div className="flex-1 relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-orange-500/5 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity blur-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-[#AFEB17]/50/5 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity blur-xl" />
                   <div className="relative flex items-center gap-3 bg-white rounded-xl border-2 border-slate-200 px-4 py-3 transition-all group-focus-within:border-primary group-focus-within:shadow-md">
                     <Search className="w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                     <Input
@@ -298,7 +298,7 @@ export default function TiendaPage() {
                       size="sm"
                       className={`h-8 text-xs md:text-sm px-3 md:px-4 ${
                         selectedCategoria === null
-                          ? "bg-secondary-gradient text-white border-none shadow-md hover:shadow-lg"
+                          ? "bg-[#012928] text-white border-none shadow-md hover:shadow-lg"
                           : "border-slate-200 text-slate-700 hover:bg-slate-50"
                       }`}
                     >
@@ -314,7 +314,7 @@ export default function TiendaPage() {
                         size="sm"
                         className={`h-8 text-xs md:text-sm px-3 md:px-4 ${
                           selectedCategoria === cat
-                            ? "bg-secondary-gradient text-white border-none shadow-md hover:shadow-lg"
+                            ? "bg-[#012928] text-white border-none shadow-md hover:shadow-lg"
                             : "border-slate-200 text-slate-700 hover:bg-slate-50"
                         }`}
                       >
@@ -442,7 +442,7 @@ export default function TiendaPage() {
                                     </Badge>
                                   )}
                                   {producto.precio_por_cantidad && (
-                                    <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 text-[8px] font-semibold text-amber-900 bg-amber-100 rounded-full border border-amber-200">
+                                    <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 text-[8px] font-semibold text-[#012928] bg-[#F2C300]/15 rounded-full border border-[#F2C300]/25">
                                       Dto. volumen
                                     </span>
                                   )}
@@ -505,7 +505,7 @@ export default function TiendaPage() {
                                       showAddToCartNotification();
                                       addItem(producto);
                                     }}
-                                    className="w-full bg-secondary-gradient text-white h-9 text-[12px] font-semibold rounded-lg active:scale-[0.97]"
+                                    className="w-full bg-[#012928] text-white h-9 text-[12px] font-semibold rounded-lg active:scale-[0.97]"
                                   >
                                     <Plus className="w-3.5 h-3.5 mr-1" />
                                     Agregar
@@ -560,7 +560,7 @@ export default function TiendaPage() {
                                   </Badge>
                                   <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                                     {producto.precio_por_cantidad && (
-                                      <span className="px-3 py-1 text-xs font-semibold text-amber-900 bg-gradient-to-r from-amber-100 via-amber-50 to-white rounded-full border border-amber-200 shadow-sm">
+                                      <span className="px-3 py-1 text-xs font-semibold text-[#012928] bg-gradient-to-r from-[#F2C300]/10 via-[#F2C300]/5 to-white rounded-full border border-[#F2C300]/25 shadow-sm">
                                         Descuento
                                       </span>
                                     )}
@@ -609,7 +609,7 @@ export default function TiendaPage() {
                                     </div>
 
                                     {producto.precio_por_cantidad && (
-                                      <div className="flex items-center gap-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 shadow-inner">
+                                      <div className="flex items-center gap-2 text-xs text-[#012928] bg-[#F2C300]/5 border border-[#F2C300]/25 rounded-lg px-3 py-2 shadow-inner">
                                         <Zap className="w-4 h-4" />
                                         <span>Mejor precio por volumen</span>
                                       </div>
@@ -681,7 +681,7 @@ export default function TiendaPage() {
                                         showAddToCartNotification();
                                         addItem(producto);
                                       }}
-                                      className="bg-secondary-gradient text-white shadow-md hover:shadow-lg relative overflow-hidden h-9 text-sm px-3"
+                                      className="bg-[#012928] text-white shadow-md hover:shadow-lg relative overflow-hidden h-9 text-sm px-3"
                                     >
                                       <Plus className="w-4 h-4 mr-1" />
                                       Agregar
@@ -698,7 +698,7 @@ export default function TiendaPage() {
                           <div className="flex items-center justify-center mt-6 gap-3">
                             <div className="relative w-full max-w-xs h-2 bg-slate-200 rounded-full overflow-hidden">
                               <div
-                                className="absolute top-0 left-0 h-full bg-secondary-gradient rounded-full transition-all duration-300 shadow-md"
+                                className="absolute top-0 left-0 h-full bg-[#012928] rounded-full transition-all duration-300 shadow-md"
                                 style={{
                                   width: `${scrollPositions[categoria] || 0}%`,
                                 }}

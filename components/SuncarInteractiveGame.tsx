@@ -23,7 +23,7 @@ export default function SuncarInteractiveGame() {
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             La Solución de Suncar
-            <span className="block bg-gradient-to-r from-[#FDB813] to-[#F26729] bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-[#F2C300] to-[#AFEB17] bg-clip-text text-transparent">
               Contra los Apagones
             </span>
           </h2>
@@ -39,7 +39,7 @@ export default function SuncarInteractiveGame() {
               <div>
                 <h3 className="text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-6 leading-tight">
                   ⚡ Descubre Cómo
-                  <span className="block bg-gradient-to-r from-[#FDB813] to-[#F26729] bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-[#F2C300] to-[#AFEB17] bg-clip-text text-transparent">
                     VENCER los Apagones
                   </span>
                 </h3>
@@ -54,7 +54,7 @@ export default function SuncarInteractiveGame() {
                     <div className="text-sm text-white font-semibold">Estudio Personalizado</div>
                   </div>
                   <div className="text-center">
-                    <Trophy className="w-10 h-10 text-[#FDB813] mx-auto mb-3" />
+                    <Trophy className="w-10 h-10 text-[#F2C300] mx-auto mb-3" />
                     <div className="text-sm text-white font-semibold">Instalación Express</div>
                   </div>
                   <div className="text-center">
@@ -68,7 +68,7 @@ export default function SuncarInteractiveGame() {
                 href="/solar-survivor"
                 className="group relative px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 text-xl flex items-center gap-3 mx-auto lg:mx-0 overflow-hidden hover:-translate-y-1"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#F2C300] via-[#AFEB17]/50 to-red-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 animate-pulse"></div>
                 <div className="relative flex items-center gap-3 z-10">
                   <span className="relative">
@@ -93,9 +93,9 @@ export default function SuncarInteractiveGame() {
             
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#F26729]/20 to-[#FDB813]/20 rounded-full blur-3xl scale-75 animate-pulse" />
-                <div className="absolute top-1/4 -right-8 w-3 h-3 bg-[#FDB813] rounded-full animate-bounce opacity-70" />
-                <div className="absolute bottom-1/4 -left-8 w-2 h-2 bg-[#F26729] rounded-full animate-bounce animation-delay-1000 opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#AFEB17]/20 to-[#F2C300]/20 rounded-full blur-3xl scale-75 animate-pulse" />
+                <div className="absolute top-1/4 -right-8 w-3 h-3 bg-[#F2C300] rounded-full animate-bounce opacity-70" />
+                <div className="absolute bottom-1/4 -left-8 w-2 h-2 bg-[#AFEB17] rounded-full animate-bounce animation-delay-1000 opacity-60" />
                 <div className="absolute top-1/2 -right-4 w-2 h-2 bg-blue-400 rounded-full animate-pulse animation-delay-500 opacity-50" />
                 <div className="absolute bottom-1/3 left-4 w-1.5 h-1.5 bg-white rounded-full animate-pulse animation-delay-1500 opacity-60" />
               </div>

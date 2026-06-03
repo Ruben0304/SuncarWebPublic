@@ -86,7 +86,7 @@ export const CurrencySelector = ({
       {/* Price Display */}
       {showConvertedPrice && !error && (
         <div className="flex flex-col gap-0.5">
-          <div className={`font-bold text-[#F26729] ${
+          <div className={`font-bold text-[#AFEB17] ${
             size === 'lg' ? 'text-2xl' : size === 'md' ? 'text-lg' : 'text-base'
           }`}>
             {formatPrice(convertedPrice, selectedCurrency)}

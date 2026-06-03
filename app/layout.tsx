@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Cinzel } from "next/font/google";
+import { Host_Grotesk } from "next/font/google";
 import "../styles/globals.css";
 import "../styles/nprogress.css";
 import ClientWrapper from "@/components/ClientWrapper";
 import ProgressBarSuspense from "@/components/ProgressBarSuspense";
 
-const cinzel = Cinzel({
+const hostGrotesk = Host_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-cinzel",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-host-grotesk",
   display: "swap",
 });
 
@@ -107,7 +107,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={cinzel.variable}>
+    <html lang="es" className={hostGrotesk.variable}>
       <head>
         <script
           type="application/ld+json"

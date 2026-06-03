@@ -66,14 +66,14 @@ function BlogContent() {
   const categoryInfo = categoriaParam ? CATEGORIAS_INFO[categoriaParam] : null
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#F2F2EF] overflow-x-hidden">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-primary via-blue-900 to-primary overflow-hidden">
         {/* Background decorations */}
         <div className="absolute top-20 left-10 w-32 h-32 bg-secondary-gradient rounded-full opacity-20 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-20 w-40 h-40 bg-orange-500/20 rounded-full opacity-30 blur-3xl animate-pulse animation-delay-1000"></div>
+        <div className="absolute bottom-10 right-20 w-40 h-40 bg-[#AFEB17]/50/20 rounded-full opacity-30 blur-3xl animate-pulse animation-delay-1000"></div>
 
         <div className="container mx-auto text-center relative z-10">
           <div className="space-y-6 max-w-4xl mx-auto">
@@ -133,7 +133,7 @@ function BlogContent() {
                 <p className="text-red-600 text-lg font-medium">{error}</p>
                 <button
                   onClick={fetchBlogs}
-                  className="mt-4 px-6 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+                  className="mt-4 px-6 py-2 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
                 >
                   Reintentar
                 </button>
@@ -151,7 +151,7 @@ function BlogContent() {
                 {categoryInfo && (
                   <Link
                     href="/blog"
-                    className="mt-4 inline-block px-6 py-2 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+                    className="mt-4 inline-block px-6 py-2 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
                   >
                     Ver todos los artículos
                   </Link>
@@ -182,7 +182,7 @@ export default function BlogPage() {
 
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-white overflow-x-hidden">
+      <div className="min-h-screen bg-[#F2F2EF] overflow-x-hidden">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-primary via-blue-900 to-primary overflow-hidden">
           <div className="container mx-auto text-center">

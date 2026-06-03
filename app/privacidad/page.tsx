@@ -7,9 +7,9 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h1 className="text-4xl font-bold text-[#0F2B66] mb-8">
+        <h1 className="text-4xl font-bold text-[#012928] mb-8">
           Política de Privacidad
         </h1>
 
@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
           </p>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               1. Introducción
             </h2>
             <p className="text-gray-700 mb-4">
@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               2. Información que Recopilamos
             </h2>
 
@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               3. Cómo Utilizamos tu Información
             </h2>
             <p className="text-gray-700 mb-3">
@@ -89,7 +89,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               4. Compartir Información
             </h2>
             <p className="text-gray-700 mb-3">
@@ -109,7 +109,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               5. Seguridad de los Datos
             </h2>
             <p className="text-gray-700 mb-4">
@@ -130,7 +130,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               6. Retención de Datos
             </h2>
             <p className="text-gray-700">
@@ -142,7 +142,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               7. Tus Derechos
             </h2>
             <p className="text-gray-700 mb-3">
@@ -163,7 +163,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               8. Cookies y Tecnologías Similares
             </h2>
             <p className="text-gray-700 mb-3">
@@ -183,7 +183,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               9. Enlaces a Terceros
             </h2>
             <p className="text-gray-700">
@@ -194,7 +194,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               10. Privacidad de Menores
             </h2>
             <p className="text-gray-700">
@@ -205,7 +205,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               11. Cambios a esta Política
             </h2>
             <p className="text-gray-700">
@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               12. Contacto
             </h2>
             <p className="text-gray-700 mb-4">
@@ -229,10 +229,10 @@ export default function PrivacyPolicyPage() {
                 <strong>Suncar</strong>
               </p>
               <p className="text-gray-700 mb-2">
-                Correo electrónico: <a href="mailto:info@suncar.cu" className="text-[#F26729] hover:underline">info@suncar.cu</a>
+                Correo electrónico: <a href="mailto:info@suncar.cu" className="text-[#AFEB17] hover:underline">info@suncar.cu</a>
               </p>
               <p className="text-gray-700 mb-2">
-                Teléfono: <a href="tel:+5378261062" className="text-[#F26729] hover:underline">+53 78261062</a>
+                Teléfono: <a href="tel:+5378261062" className="text-[#AFEB17] hover:underline">+53 78261062</a>
               </p>
               <p className="text-gray-700">
                 Dirección: Cuba
@@ -241,7 +241,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               13. Consentimiento
             </h2>
             <p className="text-gray-700">

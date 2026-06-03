@@ -93,7 +93,7 @@ export default function ClientVerificationDialog({
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#AFEB17] to-[#F2C300] rounded-full flex items-center justify-center mb-4">
                 <User className="w-8 h-8 text-white" />
               </div>
               <DialogTitle className="text-xl font-semibold text-gray-900 mb-2">
@@ -107,7 +107,7 @@ export default function ClientVerificationDialog({
             <div className="flex flex-col gap-3">
               <Button 
                 onClick={() => handleIsClientResponse(true)}
-                className="bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white font-medium py-3"
+                className="bg-gradient-to-r from-[#AFEB17] to-[#F2C300] hover:from-[#e55a1f] hover:to-[#e6a610] text-white font-medium py-3"
                 size="lg"
               >
                 <User className="w-4 h-4 mr-2" />
@@ -130,7 +130,7 @@ export default function ClientVerificationDialog({
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#F26729] to-[#FDB813] rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#AFEB17] to-[#F2C300] rounded-full flex items-center justify-center mb-4">
                 <Phone className="w-8 h-8 text-white" />
               </div>
               <DialogTitle className="text-xl font-semibold text-gray-900 mb-2">
@@ -179,7 +179,7 @@ export default function ClientVerificationDialog({
                 <Button
                   onClick={handleVerifyClient}
                   disabled={isLoading || !identifier.trim()}
-                  className="flex-1 bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white"
+                  className="flex-1 bg-gradient-to-r from-[#AFEB17] to-[#F2C300] hover:from-[#e55a1f] hover:to-[#e6a610] text-white"
                 >
                   {isLoading ? (
                     <>
@@ -210,14 +210,14 @@ export default function ClientVerificationDialog({
               </DialogDescription>
             </div>
 
-            <Card className="bg-gradient-to-br from-[#F26729]/10 to-[#FDB813]/10 border-orange-200">
+            <Card className="bg-gradient-to-br from-[#AFEB17]/10 to-[#F2C300]/10 border-[#AFEB17]/25">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900">Cliente Verificado</p>
                     <p className="text-sm text-gray-600">Acceso a ofertas especiales</p>
                   </div>
-                  <Badge className="bg-gradient-to-r from-[#F26729] to-[#FDB813] text-white">
+                  <Badge className="bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-white">
                     VIP
                   </Badge>
                 </div>
@@ -251,7 +251,7 @@ export default function ClientVerificationDialog({
               </Button>
               <Button
                 onClick={() => onOpenChange(false)}
-                className="flex-1 bg-gradient-to-r from-[#F26729] to-[#FDB813] hover:from-[#e55a1f] hover:to-[#e6a610] text-white"
+                className="flex-1 bg-gradient-to-r from-[#AFEB17] to-[#F2C300] hover:from-[#e55a1f] hover:to-[#e6a610] text-white"
               >
                 Continuar sin verificar
               </Button>

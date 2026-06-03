@@ -76,7 +76,7 @@ export default function SobreNosotrosPage() {
         "Refrigeración para productos",
         "Procesamiento sostenible"
       ],
-      color: "from-orange-500 to-orange-600"
+      color: "from-[#AFEB17]/50 to-[#012928]"
     }
   ]
 
@@ -105,7 +105,7 @@ export default function SobreNosotrosPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
@@ -138,10 +138,10 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Quiénes Somos Section */}
-      <section className="py-16 lg:py-20 bg-white">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">
+            <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full mb-4">
               Quiénes Somos
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-6">
@@ -158,7 +158,7 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Misión y Visión */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12">
             {/* Misión */}
@@ -174,7 +174,7 @@ export default function SobreNosotrosPage() {
 
             {/* Visión */}
             <div className="bg-white rounded-2xl p-8 shadow-xl hover-magnetic glow-on-hover animate-fade-in-right animation-delay-400">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center text-white mb-6 animate-pulse-glow animation-delay-800">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#AFEB17]/50 to-[#012928] rounded-2xl flex items-center justify-center text-white mb-6 animate-pulse-glow animation-delay-800">
                 <TrendingUp className="w-8 h-8 animate-bounce-slow" />
               </div>
               <h3 className="text-2xl font-bold text-primary mb-4 animate-fade-in-up animation-delay-1000">Nuestra Visión</h3>
@@ -187,10 +187,10 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Valores */}
-      <section className="py-16 lg:py-20 bg-white">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">
+            <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full mb-4">
               Nuestros Valores
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -216,10 +216,10 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Público Objetivo */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">
+            <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full mb-4">
               Nuestros Clientes
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -256,7 +256,7 @@ export default function SobreNosotrosPage() {
 
 
       {/* CTA Section */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary">
@@ -267,7 +267,7 @@ export default function SobreNosotrosPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/cotizacion">
-                <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover attention-grabber">
+                <button className="px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover attention-grabber">
                   Solicitar Cotización <ArrowRight className="w-4 h-4 animate-bounce-slow" />
                 </button>
               </Link>
@@ -282,7 +282,7 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Link to Web Info */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary">
@@ -292,7 +292,7 @@ export default function SobreNosotrosPage() {
               Descubre las tecnologías y el equipo detrás de este sitio web moderno
             </p>
             <Link href="/webinfo">
-              <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover mx-auto">
+              <button className="px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover mx-auto">
                 Ver Información del Sitio Web <ArrowRight className="w-4 h-4 animate-bounce-slow" />
               </button>
             </Link>

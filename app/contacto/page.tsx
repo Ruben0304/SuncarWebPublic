@@ -109,12 +109,12 @@ ${formData.message}
       icon: <Clock className="w-6 h-6" />,
       title: "Horarios",
       content: "Lun - Vie: 8:00 AM - 6:00 PM\nSáb: 9:00 AM - 2:00 PM",
-      color: "bg-orange-500"
+      color: "bg-[#AFEB17]/50"
     }
   ]
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
@@ -143,7 +143,7 @@ ${formData.message}
       </section>
 
        {/*Contact Form & Info Section */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
@@ -170,7 +170,7 @@ ${formData.message}
                     </p>
                     <button
                       onClick={() => setIsSubmitted(false)}
-                      className="px-6 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+                      className="px-6 py-3 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
                     >
                       Enviar Otro Mensaje
                     </button>
@@ -261,7 +261,7 @@ ${formData.message}
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full px-6 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                      className="w-full px-6 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -313,7 +313,7 @@ ${formData.message}
       </section>
 
       {/* Map Section */}
-      <section className="py-16 lg:py-20 bg-white">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl lg:text-3xl font-bold text-primary mb-4">
@@ -344,10 +344,10 @@ ${formData.message}
       </section>
 
       {/* FAQ Section */}
-      {/*<section className="py-16 lg:py-20 bg-white">*/}
+      {/*<section className="py-16 lg:py-20 bg-[#F2F2EF]">*/}
       {/*  <div className="container mx-auto px-4 md:px-6 lg:px-8">*/}
       {/*    <div className="text-center mb-12">*/}
-      {/*      <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">*/}
+      {/*      <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full mb-4">*/}
       {/*        Preguntas Frecuentes*/}
       {/*      </div>*/}
       {/*      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">*/}

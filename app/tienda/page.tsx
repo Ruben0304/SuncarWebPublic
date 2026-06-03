@@ -25,7 +25,7 @@ export default function ProductosPage() {
   const whatsappLink = cleanWhatsappNumber ? `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage}` : null
 
   return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100">
+      <div className="min-h-screen bg-[#F2F2EF]">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <main className="pt-28 pb-20 px-4">
           <div className="max-w-5xl mx-auto">
@@ -38,7 +38,7 @@ export default function ProductosPage() {
 
             {/* Content Card */}
             <div className="text-center bg-white/80 backdrop-blur rounded-3xl shadow-xl border border-white/50 p-10 md:p-16">
-              <Badge className="mx-auto mb-6 bg-secondary-gradient text-white px-4 py-1 text-sm">
+              <Badge className="mx-auto mb-6 bg-[#012928] text-white px-4 py-1 text-sm">
                 Próximamente
               </Badge>
               <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
@@ -59,7 +59,7 @@ export default function ProductosPage() {
                       href={whatsappLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full sm:w-auto rounded-2xl bg-secondary-gradient text-white font-semibold px-8 py-3 shadow-lg shadow-orange-200/60 transition-transform hover:scale-[1.02] text-center"
+                      className="w-full sm:w-auto rounded-2xl bg-[#012928] text-white font-semibold px-8 py-3 shadow-lg shadow-[#AFEB17]/20 transition-transform hover:scale-[1.02] text-center"
                   >
                     Avísame cuando esté listo
                   </a>

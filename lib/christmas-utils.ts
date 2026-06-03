@@ -7,6 +7,6 @@ export function isChristmasSeason(): boolean {
     const month = now.getMonth() // 0-11, where 11 is December
     const day = now.getDate() // 1-31
 
-    // December (month 11) from day 1 to 26
-    return month === 11 && day >= 1 && day <= 26
+    // Christmas theme permanently disabled
+    return false
 }

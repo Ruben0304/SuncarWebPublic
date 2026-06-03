@@ -5,7 +5,7 @@ export type Categoria = "instalacion" | "mantenimiento" | "casos_exito" | "ahorr
 export const CATEGORIAS_INFO: Record<Categoria, { label: string; color: string; icon: string }> = {
   instalacion: { label: "Instalación", color: "from-blue-500 to-cyan-500", icon: "⚡" },
   mantenimiento: { label: "Mantenimiento", color: "from-green-500 to-emerald-500", icon: "🔧" },
-  casos_exito: { label: "Casos de Éxito", color: "from-yellow-500 to-orange-500", icon: "⭐" },
+  casos_exito: { label: "Casos de Éxito", color: "from-[#F2C300]/50 to-[#AFEB17]/50", icon: "⭐" },
   ahorro_energetico: { label: "Ahorro Energético", color: "from-purple-500 to-pink-500", icon: "💰" },
   novedades: { label: "Novedades", color: "from-red-500 to-rose-500", icon: "🆕" },
   normativas: { label: "Normativas", color: "from-gray-600 to-slate-600", icon: "📋" },

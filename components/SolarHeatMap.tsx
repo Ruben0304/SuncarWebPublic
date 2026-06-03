@@ -315,7 +315,7 @@ export default function SolarHeatMap({
             className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm"
             style={{ height }}
           >
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-400 border-t-transparent mb-3" />
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#AFEB17] border-t-transparent mb-3" />
             <p className="text-white/80 text-sm font-medium">
               Cargando mapa de instalaciones...
             </p>

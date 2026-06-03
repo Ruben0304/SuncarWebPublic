@@ -7,14 +7,14 @@ export const metadata: Metadata = {
 
 export default function SolarSurvivorPrivacyPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-[#0F2B66] mb-4">
+          <h1 className="text-4xl font-bold text-[#012928] mb-4">
             Política de Privacidad
           </h1>
-          <p className="text-xl text-[#F26729] font-semibold">
+          <p className="text-xl text-[#AFEB17] font-semibold">
             Solar Survivor
           </p>
         </div>
@@ -26,7 +26,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 1 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               1. Introducción
             </h2>
             <p className="text-gray-700">
@@ -38,7 +38,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 2 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               2. Responsable del tratamiento
             </h2>
             <p className="text-gray-700">
@@ -49,7 +49,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 3 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               3. Datos que recopilamos
             </h2>
 
@@ -95,7 +95,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 4 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               4. Finalidades
             </h2>
             <ul className="list-disc pl-6 space-y-2 text-gray-700">
@@ -108,7 +108,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 5 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               5. Bases legales
             </h2>
             <p className="text-gray-700">
@@ -119,7 +119,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 6 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               6. Compartición de datos
             </h2>
             <p className="text-gray-700 mb-3">
@@ -134,7 +134,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 7 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               7. Conservación
             </h2>
             <ul className="list-disc pl-6 space-y-2 text-gray-700">
@@ -150,7 +150,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 8 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               8. Seguridad
             </h2>
             <p className="text-gray-700 mb-3">
@@ -165,7 +165,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 9 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               9. Derechos del usuario
             </h2>
             <p className="text-gray-700 mb-3">
@@ -181,7 +181,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 10 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               10. Transferencias internacionales
             </h2>
             <p className="text-gray-700">
@@ -193,7 +193,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 11 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               11. Menores de edad
             </h2>
             <p className="text-gray-700">
@@ -204,7 +204,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 12 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               12. Actualizaciones de esta política
             </h2>
             <p className="text-gray-700">
@@ -216,7 +216,7 @@ export default function SolarSurvivorPrivacyPage() {
 
           {/* Section 13 */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#0F2B66] mb-4">
+            <h2 className="text-2xl font-semibold text-[#012928] mb-4">
               13. Contacto y soporte
             </h2>
             <p className="text-gray-700 mb-4">
@@ -230,13 +230,13 @@ export default function SolarSurvivorPrivacyPage() {
                 <strong>Suncar SRL</strong>
               </p>
               <p className="text-gray-700 mb-2">
-                Sitio web: <a href="https://suncarsrl.com" className="text-[#F26729] hover:underline" target="_blank" rel="noopener noreferrer">suncarsrl.com</a>
+                Sitio web: <a href="https://suncarsrl.com" className="text-[#AFEB17] hover:underline" target="_blank" rel="noopener noreferrer">suncarsrl.com</a>
               </p>
               <p className="text-gray-700 mb-2">
-                Correo electrónico: <a href="mailto:info@suncar.cu" className="text-[#F26729] hover:underline">info@suncar.cu</a>
+                Correo electrónico: <a href="mailto:info@suncar.cu" className="text-[#AFEB17] hover:underline">info@suncar.cu</a>
               </p>
               <p className="text-gray-700">
-                Teléfono: <a href="tel:+5378261062" className="text-[#F26729] hover:underline">+53 78261062</a>
+                Teléfono: <a href="tel:+5378261062" className="text-[#AFEB17] hover:underline">+53 78261062</a>
               </p>
             </div>
           </section>

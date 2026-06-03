@@ -23,49 +23,46 @@ interface HeroSectionProps {
 
 export default function HeroSection({ blueText, orangeText }: HeroSectionProps) {
     return (
-        <section className="relative min-h-screen flex items-center px-4 py-24 md:px-6 lg:px-8 lg:py-0 overflow-hidden">
+        <section className="relative min-h-screen flex items-center px-4 py-24 md:px-6 lg:px-8 lg:py-0 overflow-hidden bg-[#F2F2EF]">
             <div className="container mx-auto">
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                     {/* Hero Text */}
                     <div className="space-y-6 lg:space-y-8 relative">
                         <div className="space-y-3 lg:space-y-4 relative">
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold text-primary leading-loose">
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold text-[#012928] leading-loose">
                                 <span className="inline-block min-h-[1.2em]">
                                     {blueText.displayText}
                                     {!blueText.isComplete && <span className="animate-pulse">|</span>}
                                 </span>
                                 <span className="block bg-secondary-gradient bg-clip-text text-transparent pb-2 min-h-[1.2em]">
                                     {orangeText.displayText}
-                                    {!orangeText.isComplete && <span className="animate-pulse text-orange-500">|</span>}
+                                    {!orangeText.isComplete && <span className="animate-pulse text-[#012928]">|</span>}
                                 </span>
                             </h1>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards, gentle-float 8s ease-in-out 1.9s infinite' }}>
+                            <p className="text-base sm:text-lg md:text-xl text-[#012928]/70 leading-relaxed max-w-lg opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards' }}>
                                 Transforma tu hogar o negocio con energía limpia y renovable con
                                 nuestros sistemas de paneles solares y baterías de última generación.
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards, gentle-float 8s ease-in-out 2.1s infinite' }}>
+                        <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.9s forwards' }}>
                             <Link
                                 href="/ofertas"
-                                className="px-6 py-3 lg:px-8 lg:py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base hover-magnetic glow-on-hover attention-grabber"
+                                className="px-6 py-3 lg:px-8 lg:py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base"
                             >
-                                🧰 Ver Kits de Instalación
+                                Kits de instalación
                             </Link>
                             <Link
                                 href="/productos"
-                                className="group relative px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 text-sm lg:text-base overflow-hidden transform hover:scale-105 hover:-translate-y-1"
+                                className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-[#012928] text-[#012928] bg-transparent font-semibold rounded-lg hover:bg-[#012928] hover:text-white transition-all duration-300 text-sm lg:text-base"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
-                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 animate-pulse"></div>
-                                <span className="relative z-10">🛒 Ver Productos</span>
-                                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                Productos
                             </Link>
                         </div>
                     </div>
 
                     {/* Hero 3D Model */}
-                    <div className="relative opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.4s forwards, gentle-float-image 10s ease-in-out 1.8s infinite' }}>
+                    <div className="relative opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.4s forwards' }}>
                         <SolarHouseModel />
                     </div>
                 </div>

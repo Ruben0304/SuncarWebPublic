@@ -70,7 +70,7 @@ export default function ServicesPage() {
         "Soporte técnico 24/7",
         "Atención a quejas y solicitudes"
       ],
-      color: "from-orange-500 to-orange-600"
+      color: "from-[#AFEB17]/50 to-[#012928]"
     },
     {
       icon: <Calculator className="w-8 h-8" />,
@@ -134,47 +134,45 @@ export default function ServicesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#F2F2EF] overflow-x-hidden">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
-      <section className="relative pt-20 pb-8 sm:pt-24 sm:pb-12 lg:py-32 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">
+      <section className="relative pt-20 pb-8 sm:pt-24 sm:pb-12 lg:py-32 bg-[#F2F2EF] overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-16 items-center min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-96px)] lg:min-h-[85vh]">
             {/* Text Content */}
-            <div className="text-center lg:text-left text-white space-y-4 sm:space-y-6 lg:space-y-8 order-1 lg:order-1">
+            <div className="text-center lg:text-left text-[#012928] space-y-4 sm:space-y-6 lg:space-y-8 order-1 lg:order-1">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 <span className="block animate-fade-in-up">Nuestros</span>
                 <span className="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-200">
                   Servicios Solares
                 </span>
               </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-blue-100 max-w-2xl mx-auto lg:mx-0 lg:max-w-none leading-relaxed animate-fade-in-up animation-delay-400">
+              <p className="text-base sm:text-lg lg:text-xl text-[#012928]/70 max-w-2xl mx-auto lg:mx-0 lg:max-w-none leading-relaxed animate-fade-in-up animation-delay-400">
                 Energía solar integral: sistemas eficientes y sostenibles para hogares, negocios y espacios que buscan autonomía y ahorro con energía limpia, eficiente y sostenible. Maximiza el ahorro con sistemas personalizados para cada necesidad.              </p>
             </div>
             
             {/* Lottie Animation */}
             <div className="flex justify-center lg:justify-end animate-fade-in-up animation-delay-600 order-2 lg:order-2 w-full">
-              <div className="relative w-full max-w-lg sm:max-w-xl lg:max-w-2xl xl:max-w-3xl">
+              <div className="relative w-full max-w-xl sm:max-w-2xl lg:max-w-3xl xl:max-w-4xl">
                 <SolarCellAnimation />
-                {/* Glow effect behind animation */}
-                <div className="absolute inset-0 bg-secondary-gradient rounded-full blur-3xl opacity-30 scale-125 -z-10"></div>
               </div>
             </div>
           </div>
         </div>
         
         {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-2 h-2 bg-white/30 rounded-full animate-bounce animation-delay-1000"></div>
-        <div className="absolute top-40 right-20 w-3 h-3 bg-white/20 rounded-full animate-bounce animation-delay-1200"></div>
-        <div className="absolute bottom-40 left-20 w-1 h-1 bg-white/40 rounded-full animate-bounce animation-delay-800"></div>
+        <div className="absolute top-20 left-10 w-2 h-2 bg-secondary-gradient rounded-full animate-bounce animation-delay-1000"></div>
+        <div className="absolute top-40 right-20 w-3 h-3 bg-primary/30 rounded-full animate-bounce animation-delay-1200"></div>
+        <div className="absolute bottom-40 left-20 w-1 h-1 bg-secondary-gradient rounded-full animate-bounce animation-delay-800"></div>
       </section>
 
       {/* Services Grid */}
-      <section className="py-8 sm:py-12 lg:py-20 bg-gray-50">
+      <section className="py-8 sm:py-12 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">
+            <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full mb-4">
               Servicios Principales
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -214,10 +212,10 @@ export default function ServicesPage() {
       </section>
 
       {/* Process Section */}
-      <section className="py-16 lg:py-20 bg-white">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-block px-4 py-2 bg-secondary-gradient text-white text-sm font-semibold rounded-full mb-4">
+            <div className="inline-block px-4 py-2 bg-[#012928] text-white text-sm font-semibold rounded-full mb-4">
               Proceso de Instalación
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -232,7 +230,7 @@ export default function ServicesPage() {
             {processSteps.map((step, index) => (
               <div key={index} className="text-center">
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-secondary-gradient rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                  <div className="w-20 h-20 bg-[#012928] rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                     {step.step}
                   </div>
                   {index < processSteps.length - 1 && (
@@ -262,7 +260,7 @@ export default function ServicesPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-secondary-gradient rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#012928] rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
                   {benefit.icon}
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
@@ -274,7 +272,7 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary">

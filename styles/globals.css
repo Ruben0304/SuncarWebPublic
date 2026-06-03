@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-host-grotesk), 'Host Grotesk', sans-serif;
   overflow-x: hidden;
+  background-color: #F2F2EF;
 }
 
 @layer utilities {
@@ -102,7 +103,7 @@ body {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #F26729, #FDB813);
+  background: linear-gradient(45deg, #012928, #F2C300);
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
@@ -149,15 +150,15 @@ body {
   left: 50%;
   width: 30px;
   height: 30px;
-  background: linear-gradient(45deg, #FDB813, #F26729);
+  background: linear-gradient(45deg, #F2C300, #012928);
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
   animation: rotate-around-image 8s linear infinite;
   animation-delay: 2s;
   z-index: 100;
   box-shadow:
-    0 0 20px rgba(253, 184, 19, 0.9),
-    0 0 40px rgba(242, 103, 41, 0.7),
-    0 0 60px rgba(253, 184, 19, 0.5);
+    0 0 20px rgba(242, 195, 0, 0.9),
+    0 0 40px rgba(1, 41, 40, 0.7),
+    0 0 60px rgba(242, 195, 0, 0.5);
 }
 
 .magic-star-2 {
@@ -202,10 +203,10 @@ body {
   position: absolute;
   width: 8px;
   height: 8px;
-  background: radial-gradient(circle, #FDB813, #F26729);
+  background: radial-gradient(circle, #F2C300, #012928);
   border-radius: 50%;
   animation: float-particle 3s ease-in-out infinite;
-  box-shadow: 0 0 15px rgba(253, 184, 19, 0.8);
+  box-shadow: 0 0 15px rgba(242, 195, 0, 0.8);
   z-index: 100;
 }
 
@@ -323,16 +324,16 @@ body {
   0%,
   100% {
     box-shadow:
-      0 0 20px rgba(253, 184, 19, 0.3),
-      0 0 40px rgba(242, 103, 41, 0.2),
-      inset 0 0 20px rgba(253, 184, 19, 0.1);
+      0 0 20px rgba(242, 195, 0, 0.3),
+      0 0 40px rgba(1, 41, 40, 0.2),
+      inset 0 0 20px rgba(242, 195, 0, 0.1);
   }
 
   50% {
     box-shadow:
-      0 0 30px rgba(253, 184, 19, 0.6),
-      0 0 60px rgba(242, 103, 41, 0.4),
-      inset 0 0 30px rgba(253, 184, 19, 0.2);
+      0 0 30px rgba(242, 195, 0, 0.6),
+      0 0 60px rgba(1, 41, 40, 0.4),
+      inset 0 0 30px rgba(242, 195, 0, 0.2);
   }
 }
 
@@ -434,7 +435,7 @@ body {
 
 /* Morphing shapes */
 .morphing-shape {
-  background: linear-gradient(45deg, #F26729, #FDB813);
+  background: linear-gradient(45deg, #012928, #F2C300);
   animation: morph-bg 8s ease-in-out infinite;
 }
 
@@ -750,7 +751,7 @@ body {
 .shimmer-effect {
   background: linear-gradient(90deg,
       transparent,
-      rgba(253, 184, 19, 0.2),
+      rgba(242, 195, 0, 0.2),
       transparent);
   background-size: 468px 100%;
   animation: shimmer 2s infinite;
@@ -838,7 +839,7 @@ body {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #F26729, #FDB813);
+  background: linear-gradient(45deg, #012928, #F2C300);
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border: none;
@@ -983,11 +984,11 @@ body {
 
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+    box-shadow: 0 0 20px rgba(242, 195, 0, 0.3);
   }
 
   50% {
-    box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 191, 36, 0.4);
+    box-shadow: 0 0 40px rgba(242, 195, 0, 0.6), 0 0 60px rgba(242, 195, 0, 0.4);
   }
 }
 

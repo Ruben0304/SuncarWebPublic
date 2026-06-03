@@ -12,7 +12,7 @@ const NightLightsMap = dynamic(() => import("@/components/NightLightsMap"), {
       style={{ height: "500px" }}
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-amber-400 border-t-transparent" />
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#F2C300] border-t-transparent" />
         <p className="text-white/60 text-sm font-medium">Cargando mapa</p>
       </div>
     </div>
@@ -37,14 +37,14 @@ export default function BlackoutSection() {
   }
 
   return (
-    <section className="py-16 lg:py-24 bg-black relative overflow-hidden">
+    <section className="py-16 lg:py-24 bg-[#012928] relative overflow-hidden">
       {/* Ambient glow when lights are on */}
       <div
         className="absolute inset-0 transition-opacity duration-1000 pointer-events-none"
         style={{ opacity: lightsOn ? 1 : 0 }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#F2C300]/50/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#AFEB17]/50/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
@@ -56,7 +56,7 @@ export default function BlackoutSection() {
               {lightsOn ? (
                 <>
                   <span className="text-white">Cuba iluminada </span>
-                  <span className="text-amber-400">con Suncar</span>
+                  <span className="text-[#F2C300]">con Suncar</span>
                 </>
               ) : (
                 <>
@@ -89,7 +89,7 @@ export default function BlackoutSection() {
             >
               {/* Pulsing glow when turning on */}
               {isAnimating && !lightsOn && (
-                <div className="absolute -inset-4 rounded-full bg-amber-400/30 animate-ping" />
+                <div className="absolute -inset-4 rounded-full bg-[#F2C300]/20 animate-ping" />
               )}
 
               {/* Glow behind switch when on */}
@@ -106,7 +106,7 @@ export default function BlackoutSection() {
               <div
                 className={`relative w-20 h-10 rounded-full transition-all duration-700 border-2 ${
                   lightsOn
-                    ? "bg-gradient-to-r from-amber-500 to-amber-400 border-amber-300 shadow-xl shadow-amber-500/50"
+                    ? "bg-gradient-to-r from-[#F2C300]/50 to-[#F2C300] border-[#F2C300]/40 shadow-xl shadow-[#AFEB17]/40"
                     : "bg-gray-800 border-gray-600 shadow-inner"
                 } ${isAnimating ? "scale-105" : "scale-100"}`}
               >
@@ -119,20 +119,20 @@ export default function BlackoutSection() {
                 <div
                   className={`absolute top-0.5 w-8 h-8 rounded-full transition-all duration-700 flex items-center justify-center ${
                     lightsOn
-                      ? "left-[calc(100%-2.25rem)] bg-white shadow-2xl shadow-amber-500/50"
+                      ? "left-[calc(100%-2.25rem)] bg-white shadow-2xl shadow-[#AFEB17]/40"
                       : "left-0.5 bg-gray-500 shadow-inner"
                   } ${isAnimating ? "scale-110" : "scale-100"}`}
                 >
                   <Zap
                     className={`w-4 h-4 transition-all duration-700 ${
-                      lightsOn ? "text-amber-500 drop-shadow-glow" : "text-gray-700"
+                      lightsOn ? "text-white0 drop-shadow-glow" : "text-gray-700"
                     } ${isAnimating && !lightsOn ? "animate-pulse" : ""}`}
                   />
                 </div>
               </div>
             </button>
 
-            <Zap className={`w-5 h-5 transition-all duration-500 ${lightsOn ? "text-amber-400 opacity-100 scale-110 drop-shadow-glow" : "text-gray-700 opacity-30"}`} />
+            <Zap className={`w-5 h-5 transition-all duration-500 ${lightsOn ? "text-[#F2C300] opacity-100 scale-110 drop-shadow-glow" : "text-gray-700 opacity-30"}`} />
           </div>
         </div>
 

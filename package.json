@@ -16,6 +16,7 @@
   "dependencies": {
     "@google/model-viewer": "^4.1.0",
     "@hookform/resolvers": "^3.9.1",
+    "@icons-pack/react-simple-icons": "^13.13.0",
     "@lottiefiles/dotlottie-react": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",

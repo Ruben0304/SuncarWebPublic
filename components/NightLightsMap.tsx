@@ -134,6 +134,11 @@ export default function NightLightsMap({
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -374,7 +379,7 @@ export default function NightLightsMap({
           className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm gap-3"
           style={{ height }}
         >
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-amber-400 border-t-transparent" />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#F2C300] border-t-transparent" />
           <p className="text-white/60 text-sm font-medium">Cargando mapa</p>
         </div>
       )}
@@ -395,7 +400,9 @@ export default function NightLightsMap({
             : "brightness-[0.46] saturate-[0.8]"
         }`}
       >
-        <MapContainer
+        {!isMounted ? (
+          <div style={{ height, width: "100%" }} className="rounded-2xl lg:rounded-3xl bg-[#0A052D]" />
+        ) : <MapContainer
           center={MAP_CENTER}
           zoom={7}
           minZoom={6}
@@ -433,7 +440,7 @@ export default function NightLightsMap({
             />
           ))}
           <ZoomControl position="bottomright" />
-        </MapContainer>
+        </MapContainer>}
 
         <div
           className="pointer-events-none absolute inset-0 transition-opacity duration-1000"
@@ -448,13 +455,13 @@ export default function NightLightsMap({
       {lightsOn && (
         <div className="pointer-events-none absolute top-4 left-4 z-[1200]">
           <div
-            className="rounded-2xl border border-amber-300/60 bg-amber-100/15 px-4 py-3 backdrop-blur-xl shadow-[0_0_25px_rgba(251,191,36,0.32)] transition-all duration-700"
+            className="rounded-2xl border border-[#F2C300]/35 bg-[#F2C300]/10 px-4 py-3 backdrop-blur-xl shadow-[0_0_25px_rgba(251,191,36,0.32)] transition-all duration-700"
             aria-label={`${totalMunicipios} municipios encendidos`}
           >
-            <p className="text-3xl font-semibold leading-none text-amber-50 animate-hub-breathe">
+            <p className="text-3xl font-semibold leading-none text-white animate-hub-breathe">
               {totalMunicipios}
             </p>
-            <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-amber-100/85">
+            <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-white/70">
               municipios instalados
             </p>
           </div>

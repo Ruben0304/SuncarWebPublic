@@ -139,7 +139,7 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       {/* Hero Section */}
@@ -169,7 +169,7 @@ export default function TestimonialsPage() {
       </section>
 
       {/* Video Testimonials Slider */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      <section className="py-16 lg:py-20 bg-[#F2F2EF]">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-12" data-aos="fade-up">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -284,7 +284,7 @@ export default function TestimonialsPage() {
               <div className="p-8">
                 <div className="text-center space-y-4">
                   <div className="flex items-center justify-center gap-4">
-                    <div className="w-16 h-16 bg-secondary-gradient rounded-full flex items-center justify-center text-white font-bold text-xl">
+                    <div className="w-16 h-16 bg-[#012928] rounded-full flex items-center justify-center text-white font-bold text-xl">
                       {videoTestimonials[currentVideo].name.charAt(0)}
                     </div>
                     <div>
@@ -351,7 +351,7 @@ export default function TestimonialsPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/cotizacion">
-                <button className="px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <button className="px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                   Solicitar Cotización
                 </button>
               </Link>
