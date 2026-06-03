@@ -26,7 +26,7 @@ export default function WebInfoPage() {
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
       
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 overflow-hidden">
+      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#011818] via-[#012928] to-[#011818] overflow-hidden">
         {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/10 to-secondary-start/10 opacity-50"></div>
         <div className="absolute top-20 left-20 w-32 h-32 bg-secondary-gradient rounded-full opacity-20 blur-3xl animate-pulse animation-delay-1000"></div>
@@ -43,7 +43,7 @@ export default function WebInfoPage() {
                 Next.js
               </span>
             </h1>
-            <p className="text-lg lg:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600">
+            <p className="text-lg lg:text-xl text-green-100/80 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600">
               Una experiencia web moderna y eficiente, creada con las últimas tecnologías para brindarte la mejor navegación
             </p>
           </div>

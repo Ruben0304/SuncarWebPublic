@@ -143,7 +143,7 @@ export default function TestimonialsPage() {
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-primary to-blue-800 overflow-hidden">
+      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#011818] via-[#012928] to-[#011818] overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div
             className="text-center text-white space-y-6"
@@ -155,7 +155,7 @@ export default function TestimonialsPage() {
                 Nuestros Clientes
               </span>
             </h1>
-            <p className="text-lg lg:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-400">
+            <p className="text-lg lg:text-xl text-green-100/80 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-400">
               Historias reales de familias cubanas que han transformado sus
               hogares con energía solar y han logrado independencia energética
             </p>
@@ -345,13 +345,13 @@ export default function TestimonialsPage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
               ¿Quieres Ser Nuestro Próximo Cliente Satisfecho?
             </h2>
-            <p className="text-lg text-blue-100">
+            <p className="text-lg text-green-100/80">
               Únete a cientos de familias cubanas que ya disfrutan de los
               beneficios de la energía solar
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/cotizacion">
-                <button className="px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <button className="px-8 py-4 bg-[#AFEB17] text-[#012928] font-semibold rounded-lg shadow-lg hover:shadow-xl hover:bg-[#9fd613] transition-all duration-300 transform hover:scale-105">
                   Solicitar Cotización
                 </button>
               </Link>

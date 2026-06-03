@@ -265,14 +265,14 @@ export default function SobreNosotrosPage() {
             <p className="text-lg text-gray-600">
               Únete a las familias y empresas que ya confían en SUNCAR para su independencia energética
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cotizacion">
-                <button className="px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover attention-grabber">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
+              <Link href="/cotizacion" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover attention-grabber">
                   Solicitar Cotización <ArrowRight className="w-4 h-4 animate-bounce-slow" />
                 </button>
               </Link>
-              <Link href="/contacto">
-                <button className="px-8 py-4 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300 hover-magnetic">
+              <Link href="/contacto" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto px-8 py-4 border-2 border-[#012928] text-[#012928] font-semibold rounded-lg hover:bg-[#012928] hover:text-white transition-all duration-300 hover-magnetic">
                   Contactar Ahora
                 </button>
               </Link>
