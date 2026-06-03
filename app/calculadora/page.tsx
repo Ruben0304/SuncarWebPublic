@@ -29,15 +29,36 @@ import {
   RotateCcw,
   Battery,
   Cpu,
-  Lightbulb,
+  Sun,
   Minus,
   Search,
   Loader2,
   Trash2,
-  ArrowLeft
+  ArrowLeft,
+  Home,
+  Building2,
+  Clock,
+  Info,
+  ChevronDown,
+  Sparkles,
+  SlidersHorizontal,
 } from "lucide-react"
 import { calculoEnergeticoService } from "@/services/api/calculoEnergeticoService"
-import type { CalculoEnergeticoCategoria, CalculoEnergeticoEquipo } from "@/services/api/calculoEnergeticoService"
+import type { CalculoEnergeticoCategoria } from "@/services/api/calculoEnergeticoService"
+import {
+  dimensionarSistema,
+  inferirTipoCarga,
+  horasUsoPorDefecto,
+  factorArranquePorDefecto,
+  CONSTANTES,
+  FACTOR_SIMULTANEIDAD,
+  DOD,
+  type EquipoCalculo,
+  type ParametrosDimensionamiento,
+  type PerfilUso,
+  type TecnologiaBateria,
+  type TipoCarga,
+} from "@/lib/solar/dimensionamiento"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { isChristmasSeason } from "@/lib/christmas-utils"
@@ -53,6 +74,8 @@ const categoriaIconos: Record<string, string> = {
   "Otros Equipos y Herramientas": "🔧",
 }
 
+type Modo = "asistido" | "experto"
+
 const getEquipoKey = (categoriaId: string, equipoNombre: string) => `${categoriaId}::${equipoNombre}`
 
 type EquipoWithMeta = {
@@ -62,13 +85,18 @@ type EquipoWithMeta = {
   nombre: string
   potencia_kw: number
   energia_kwh: number
-  isLocal?: boolean // Marca si es un equipo creado localmente
+  horas_uso_dia: number
+  tipo_carga: TipoCarga
+  factor_arranque: number
+  isLocal?: boolean
 }
 
 interface CreateEquipoForm {
   nombre: string
   potencia_kw: string
   energia_kwh: string
+  horas_uso_dia: string
+  tipo_carga: TipoCarga
   categoria: string
   categoriaPersonalizada: string
 }
@@ -77,18 +105,35 @@ const createEmptyCreateForm = (): CreateEquipoForm => ({
   nombre: "",
   potencia_kw: "",
   energia_kwh: "",
+  horas_uso_dia: "4",
+  tipo_carga: "resistiva",
   categoria: "",
   categoriaPersonalizada: "",
 })
 
+const fmt = (n: number, dec = 1) =>
+  n.toLocaleString("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec })
+
 export default function CalculadoraPage() {
   const { toast } = useToast()
+
+  const [modo, setModo] = useState<Modo>("asistido")
+  const [perfil, setPerfil] = useState<PerfilUso>("hogar")
+  const [tecnologiaBateria, setTecnologiaBateria] = useState<TecnologiaBateria>("litio")
+  const [horasAutonomia, setHorasAutonomia] = useState([8])
+  const [showAvanzado, setShowAvanzado] = useState(false)
+  const [avanzado, setAvanzado] = useState({
+    factorSimultaneidad: null as number | null,
+    hsp: CONSTANTES.HSP,
+    pr: CONSTANTES.PR,
+    factorPotencia: CONSTANTES.FACTOR_POTENCIA,
+    potenciaPanelKwp: CONSTANTES.POTENCIA_PANEL_KWP,
+  })
 
   const [categorias, setCategorias] = useState<CalculoEnergeticoCategoria[]>([])
   const [equiposLocales, setEquiposLocales] = useState<Map<string, EquipoWithMeta>>(new Map())
   const [equiposCantidad, setEquiposCantidad] = useState<Map<string, number>>(new Map())
-  const [showRecomendaciones, setShowRecomendaciones] = useState(false)
-  const [bateriaKwh, setBateriaKwh] = useState([0])
+  const [horasUsoOverride, setHorasUsoOverride] = useState<Map<string, number>>(new Map())
   const [openBuscador, setOpenBuscador] = useState(false)
   const [busqueda, setBusqueda] = useState("")
   const [cantidadBuscador, setCantidadBuscador] = useState<Map<string, number>>(new Map())
@@ -122,18 +167,24 @@ export default function CalculadoraPage() {
     fetchCategorias()
   }, [fetchCategorias])
 
-  // Combinar equipos del backend con equipos locales
+  // Combinar equipos del backend con equipos locales, infiriendo campos faltantes
   const equiposConMeta = useMemo<EquipoWithMeta[]>(() => {
     const equiposBackend = categorias.flatMap((categoria) =>
-      (categoria.equipos || []).map((equipo) => ({
-        key: getEquipoKey(categoria.id, equipo.nombre),
-        categoriaId: categoria.id,
-        categoriaNombre: categoria.nombre,
-        nombre: equipo.nombre,
-        potencia_kw: equipo.potencia_kw,
-        energia_kwh: equipo.energia_kwh,
-        isLocal: false,
-      }))
+      (categoria.equipos || []).map((equipo) => {
+        const tipo = equipo.tipo_carga ?? inferirTipoCarga(equipo.nombre)
+        return {
+          key: getEquipoKey(categoria.id, equipo.nombre),
+          categoriaId: categoria.id,
+          categoriaNombre: categoria.nombre,
+          nombre: equipo.nombre,
+          potencia_kw: equipo.potencia_kw,
+          energia_kwh: equipo.energia_kwh,
+          horas_uso_dia: equipo.horas_uso_dia ?? horasUsoPorDefecto(categoria.nombre),
+          tipo_carga: tipo,
+          factor_arranque: equipo.factor_arranque ?? factorArranquePorDefecto(tipo),
+          isLocal: false,
+        }
+      })
     )
 
     const equiposLocalesArray = Array.from(equiposLocales.values())
@@ -147,18 +198,13 @@ export default function CalculadoraPage() {
     return map
   }, [equiposConMeta])
 
-  // Organizar equipos por categoría (incluyendo locales)
   const categoriasPorNombre = useMemo(() => {
     const map = new Map<string, EquipoWithMeta[]>()
-
     equiposConMeta.forEach((equipo) => {
       const categoria = equipo.categoriaNombre
-      if (!map.has(categoria)) {
-        map.set(categoria, [])
-      }
+      if (!map.has(categoria)) map.set(categoria, [])
       map.get(categoria)!.push(equipo)
     })
-
     return map
   }, [equiposConMeta])
 
@@ -168,64 +214,73 @@ export default function CalculadoraPage() {
       let changed = false
       const next = new Map<string, T>()
       source.forEach((value, key) => {
-        if (validKeys.has(key)) {
-          next.set(key, value)
-        } else {
-          changed = true
-        }
+        if (validKeys.has(key)) next.set(key, value)
+        else changed = true
       })
-
-      if (!changed && source.size === next.size) {
-        let identical = true
-        source.forEach((value, key) => {
-          if (next.get(key) !== value) {
-            identical = false
-          }
-        })
-        if (identical) {
-          return source
-        }
-      }
+      if (!changed && source.size === next.size) return source
       return next
     }
 
     setEquiposCantidad((prev) => pruneMap(prev))
     setCantidadBuscador((prev) => pruneMap(prev))
+    setHorasUsoOverride((prev) => pruneMap(prev))
   }, [equiposConMeta])
 
-  const potenciaTotalKw = useMemo(() => {
-    let total = 0
+  const getHorasUso = useCallback(
+    (equipo: EquipoWithMeta) => horasUsoOverride.get(equipo.key) ?? equipo.horas_uso_dia,
+    [horasUsoOverride]
+  )
+
+  // Lista lista para el motor de cálculo
+  const equiposParaCalculo = useMemo<EquipoCalculo[]>(() => {
+    const lista: EquipoCalculo[] = []
     equiposCantidad.forEach((cantidad, key) => {
       const equipo = equiposIndex.get(key)
       if (equipo) {
-        total += equipo.potencia_kw * cantidad
+        lista.push({
+          potencia_kw: equipo.potencia_kw,
+          energia_kwh: equipo.energia_kwh,
+          horas_uso_dia: getHorasUso(equipo),
+          factor_arranque: equipo.factor_arranque,
+          cantidad,
+        })
       }
     })
-    return total
-  }, [equiposCantidad, equiposIndex])
+    return lista
+  }, [equiposCantidad, equiposIndex, getHorasUso])
 
-  const consumoRealKwh = useMemo(() => {
-    let total = 0
-    equiposCantidad.forEach((cantidad, key) => {
-      const equipo = equiposIndex.get(key)
-      if (equipo) {
-        total += equipo.energia_kwh * cantidad
+  const parametros = useMemo<ParametrosDimensionamiento>(() => {
+    const base: ParametrosDimensionamiento = {
+      perfil,
+      tecnologiaBateria,
+      horasAutonomia: horasAutonomia[0],
+    }
+    if (modo === "experto") {
+      return {
+        ...base,
+        factorSimultaneidad: avanzado.factorSimultaneidad ?? undefined,
+        hsp: avanzado.hsp,
+        pr: avanzado.pr,
+        factorPotencia: avanzado.factorPotencia,
+        potenciaPanelKwp: avanzado.potenciaPanelKwp,
       }
-    })
-    return total
-  }, [equiposCantidad, equiposIndex])
+    }
+    return base
+  }, [perfil, tecnologiaBateria, horasAutonomia, modo, avanzado])
 
-  const inversorRecomendado = potenciaTotalKw * 1.25
-  const bateriaRecomendada5h = consumoRealKwh * 5
-  const duracionConBateria = consumoRealKwh > 0 ? bateriaKwh[0] / consumoRealKwh : 0
+  const resultado = useMemo(
+    () => dimensionarSistema(equiposParaCalculo, parametros),
+    [equiposParaCalculo, parametros]
+  )
+
   const totalEquipos = equiposCantidad.size
+  const tieneEquipos = totalEquipos > 0
 
   const categoriaOptions = useMemo(() => {
     const categoriasBackend = categorias.map((cat) => cat.nombre)
     const categoriasLocales = Array.from(
       new Set(Array.from(equiposLocales.values()).map((eq) => eq.categoriaNombre))
     ).filter((cat) => !categoriasBackend.includes(cat))
-
     return [...categoriasBackend, ...categoriasLocales]
   }, [categorias, equiposLocales])
 
@@ -238,11 +293,11 @@ export default function CalculadoraPage() {
     setEquiposCantidad(new Map())
     setCantidadBuscador(new Map())
     setEquiposLocales(new Map())
+    setHorasUsoOverride(new Map())
   }
 
   const agregarEquipo = (equipoKey: string, cantidad = 1) => {
     if (!equiposIndex.has(equipoKey)) return
-
     setEquiposCantidad((prev) => {
       const next = new Map(prev)
       next.set(equipoKey, cantidad)
@@ -261,8 +316,7 @@ export default function CalculadoraPage() {
   const incrementarCantidad = (equipoKey: string) => {
     setEquiposCantidad((prev) => {
       const next = new Map(prev)
-      const actual = next.get(equipoKey) || 0
-      next.set(equipoKey, actual + 1)
+      next.set(equipoKey, (next.get(equipoKey) || 0) + 1)
       return next
     })
   }
@@ -271,11 +325,16 @@ export default function CalculadoraPage() {
     setEquiposCantidad((prev) => {
       const next = new Map(prev)
       const actual = next.get(equipoKey) || 0
-      if (actual > 1) {
-        next.set(equipoKey, actual - 1)
-      } else {
-        next.delete(equipoKey)
-      }
+      if (actual > 1) next.set(equipoKey, actual - 1)
+      else next.delete(equipoKey)
+      return next
+    })
+  }
+
+  const actualizarHorasUso = (equipoKey: string, horas: number) => {
+    setHorasUsoOverride((prev) => {
+      const next = new Map(prev)
+      next.set(equipoKey, Math.min(24, Math.max(0.5, horas)))
       return next
     })
   }
@@ -295,31 +354,22 @@ export default function CalculadoraPage() {
   const actualizarCantidadBuscador = (equipoKey: string, cantidad: number) => {
     setCantidadBuscador((prev) => {
       const next = new Map(prev)
-      if (cantidad > 0) {
-        next.set(equipoKey, cantidad)
-      } else {
-        next.delete(equipoKey)
-      }
+      if (cantidad > 0) next.set(equipoKey, cantidad)
+      else next.delete(equipoKey)
       return next
     })
   }
 
-  const handleOpenRecomendaciones = () => {
-    setBateriaKwh([parseFloat(bateriaRecomendada5h.toFixed(2))])
-    setShowRecomendaciones(true)
-  }
-
   const handleCreateDialogChange = (open: boolean) => {
     setIsCreateDialogOpen(open)
-    if (!open) {
-      setCreateForm(createEmptyCreateForm())
-    }
+    if (!open) setCreateForm(createEmptyCreateForm())
   }
 
   const handleCreateEquipoLocal = () => {
     const nombre = createForm.nombre.trim()
     const potencia = parseFloat(createForm.potencia_kw)
     const energia = parseFloat(createForm.energia_kwh)
+    const horas = parseFloat(createForm.horas_uso_dia)
     const categoriaSeleccionada =
       createForm.categoria === "otro" ? createForm.categoriaPersonalizada.trim() : createForm.categoria.trim()
 
@@ -327,41 +377,25 @@ export default function CalculadoraPage() {
       toast({ title: "Campos incompletos", description: "Ingresa el nombre del equipo.", variant: "destructive" })
       return
     }
-
     if (!categoriaSeleccionada) {
       toast({ title: "Campos incompletos", description: "Selecciona o ingresa una categoría.", variant: "destructive" })
       return
     }
-
     if (Number.isNaN(potencia) || potencia <= 0) {
-      toast({
-        title: "Dato inválido",
-        description: "La potencia debe ser un número positivo en kW.",
-        variant: "destructive",
-      })
+      toast({ title: "Dato inválido", description: "La potencia debe ser un número positivo en kW.", variant: "destructive" })
       return
     }
-
     if (Number.isNaN(energia) || energia <= 0) {
-      toast({
-        title: "Dato inválido",
-        description: "La energía debe ser un número positivo en kWh.",
-        variant: "destructive",
-      })
+      toast({ title: "Dato inválido", description: "El consumo debe ser un número positivo en kWh.", variant: "destructive" })
       return
     }
+    const horasUso = Number.isNaN(horas) || horas <= 0 ? 4 : Math.min(24, horas)
 
-    // Crear equipo local (no persistente)
     const categoriaId = `local-${categoriaSeleccionada.toLowerCase().replace(/\s+/g, "-")}`
     const equipoKey = getEquipoKey(categoriaId, nombre)
 
-    // Verificar si ya existe
     if (equiposLocales.has(equipoKey) || equiposIndex.has(equipoKey)) {
-      toast({
-        title: "Equipo duplicado",
-        description: "Ya existe un equipo con ese nombre en esta categoría.",
-        variant: "destructive",
-      })
+      toast({ title: "Equipo duplicado", description: "Ya existe un equipo con ese nombre en esta categoría.", variant: "destructive" })
       return
     }
 
@@ -372,6 +406,9 @@ export default function CalculadoraPage() {
       nombre,
       potencia_kw: potencia,
       energia_kwh: energia,
+      horas_uso_dia: horasUso,
+      tipo_carga: createForm.tipo_carga,
+      factor_arranque: factorArranquePorDefecto(createForm.tipo_carga),
       isLocal: true,
     }
 
@@ -381,10 +418,7 @@ export default function CalculadoraPage() {
       return next
     })
 
-    toast({
-      title: "Equipo agregado",
-      description: "El equipo se agregó a tu calculadora (solo visible en esta sesión)."
-    })
+    toast({ title: "Equipo agregado", description: "El equipo se agregó a tu calculadora (solo en esta sesión)." })
     handleCreateDialogChange(false)
   }
 
@@ -394,182 +428,420 @@ export default function CalculadoraPage() {
       next.delete(equipoKey)
       return next
     })
-
     setEquiposCantidad((prev) => {
       const next = new Map(prev)
       next.delete(equipoKey)
       return next
     })
-
     setCantidadBuscador((prev) => {
       const next = new Map(prev)
       next.delete(equipoKey)
       return next
     })
-
     toast({ title: "Equipo eliminado", description: "El equipo personalizado fue eliminado." })
   }
+
+  const BackButton = () => (
+    <Link
+      href="/"
+      className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-[#AFEB17]/25 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
+    >
+      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+      <span className="text-sm font-semibold">Volver</span>
+    </Link>
+  )
+
+  const Header = () => (
+    <header className="bg-white border-b border-[#AFEB17]/25 sticky top-0 z-20 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#012928]/20 flex-shrink-0 bg-white flex items-center justify-center p-1">
+              <img src="/images/logo-icon.png" alt="Suncar Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                <Calculator className="h-5 w-5 text-[#012928]" />
+                Calculadora Solar
+              </h1>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            {loadingCategorias && (
+              <span className="hidden md:flex items-center gap-2 text-sm text-[#012928]">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Actualizando</span>
+              </span>
+            )}
+            <Button
+              onClick={restablecerParametros}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 border-[#AFEB17]/25 hover:bg-[#AFEB17]/5 hover:border-[#AFEB17]/40"
+              disabled={totalEquipos === 0 && equiposLocales.size === 0}
+            >
+              <RotateCcw className="h-4 w-4 text-[#012928]" />
+              <span className="hidden sm:inline">Limpiar</span>
+            </Button>
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              size="sm"
+              className="flex items-center gap-2 bg-[#012928] hover:bg-[#011818] text-white"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Crear</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
 
   if (initialLoading) {
     return (
       <>
-        {/* Back Button */}
-        <Link
-          href="/"
-          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-[#AFEB17]/25 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-semibold">Volver</span>
-        </Link>
-
+        <BackButton />
         <div className="min-h-screen bg-[#F2F2EF]">
-          {/* Barra superior compacta */}
-          <header className="bg-white border-b border-[#AFEB17]/25 sticky top-0 z-20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#012928]/20 flex-shrink-0 bg-white flex items-center justify-center p-1">
-                  <img
-                    src="/images/logo-icon.png"
-                    alt="Suncar Logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div>
-                  <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Calculator className="h-5 w-5 text-[#012928]" />
-                    Calculadora Solar
-                  </h1>
-                </div>
-              </Link>
+          <Header />
+          <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 60px)" }}>
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-[#012928] mx-auto mb-4" />
+              <p className="text-gray-600">Cargando calculadora...</p>
             </div>
           </div>
-        </header>
-
-        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 60px)' }}>
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-[#012928] mx-auto mb-4" />
-            <p className="text-gray-600">Cargando calculadora...</p>
-          </div>
-        </div>
-        {isChristmas ? <FooterChristmas /> : <Footer />}
+          {isChristmas ? <FooterChristmas /> : <Footer />}
         </div>
       </>
     )
   }
 
+  const esExperto = modo === "experto"
+  const factorSimAplicado = parametros.factorSimultaneidad ?? FACTOR_SIMULTANEIDAD[perfil]
+
   return (
     <>
-      {/* Back Button */}
-      <Link
-        href="/"
-        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full border border-[#AFEB17]/25 text-gray-700 hover:bg-white transition-all duration-300 group shadow-lg"
-      >
-        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        <span className="text-sm font-semibold">Volver</span>
-      </Link>
+      <BackButton />
 
       <div className="min-h-screen bg-[#F2F2EF]">
-        {/* Barra superior compacta */}
-        <header className="bg-white border-b border-[#AFEB17]/25 sticky top-0 z-20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#012928]/20 flex-shrink-0 bg-white flex items-center justify-center p-1">
-                <img
-                  src="/images/logo-icon.png"
-                  alt="Suncar Logo"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <Calculator className="h-5 w-5 text-[#012928]" />
-                  Calculadora Solar
-                </h1>
-              </div>
-            </Link>
+        <Header />
 
-            <div className="flex items-center gap-2">
-              {loadingCategorias && (
-                <span className="hidden md:flex items-center gap-2 text-sm text-[#012928]">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Actualizando</span>
-                </span>
-              )}
-              <Button
-                onClick={restablecerParametros}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 border-[#AFEB17]/25 hover:bg-[#AFEB17]/5 hover:border-[#AFEB17]/40"
-                disabled={totalEquipos === 0 && equiposLocales.size === 0}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+          {/* Selector de modo */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="inline-flex rounded-full border border-[#AFEB17]/30 bg-white p-1 shadow-sm self-start">
+              <button
+                onClick={() => setModo("asistido")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                  !esExperto ? "bg-[#012928] text-white" : "text-gray-600 hover:text-[#012928]"
+                }`}
               >
-                <RotateCcw className="h-4 w-4 text-[#012928]" />
-                <span className="hidden sm:inline">Limpiar</span>
-              </Button>
-              <Button
-                onClick={() => setIsCreateDialogOpen(true)}
-                size="sm"
-                className="flex items-center gap-2 bg-[#012928] hover:bg-[#011818] text-white"
+                <Sparkles className="h-4 w-4" />
+                Modo Asistido
+              </button>
+              <button
+                onClick={() => setModo("experto")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                  esExperto ? "bg-[#012928] text-white" : "text-gray-600 hover:text-[#012928]"
+                }`}
               >
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Crear</span>
-              </Button>
+                <SlidersHorizontal className="h-4 w-4" />
+                Modo Experto
+              </button>
             </div>
+            <p className="text-sm text-gray-600 max-w-md">
+              {esExperto
+                ? "Ajusta factores técnicos (simultaneidad, DoD, pérdidas, fases) y ve el detalle en kVA."
+                : "Selecciona tus equipos y te decimos qué necesitas, en lenguaje sencillo."}
+            </p>
           </div>
-        </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Panel de consumo total */}
-        <div className="sticky top-16 z-10 bg-gradient-to-br from-[#AFEB17]/5 to-[#F2C300]/5 pb-4 sm:pb-6">
-          <Card className="bg-white border-[#AFEB17]/25 shadow-lg">
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-                <div className="flex-1 w-full">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    <div>
-                      <p className="text-xs sm:text-sm text-gray-600 mb-1">Potencia Total (Inversor)</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                        <Cpu className="h-6 w-6 sm:h-8 sm:w-8 text-[#012928]" />
-                        {potenciaTotalKw.toFixed(2)} kW
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">= {(potenciaTotalKw * 1000).toFixed(0)} Watts</p>
-                    </div>
-                    <div>
-                      <p className="text-xs sm:text-sm text-gray-600 mb-1">Consumo Real por Hora</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                        <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-[#012928]" />
-                        {consumoRealKwh.toFixed(3)} kWh
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Diario (24h): {(consumoRealKwh * 24).toFixed(2)} kWh
-                      </p>
+          {/* Configuración del sistema */}
+          <Card className="bg-white border-[#AFEB17]/25 shadow-sm">
+            <CardContent className="pt-5 sm:pt-6 space-y-5">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                {/* Perfil */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-900">¿Dónde lo vas a instalar?</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <button
+                      onClick={() => setPerfil("hogar")}
+                      className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+                        perfil === "hogar"
+                          ? "border-[#AFEB17] bg-[#AFEB17]/10 text-[#012928]"
+                          : "border-gray-200 text-gray-600 hover:border-[#AFEB17]/40"
+                      }`}
+                    >
+                      <Home className="h-4 w-4" />
+                      Mi casa
+                    </button>
+                    <button
+                      onClick={() => setPerfil("empresa")}
+                      className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+                        perfil === "empresa"
+                          ? "border-[#AFEB17] bg-[#AFEB17]/10 text-[#012928]"
+                          : "border-gray-200 text-gray-600 hover:border-[#AFEB17]/40"
+                      }`}
+                    >
+                      <Building2 className="h-4 w-4" />
+                      Mi negocio
+                    </button>
+                  </div>
+                </div>
+
+                {/* Autonomía */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-[#012928]" />
+                    ¿Cuántas horas de respaldo quieres en un apagón?
+                  </Label>
+                  <div className="mt-3">
+                    <Slider
+                      min={1}
+                      max={24}
+                      step={1}
+                      value={horasAutonomia}
+                      onValueChange={setHorasAutonomia}
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>1 h</span>
+                      <span className="font-semibold text-[#012928]">{horasAutonomia[0]} horas</span>
+                      <span>24 h</span>
                     </div>
                   </div>
                 </div>
-                <Badge variant="outline" className="text-base sm:text-lg px-3 sm:px-4 py-2 bg-white">
-                  {totalEquipos} {totalEquipos === 1 ? "equipo" : "equipos"}
-                </Badge>
+
+                {/* Tecnología de batería */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-900">Tipo de batería</Label>
+                  <Select value={tecnologiaBateria} onValueChange={(v) => setTecnologiaBateria(v as TecnologiaBateria)}>
+                    <SelectTrigger className="w-full mt-2">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="litio">Litio (LiFePO4) — recomendada</SelectItem>
+                      <SelectItem value="plomo">Plomo-ácido — económica</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {esExperto && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Profundidad de descarga útil (DoD): {(DOD[tecnologiaBateria] * 100).toFixed(0)}%
+                    </p>
+                  )}
+                </div>
               </div>
 
-              {totalEquipos > 0 && (
-                <div className="border-t border-[#AFEB17]/25 pt-4">
-                  <Button
-                    onClick={handleOpenRecomendaciones}
-                    className="w-full bg-[#012928] hover:bg-[#011818] flex items-center justify-center gap-2"
+              {/* Parámetros avanzados (solo experto) */}
+              {esExperto && (
+                <div className="border-t border-[#AFEB17]/20 pt-4">
+                  <button
+                    onClick={() => setShowAvanzado((v) => !v)}
+                    className="flex items-center gap-2 text-sm font-semibold text-[#012928] hover:opacity-80"
                   >
-                    <Lightbulb className="h-5 w-5" />
-                    Dimensionar Sistema Solar
-                  </Button>
+                    <SlidersHorizontal className="h-4 w-4" />
+                    Parámetros avanzados
+                    <ChevronDown className={`h-4 w-4 transition-transform ${showAvanzado ? "rotate-180" : ""}`} />
+                  </button>
+                  {showAvanzado && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                      <div>
+                        <Label className="text-xs text-gray-600">
+                          Factor de simultaneidad (def. {FACTOR_SIMULTANEIDAD[perfil]})
+                        </Label>
+                        <Input
+                          type="number"
+                          step="0.05"
+                          min="0.1"
+                          max="1"
+                          placeholder={String(FACTOR_SIMULTANEIDAD[perfil])}
+                          value={avanzado.factorSimultaneidad ?? ""}
+                          onChange={(e) =>
+                            setAvanzado((p) => ({
+                              ...p,
+                              factorSimultaneidad: e.target.value === "" ? null : parseFloat(e.target.value),
+                            }))
+                          }
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-600">Horas Sol Pico (HSP)</Label>
+                        <Input
+                          type="number"
+                          step="0.1"
+                          value={avanzado.hsp}
+                          onChange={(e) => setAvanzado((p) => ({ ...p, hsp: parseFloat(e.target.value) || CONSTANTES.HSP }))}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-600">Performance Ratio (PR)</Label>
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={avanzado.pr}
+                          onChange={(e) => setAvanzado((p) => ({ ...p, pr: parseFloat(e.target.value) || CONSTANTES.PR }))}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-600">Factor de potencia</Label>
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={avanzado.factorPotencia}
+                          onChange={(e) =>
+                            setAvanzado((p) => ({ ...p, factorPotencia: parseFloat(e.target.value) || CONSTANTES.FACTOR_POTENCIA }))
+                          }
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-600">Potencia por panel (kWp)</Label>
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={avanzado.potenciaPanelKwp}
+                          onChange={(e) =>
+                            setAvanzado((p) => ({ ...p, potenciaPanelKwp: parseFloat(e.target.value) || CONSTANTES.POTENCIA_PANEL_KWP }))
+                          }
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
           </Card>
-        </div>
 
-        {/* Buscador de equipos */}
-        <div className="mb-6">
+          {/* Resultados del dimensionamiento */}
+          {tieneEquipos ? (
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <Sun className="h-5 w-5 text-[#F2C300]" />
+                Tu sistema solar recomendado
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Inversor */}
+                <Card className="border-[#AFEB17]/25 shadow-sm overflow-hidden">
+                  <div className="bg-[#012928] px-4 py-3 flex items-center gap-2">
+                    <Cpu className="h-5 w-5 text-[#AFEB17]" />
+                    <span className="font-semibold text-white">Inversor</span>
+                  </div>
+                  <CardContent className="pt-4 space-y-2">
+                    <p className="text-3xl font-bold text-[#012928]">
+                      {fmt(esExperto ? resultado.inversorKva : resultado.inversorKw, esExperto ? 1 : 1)}{" "}
+                      <span className="text-lg font-semibold text-gray-500">{esExperto ? "kVA" : "kW"}</span>
+                    </p>
+                    {esExperto ? (
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <p>Potencia continua: <b>{fmt(resultado.potenciaContinuaKw)} kW</b></p>
+                        <p>Pico de arranque: <b>{fmt(resultado.potenciaPicoKw)} kW</b></p>
+                        <p>Potencia instalada: {fmt(resultado.potenciaInstaladaKw)} kW</p>
+                        <p>Simultaneidad: {factorSimAplicado} · FP: {parametros.factorPotencia ?? CONSTANTES.FACTOR_POTENCIA}</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-600">
+                        Capaz de mover tus equipos a la vez, con margen para el arranque de motores.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Baterías */}
+                <Card className="border-[#AFEB17]/25 shadow-sm overflow-hidden">
+                  <div className="bg-[#012928] px-4 py-3 flex items-center gap-2">
+                    <Battery className="h-5 w-5 text-[#AFEB17]" />
+                    <span className="font-semibold text-white">Baterías</span>
+                  </div>
+                  <CardContent className="pt-4 space-y-2">
+                    <p className="text-3xl font-bold text-[#012928]">
+                      {fmt(resultado.bateriaBancoKwh)} <span className="text-lg font-semibold text-gray-500">kWh</span>
+                    </p>
+                    {esExperto ? (
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <p>Energía útil requerida: <b>{fmt(resultado.bateriaUtilKwh)} kWh</b></p>
+                        <p>Tecnología: {tecnologiaBateria === "litio" ? "Litio" : "Plomo-ácido"} (DoD {(DOD[tecnologiaBateria] * 100).toFixed(0)}%)</p>
+                        <p>Incluye pérdidas de batería e inversor.</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-600">
+                        Para mantener tus equipos encendidos ~{horasAutonomia[0]} h durante un apagón.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Paneles */}
+                <Card className="border-[#AFEB17]/25 shadow-sm overflow-hidden">
+                  <div className="bg-[#012928] px-4 py-3 flex items-center gap-2">
+                    <Sun className="h-5 w-5 text-[#AFEB17]" />
+                    <span className="font-semibold text-white">Paneles solares</span>
+                  </div>
+                  <CardContent className="pt-4 space-y-2">
+                    <p className="text-3xl font-bold text-[#012928]">
+                      {resultado.numeroPaneles} <span className="text-lg font-semibold text-gray-500">paneles</span>
+                    </p>
+                    {esExperto ? (
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <p>Potencia del campo: <b>{fmt(resultado.panelesKwp)} kWp</b></p>
+                        <p>Consumo diario: {fmt(resultado.energiaDiaKwh)} kWh/día</p>
+                        <p>HSP: {parametros.hsp ?? CONSTANTES.HSP} · PR: {parametros.pr ?? CONSTANTES.PR}</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-600">
+                        ~{fmt(resultado.panelesKwp)} kWp para generar tu consumo de {fmt(resultado.energiaDiaKwh)} kWh al día.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Resumen de consumo */}
+              <Card className="mt-4 border-[#AFEB17]/25 bg-gradient-to-br from-[#AFEB17]/5 to-[#F2C300]/5">
+                <CardContent className="py-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-600">Equipos</p>
+                    <p className="text-xl font-bold text-gray-900">{totalEquipos}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Potencia instalada</p>
+                    <p className="text-xl font-bold text-gray-900 flex items-center gap-1">
+                      <Cpu className="h-4 w-4 text-[#012928]" />
+                      {fmt(resultado.potenciaInstaladaKw)} kW
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Consumo diario</p>
+                    <p className="text-xl font-bold text-gray-900 flex items-center gap-1">
+                      <Zap className="h-4 w-4 text-[#012928]" />
+                      {fmt(resultado.energiaDiaKwh)} kWh
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Consumo mensual aprox.</p>
+                    <p className="text-xl font-bold text-gray-900">{fmt(resultado.energiaDiaKwh * 30, 0)} kWh</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <p className="text-xs text-gray-500 mt-3 flex items-start gap-1.5">
+                <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                Resultado estimado de referencia. El dimensionamiento final debe confirmarlo un técnico de Suncar según tus equipos reales y la ubicación.
+              </p>
+            </div>
+          ) : (
+            <Card className="border-dashed border-[#AFEB17]/30 bg-white">
+              <CardContent className="py-8 text-center">
+                <Sun className="h-10 w-10 text-[#F2C300] mx-auto mb-3" />
+                <p className="text-gray-700 font-medium">Agrega tus equipos para ver qué sistema necesitas</p>
+                <p className="text-sm text-gray-500 mt-1">Búscalos abajo o créalos con el botón “Crear”.</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Buscador de equipos */}
           <Card className="border-[#AFEB17]/25">
             <CardContent className="pt-4 sm:pt-6">
               <Popover open={openBuscador} onOpenChange={setOpenBuscador}>
@@ -586,23 +858,15 @@ export default function CalculadoraPage() {
                 </PopoverTrigger>
                 <PopoverContent className="w-[90vw] sm:w-[600px] p-0" align="start">
                   <Command>
-                    <CommandInput
-                      placeholder="Buscar por nombre o categoría..."
-                      value={busqueda}
-                      onValueChange={setBusqueda}
-                    />
+                    <CommandInput placeholder="Buscar por nombre o categoría..." value={busqueda} onValueChange={setBusqueda} />
                     <CommandList>
                       <CommandEmpty>Sin resultados para la búsqueda.</CommandEmpty>
                       {Array.from(categoriasPorNombre.entries()).map(([categoriaNombre, equipos]) => {
                         const equiposFiltrados = equipos.filter((equipo) => {
                           if (!busqueda.trim()) return true
-                          const busquedaLower = busqueda.toLowerCase()
-                          return (
-                            equipo.nombre.toLowerCase().includes(busquedaLower) ||
-                            categoriaNombre.toLowerCase().includes(busquedaLower)
-                          )
+                          const q = busqueda.toLowerCase()
+                          return equipo.nombre.toLowerCase().includes(q) || categoriaNombre.toLowerCase().includes(q)
                         })
-
                         if (equiposFiltrados.length === 0) return null
 
                         return (
@@ -610,7 +874,6 @@ export default function CalculadoraPage() {
                             {equiposFiltrados.map((equipo) => {
                               const yaAgregado = equiposCantidad.has(equipo.key)
                               const cantidadActual = cantidadBuscador.get(equipo.key) || 1
-
                               return (
                                 <CommandItem
                                   key={equipo.key}
@@ -623,21 +886,14 @@ export default function CalculadoraPage() {
                                       <div>
                                         <p className="text-sm font-medium text-gray-900 flex items-center gap-2">
                                           {equipo.nombre}
-                                          {equipo.isLocal && (
-                                            <Badge variant="secondary" className="text-xs">
-                                              Personalizado
-                                            </Badge>
-                                          )}
+                                          {equipo.isLocal && <Badge variant="secondary" className="text-xs">Personalizado</Badge>}
                                         </p>
                                         <p className="text-xs text-gray-500 mt-1">
-                                          {Math.round(equipo.potencia_kw * 1000)} W •{" "}
-                                          {Math.round(equipo.energia_kwh * 1000)} W real/h
+                                          {Math.round(equipo.potencia_kw * 1000)} W · consumo medio {Math.round(equipo.energia_kwh * 1000)} W
                                         </p>
                                       </div>
                                       {yaAgregado && (
-                                        <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-                                          Agregado
-                                        </Badge>
+                                        <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">Agregado</Badge>
                                       )}
                                     </div>
                                   </div>
@@ -701,30 +957,25 @@ export default function CalculadoraPage() {
               </Popover>
             </CardContent>
           </Card>
-        </div>
 
-        {categoriasError && (
-          <div className="mb-6 rounded-lg border border-[#AFEB17]/20 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {categoriasError}
-          </div>
-        )}
+          {categoriasError && (
+            <div className="rounded-lg border border-[#AFEB17]/20 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {categoriasError}
+            </div>
+          )}
 
-        {/* Contenido principal */}
-        <div className="space-y-6">
+          {/* Catálogo de equipos */}
           {noEquiposRegistrados && !loadingCategorias ? (
             <Card className="border-dashed border-[#AFEB17]/25">
               <CardContent className="py-10 text-center">
                 <p className="text-gray-600">No hay equipos disponibles.</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Usa el botón &quot;Crear equipo&quot; para agregar equipos personalizados.
-                </p>
+                <p className="text-sm text-gray-500 mt-2">Usa el botón “Crear” para agregar equipos personalizados.</p>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-4">
               {Array.from(categoriasPorNombre.entries()).map(([categoriaNombre, equipos]) => {
                 const icono = categoriaIconos[categoriaNombre] || "⚡️"
-
                 return (
                   <Card key={categoriaNombre} className="border-[#AFEB17]/15">
                     <CardHeader className="pb-3">
@@ -738,7 +989,7 @@ export default function CalculadoraPage() {
                         {equipos.map((equipo) => {
                           const cantidad = equiposCantidad.get(equipo.key) || 0
                           const seleccionado = cantidad > 0
-
+                          const horasUso = getHorasUso(equipo)
                           return (
                             <div
                               key={equipo.key}
@@ -750,15 +1001,15 @@ export default function CalculadoraPage() {
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium text-gray-900 flex items-center gap-2 flex-wrap">
                                     {equipo.nombre}
-                                    {equipo.isLocal && (
-                                      <Badge variant="secondary" className="text-xs">
-                                        Personalizado
+                                    {equipo.tipo_carga === "motor" && (
+                                      <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 border-amber-200">
+                                        Motor
                                       </Badge>
                                     )}
+                                    {equipo.isLocal && <Badge variant="secondary" className="text-xs">Personalizado</Badge>}
                                   </p>
                                   <p className="text-xs text-gray-500 mt-1">
-                                    {Math.round(equipo.potencia_kw * 1000)} W •{" "}
-                                    {Math.round(equipo.energia_kwh * 1000)} W real/h
+                                    {Math.round(equipo.potencia_kw * 1000)} W · consumo medio {Math.round(equipo.energia_kwh * 1000)} W
                                   </p>
                                 </div>
                                 {equipo.isLocal && (
@@ -785,34 +1036,51 @@ export default function CalculadoraPage() {
                                   Agregar
                                 </Button>
                               ) : (
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    onClick={() => decrementarCantidad(equipo.key)}
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <Minus className="h-3 w-3" />
-                                  </Button>
-                                  <div className="flex-1 text-center">
-                                    <span className="text-sm font-semibold">{cantidad}</span>
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500 w-16">Cantidad</span>
+                                    <Button onClick={() => decrementarCantidad(equipo.key)} size="sm" variant="outline" className="h-8 w-8 p-0">
+                                      <Minus className="h-3 w-3" />
+                                    </Button>
+                                    <div className="flex-1 text-center">
+                                      <span className="text-sm font-semibold">{cantidad}</span>
+                                    </div>
+                                    <Button onClick={() => incrementarCantidad(equipo.key)} size="sm" variant="outline" className="h-8 w-8 p-0">
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      onClick={() => eliminarEquipo(equipo.key)}
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
                                   </div>
-                                  <Button
-                                    onClick={() => incrementarCantidad(equipo.key)}
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    onClick={() => eliminarEquipo(equipo.key)}
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500 w-16">Horas/día</span>
+                                    <Button
+                                      onClick={() => actualizarHorasUso(equipo.key, horasUso - 1)}
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 w-8 p-0"
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                    </Button>
+                                    <div className="flex-1 text-center">
+                                      <span className="text-sm font-semibold">{horasUso}</span>
+                                      <span className="text-xs text-gray-400"> h</span>
+                                    </div>
+                                    <Button
+                                      onClick={() => actualizarHorasUso(equipo.key, horasUso + 1)}
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 w-8 p-0"
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                    <div className="h-8 w-8" />
+                                  </div>
                                 </div>
                               )}
                             </div>
@@ -825,196 +1093,137 @@ export default function CalculadoraPage() {
               })}
             </div>
           )}
-        </div>
-      </main>
+        </main>
 
-      {/* Crear equipo local */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={handleCreateDialogChange}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Crear equipo personalizado</DialogTitle>
-            <DialogDescription>
-              Este equipo solo estará disponible en esta sesión y no se guardará de forma permanente.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="nuevo-equipo-nombre">Nombre del equipo</Label>
-              <Input
-                id="nuevo-equipo-nombre"
-                placeholder="Ej: Refrigerador Samsung 2023"
-                value={createForm.nombre}
-                onChange={(e) => setCreateForm((prev) => ({ ...prev, nombre: e.target.value }))}
-              />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="nuevo-equipo-potencia">Potencia instantánea (kW)</Label>
-                <Input
-                  id="nuevo-equipo-potencia"
-                  type="number"
-                  inputMode="decimal"
-                  placeholder="Ej: 0.15"
-                  min="0"
-                  step="0.01"
-                  value={createForm.potencia_kw}
-                  onChange={(e) => setCreateForm((prev) => ({ ...prev, potencia_kw: e.target.value }))}
-                />
-                <p className="text-xs text-gray-500 mt-1">1 kW = 1000 Watts</p>
-              </div>
-              <div>
-                <Label htmlFor="nuevo-equipo-energia">Consumo real por hora (kWh)</Label>
-                <Input
-                  id="nuevo-equipo-energia"
-                  type="number"
-                  inputMode="decimal"
-                  placeholder="Ej: 0.06"
-                  min="0"
-                  step="0.01"
-                  value={createForm.energia_kwh}
-                  onChange={(e) => setCreateForm((prev) => ({ ...prev, energia_kwh: e.target.value }))}
-                />
-                <p className="text-xs text-gray-500 mt-1">Energía consumida por hora</p>
-              </div>
-            </div>
-            <div>
-              <Label>Categoría</Label>
-              <Select
-                value={createForm.categoria}
-                onValueChange={(value) =>
-                  setCreateForm((prev) => ({
-                    ...prev,
-                    categoria: value,
-                    categoriaPersonalizada: value === "otro" ? prev.categoriaPersonalizada : "",
-                  }))
-                }
-              >
-                <SelectTrigger className="w-full mt-1">
-                  <SelectValue placeholder="Selecciona una categoría" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoriaOptions.map((nombre) => (
-                    <SelectItem key={nombre} value={nombre}>
-                      {nombre}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="otro">Otra categoría</SelectItem>
-                </SelectContent>
-              </Select>
-              {createForm.categoria === "otro" && (
-                <Input
-                  className="mt-3"
-                  placeholder="Nombre de la nueva categoría"
-                  value={createForm.categoriaPersonalizada}
-                  onChange={(e) => setCreateForm((prev) => ({ ...prev, categoriaPersonalizada: e.target.value }))}
-                />
-              )}
-            </div>
-          </div>
-          <DialogFooter className="pt-4">
-            <Button variant="outline" onClick={() => handleCreateDialogChange(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleCreateEquipoLocal} className="bg-[#012928] hover:bg-[#011818]">
-              Crear Equipo
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal de Recomendaciones */}
-      <Dialog open={showRecomendaciones} onOpenChange={setShowRecomendaciones}>
-        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
-          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 pt-6 pb-4">
+        {/* Crear equipo local */}
+        <Dialog open={isCreateDialogOpen} onOpenChange={handleCreateDialogChange}>
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-[#012928]" />
-                Dimensionamiento de Sistema Solar
-              </DialogTitle>
+              <DialogTitle>Crear equipo personalizado</DialogTitle>
+              <DialogDescription>
+                Este equipo solo estará disponible en esta sesión y no se guardará de forma permanente.
+              </DialogDescription>
             </DialogHeader>
-          </div>
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            <div className="space-y-6">
-              <Card className="border-[#AFEB17]/25">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Cpu className="h-5 w-5 text-[#012928]" />
-                    Inversor Recomendado
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="bg-[#AFEB17]/5 p-3 sm:p-4 rounded-lg">
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Potencia del Inversor</p>
-                    <p className="text-xl sm:text-2xl font-bold text-[#012928]">{inversorRecomendado.toFixed(2)} kW</p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Potencia base: {potenciaTotalKw.toFixed(2)} kW + 25% de margen
-                    </p>
-                  </div>
-                  <p className="text-xs text-gray-600">
-                    ℹ️ El margen del 25% cubre picos de arranque de motores (aires acondicionados, refrigeradores) y
-                    permite expansión futura.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-[#AFEB17]/25">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Battery className="h-5 w-5 text-[#012928]" />
-                    Banco de Baterías
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="bg-[#AFEB17]/5 p-3 sm:p-4 rounded-lg">
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Capacidad Recomendada (5 horas)</p>
-                    <p className="text-xl sm:text-2xl font-bold text-[#012928]">{bateriaRecomendada5h.toFixed(2)} kWh</p>
-                    <p className="text-xs text-gray-500 mt-2">{consumoRealKwh.toFixed(3)} kWh/h × 5 horas de autonomía</p>
-                  </div>
-                  <div className="border-t border-[#AFEB17]/25 pt-4">
-                    <Label htmlFor="bateria-kwh" className="text-xs sm:text-sm font-medium">
-                      Ajustar Capacidad de Batería: {bateriaKwh[0].toFixed(2)} kWh
-                    </Label>
-                    <Slider
-                      id="bateria-kwh"
-                      min={0.5}
-                      max={50}
-                      step={0.5}
-                      value={bateriaKwh}
-                      onValueChange={setBateriaKwh}
-                      className="mt-2"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>0.5 kWh</span>
-                      <span>50 kWh</span>
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border border-blue-200">
-                    <p className="text-xs sm:text-sm font-semibold text-gray-900 mb-2">
-                      ⏱️ Duración con {bateriaKwh[0].toFixed(2)} kWh
-                    </p>
-                    <p className="text-2xl sm:text-3xl font-bold text-blue-600">{duracionConBateria.toFixed(1)} horas</p>
-                    <p className="text-xs text-gray-600 mt-2">
-                      Con {bateriaKwh[0].toFixed(2)} kWh de batería y un consumo real de {consumoRealKwh.toFixed(3)} kWh/h,
-                      el sistema funcionará aproximadamente {duracionConBateria.toFixed(1)} horas sin red eléctrica.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="nuevo-equipo-nombre">Nombre del equipo</Label>
+                <Input
+                  id="nuevo-equipo-nombre"
+                  placeholder="Ej: Refrigerador Samsung 2023"
+                  value={createForm.nombre}
+                  onChange={(e) => setCreateForm((prev) => ({ ...prev, nombre: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="nuevo-equipo-potencia">Potencia (kW)</Label>
+                  <Input
+                    id="nuevo-equipo-potencia"
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="Ej: 0.15"
+                    min="0"
+                    step="0.01"
+                    value={createForm.potencia_kw}
+                    onChange={(e) => setCreateForm((prev) => ({ ...prev, potencia_kw: e.target.value }))}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">1 kW = 1000 Watts</p>
+                </div>
+                <div>
+                  <Label htmlFor="nuevo-equipo-energia">Consumo medio (kWh/h)</Label>
+                  <Input
+                    id="nuevo-equipo-energia"
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="Ej: 0.06"
+                    min="0"
+                    step="0.01"
+                    value={createForm.energia_kwh}
+                    onChange={(e) => setCreateForm((prev) => ({ ...prev, energia_kwh: e.target.value }))}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Consumo real por hora de uso</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="nuevo-equipo-horas">Horas de uso al día</Label>
+                  <Input
+                    id="nuevo-equipo-horas"
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="Ej: 4"
+                    min="0"
+                    max="24"
+                    step="0.5"
+                    value={createForm.horas_uso_dia}
+                    onChange={(e) => setCreateForm((prev) => ({ ...prev, horas_uso_dia: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label>Tipo de carga</Label>
+                  <Select
+                    value={createForm.tipo_carga}
+                    onValueChange={(v) => setCreateForm((prev) => ({ ...prev, tipo_carga: v as TipoCarga }))}
+                  >
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="resistiva">Resistiva (luces, TV, cargadores)</SelectItem>
+                      <SelectItem value="electronica">Electrónica</SelectItem>
+                      <SelectItem value="motor">Motor (aire, nevera, bomba)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label>Categoría</Label>
+                <Select
+                  value={createForm.categoria}
+                  onValueChange={(value) =>
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      categoria: value,
+                      categoriaPersonalizada: value === "otro" ? prev.categoriaPersonalizada : "",
+                    }))
+                  }
+                >
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="Selecciona una categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoriaOptions.map((nombre) => (
+                      <SelectItem key={nombre} value={nombre}>
+                        {nombre}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="otro">Otra categoría</SelectItem>
+                  </SelectContent>
+                </Select>
+                {createForm.categoria === "otro" && (
+                  <Input
+                    className="mt-3"
+                    placeholder="Nombre de la nueva categoría"
+                    value={createForm.categoriaPersonalizada}
+                    onChange={(e) => setCreateForm((prev) => ({ ...prev, categoriaPersonalizada: e.target.value }))}
+                  />
+                )}
+              </div>
             </div>
-          </div>
-          <div className="border-t border-gray-200 px-6 py-4 bg-white">
-            <div className="flex justify-end">
-              <Button onClick={() => setShowRecomendaciones(false)} variant="outline">
-                Cerrar
+            <DialogFooter className="pt-4">
+              <Button variant="outline" onClick={() => handleCreateDialogChange(false)}>
+                Cancelar
               </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+              <Button onClick={handleCreateEquipoLocal} className="bg-[#012928] hover:bg-[#011818]">
+                Crear Equipo
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      <Toaster />
+        <Toaster />
 
-      {isChristmas ? <FooterChristmas /> : <Footer />}
+        {isChristmas ? <FooterChristmas /> : <Footer />}
       </div>
     </>
   )

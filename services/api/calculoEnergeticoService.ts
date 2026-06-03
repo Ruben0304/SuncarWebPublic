@@ -4,6 +4,12 @@ export interface CalculoEnergeticoEquipo {
   nombre: string;
   potencia_kw: number;
   energia_kwh: number;
+  /** Horas de uso al día (opcional; el frontend infiere un default si no viene). */
+  horas_uso_dia?: number;
+  /** Tipo de carga eléctrica (opcional; se infiere por el nombre si no viene). */
+  tipo_carga?: 'resistiva' | 'electronica' | 'motor';
+  /** Factor de arranque/pico (opcional; default según tipo de carga). */
+  factor_arranque?: number;
 }
 
 export interface CalculoEnergeticoCategoria {
