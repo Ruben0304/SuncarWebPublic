@@ -161,8 +161,10 @@ export default function TarjetaPage() {
 
         {/* Tarjeta */}
         <div className="w-full overflow-hidden rounded-3xl bg-white shadow-2xl animate-elegant-scale-in">
-          {/* Portada: verde marca uniforme con brillos sutiles y filo dorado */}
-          <div className="relative h-32 overflow-hidden bg-primary">
+          {/* Portada: verde marca uniforme con brillos sutiles y filo dorado.
+              rounded-t-3xl propio: el clip del contenedor falla con hijos con blur/animación
+              y las esquinas rectas asomaban como "picos". */}
+          <div className="relative h-32 overflow-hidden rounded-t-3xl bg-primary">
             <div className="pointer-events-none absolute -right-10 -top-14 h-48 w-48 rounded-full bg-solar-radiance/20 blur-2xl" />
             <div className="pointer-events-none absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-volt-green/10 blur-2xl" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -170,8 +172,9 @@ export default function TarjetaPage() {
             <div className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-transparent via-solar-radiance to-transparent" />
           </div>
 
-          {/* Cabecera con avatar */}
-          <div className="px-6 pb-6">
+          {/* Cabecera con avatar. relative z-10: la portada es position:relative y sin esto
+              pinta por encima del avatar que la solapa (la foto se veía "cortada"). */}
+          <div className="relative z-10 px-6 pb-6">
             <div className="-mt-16 mb-5 flex justify-center">
               {t.foto_url ? (
                 <img

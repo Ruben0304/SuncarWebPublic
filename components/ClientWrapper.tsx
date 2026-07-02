@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { LoadingProvider, useLoadingContext } from "@/hooks/useLoadingContext";
 import { ClientProvider } from "@/hooks/useClient";
@@ -17,6 +18,11 @@ interface ClientWrapperProps {
 function ClientWrapperContent({ children }: ClientWrapperProps) {
   const [shouldRenderChat, setShouldRenderChat] = useState(false);
   const { setLoadingComplete } = useLoadingContext();
+  const pathname = usePathname();
+
+  // La tarjeta de presentación es una página personal del trabajador:
+  // no debe mostrar el asistente/FAB de WhatsApp corporativo.
+  const hideChat = pathname?.startsWith("/tarjeta");
 
   useEffect(() => {
     // Ensure components waiting on the loader can proceed immediately
@@ -61,7 +67,7 @@ function ClientWrapperContent({ children }: ClientWrapperProps) {
       <div className="transition-opacity duration-500 opacity-100">
         {children}
       </div>
-      {shouldRenderChat && <UnifiedChatAssistant />}
+      {shouldRenderChat && !hideChat && <UnifiedChatAssistant />}
     </>
   );
 }
