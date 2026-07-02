@@ -160,13 +160,18 @@ export default function TarjetaPage() {
         </Link>
 
         {/* Tarjeta */}
-        <div className="w-full overflow-hidden rounded-3xl bg-white shadow-2xl animate-elegant-scale-in">
-          {/* Portada: verde marca uniforme con brillos sutiles y filo dorado.
-              rounded-t-3xl propio: el clip del contenedor falla con hijos con blur/animación
-              y las esquinas rectas asomaban como "picos". */}
-          <div className="relative h-32 overflow-hidden rounded-t-3xl bg-primary">
-            <div className="pointer-events-none absolute -right-10 -top-14 h-48 w-48 rounded-full bg-solar-radiance/20 blur-2xl" />
-            <div className="pointer-events-none absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-volt-green/10 blur-2xl" />
+        {/* isolate + animación simple (solo opacidad/escala, sin blur): los filtros y
+            transforms de la animación anterior rompían el recorte redondeado. */}
+        <div className="isolate w-full overflow-hidden rounded-3xl bg-white shadow-2xl animate-fade-in">
+          {/* Portada: verde marca con los brillos pintados como gradientes del PROPIO fondo
+              (cero capas con blur: eran las que rompían el recorte y asomaban picos). */}
+          <div
+            className="relative h-32 overflow-hidden rounded-t-3xl bg-primary"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 85% -25%, rgba(242,195,0,0.30), transparent 55%), radial-gradient(circle at -10% 115%, rgba(175,235,23,0.16), transparent 50%)",
+            }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/images/logo-icon-white.png" alt="" className="absolute right-4 top-4 h-6 w-auto opacity-60" />
             <div className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-transparent via-solar-radiance to-transparent" />
