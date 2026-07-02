@@ -161,45 +161,63 @@ export default function TarjetaPage() {
 
         {/* Tarjeta */}
         <div className="w-full overflow-hidden rounded-3xl bg-white shadow-2xl animate-elegant-scale-in">
-          {/* Portada */}
-          <div className="relative h-28 bg-secondary-gradient">
-            <div className="absolute inset-0 opacity-30 [background:radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.5),transparent_50%)]" />
+          {/* Portada: verde marca uniforme con brillos sutiles y filo dorado */}
+          <div className="relative h-32 overflow-hidden bg-primary">
+            <div className="pointer-events-none absolute -right-10 -top-14 h-48 w-48 rounded-full bg-solar-radiance/20 blur-2xl" />
+            <div className="pointer-events-none absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-volt-green/10 blur-2xl" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo-icon-white.png" alt="" className="absolute right-4 top-4 h-6 w-auto opacity-60" />
+            <div className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-transparent via-solar-radiance to-transparent" />
           </div>
 
           {/* Cabecera con avatar */}
           <div className="px-6 pb-6">
-            <div className="-mt-14 mb-4 flex justify-center">
+            <div className="-mt-16 mb-5 flex justify-center">
               {t.foto_url ? (
                 <img
                   src={t.foto_url}
                   alt={t.nombre}
-                  className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg"
+                  className="h-32 w-32 rounded-full border-4 border-white bg-white object-cover object-top shadow-xl ring-1 ring-black/5"
                 />
               ) : (
-                <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-primary text-3xl font-bold text-white shadow-lg">
+                <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-primary text-4xl font-bold text-white shadow-xl ring-1 ring-black/5">
                   {iniciales(t.nombre)}
                 </div>
               )}
             </div>
 
             <div className="text-center">
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t.nombre}</h1>
-              {t.titulo && <p className="mt-1 font-semibold text-primary">{t.titulo}</p>}
-              <div className="mt-1 flex items-center justify-center gap-2 text-sm text-gray-500">
-                <span className="font-medium">{t.empresa}</span>
-                {t.sede && (
-                  <>
-                    <span>•</span>
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {t.sede}
-                    </span>
-                  </>
-                )}
+              <h1 className="text-balance text-[1.7rem] font-bold leading-tight tracking-tight text-gray-900">
+                {t.nombre}
+              </h1>
+              {t.titulo && (
+                <p className="mt-1.5 text-[1.05rem] font-semibold text-primary">{t.titulo}</p>
+              )}
+
+              {/* Chip de empresa */}
+              <div className="mt-4 flex justify-center">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/logo-icon.png" alt="" className="h-3.5 w-auto" />
+                  {t.empresa}
+                </span>
               </div>
+
+              {/* Ubicación en su propia línea (soporta direcciones largas) */}
+              {t.sede && (
+                <p className="mx-auto mt-3 flex max-w-[17rem] items-start justify-center gap-1.5 text-sm leading-relaxed text-gray-500">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-solar-radiance" />
+                  <span>{t.sede}</span>
+                </p>
+              )}
             </div>
 
-            {t.bio && <p className="mt-4 text-center text-sm leading-relaxed text-gray-600">{t.bio}</p>}
+            {t.bio && (
+              <>
+                <div className="mx-auto mb-4 mt-5 h-px w-16 bg-gray-200" />
+                <p className="text-center text-[15px] leading-relaxed text-gray-600">{t.bio}</p>
+              </>
+            )}
 
             {/* CTA principal: Guardar contacto (vCard) */}
             {t.vcard_url && (
@@ -212,12 +230,12 @@ export default function TarjetaPage() {
               </a>
             )}
 
-            {/* Acciones rápidas */}
-            <div className="mt-3 grid grid-cols-3 gap-3">
+            {/* Acciones rápidas: se reparten el ancho según cuántas existan */}
+            <div className="mt-3 flex gap-3">
               {t.telefono && (
                 <a
                   href={`tel:${t.telefono}`}
-                  className="flex flex-col items-center gap-1 rounded-xl border border-gray-200 py-3 text-gray-700 transition hover:border-primary hover:text-primary"
+                  className="flex flex-1 flex-col items-center gap-1 rounded-xl border border-gray-200 py-3 text-gray-700 transition hover:border-primary hover:text-primary"
                 >
                   <Phone className="h-5 w-5" />
                   <span className="text-xs font-medium">Llamar</span>
@@ -228,7 +246,7 @@ export default function TarjetaPage() {
                   href={`https://wa.me/${whatsappDigits}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col items-center gap-1 rounded-xl border border-gray-200 py-3 text-gray-700 transition hover:border-[#25D366] hover:text-[#25D366]"
+                  className="flex flex-1 flex-col items-center gap-1 rounded-xl border border-gray-200 py-3 text-gray-700 transition hover:border-[#25D366] hover:text-[#25D366]"
                 >
                   <MessageCircle className="h-5 w-5" />
                   <span className="text-xs font-medium">WhatsApp</span>
@@ -237,7 +255,7 @@ export default function TarjetaPage() {
               {t.email && (
                 <a
                   href={`mailto:${t.email}`}
-                  className="flex flex-col items-center gap-1 rounded-xl border border-gray-200 py-3 text-gray-700 transition hover:border-primary hover:text-primary"
+                  className="flex flex-1 flex-col items-center gap-1 rounded-xl border border-gray-200 py-3 text-gray-700 transition hover:border-primary hover:text-primary"
                 >
                   <Mail className="h-5 w-5" />
                   <span className="text-xs font-medium">Email</span>
