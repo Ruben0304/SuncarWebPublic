@@ -89,9 +89,10 @@ export default function TarjetaPage() {
 
   const handleShare = async () => {
     const url = tarjeta?.url_publica || (typeof window !== "undefined" ? window.location.href : "")
+    // Solo title + url (SIN `text`): al pasar text y url juntos, WhatsApp los
+    // concatena y el enlace aparece duplicado en el mensaje. Con solo url va una vez.
     const shareData = {
       title: tarjeta ? `${tarjeta.nombre} — ${tarjeta.empresa}` : "Tarjeta SunCar",
-      text: tarjeta?.titulo || "",
       url,
     }
     if (typeof navigator !== "undefined" && (navigator as any).share) {
