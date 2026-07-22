@@ -70,10 +70,10 @@ function BlogContent() {
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
 
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-primary via-blue-900 to-primary overflow-hidden">
+      <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-[#012928] via-[#023d3a] to-[#012928] overflow-hidden">
         {/* Background decorations */}
         <div className="absolute top-20 left-10 w-32 h-32 bg-secondary-gradient rounded-full opacity-20 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-20 w-40 h-40 bg-[#AFEB17]/50/20 rounded-full opacity-30 blur-3xl animate-pulse animation-delay-1000"></div>
+        <div className="absolute bottom-10 right-20 w-40 h-40 bg-[#AFEB17]/20 rounded-full opacity-30 blur-3xl animate-pulse animation-delay-1000"></div>
 
         <div className="container mx-auto text-center relative z-10">
           <div className="space-y-6 max-w-4xl mx-auto">
@@ -81,7 +81,7 @@ function BlogContent() {
               <div className="mb-4">
                 <Link
                   href="/blog"
-                  className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors text-sm"
+                  className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
                 >
                   ← Volver a todos los artículos
                 </Link>
@@ -104,7 +104,7 @@ function BlogContent() {
                 </>
               )}
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed">
               {categoryInfo
                 ? `Artículos sobre ${categoryInfo.label.toLowerCase()}`
                 : "Información, consejos y novedades sobre energía solar, instalaciones fotovoltaicas y sostenibilidad"
@@ -184,7 +184,7 @@ export default function BlogPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-[#F2F2EF] overflow-x-hidden">
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
-        <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-primary via-blue-900 to-primary overflow-hidden">
+        <section className="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-[#012928] via-[#023d3a] to-[#012928] overflow-hidden">
           <div className="container mx-auto text-center">
             <div className="h-16 w-16 mx-auto animate-spin rounded-full border-4 border-white border-t-transparent"></div>
           </div>

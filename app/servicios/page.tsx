@@ -15,6 +15,7 @@ import {
   ArrowRight
 } from "lucide-react"
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import Navigation from "@/components/navigation"
 import NavigationChristmas from "@/components/navigation-christmas"
 import Footer from "@/components/footer"
@@ -42,7 +43,7 @@ export default function ServicesPage() {
         "Tenemos equipos de 3kW, 5kW, 10kW, 25kW, 50kW",
         "Comercializamos marcas líderes como Huawei, Greenheiss, JSMCH2, Sungrow"
       ],
-      color: "from-blue-500 to-blue-600"
+      color: "from-[#012928] to-[#023d3a]"
     },
     {
       icon: <Battery className="w-8 h-8" />,
@@ -57,7 +58,7 @@ export default function ServicesPage() {
         "Diseñadas para operar en climas extremos (-20°C a 60°C)",
         "Incluyen software de gestión para optimizar autoconsumo y ahorro"
       ],
-      color: "from-green-500 to-green-600"
+      color: "from-[#F2C300] to-[#AFEB17]"
     },
     {
       icon: <Wrench className="w-8 h-8" />,
@@ -70,7 +71,7 @@ export default function ServicesPage() {
         "Soporte técnico 24/7",
         "Atención a quejas y solicitudes"
       ],
-      color: "from-[#AFEB17]/50 to-[#012928]"
+      color: "from-[#012928] to-[#023d3a]"
     },
     {
       icon: <Calculator className="w-8 h-8" />,
@@ -83,7 +84,7 @@ export default function ServicesPage() {
         "Asesoría en financiamiento"
       ],
       price: "Consulta Gratuita",
-      color: "from-purple-500 to-purple-600"
+      color: "from-[#F2C300] to-[#AFEB17]"
     }
   ]
 
@@ -196,7 +197,7 @@ export default function ServicesPage() {
                 <div className="space-y-3 mb-6">
                   {service.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-[#012928] flex-shrink-0" />
                       <span className="text-sm text-gray-700">{feature}</span>
                     </div>
                   ))}
@@ -281,6 +282,15 @@ export default function ServicesPage() {
             <p className="text-lg text-gray-600">
               Obtén una consulta gratuita y descubre cómo la energía solar puede transformar tu hogar
             </p>
+            <div className="pt-4">
+              <Link
+                href="/cotizacion"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                Solicitar Cotización
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

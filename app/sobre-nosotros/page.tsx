@@ -40,7 +40,7 @@ export default function SobreNosotrosPage() {
         "Mejora de la calidad de vida",
         "Solución sostenible y duradera"
       ],
-      color: "from-blue-500 to-blue-600"
+      color: "from-[#012928] to-[#023d3a]"
     },
     {
       icon: <Building className="w-8 h-8" />,
@@ -52,7 +52,7 @@ export default function SobreNosotrosPage() {
         "Respaldo ante interrupciones eléctricas",
         "Mayor productividad empresarial"
       ],
-      color: "from-green-500 to-green-600"
+      color: "from-[#F2C300] to-[#AFEB17]"
     },
     {
       icon: <Factory className="w-8 h-8" />,
@@ -64,7 +64,7 @@ export default function SobreNosotrosPage() {
         "Responsabilidad ambiental corporativa",
         "Ahorro significativo en energía"
       ],
-      color: "from-purple-500 to-purple-600"
+      color: "from-[#012928] to-[#023d3a]"
     },
     {
       icon: <Sprout className="w-8 h-8" />,
@@ -76,7 +76,7 @@ export default function SobreNosotrosPage() {
         "Refrigeración para productos",
         "Procesamiento sostenible"
       ],
-      color: "from-[#AFEB17]/50 to-[#012928]"
+      color: "from-[#F2C300] to-[#AFEB17]"
     }
   ]
 
@@ -163,7 +163,7 @@ export default function SobreNosotrosPage() {
           <div className="grid md:grid-cols-2 gap-12">
             {/* Misión */}
             <div className="bg-white rounded-2xl p-8 shadow-xl hover-magnetic glow-on-hover animate-fade-in-left animation-delay-400">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 animate-pulse-glow animation-delay-600">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#012928] to-[#023d3a] rounded-2xl flex items-center justify-center text-white mb-6 animate-pulse-glow animation-delay-600">
                 <Target className="w-8 h-8 animate-rotate-slow" />
               </div>
               <h3 className="text-2xl font-bold text-primary mb-4 animate-fade-in-up animation-delay-800">Nuestra Misión</h3>
@@ -174,8 +174,8 @@ export default function SobreNosotrosPage() {
 
             {/* Visión */}
             <div className="bg-white rounded-2xl p-8 shadow-xl hover-magnetic glow-on-hover animate-fade-in-right animation-delay-400">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#AFEB17]/50 to-[#012928] rounded-2xl flex items-center justify-center text-white mb-6 animate-pulse-glow animation-delay-800">
-                <TrendingUp className="w-8 h-8 animate-bounce-slow" />
+              <div className="w-16 h-16 bg-gradient-to-br from-[#F2C300] to-[#AFEB17] rounded-2xl flex items-center justify-center text-white mb-6 animate-pulse-glow animation-delay-800">
+                <TrendingUp className="w-8 h-8" />
               </div>
               <h3 className="text-2xl font-bold text-primary mb-4 animate-fade-in-up animation-delay-1000">Nuestra Visión</h3>
               <p className="text-gray-600 leading-relaxed animate-fade-in-up animation-delay-1200">
@@ -243,7 +243,7 @@ export default function SobreNosotrosPage() {
                 <div className="space-y-3">
                   {audience.features.map((feature, idx) => (
                     <div key={idx} className={`flex items-center gap-3 animate-fade-in-left animation-delay-${1600 + index * 300 + idx * 100}`}>
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 animate-bounce-slow" />
+                      <CheckCircle className="w-5 h-5 text-[#012928] flex-shrink-0" />
                       <span className="text-sm text-gray-700">{feature}</span>
                     </div>
                   ))}
@@ -267,12 +267,12 @@ export default function SobreNosotrosPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
               <Link href="/cotizacion" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover attention-grabber">
-                  Solicitar Cotización <ArrowRight className="w-4 h-4 animate-bounce-slow" />
+                <button className="w-full sm:w-auto px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover">
+                  Solicitar Cotización <ArrowRight className="w-4 h-4" />
                 </button>
               </Link>
               <Link href="/contacto" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-4 border-2 border-[#012928] text-[#012928] font-semibold rounded-lg hover:bg-[#012928] hover:text-white transition-all duration-300 hover-magnetic">
+                <button className="w-full sm:w-auto px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic">
                   Contactar Ahora
                 </button>
               </Link>
@@ -291,11 +291,14 @@ export default function SobreNosotrosPage() {
             <p className="text-lg text-gray-600">
               Descubre las tecnologías y el equipo detrás de este sitio web moderno
             </p>
-            <Link href="/webinfo">
-              <button className="px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover mx-auto">
-                Ver Información del Sitio Web <ArrowRight className="w-4 h-4 animate-bounce-slow" />
-              </button>
-            </Link>
+            <div className="pt-4">
+              <Link href="/webinfo" className="inline-block">
+                <button className="group px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover mx-auto">
+                  Ver Información del Sitio Web
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

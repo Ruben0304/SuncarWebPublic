@@ -7,12 +7,11 @@ import React, { useEffect, useRef, useState } from "react"
 const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
   <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
     <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-[#AFEB17]/5/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-[#012928]/5 to-[#AFEB17]/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
       <Image
         src={src}
         alt={alt}
         fill
-        unoptimized
         sizes="(max-width: 640px) 240px, (max-width: 1024px) 280px, 320px"
         className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
       />
@@ -28,7 +27,6 @@ const PartnerItemGrid = ({ src, alt, visible }: { src: string; alt: string; visi
         src={src}
         alt={alt}
         fill
-        unoptimized
         sizes="33vw"
         className="w-full h-full object-contain filter grayscale-[20%]"
         style={{
@@ -97,7 +95,6 @@ const partners = [
   { src: "https://s3.suncarsrl.com/partners/humidores.png", alt: "Humidores - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/kingbar%20(1).png", alt: "King Bar - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/marea%20(1).png", alt: "Marea - Cliente de Suncar" },
-  { src: "https://s3.suncarsrl.com/partners/mercazon.png", alt: "Mercazon - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/milexus.png", alt: "Milexus - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/mioytuyo%20(1).png", alt: "Mío y Tuyo - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/nacional.png", alt: "Hotel Nacional - Cliente de Suncar" },

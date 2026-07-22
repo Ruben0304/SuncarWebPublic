@@ -261,15 +261,15 @@ export default function OfertaDetailPage() {
               {/* Header Card */}
               <Card className="overflow-hidden" data-aos="fade-up">
                 {/* Image Section */}
-                <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
+                <div className="relative h-64 md:h-80 lg:h-[28rem] overflow-hidden bg-[#F2F2EF]">
                   <Image
                     src={oferta.imagen || "/placeholder.svg"}
                     alt={oferta.descripcion}
                     fill
-                    sizes="100vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1280px"
                     quality={75}
                     fetchPriority="high"
-                    className="object-cover"
+                    className="object-contain md:object-contain"
                     priority
                   />
                   {/* Status badges - top left corner */}

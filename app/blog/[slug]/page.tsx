@@ -203,7 +203,7 @@ export default function BlogDetailPage() {
             <div className="flex items-center justify-between flex-wrap gap-4 pb-8 border-b border-gray-200">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-blue-900 flex items-center justify-center text-white font-bold text-lg">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#012928] to-[#023d3a] flex items-center justify-center text-white font-bold text-lg">
                     {blog.autor.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -253,7 +253,7 @@ export default function BlogDetailPage() {
                 prose-h3:text-3xl prose-h3:mb-5 prose-h3:mt-12 prose-h3:leading-tight
                 prose-h4:text-2xl prose-h4:mb-4 prose-h4:mt-10
                 prose-p:text-gray-700 prose-p:leading-[1.9] prose-p:mb-8 prose-p:text-[1.125rem] prose-p:font-normal
-                prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#012928]
+                prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#AFEB17]
                 prose-strong:text-gray-900 prose-strong:font-bold
                 prose-em:text-gray-600 prose-em:italic
                 prose-ul:my-8 prose-ul:list-disc prose-ul:pl-8 prose-ul:space-y-3
@@ -285,7 +285,7 @@ export default function BlogDetailPage() {
                   hr: ({ node, ...props }) => <hr className="border-gray-200 my-16" {...props} />,
                   strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
                   em: ({ node, ...props }) => <em className="italic text-gray-600" {...props} />,
-                  a: ({ node, ...props }) => <a className="text-primary font-medium no-underline hover:underline hover:text-[#012928]" {...props} />,
+                  a: ({ node, ...props }) => <a className="text-primary font-medium no-underline hover:underline hover:text-[#AFEB17]" {...props} />,
                   code: ({ node, inline, ...props }) =>
                     inline ? (
                       <code className="bg-gray-100 text-gray-900 px-2 py-1 rounded text-base font-mono" {...props} />
@@ -353,7 +353,7 @@ export default function BlogDetailPage() {
             </div>
 
             {/* CTA Section - Elegant */}
-            <div className="mt-16 p-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border border-gray-200">
+            <div className="mt-16 p-8 bg-gradient-to-br from-[#F2F2EF] to-[#F2C300]/10 rounded-2xl border border-gray-200">
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">¿Interesado en energía solar?</h3>
                 <p className="text-gray-600 mb-6 max-w-xl mx-auto">
@@ -362,7 +362,7 @@ export default function BlogDetailPage() {
                 <div className="flex items-center justify-center gap-4 flex-wrap">
                   <Link
                     href="/cotizacion"
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-blue-900 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+                    className="inline-flex items-center px-6 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
                   >
                     Cotizar Ahora
                   </Link>

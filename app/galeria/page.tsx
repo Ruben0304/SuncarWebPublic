@@ -138,6 +138,7 @@ export default function GaleriaPage() {
   const [galleryData, setGalleryData] =
     useState<GalleryImages>(EMPTY_GALLERY_DATA);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [isChristmas, setIsChristmas] = useState(false);
 
   // Check if it's Christmas season
@@ -150,6 +151,7 @@ export default function GaleriaPage() {
       try {
         if (!silent) {
           setIsLoading(true);
+          setHasError(false);
         }
 
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -165,6 +167,7 @@ export default function GaleriaPage() {
             interior: interiorRes.status,
             nosotros: nosotrosRes.status,
           });
+          throw new Error("Respuesta inválida del servidor");
         }
 
         const exteriorData = await exteriorRes.json();
@@ -190,6 +193,9 @@ export default function GaleriaPage() {
         writeGaleriaCache(mappedData);
       } catch (error) {
         console.error("Error fetching gallery images:", error);
+        if (!silent) {
+          setHasError(true);
+        }
       } finally {
         if (!silent) {
           setIsLoading(false);
@@ -333,10 +339,25 @@ export default function GaleriaPage() {
             <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
               {/* Main Image */}
               <div className="relative h-96 md:h-[500px] lg:h-[600px] bg-gray-100 flex items-center justify-center">
-                {isLoading || currentImages.length === 0 ? (
+                {isLoading ? (
                   <div className="flex flex-col items-center justify-center gap-4">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                     <p className="text-gray-600">Cargando imágenes...</p>
+                  </div>
+                ) : hasError ? (
+                  <div className="flex flex-col items-center justify-center gap-4 px-6 text-center">
+                    <p className="text-gray-700 font-medium">No pudimos cargar las imágenes en este momento.</p>
+                    <button
+                      onClick={() => void fetchGalleryImages()}
+                      className="px-6 py-3 bg-[#012928] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+                    >
+                      Reintentar
+                    </button>
+                  </div>
+                ) : currentImages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-2 px-6 text-center">
+                    <p className="text-gray-700 font-medium">Aún no hay imágenes en esta categoría.</p>
+                    <p className="text-sm text-gray-500">Prueba con otra sección.</p>
                   </div>
                 ) : (
                   <Image

@@ -96,11 +96,11 @@ export default function SolarSurvivorPage() {
       {/* Animated Background with Gradient */}
       <div className="fixed inset-0 z-0">
         <div
-          className="absolute inset-0 bg-gradient-to-br from-blue-950 via-slate-900 to-black transition-opacity duration-1000"
+          className="absolute inset-0 bg-gradient-to-br from-[#012928] via-[#023d3a] to-black transition-opacity duration-1000"
           style={{ opacity: 1 - scrollY / 1000 }}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-tr from-[#012928]/40 via-transparent to-[#012928]/30"
+          className="absolute inset-0 bg-gradient-to-tr from-[#012928]/60 via-transparent to-[#012928]/40"
           style={{ opacity: Math.min(1, scrollY / 500) }}
         />
 
@@ -109,7 +109,7 @@ export default function SolarSurvivorPage() {
           {particles.map((particle, i) => (
             <div
               key={i}
-              className="absolute rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-400/20 animate-float-particle"
+              className="absolute rounded-full bg-gradient-to-br from-[#AFEB17]/20 to-[#F2C300]/20 animate-float-particle"
               style={{
                 left: `${particle.left}%`,
                 top: `${particle.top}%`,
@@ -124,7 +124,7 @@ export default function SolarSurvivorPage() {
 
         {/* Gradient orbs */}
         <div
-          className="absolute top-20 right-20 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl transition-opacity duration-1000"
+          className="absolute top-20 right-20 w-[600px] h-[600px] bg-[#F2C300]/10 rounded-full blur-3xl transition-opacity duration-1000"
           style={{ opacity: 0.5 - scrollY / 2000 }}
         />
         <div
@@ -158,19 +158,23 @@ export default function SolarSurvivorPage() {
             <div
               className="relative mb-8 md:mb-12 transition-all duration-700"
               style={{
-                transform: `translateY(${scrollY * 0.15}px) scale(${1 - scrollY / 3000})`,
+                transform: `scale(${Math.max(0.6, 1 - scrollY / 2500)})`,
                 opacity: 1 - scrollY / 800
               }}
             >
-              <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto">
-                <img
+              <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto animate-float">
+                <Image
                   src="https://s3.suncarsrl.com/web/logo-juego.png"
                   alt="Solar Survivor Logo"
-                  className="object-contain drop-shadow-2xl animate-float"
+                  fill
+                  sizes="(max-width: 640px) 192px, (max-width: 768px) 256px, (max-width: 1024px) 320px, 384px"
+                  className="object-contain drop-shadow-2xl"
+                  priority
+                  fetchPriority="high"
                 />
 
                 {/* Elegant glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#AFEB17]/15 to-[#F2C300]/15 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#AFEB17]/15 to-[#F2C300]/15 rounded-full blur-3xl animate-pulse -z-10" />
               </div>
             </div>
 
@@ -183,16 +187,16 @@ export default function SolarSurvivorPage() {
               }}
             >
               <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 relative">
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 animate-gradient-x">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#F2C300] via-[#AFEB17] to-[#F2C300] animate-gradient-x">
                   SOLAR SURVIVOR
                 </span>
               </h1>
 
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-blue-200 mb-6 md:mb-8 font-light tracking-wide animate-fade-in-up animation-delay-500">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/80 mb-6 md:mb-8 font-light tracking-wide animate-fade-in-up animation-delay-500">
                 Sobrevive a los apagones. Domina la energía solar.
               </p>
 
-              <p className="text-base sm:text-lg md:text-xl text-[#AFEB17]/70 mb-8 md:mb-12 max-w-3xl mx-auto animate-fade-in-up animation-delay-1000 px-4">
+              <p className="text-base sm:text-lg md:text-xl text-[#AFEB17]/90 mb-8 md:mb-12 max-w-3xl mx-auto animate-fade-in-up animation-delay-1000 px-4">
                 Un simulador de apagones donde cada decisión cuenta. Gestiona tus paneles solares,
                 conecta electrodomésticos estratégicamente y mantén el confort de tu familia.
               </p>
@@ -274,28 +278,28 @@ export default function SolarSurvivorPage() {
                   icon: <Lightbulb className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />,
                   title: "Electrodomésticos Estratégicos",
                   description: "Decide qué equipos conectar: refrigerador, ventilador, internet, televisión. Cada uno afecta tu energía y confort.",
-                  color: "from-blue-400 to-cyan-400",
+                  color: "from-[#012928] to-[#023d3a]",
                   delay: 200
                 },
                 {
                   icon: <Gauge className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />,
                   title: "Medidor de Confort",
                   description: "Mantén el balance perfecto entre higiene, alimentación, entretenimiento y bienestar familiar.",
-                  color: "from-green-400 to-emerald-400",
+                  color: "from-[#F2C300] to-[#AFEB17]",
                   delay: 300
                 },
                 {
                   icon: <Trophy className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />,
                   title: "Sistema de Puntuación",
                   description: "Gana puntos por decisiones inteligentes. Compite por el mejor puntaje y desbloquea logros épicos.",
-                  color: "from-purple-400 to-pink-400",
+                  color: "from-[#012928] to-[#023d3a]",
                   delay: 400
                 },
                 {
                   icon: <Target className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />,
                   title: "Situaciones Difíciles",
                   description: "Enfrenta escenarios desafiantes: días nublados, averías, emergencias familiares. ¿Podrás sobrevivir?",
-                  color: "from-indigo-400 to-blue-400",
+                  color: "from-[#F2C300] to-[#AFEB17]",
                   delay: 500
                 }
               ].map((feature, index) => (
@@ -303,7 +307,7 @@ export default function SolarSurvivorPage() {
                   key={index}
                   className="group relative bg-white/5 backdrop-blur-md rounded-xl md:rounded-2xl p-5 sm:p-6 md:p-8 border border-white/10 hover:border-white/30 transition-all duration-700 hover:scale-105 hover:-translate-y-2"
                   style={{
-                    transform: `translateY(${Math.max(0, 150 - (scrollY - 400) * 0.2 - index * 10)}px)`,
+                    transform: `translateY(${Math.max(0, 40 - (scrollY - 400) * 0.15)}px)`,
                     opacity: Math.min(1, (scrollY - 400 - index * 50) / 300),
                     transitionDelay: `${feature.delay}ms`
                   }}
@@ -315,7 +319,7 @@ export default function SolarSurvivorPage() {
                   </div>
 
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-4">{feature.title}</h3>
-                  <p className="text-sm sm:text-base text-blue-200/80 leading-relaxed">{feature.description}</p>
+                  <p className="text-sm sm:text-base text-white/70 leading-relaxed">{feature.description}</p>
 
                   <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 border-t-2 border-r-2 border-white/5 rounded-tr-xl md:rounded-tr-2xl transition-colors duration-500 group-hover:border-white/20" />
                   <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 border-b-2 border-l-2 border-white/5 rounded-bl-xl md:rounded-bl-2xl transition-colors duration-500 group-hover:border-white/20" />
@@ -326,7 +330,7 @@ export default function SolarSurvivorPage() {
         </section>
 
         {/* Comfort Metrics Section */}
-        <section className="relative py-16 md:py-24 lg:py-32 px-4 bg-gradient-to-b from-transparent via-blue-950/20 to-transparent">
+        <section className="relative py-16 md:py-24 lg:py-32 px-4 bg-gradient-to-b from-transparent via-[#012928]/30 to-transparent">
           <div className="container mx-auto">
             <div
               className="transition-all duration-1000"
@@ -335,20 +339,20 @@ export default function SolarSurvivorPage() {
                 opacity: Math.min(1, (scrollY - 1200) / 400)
               }}
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-6 md:mb-12 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 px-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-6 md:mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#F2C300] to-[#AFEB17] px-4">
                 Sistema de Confort
               </h2>
 
-              <p className="text-base sm:text-lg md:text-xl text-center text-blue-200 mb-12 md:mb-20 max-w-3xl mx-auto px-4">
+              <p className="text-base sm:text-lg md:text-xl text-center text-white/80 mb-12 md:mb-20 max-w-3xl mx-auto px-4">
                 Mantén el equilibrio perfecto en estos aspectos vitales para sobrevivir
               </p>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto">
               {[
-                { icon: <Droplet className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Higiene", color: "from-blue-400 to-cyan-400", value: 85 },
+                { icon: <Droplet className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Higiene", color: "from-[#012928] to-[#023d3a]", value: 85 },
                 { icon: <Home className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Alimentos", color: "from-[#AFEB17] to-[#F2C300]", value: 92 },
-                { icon: <Wifi className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Internet", color: "from-purple-400 to-pink-400", value: 78 },
+                { icon: <Wifi className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Internet", color: "from-[#012928] to-[#023d3a]", value: 78 },
                 { icon: <Users className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />, label: "Familia", color: "from-[#F2C300] to-[#AFEB17]", value: 88 }
               ].map((metric, index) => (
                 <div
@@ -373,7 +377,7 @@ export default function SolarSurvivorPage() {
                         }}
                       />
                     </div>
-                    <p className="text-xs text-blue-200 mt-2">{metric.value}% óptimo</p>
+                    <p className="text-xs text-white/70 mt-2">{metric.value}% óptimo</p>
                   </div>
                 </div>
               ))}
@@ -410,7 +414,7 @@ export default function SolarSurvivorPage() {
                     <Sun className="w-8 h-8 md:w-10 md:h-10 text-[#F2C300]" />
                     Ciclo Día/Noche
                   </h3>
-                  <p className="text-base sm:text-lg text-blue-200 leading-relaxed mb-4 md:mb-6">
+                  <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-4 md:mb-6">
                     Durante el día, tus paneles solares generan energía que puedes usar inmediatamente o almacenar en baterías.
                     Cuando cae la noche o hay un apagón, dependerás de tu energía almacenada.
                   </p>
@@ -420,7 +424,7 @@ export default function SolarSurvivorPage() {
                       <div className="text-xs sm:text-sm font-semibold">Día</div>
                       <div className="text-[10px] sm:text-xs opacity-80">Generar energía</div>
                     </div>
-                    <div className="flex-1 bg-gradient-to-br from-blue-900 to-purple-900 rounded-lg md:rounded-xl p-3 md:p-4 text-white transform hover:scale-105 transition-transform duration-500">
+                    <div className="flex-1 bg-gradient-to-br from-[#012928] to-[#023d3a] rounded-lg md:rounded-xl p-3 md:p-4 text-white transform hover:scale-105 transition-transform duration-500">
                       <Moon className="w-6 h-6 md:w-8 md:h-8 mb-2" />
                       <div className="text-xs sm:text-sm font-semibold">Noche</div>
                       <div className="text-[10px] sm:text-xs opacity-80">Usar baterías</div>
@@ -428,12 +432,10 @@ export default function SolarSurvivorPage() {
                   </div>
                 </div>
 
-                <div className="relative h-64 md:h-80 bg-gradient-to-b from-[#AFEB17]/10 to-blue-900/10 rounded-xl md:rounded-2xl overflow-hidden border border-white/10">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative w-32 h-32 md:w-40 md:h-40">
-                      <Sun className="absolute inset-0 w-full h-full text-[#AFEB17]/50 animate-spin-slow" />
-                      <Moon className="absolute inset-0 w-full h-full text-blue-300/50 animate-spin-reverse" />
-                    </div>
+                <div className="relative h-64 md:h-80 bg-gradient-to-b from-[#F2C300]/10 to-[#012928]/30 rounded-xl md:rounded-2xl overflow-hidden border border-white/10">
+                  <div className="absolute inset-0 flex items-center justify-center gap-8 md:gap-12">
+                    <Sun className="w-24 h-24 md:w-28 md:h-28 text-[#F2C300] animate-spin-slow drop-shadow-[0_0_18px_rgba(242,195,0,0.4)]" />
+                    <Moon className="w-24 h-24 md:w-28 md:h-28 text-white/80 animate-spin-reverse drop-shadow-[0_0_18px_rgba(255,255,255,0.25)]" />
                   </div>
                 </div>
               </div>
@@ -446,7 +448,7 @@ export default function SolarSurvivorPage() {
                   opacity: Math.min(1, (scrollY - 2800) / 400)
                 }}
               >
-                <div className="order-2 md:order-1 relative h-64 md:h-80 bg-gradient-to-br from-blue-900/10 to-purple-900/10 rounded-xl md:rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center">
+                <div className="order-2 md:order-1 relative h-64 md:h-80 bg-gradient-to-br from-[#012928]/20 to-[#023d3a]/20 rounded-xl md:rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center">
                   <div className="grid grid-cols-3 gap-3 md:gap-4 p-6 md:p-8">
                     {[Lightbulb, Wind, Battery].map((Icon, i) => (
                       <div
@@ -457,7 +459,7 @@ export default function SolarSurvivorPage() {
                           opacity: Math.min(1, (scrollY - 2900 - i * 100) / 200)
                         }}
                       >
-                        <Icon className="w-8 h-8 md:w-10 md:h-10 text-blue-400 group-hover:scale-125 transition-transform duration-500" />
+                        <Icon className="w-8 h-8 md:w-10 md:h-10 text-[#AFEB17] group-hover:scale-125 transition-transform duration-500" />
                       </div>
                     ))}
                   </div>
@@ -465,10 +467,10 @@ export default function SolarSurvivorPage() {
 
                 <div className="order-1 md:order-2">
                   <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 md:mb-6 flex items-center gap-3 md:gap-4">
-                    <Battery className="w-8 h-8 md:w-10 md:h-10 text-green-400" />
+                    <Battery className="w-8 h-8 md:w-10 md:h-10 text-[#AFEB17]" />
                     Gestión de Equipos
                   </h3>
-                  <p className="text-base sm:text-lg text-blue-200 leading-relaxed mb-4 md:mb-6">
+                  <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-4 md:mb-6">
                     Conecta y desconecta electrodomésticos según tu energía disponible.
                     ¿Priorizas el refrigerador para conservar alimentos o el ventilador para mantener el confort?
                     Cada decisión tiene consecuencias.
@@ -530,7 +532,7 @@ export default function SolarSurvivorPage() {
                   ¿Listo para el Desafío?
                 </h2>
 
-                <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-8 md:mb-10 px-4">
+                <p className="text-base sm:text-lg md:text-xl text-white/80 mb-8 md:mb-10 px-4">
                   Descarga Solar Survivor ahora y demuestra que puedes sobrevivir
                   a cualquier apagón con energía solar inteligente.
                 </p>
@@ -565,7 +567,7 @@ export default function SolarSurvivorPage() {
                   </Link>
                 </div>
 
-                <p className="text-xs sm:text-sm text-blue-200/60 mt-4 md:mt-6 px-4">
+                <p className="text-xs sm:text-sm text-white/60 mt-4 md:mt-6 px-4">
                   Compatible con Android 5.0 o superior • Tamaño: ~10MB
                 </p>
               </div>

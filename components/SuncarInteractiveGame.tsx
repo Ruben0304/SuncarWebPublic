@@ -6,16 +6,16 @@ import { Battery, ChevronRight, PlayCircle, Star, Sun, Target, Trophy, Zap } fro
 
 export default function SuncarInteractiveGame() {
   return (
-    <section className="py-16 lg:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
+    <section className="py-16 lg:py-20 bg-gradient-to-br from-[#012928] via-[#023d3a] to-[#012928] relative overflow-hidden">
       <div className="absolute inset-0 opacity-40">
         <div className="absolute top-32 right-20 animate-bounce animation-delay-1000">
-          <Sun className="w-6 h-6 text-yellow-400/40" />
+          <Sun className="w-6 h-6 text-[#F2C300]/40" />
         </div>
         <div className="absolute bottom-32 left-20 animate-bounce animation-delay-1500">
-          <Battery className="w-6 h-6 text-green-400/40" />
+          <Battery className="w-6 h-6 text-[#AFEB17]/40" />
         </div>
         <div className="absolute top-1/2 right-1/4 animate-bounce animation-delay-500">
-          <Zap className="w-6 h-6 text-blue-400/40" />
+          <Zap className="w-6 h-6 text-[#F2C300]/40" />
         </div>
       </div>
 
@@ -27,7 +27,7 @@ export default function SuncarInteractiveGame() {
               Contra los Apagones
             </span>
           </h2>
-          <p className="text-lg text-blue-100/90 max-w-3xl mx-auto mb-8">
+          <p className="text-lg text-white/85 max-w-3xl mx-auto mb-8">
             Tu hogar puede mantenerse iluminado, fresco y seguro aun cuando la red eléctrica falle. Diseñamos
             sistemas solares personalizados con almacenamiento inteligente para que disfrutes electricidad 24/7.
           </p>
@@ -43,14 +43,14 @@ export default function SuncarInteractiveGame() {
                     VENCER los Apagones
                   </span>
                 </h3>
-                <p className="text-blue-100/90 mb-8 text-lg lg:text-xl leading-relaxed">
+                <p className="text-white/85 mb-8 text-lg lg:text-xl leading-relaxed">
                   Somos tu equipo aliado para lograr independencia energética. Te acompañamos desde el estudio
                   inicial hasta la instalación y monitoreo, con soluciones pensadas para el clima cubano.
                 </p>
 
                 <div className="grid grid-cols-3 gap-6 max-w-md mx-auto lg:mx-0">
                   <div className="text-center">
-                    <Target className="w-10 h-10 text-blue-400 mx-auto mb-3" />
+                    <Target className="w-10 h-10 text-[#AFEB17] mx-auto mb-3" />
                     <div className="text-sm text-white font-semibold">Estudio Personalizado</div>
                   </div>
                   <div className="text-center">
@@ -58,7 +58,7 @@ export default function SuncarInteractiveGame() {
                     <div className="text-sm text-white font-semibold">Instalación Express</div>
                   </div>
                   <div className="text-center">
-                    <Star className="w-10 h-10 text-green-400 mx-auto mb-3" />
+                    <Star className="w-10 h-10 text-[#F2C300] mx-auto mb-3" />
                     <div className="text-sm text-white font-semibold">Garantía Integral</div>
                   </div>
                 </div>
@@ -66,14 +66,13 @@ export default function SuncarInteractiveGame() {
 
               <Link
                 href="/solar-survivor"
-                className="group relative px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 text-xl flex items-center gap-3 mx-auto lg:mx-0 overflow-hidden hover:-translate-y-1"
+                className="group relative px-10 py-5 bg-gradient-to-r from-[#F2C300] via-[#AFEB17] to-[#F2C300] text-[#012928] font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 text-xl flex items-center gap-3 mx-auto lg:mx-0 overflow-hidden hover:-translate-y-1"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#F2C300] via-[#AFEB17]/50 to-red-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
-                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 animate-pulse"></div>
+                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-15 animate-pulse"></div>
                 <div className="relative flex items-center gap-3 z-10">
                   <span className="relative">
                     🎮 Jugar Simulador
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></span>
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#012928] rounded-full animate-ping"></span>
                   </span>
                   <svg className="w-6 h-6 transform group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -85,18 +84,21 @@ export default function SuncarInteractiveGame() {
 
             <div className="flex justify-center lg:justify-end order-1 lg:order-2">
               <div className="relative">
-                <div className="relative w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] xl:w-[32rem] xl:h-[32rem]">
-                  <img
+                <div className="relative w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] xl:w-[32rem] xl:h-[32rem] animate-float">
+                  <Image
                     src="https://s3.suncarsrl.com/web/logo-juego.png"
                     alt="Solución anti-apagones de Suncar"
-                    className="object-contain animate-float drop-shadow-2xl"
-            
+                    fill
+                    sizes="(max-width: 640px) 320px, (max-width: 1024px) 384px, (max-width: 1280px) 448px, 512px"
+                    className="object-contain drop-shadow-2xl"
+                    priority
+                    fetchPriority="high"
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#AFEB17]/20 to-[#F2C300]/20 rounded-full blur-3xl scale-75 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#AFEB17]/20 to-[#F2C300]/20 rounded-full blur-3xl scale-75 animate-pulse -z-10" />
                 <div className="absolute top-1/4 -right-8 w-3 h-3 bg-[#F2C300] rounded-full animate-bounce opacity-70" />
                 <div className="absolute bottom-1/4 -left-8 w-2 h-2 bg-[#AFEB17] rounded-full animate-bounce animation-delay-1000 opacity-60" />
-                <div className="absolute top-1/2 -right-4 w-2 h-2 bg-blue-400 rounded-full animate-pulse animation-delay-500 opacity-50" />
+                <div className="absolute top-1/2 -right-4 w-2 h-2 bg-[#F2C300] rounded-full animate-pulse animation-delay-500 opacity-50" />
                 <div className="absolute bottom-1/3 left-4 w-1.5 h-1.5 bg-white rounded-full animate-pulse animation-delay-1500 opacity-60" />
               </div>
             </div>

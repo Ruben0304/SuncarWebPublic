@@ -91,25 +91,25 @@ ${formData.message}
       icon: <MapPin className="w-6 h-6" />,
       title: "Oficina Principal",
       content: contacto.direccion,
-      color: "bg-blue-500"
+      color: "bg-[#012928]"
     }] : []),
     ...(contacto?.telefono ? [{
       icon: <Phone className="w-6 h-6" />,
       title: "Teléfono",
       content: contacto.telefono,
-      color: "bg-green-500"
+      color: "bg-secondary-gradient"
     }] : []),
     ...(contacto?.correo ? [{
       icon: <Mail className="w-6 h-6" />,
       title: "Email",
       content: contacto.correo,
-      color: "bg-purple-500"
+      color: "bg-[#012928]"
     }] : []),
     {
       icon: <Clock className="w-6 h-6" />,
       title: "Horarios",
       content: "Lun - Vie: 8:00 AM - 6:00 PM\nSáb: 9:00 AM - 2:00 PM",
-      color: "bg-[#AFEB17]/50"
+      color: "bg-secondary-gradient"
     }
   ]
 

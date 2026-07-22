@@ -42,7 +42,6 @@ export default function BrandsSection() {
                     src={brand.src}
                     alt={brand.alt}
                     fill
-                    unoptimized
                     sizes="50vw"
                     className="object-contain opacity-90"
                   />
@@ -110,7 +109,6 @@ export default function BrandsSection() {
                   alt={brand.alt}
                   width={260}
                   height={160}
-                  unoptimized
                   sizes="(max-width: 1536px) 240px, 260px"
                   className="w-full h-auto object-contain transition-all duration-500 hover:scale-110 opacity-90 hover:opacity-100"
                   style={{ maxHeight: "160px" }}
