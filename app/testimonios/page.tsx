@@ -27,6 +27,7 @@ export default function TestimonialsPage() {
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isChristmas, setIsChristmas] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Check if it's Christmas season
@@ -60,6 +61,7 @@ export default function TestimonialsPage() {
     setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
     setIsPlaying(false);
     setCurrentTime(0);
+    setVideoError(false);
   };
 
   const prevVideo = () => {
@@ -69,6 +71,7 @@ export default function TestimonialsPage() {
     );
     setIsPlaying(false);
     setCurrentTime(0);
+    setVideoError(false);
   };
 
   const togglePlay = () => {
@@ -201,6 +204,7 @@ export default function TestimonialsPage() {
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
                   onEnded={() => setIsPlaying(false)}
+                  onError={() => setVideoError(true)}
                 >
                   <source
                     src={videoTestimonials[currentVideo].videoUrl}
@@ -209,19 +213,30 @@ export default function TestimonialsPage() {
                   Tu navegador no soporta la reproducción de video.
                 </video>
 
+                {/* Error Overlay */}
+                {videoError && (
+                  <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-3 px-6 text-center z-10">
+                    <p className="text-white font-semibold">No se pudo cargar el video</p>
+                    <p className="text-white/70 text-sm">Inténtalo de nuevo en unos minutos.</p>
+                  </div>
+                )}
+
                 {/* Video Controls Overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                  <button
-                    onClick={togglePlay}
-                    className="w-20 h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-primary shadow-xl hover:bg-white hover:scale-110 transition-all duration-300 opacity-0 group-hover:opacity-100"
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-10 h-10" />
-                    ) : (
-                      <Play className="w-10 h-10 ml-1" />
-                    )}
-                  </button>
-                </div>
+                {!videoError && (
+                  <div className="absolute inset-0 bg-black/0 md:group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                    <button
+                      onClick={togglePlay}
+                      aria-label={isPlaying ? "Pausar video" : "Reproducir video"}
+                      className="w-20 h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-primary shadow-xl hover:bg-white hover:scale-110 transition-all duration-300 opacity-90 md:opacity-0 md:group-hover:opacity-100"
+                    >
+                      {isPlaying ? (
+                        <Pause className="w-10 h-10" />
+                      ) : (
+                        <Play className="w-10 h-10 ml-1" />
+                      )}
+                    </button>
+                  </div>
+                )}
 
                 {/* Video Progress Bar */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4">
