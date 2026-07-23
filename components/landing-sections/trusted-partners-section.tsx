@@ -95,6 +95,7 @@ const partners = [
   { src: "https://s3.suncarsrl.com/partners/humidores.png", alt: "Humidores - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/kingbar%20(1).png", alt: "King Bar - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/marea%20(1).png", alt: "Marea - Cliente de Suncar" },
+  { src: "https://s3.suncarsrl.com/partners/mercazon.png", alt: "Mercazon - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/milexus.png", alt: "Milexus - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/mioytuyo%20(1).png", alt: "Mío y Tuyo - Cliente de Suncar" },
   { src: "https://s3.suncarsrl.com/partners/nacional.png", alt: "Hotel Nacional - Cliente de Suncar" },
