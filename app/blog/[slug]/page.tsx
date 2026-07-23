@@ -360,12 +360,15 @@ export default function BlogDetailPage() {
                   Solicita una cotización personalizada para tu hogar o negocio y descubre cuánto puedes ahorrar
                 </p>
                 <div className="flex items-center justify-center gap-4 flex-wrap">
+                  {/* Cotizar deshabilitado temporalmente */}
+                  {/*
                   <Link
                     href="/cotizacion"
                     className="inline-flex items-center px-6 py-3 bg-secondary-gradient text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
                   >
                     Cotizar Ahora
                   </Link>
+                  */}
                   <Link
                     href="/blog"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all duration-300 border border-gray-200"

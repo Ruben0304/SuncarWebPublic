@@ -485,7 +485,8 @@ export default function NavigationChristmas() {
                 })}
               </div>
 
-              {/* CTA Button - Christmas themed */}
+              {/* CTA Button - Christmas themed — deshabilitado temporalmente */}
+              {/*
               <div className="hidden md:block">
                 <Link
                   href="/cotizacion"
@@ -495,6 +496,7 @@ export default function NavigationChristmas() {
                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-red-500 to-yellow-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </Link>
               </div>
+              */}
 
               {/* Mobile Menu Button */}
               <button
@@ -539,6 +541,8 @@ export default function NavigationChristmas() {
                       )}
                     </Link>
                   ))}
+                  {/* Cotizar deshabilitado temporalmente */}
+                  {/*
                   <Link
                     href="/cotizacion"
                     className="mt-3 px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 w-full text-sm text-center block"
@@ -546,6 +550,7 @@ export default function NavigationChristmas() {
                   >
                     🎁 Cotizar
                   </Link>
+                  */}
                 </div>
               </div>
             )}

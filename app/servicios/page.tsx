@@ -282,6 +282,8 @@ export default function ServicesPage() {
             <p className="text-lg text-gray-600">
               Obtén una consulta gratuita y descubre cómo la energía solar puede transformar tu hogar
             </p>
+            {/* Cotizar deshabilitado temporalmente */}
+            {/*
             <div className="pt-4">
               <Link
                 href="/cotizacion"
@@ -291,6 +293,7 @@ export default function ServicesPage() {
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
+            */}
           </div>
         </div>
       </section>

@@ -37,12 +37,15 @@ export function ClientOfferPrompt({ initiallyShowDialog = false }: ClientOfferPr
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+              {/* Cotizar deshabilitado temporalmente */}
+              {/*
               <Link
                 href="/cotizacion"
                 className="px-6 py-3 lg:px-8 lg:py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm lg:text-base"
               >
                 Solicitar Cotización
               </Link>
+              */}
               <button
                 type="button"
                 className="text-primary hover:text-[#012928] font-semibold text-sm lg:text-base transition-colors duration-300"
@@ -73,6 +76,8 @@ export function ClientOfferPrompt({ initiallyShowDialog = false }: ClientOfferPr
               </p>
 
               <div className="flex flex-col gap-3">
+                {/* Cotizar deshabilitado temporalmente */}
+                {/*
                 <Link
                   href="/cotizacion"
                   className="bg-[#012928] text-white font-semibold py-3 px-6 rounded-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
@@ -80,6 +85,7 @@ export function ClientOfferPrompt({ initiallyShowDialog = false }: ClientOfferPr
                 >
                   🌟 Solicitar Cotización
                 </Link>
+                */}
                 <button
                   onClick={() => setShowOfferDialog(false)}
                   className="text-gray-500 hover:text-gray-700 py-2"

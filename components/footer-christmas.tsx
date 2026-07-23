@@ -164,12 +164,15 @@ export default function FooterChristmas() {
               Contacto
             </h3>
             <ContactInfo />
+            {/* Cotizar deshabilitado temporalmente */}
+            {/*
             <Link href="/cotizacion">
               <button className="w-full px-3 py-2 lg:px-4 lg:py-3 bg-gradient-to-r from-red-600 via-red-500 to-red-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:scale-105 text-sm lg:text-base border border-red-400/30 relative overflow-hidden group">
                 <span className="relative z-10">🎁 Solicitar Cotización</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-red-500 to-yellow-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
               </button>
             </Link>
+            */}
           </div>
         </div>
 

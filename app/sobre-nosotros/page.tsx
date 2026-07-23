@@ -266,11 +266,14 @@ export default function SobreNosotrosPage() {
               Únete a las familias y empresas que ya confían en SUNCAR para su independencia energética
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
+              {/* Cotizar deshabilitado temporalmente */}
+              {/*
               <Link href="/cotizacion" className="w-full sm:w-auto">
                 <button className="w-full sm:w-auto px-8 py-4 bg-secondary-gradient text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic glow-on-hover">
                   Solicitar Cotización <ArrowRight className="w-4 h-4" />
                 </button>
               </Link>
+              */}
               <Link href="/contacto" className="w-full sm:w-auto">
                 <button className="w-full sm:w-auto px-8 py-4 bg-[#012928] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 hover-magnetic">
                   Contactar Ahora

@@ -365,11 +365,14 @@ export default function TestimonialsPage() {
               beneficios de la energía solar
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {/* Cotizar deshabilitado temporalmente */}
+              {/*
               <Link href="/cotizacion">
                 <button className="px-8 py-4 bg-[#AFEB17] text-[#012928] font-semibold rounded-lg shadow-lg hover:shadow-xl hover:bg-[#9fd613] transition-all duration-300 transform hover:scale-105">
                   Solicitar Cotización
                 </button>
               </Link>
+              */}
               <Link href="/servicios">
                 <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300">
                   Ver Servicios

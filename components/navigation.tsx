@@ -311,7 +311,8 @@ export default function Navigation() {
                 })}
               </div>
 
-              {/* CTA Button */}
+              {/* CTA Button — deshabilitado temporalmente */}
+              {/*
               <div className="hidden md:block">
                 <Link
                   href="/cotizacion"
@@ -320,6 +321,7 @@ export default function Navigation() {
                   Cotizar
                 </Link>
               </div>
+              */}
 
               {/* Mobile Menu Button */}
               <button
@@ -403,6 +405,8 @@ export default function Navigation() {
                       </Link>
                     );
                   })}
+                  {/* Cotizar deshabilitado temporalmente */}
+                  {/*
                   <Link
                     href="/cotizacion"
                     className="mt-3 px-4 py-2 bg-[#012928] text-white font-semibold rounded-lg hover:bg-[#011818] hover:shadow-lg transition-all duration-300 w-full text-sm text-center block"
@@ -410,6 +414,7 @@ export default function Navigation() {
                   >
                     Cotizar
                   </Link>
+                  */}
                 </div>
               </div>
             )}

@@ -112,11 +112,14 @@ export default function Footer() {
           {/* Contact Info */}
           <div className="space-y-4">
             <ContactInfo />
+            {/* Cotizar deshabilitado temporalmente */}
+            {/*
             <Link href="/cotizacion">
               <button className="w-full px-3 py-3 lg:px-4 lg:py-4 bg-[#F2C300] text-[#012928] font-semibold rounded-lg hover:bg-[#d4aa00] hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm lg:text-base">
                 Solicitar Cotización
               </button>
             </Link>
+            */}
           </div>
         </div>
 
