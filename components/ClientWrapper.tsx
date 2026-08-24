@@ -22,7 +22,10 @@ function ClientWrapperContent({ children }: ClientWrapperProps) {
 
   // La tarjeta de presentación es una página personal del trabajador:
   // no debe mostrar el asistente/FAB de WhatsApp corporativo.
-  const hideChat = pathname?.startsWith("/tarjeta");
+  // /feria es la herramienta del stand: pantalla completa, sin red y con el
+  // comercial operando la tablet. Un FAB flotante encima solo estorba.
+  const hideChat =
+    pathname?.startsWith("/tarjeta") || pathname?.startsWith("/feria");
 
   useEffect(() => {
     // Ensure components waiting on the loader can proceed immediately
