@@ -447,14 +447,15 @@ export default function FeriaPage() {
         sesion={sesion}
         pendientes={pendientes}
         sesionRechazada={sesionRechazada}
-        offline={offline}
         onPaso={setPaso}
         onReiniciar={reiniciar}
         onSalir={salir}
         onVerCola={() => setVerCola(true)}
       />
 
-      {paso === 1 && <PasoPerfil onElegir={elegirPerfil} />}
+      {paso === 1 && (
+        <PasoPerfil sesion={sesion} offline={offline} onElegir={elegirPerfil} />
+      )}
 
       {paso === 2 && (
         <PasoApagon
@@ -530,16 +531,16 @@ export default function FeriaPage() {
 
 function Pantalla({ mensaje }: { mensaje: string | null }) {
   return (
-    <div className="flex h-[100dvh] flex-col items-center justify-center gap-6 bg-[#F2F2EF] px-8 text-center text-[#012928]">
+    <div className="flex h-[100dvh] flex-col items-center justify-center gap-4 bg-[#F2F2EF] px-8 text-center text-[#012928]">
       {mensaje ? (
         <>
-          <AlertTriangle className="h-16 w-16 text-[#012928]" />
-          <p className="max-w-md text-2xl font-semibold">{mensaje}</p>
+          <AlertTriangle className="h-10 w-10 text-[#012928]" strokeWidth={1.75} />
+          <p className="max-w-sm text-[15px] leading-snug">{mensaje}</p>
         </>
       ) : (
         <>
-          <Loader2 className="h-16 w-16 animate-spin text-[#012928]" />
-          <p className="text-2xl font-semibold">Cargando catálogo…</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#012928]/40" strokeWidth={2} />
+          <p className="text-[15px] text-[#012928]/55">Cargando catálogo…</p>
         </>
       )}
     </div>
@@ -552,7 +553,6 @@ function Cabecera({
   sesion,
   pendientes,
   sesionRechazada,
-  offline,
   onPaso,
   onReiniciar,
   onSalir,
@@ -563,7 +563,6 @@ function Cabecera({
   sesion: SesionFeria
   pendientes: number
   sesionRechazada: boolean
-  offline: EstadoOffline
   onPaso: (paso: 1 | 2 | 3) => void
   onReiniciar: () => void
   onSalir: () => void
@@ -575,123 +574,78 @@ function Cabecera({
     { n: 3, titulo: "Resultado" },
   ]
 
-  const dias = diasRestantes(sesion)
-  // Dos días o menos es la señal de "renová antes de que se te acabe la feria".
-  const porVencer = dias <= 2
-
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b-2 border-[#012928]/10 bg-white px-4">
-      <div className="flex min-w-0 items-baseline gap-2">
-        <span className="text-xl font-black tracking-tight">SunCar</span>
-        <span className="truncate text-sm font-semibold text-[#012928]/60">
+    /**
+     * En 375 px no entran logo, tres pasos con nombre y cinco indicadores: la
+     * versión anterior se solapaba. Acá queda una sola fila de acciones y los
+     * pasos pasan a ser una barra de progreso. El estado del día —acceso y modo
+     * sin red— se mira una vez al empezar, así que vive en el paso 1 y no
+     * compite en cada pantalla.
+     */
+    <header className="shrink-0 border-b border-[#012928]/10 bg-white">
+      <div className="flex h-14 items-center gap-2 px-3">
+        <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-[#012928]">
           {sesion.nombre}
-        </span>
+        </p>
+
+        {/* El backend rechazó el token. Nadie es expulsado de golpe: el
+            comercial decide cuándo cortar y volver a entrar. */}
+        {sesionRechazada && (
+          <button
+            type="button"
+            onClick={onSalir}
+            className="h-9 shrink-0 rounded-full bg-[#0A052D] px-3 text-[13px] font-semibold text-white"
+          >
+            Volvé a entrar
+          </button>
+        )}
+
+        {/* Leads sin enviar. En 0 no se muestra: lo que importa es que aparezca
+            cuando hay algo esperando. */}
+        {pendientes > 0 && (
+          <button
+            type="button"
+            onClick={onVerCola}
+            aria-label={`${pendientes} leads sin enviar`}
+            className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-[#F2C300] px-3 text-[13px] font-semibold text-[#012928]"
+          >
+            <CloudOff className="h-4 w-4" strokeWidth={2.5} />
+            <span className="tabular-nums">{pendientes}</span>
+          </button>
+        )}
+
+        <BotonIcono etiqueta="Empezar de nuevo" onClick={onReiniciar}>
+          <RotateCcw className="h-[18px] w-[18px]" />
+        </BotonIcono>
+        <BotonIcono etiqueta="Cerrar sesión" onClick={onSalir}>
+          <LogOut className="h-[18px] w-[18px]" />
+        </BotonIcono>
       </div>
 
-      <nav className="flex items-center gap-1">
+      {/* Tres pasos, tres segmentos. Los ya recorridos se pueden tocar. */}
+      <nav aria-label="Pasos" className="flex gap-1.5 px-3 pb-2.5">
         {pasos.map(({ n, titulo }) => {
           const habilitado = n === 1 || Boolean(perfil)
-          const activo = paso === n
+          const recorrido = n <= paso
           return (
             <button
               key={n}
               type="button"
               disabled={!habilitado}
+              aria-label={`Paso ${n}: ${titulo}`}
+              aria-current={paso === n ? "step" : undefined}
               onClick={() => habilitado && onPaso(n)}
-              className={`rounded-xl px-3 py-2 text-sm font-bold transition ${
-                activo
-                  ? "bg-[#012928] text-white"
-                  : habilitado
-                    ? "text-[#012928]/60"
-                    : "text-[#012928]/25"
-              }`}
+              className="group flex-1 py-1.5"
             >
-              <span className="tabular-nums">{n}</span>
-              <span className="ml-1 hidden sm:inline">{titulo}</span>
+              <span
+                className={`block h-[3px] rounded-full transition-colors ${
+                  recorrido ? "bg-[#012928]" : "bg-[#012928]/15"
+                }`}
+              />
             </button>
           )
         })}
       </nav>
-
-      <div className="flex shrink-0 items-center gap-2">
-        {/* El ritual de las 8:30: abrir con wifi y confirmar acá que la tablet
-            ya funciona sin red. En verde se puede guardar y bajar a la playa. */}
-        <span
-          className={`flex h-12 items-center gap-1.5 rounded-xl px-2.5 text-sm font-black ${
-            offline.listo ? "bg-[#AFEB17] text-[#012928]" : "bg-[#0A052D] text-white"
-          }`}
-          title={
-            offline.listo
-              ? `${offline.recursos} recursos guardados para usar sin red`
-              : "Todavía no está guardada para usar sin red"
-          }
-        >
-          {offline.listo ? (
-            <CheckCircle2 className="h-5 w-5" strokeWidth={2.5} />
-          ) : (
-            <CloudOff className="h-5 w-5" strokeWidth={2.5} />
-          )}
-          <span className="hidden md:inline">
-            {offline.listo ? "sin red ✓" : "sin guardar"}
-          </span>
-        </span>
-
-        {/* Contador de leads sin enviar. El comercial tiene que poder ver, al
-            final del día, que no se perdió ninguno. En 0 no se muestra: lo que
-            importa es que aparezca cuando hay algo esperando. */}
-        {pendientes > 0 && (
-          <button
-            type="button"
-            onClick={onVerCola}
-            className="flex h-12 items-center gap-1.5 rounded-xl bg-[#F2C300] px-3 text-base font-black text-[#012928]"
-          >
-            <CloudOff className="h-5 w-5" strokeWidth={2.5} />
-            <span className="tabular-nums">{pendientes}</span>
-            <span className="hidden sm:inline">sin enviar</span>
-          </button>
-        )}
-
-        {/* El backend rechazó el token. Nadie es expulsado de golpe: el
-            comercial decide cuándo cortar y volver a entrar. */}
-        {sesionRechazada ? (
-          <button
-            type="button"
-            onClick={onSalir}
-            className="h-12 rounded-xl bg-[#0A052D] px-3 text-sm font-black text-white"
-          >
-            Volvé a entrar
-          </button>
-        ) : (
-          /* Cuánto le queda al acceso. El viernes tiene que ver que vence el
-             martes, no descubrirlo el domingo con un cliente delante. */
-          <span
-            className={`rounded-lg px-2 py-1 text-xs font-black ${
-              porVencer ? "bg-[#F2C300] text-[#012928]" : "bg-[#012928]/10 text-[#012928]/70"
-            }`}
-          >
-            <span className="tabular-nums">{dias}</span> {dias === 1 ? "día" : "días"}
-            <span className="hidden lg:inline"> · vence {fechaVencimiento(sesion)}</span>
-          </span>
-        )}
-
-        <button
-          type="button"
-          onClick={onReiniciar}
-          aria-label="Empezar de nuevo"
-          className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#012928]/10 text-[#012928]/60 active:bg-[#012928]/5"
-        >
-          <RotateCcw className="h-6 w-6" />
-        </button>
-
-        <button
-          type="button"
-          onClick={onSalir}
-          aria-label="Cerrar sesión"
-          className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#012928]/10 text-[#012928]/60 active:bg-[#012928]/5"
-        >
-          <LogOut className="h-6 w-6" />
-        </button>
-      </div>
     </header>
   )
 }
@@ -759,13 +713,13 @@ function PantallaLogin({ onEntrar }: { onEntrar: (sesion: SesionFeria) => void }
 
   return (
     <div className="flex h-[100dvh] flex-col items-center justify-center bg-[#F2F2EF] px-6 text-[#012928]">
-      <form onSubmit={enviar} className="w-full max-w-md">
-        <p className="text-3xl font-black leading-tight">SunCar</p>
-        <p className="mb-6 text-lg font-bold text-[#012928]/60">
+      <form onSubmit={enviar} className="w-full max-w-sm">
+        <p className="text-2xl font-semibold leading-tight">SunCar</p>
+        <p className="mb-7 text-[15px] text-[#012928]/55">
           Feria Varadero · 28 al 30 de agosto
         </p>
 
-        <label className="mb-1 block text-base font-bold" htmlFor="feria-ci">
+        <label className="mb-1.5 block text-[13px] font-medium text-[#012928]/55" htmlFor="feria-ci">
           Carné de identidad
         </label>
         <input
@@ -776,10 +730,10 @@ function PantallaLogin({ onEntrar }: { onEntrar: (sesion: SesionFeria) => void }
           // La tablet es compartida: autocompletar el CI de otro comercial hace
           // que el lead salga firmado por quien no atendió.
           autoComplete="off"
-          className="mb-4 h-16 w-full rounded-2xl border-2 border-[#012928]/20 bg-white px-4 text-2xl font-bold tabular-nums outline-none focus:border-[#012928]"
+          className="mb-4 h-[52px] w-full rounded-xl border border-[#012928]/15 bg-white px-3.5 text-[17px] tabular-nums outline-none transition focus:border-[#012928]"
         />
 
-        <label className="mb-1 block text-base font-bold" htmlFor="feria-clave">
+        <label className="mb-1.5 block text-[13px] font-medium text-[#012928]/55" htmlFor="feria-clave">
           Contraseña
         </label>
         <input
@@ -788,11 +742,11 @@ function PantallaLogin({ onEntrar }: { onEntrar: (sesion: SesionFeria) => void }
           value={clave}
           onChange={(evento) => setClave(evento.target.value)}
           autoComplete="off"
-          className="mb-4 h-16 w-full rounded-2xl border-2 border-[#012928]/20 bg-white px-4 text-2xl font-bold outline-none focus:border-[#012928]"
+          className="mb-4 h-[52px] w-full rounded-xl border border-[#012928]/15 bg-white px-3.5 text-[17px] outline-none transition focus:border-[#012928]"
         />
 
         {error && (
-          <p className="mb-4 rounded-2xl bg-[#0A052D] p-3 text-base font-bold text-white">
+          <p className="mb-4 rounded-xl bg-[#0A052D] p-3 text-[13px] font-medium leading-snug text-white">
             {error}
           </p>
         )}
@@ -800,12 +754,12 @@ function PantallaLogin({ onEntrar }: { onEntrar: (sesion: SesionFeria) => void }
         <button
           type="submit"
           disabled={entrando || !ci.trim() || !clave}
-          className="flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-2xl font-black text-[#012928] disabled:from-[#012928]/15 disabled:to-[#012928]/15 disabled:text-[#012928]/40"
+          className="flex h-[52px] w-full items-center justify-center rounded-full bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-[17px] font-semibold text-[#012928] transition active:opacity-90 disabled:bg-none disabled:bg-[#012928]/10 disabled:text-[#012928]/35"
         >
-          {entrando ? <Loader2 className="h-7 w-7 animate-spin" /> : "Entrar"}
+          {entrando ? <Loader2 className="h-5 w-5 animate-spin" /> : "Entrar"}
         </button>
 
-        <p className="mt-4 text-sm font-semibold text-[#012928]/60">
+        <p className="mt-4 text-[13px] leading-snug text-[#012928]/55">
           Entrá una vez con wifi. Después el stand funciona sin red hasta que venza el acceso.
         </p>
       </form>
@@ -813,18 +767,53 @@ function PantallaLogin({ onEntrar }: { onEntrar: (sesion: SesionFeria) => void }
   )
 }
 
+/** Botón de acción secundaria de la cabecera. 40 px: sigue siendo tocable. */
+function BotonIcono({
+  children,
+  etiqueta,
+  onClick,
+}: {
+  children: React.ReactNode
+  etiqueta: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={etiqueta}
+      onClick={onClick}
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#012928]/50 transition active:bg-[#012928]/5"
+    >
+      {children}
+    </button>
+  )
+}
+
 /* ------------------------------------------------------------------ */
 /* Paso 1 — Perfil                                                     */
 /* ------------------------------------------------------------------ */
 
-function PasoPerfil({ onElegir }: { onElegir: (perfil: PerfilFeria) => void }) {
+function PasoPerfil({
+  sesion,
+  offline,
+  onElegir,
+}: {
+  sesion: SesionFeria
+  offline: EstadoOffline
+  onElegir: (perfil: PerfilFeria) => void
+}) {
+  const dias = diasRestantes(sesion)
+  const porVencer = dias <= 2
+
   return (
-    <main className="flex min-h-0 flex-1 flex-col gap-4 p-4">
-      <h1 className="shrink-0 text-center text-3xl font-black sm:text-4xl">
+    <main className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-5">
+      <h1 className="shrink-0 text-[22px] font-semibold leading-tight">
         ¿Qué vamos a respaldar?
       </h1>
 
-      <div className="grid min-h-0 flex-1 grid-rows-3 gap-4 lg:grid-cols-3 lg:grid-rows-1">
+      {/* En móvil las tarjetas quedan arriba con su alto natural y el aire cae
+          abajo; en pantallas anchas se reparten el alto en fila. */}
+      <div className="mt-4 flex min-h-0 flex-col gap-2.5 lg:flex-1 lg:flex-row">
         {PERFILES.map((perfil) => {
           const Icono = ICONO_PERFIL[perfil.id]
           return (
@@ -832,22 +821,43 @@ function PasoPerfil({ onElegir }: { onElegir: (perfil: PerfilFeria) => void }) {
               key={perfil.id}
               type="button"
               onClick={() => onElegir(perfil)}
-              className="flex min-h-0 items-center gap-5 rounded-3xl border-4 border-[#012928]/10 bg-white p-5 text-left transition active:scale-[0.98] active:border-[#AFEB17] lg:flex-col lg:justify-center lg:text-center"
+              className="flex min-h-0 shrink-0 items-center gap-3.5 rounded-2xl border border-[#012928]/10 bg-white p-4 text-left transition active:border-[#012928]/30 active:bg-[#012928]/[0.03] lg:flex-1 lg:flex-col lg:justify-center lg:gap-4 lg:text-center"
             >
-              <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#AFEB17] to-[#F2C300] text-[#012928]">
-                <Icono className="h-11 w-11" strokeWidth={2.5} />
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#012928]/[0.06] text-[#012928] lg:h-14 lg:w-14">
+                <Icono className="h-[22px] w-[22px] lg:h-7 lg:w-7" strokeWidth={2} />
               </span>
               <span className="min-w-0">
-                <span className="block text-2xl font-black leading-tight sm:text-3xl">
+                <span className="block text-[17px] font-semibold leading-tight lg:text-xl">
                   {perfil.nombre}
                 </span>
-                <span className="mt-1 block text-base font-medium leading-snug text-[#012928]/60">
+                <span className="mt-0.5 block text-[13px] leading-snug text-[#012928]/55">
                   {perfil.descripcion}
                 </span>
               </span>
             </button>
           )
         })}
+      </div>
+
+      {/* El estado del día. Se mira una vez, al abrir con wifi a las 8:30, y por
+          eso vive acá y no en la cabecera de todas las pantallas. */}
+      <div className="mt-4 flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1 text-[13px]">
+        <span className="flex items-center gap-1.5">
+          {offline.listo ? (
+            <>
+              <CheckCircle2 className="h-4 w-4 text-[#012928]" strokeWidth={2.5} />
+              <span className="text-[#012928]/60">Funciona sin red</span>
+            </>
+          ) : (
+            <>
+              <CloudOff className="h-4 w-4 text-[#0A052D]" strokeWidth={2.5} />
+              <span className="font-semibold text-[#0A052D]">Todavía no funciona sin red</span>
+            </>
+          )}
+        </span>
+        <span className={porVencer ? "font-semibold text-[#012928]" : "text-[#012928]/60"}>
+          Acceso: {dias} {dias === 1 ? "día" : "días"} · vence {fechaVencimiento(sesion)}
+        </span>
       </div>
     </main>
   )
@@ -885,22 +895,28 @@ function PasoApagon({
 
   return (
     <main className="flex min-h-0 flex-1 flex-col">
-      {/* Media pantalla para el gancho: mover el apagón y ver crecer el banco. */}
-      <section className="flex h-1/2 shrink-0 flex-col gap-3 border-b-4 border-[#012928]/10 bg-white p-4 lg:flex-row lg:items-center lg:gap-8 lg:px-8">
-        <div className="flex min-h-0 flex-1 flex-col justify-center">
-          <p className="text-lg font-bold text-[#012928]/60 sm:text-xl">
+      {/* El gancho: mover el apagón y ver crecer el banco. Ocupa la mitad de
+          arriba, pero con la escala tipográfica contenida — antes el "8" a 5rem
+          y el banco a 3.5rem competían entre sí y no se leía cuál mandaba. */}
+      <section className="shrink-0 border-b border-[#012928]/10 bg-white px-4 pb-4 pt-4 lg:flex lg:items-center lg:gap-8 lg:px-8">
+        <div className="lg:flex-1">
+          <p className="text-[13px] font-medium text-[#012928]/55">
             ¿Cuántas horas al día se va la corriente?
           </p>
 
           <p className="flex items-baseline gap-2 leading-none">
-            <span className="text-[5rem] font-black tabular-nums sm:text-[7rem]">{horas}</span>
-            <span className="text-3xl font-bold text-[#012928]/40">horas</span>
+            <span className="text-[56px] font-semibold tabular-nums tracking-tight lg:text-7xl">
+              {horas}
+            </span>
+            <span className="text-lg font-medium text-[#012928]/45">horas</span>
           </p>
 
-          <div className="relative mt-2 h-16">
-            <div className="absolute inset-x-0 top-1/2 h-5 -translate-y-1/2 overflow-hidden rounded-full bg-[#012928]/10">
+          {/* El thumb baja de 64 a 28 px: el de antes se montaba encima de los
+              atajos de abajo. El área tocable sigue siendo la del input entero. */}
+          <div className="relative mt-1 h-11">
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-[#012928]/10">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#AFEB17] to-[#F2C300]"
+                className="h-full rounded-full bg-[#012928]"
                 style={{ width: `${porcentajeSlider}%` }}
               />
             </div>
@@ -912,26 +928,26 @@ function PasoApagon({
               value={horas}
               onChange={(evento) => onHoras(Number(evento.target.value))}
               aria-label="Horas de apagón al día"
-              className="absolute inset-0 h-16 w-full cursor-pointer appearance-none bg-transparent
-                [&::-webkit-slider-thumb]:h-16 [&::-webkit-slider-thumb]:w-16 [&::-webkit-slider-thumb]:appearance-none
-                [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-white
-                [&::-webkit-slider-thumb]:bg-[#012928] [&::-webkit-slider-thumb]:shadow-lg
-                [&::-moz-range-thumb]:h-16 [&::-moz-range-thumb]:w-16 [&::-moz-range-thumb]:appearance-none
-                [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-white
+              className="absolute inset-0 h-11 w-full cursor-pointer appearance-none bg-transparent
+                [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:appearance-none
+                [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-white
+                [&::-webkit-slider-thumb]:bg-[#012928] [&::-webkit-slider-thumb]:shadow-md
+                [&::-moz-range-thumb]:h-7 [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:appearance-none
+                [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-white
                 [&::-moz-range-thumb]:bg-[#012928]"
             />
           </div>
 
-          <div className="mt-1 flex gap-2">
+          <div className="mt-2 flex gap-1.5">
             {HORAS_ATAJO.map((atajo) => (
               <button
                 key={atajo}
                 type="button"
                 onClick={() => onHoras(atajo)}
-                className={`h-12 flex-1 rounded-xl border-2 text-lg font-bold tabular-nums transition ${
+                className={`h-9 flex-1 rounded-full text-[13px] font-semibold tabular-nums transition ${
                   horas === atajo
-                    ? "border-[#012928] bg-[#012928] text-white"
-                    : "border-[#012928]/10 bg-white text-[#012928]/60"
+                    ? "bg-[#012928] text-white"
+                    : "bg-[#012928]/[0.06] text-[#012928]/60"
                 }`}
               >
                 {atajo} h
@@ -940,27 +956,27 @@ function PasoApagon({
           </div>
         </div>
 
-        {/* El banco de baterías crece en vivo: es lo que el cliente mira.
-            Texto en verde oscuro, no en blanco: el volt green es demasiado
-            luminoso y al sol el blanco encima desaparece. */}
-        <div className="flex shrink-0 flex-col justify-center rounded-3xl bg-gradient-to-br from-[#AFEB17] to-[#F2C300] p-4 text-[#012928] lg:h-full lg:w-[38%] lg:p-6">
-          <p className="flex items-center gap-2 text-base font-bold uppercase tracking-wide opacity-80">
-            <BatteryCharging className="h-6 w-6" />
+        {/* El banco de baterías crece en vivo: es lo que el cliente mira. Bloque
+            oscuro con el número en volt green — más contraste al sol que el
+            degradado, y deja el degradado libre para el botón principal. */}
+        <div className="mt-4 rounded-2xl bg-[#012928] p-4 text-white lg:mt-0 lg:w-[38%]">
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/60">
+            <BatteryCharging className="h-4 w-4" />
             Banco de baterías
           </p>
-          <p className="flex items-baseline gap-2 leading-none">
-            <span className="text-[3.5rem] font-black tabular-nums lg:text-[5rem]">
+          <p className="mt-1 flex items-baseline gap-1.5 leading-none">
+            <span className="text-[40px] font-semibold tabular-nums tracking-tight text-[#AFEB17] lg:text-6xl">
               {num(bancoKwh)}
             </span>
-            <span className="text-2xl font-bold opacity-80">kWh</span>
+            <span className="text-base font-medium text-white/60">kWh</span>
           </p>
-          <div className="mt-3 h-4 overflow-hidden rounded-full bg-[#012928]/20">
+          <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/20">
             <div
-              className="h-full rounded-full bg-[#012928] transition-[width] duration-200"
+              className="h-full rounded-full bg-[#AFEB17] transition-[width] duration-200"
               style={{ width: `${porcentajeBanco}%` }}
             />
           </div>
-          <p className="mt-2 text-sm font-semibold leading-snug">
+          <p className="mt-2 text-[12px] leading-snug text-white/60">
             {superaCatalogo
               ? `Pasa el kit más grande (${num(maxBateriaKits)} kWh): hay que ampliar.`
               : `Kit más grande del catálogo: ${num(maxBateriaKits)} kWh.`}
@@ -970,47 +986,51 @@ function PasoApagon({
 
       {/* Equipos: el comercial solo corrige cantidades. */}
       <section className="flex min-h-0 flex-1 flex-col">
-        <div className="flex shrink-0 items-center justify-between gap-3 px-4 py-2">
-          <h2 className="text-lg font-black">Equipos</h2>
+        <div className="flex shrink-0 items-center justify-between gap-3 px-4 pb-1 pt-3">
+          <h2 className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#012928]/45">
+            Equipos
+          </h2>
           <button
             type="button"
             onClick={onAbrirAgregar}
-            className="flex h-11 items-center gap-2 rounded-xl border-2 border-[#012928] px-4 text-base font-bold"
+            className="flex h-9 items-center gap-1.5 rounded-full bg-[#012928]/[0.06] px-3 text-[13px] font-semibold text-[#012928]"
           >
-            <Plus className="h-5 w-5" strokeWidth={3} />
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
             Agregar
           </button>
         </div>
 
-        <ul className="min-h-0 flex-1 overflow-y-auto px-4 pb-2">
+        <ul className="min-h-0 flex-1 overflow-y-auto px-4 pb-3">
           {equipos.map((equipo) => (
             <li
               key={equipo.nombre}
-              className={`flex items-center gap-3 border-b border-[#012928]/10 py-2 ${
+              className={`flex items-center gap-2 border-b border-[#012928]/[0.07] py-1.5 ${
                 equipo.cantidad === 0 ? "opacity-40" : ""
               }`}
             >
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-lg font-bold leading-tight">{equipo.nombre}</p>
-                <p className="text-sm font-medium text-[#012928]/60 tabular-nums">
+              {/* Nombre y potencia en una línea: en 375 px, apilarlos hacía la
+                  fila tan alta que solo entraban dos equipos en pantalla. */}
+              <p className="min-w-0 flex-1 truncate text-[15px] leading-tight">
+                <span className="font-medium">{equipo.nombre}</span>
+                <span className="ml-1.5 text-[13px] tabular-nums text-[#012928]/40">
                   {num(equipo.potencia_kw * 1000, 0)} W
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
+                </span>
+              </p>
+              <div className="flex shrink-0 items-center">
                 <BotonCantidad
                   etiqueta={`Quitar un ${equipo.nombre}`}
                   onClick={() => onCantidad(equipo.nombre, -1)}
                 >
-                  <Minus className="h-7 w-7" strokeWidth={3} />
+                  <Minus className="h-[18px] w-[18px]" strokeWidth={2.5} />
                 </BotonCantidad>
-                <span className="w-10 text-center text-2xl font-black tabular-nums">
+                <span className="w-7 text-center text-[17px] font-semibold tabular-nums">
                   {equipo.cantidad}
                 </span>
                 <BotonCantidad
                   etiqueta={`Agregar un ${equipo.nombre}`}
                   onClick={() => onCantidad(equipo.nombre, 1)}
                 >
-                  <Plus className="h-7 w-7" strokeWidth={3} />
+                  <Plus className="h-[18px] w-[18px]" strokeWidth={2.5} />
                 </BotonCantidad>
               </div>
             </li>
@@ -1018,21 +1038,54 @@ function PasoApagon({
         </ul>
       </section>
 
-      <footer className="shrink-0 border-t-2 border-[#012928]/10 bg-white p-3">
+      <PieAccion>
         <button
           type="button"
           disabled={!hayConsumo}
           onClick={onContinuar}
-          className="flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-2xl font-black text-[#012928] disabled:from-[#012928]/15 disabled:to-[#012928]/15 disabled:text-[#012928]/40"
+          className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-[17px] font-semibold text-[#012928] transition active:opacity-90 disabled:bg-none disabled:bg-[#012928]/10 disabled:text-[#012928]/35"
         >
           Ver el sistema
-          <ArrowRight className="h-7 w-7" strokeWidth={3} />
+          <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
         </button>
-      </footer>
+      </PieAccion>
     </main>
   )
 }
 
+/** Cabecera común de las hojas a pantalla completa. */
+function CabeceraHoja({ titulo, onCerrar }: { titulo: string; onCerrar: () => void }) {
+  return (
+    <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[#012928]/10 px-4">
+      <h2 className="min-w-0 truncate text-[17px] font-semibold">{titulo}</h2>
+      <BotonIcono etiqueta="Cerrar" onClick={onCerrar}>
+        <X className="h-5 w-5" strokeWidth={2.5} />
+      </BotonIcono>
+    </header>
+  )
+}
+
+/**
+ * Pie fijo de acción.
+ *
+ * `env(safe-area-inset-bottom)` es lo que evita que el botón principal quede
+ * debajo de la barra de gestos en un teléfono con notch — en la tablet suma 0.
+ */
+function PieAccion({ children }: { children: React.ReactNode }) {
+  return (
+    <footer
+      className="shrink-0 border-t border-[#012928]/10 bg-white px-4 pt-3"
+      style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+    >
+      {children}
+    </footer>
+  )
+}
+
+/**
+ * Botón de cantidad. 44 px es el mínimo tocable de iOS y deja sitio al nombre
+ * del equipo: con los 64 px de antes, en 375 px los nombres se truncaban todos.
+ */
 function BotonCantidad({
   children,
   etiqueta,
@@ -1047,7 +1100,7 @@ function BotonCantidad({
       type="button"
       aria-label={etiqueta}
       onClick={onClick}
-      className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#012928]/20 bg-white text-[#012928] active:bg-[#012928]/5"
+      className="flex h-11 w-11 items-center justify-center rounded-full text-[#012928]/70 transition active:bg-[#012928]/[0.06]"
     >
       {children}
     </button>
@@ -1079,34 +1132,28 @@ function DialogoAgregar({
   const visibles = catalogo.filter((equipo) => equipo.categoria === categoria)
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white">
-      <header className="flex h-16 shrink-0 items-center justify-between border-b-2 border-[#012928]/10 px-4">
-        <h2 className="text-xl font-black text-[#012928]">Agregar equipo</h2>
-        <button
-          type="button"
-          onClick={onCerrar}
-          aria-label="Cerrar"
-          className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#012928]/10 text-[#012928]/60"
-        >
-          <X className="h-6 w-6" strokeWidth={3} />
-        </button>
-      </header>
+    <div className="fixed inset-0 z-50 flex flex-col bg-white text-[#012928]">
+      <CabeceraHoja titulo="Agregar equipo" onCerrar={onCerrar} />
 
-      <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-[#012928]/10 px-4 py-3">
-        {categorias.map((nombre) => (
-          <button
-            key={nombre}
-            type="button"
-            onClick={() => setCategoria(nombre)}
-            className={`h-12 shrink-0 rounded-xl border-2 px-4 text-base font-bold ${
-              categoria === nombre
-                ? "border-[#012928] bg-[#012928] text-white"
-                : "border-[#012928]/10 text-[#012928]/70"
-            }`}
-          >
-            {nombre}
-          </button>
-        ))}
+      {/* `-mx-4 px-4` deja que los chips se deslicen hasta el borde en vez de
+          cortarse contra el padding: se ve que la fila sigue. */}
+      <div className="shrink-0 border-b border-[#012928]/10 px-4 py-2.5">
+        <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {categorias.map((nombre) => (
+            <button
+              key={nombre}
+              type="button"
+              onClick={() => setCategoria(nombre)}
+              className={`h-9 shrink-0 whitespace-nowrap rounded-full px-3.5 text-[13px] font-medium transition ${
+                categoria === nombre
+                  ? "bg-[#012928] text-white"
+                  : "bg-[#012928]/[0.06] text-[#012928]/60"
+              }`}
+            >
+              {nombre}
+            </button>
+          ))}
+        </div>
       </div>
 
       <ul className="min-h-0 flex-1 overflow-y-auto px-4">
@@ -1115,18 +1162,16 @@ function DialogoAgregar({
             <button
               type="button"
               onClick={() => onAgregar(equipo)}
-              className="flex w-full items-center justify-between gap-3 border-b border-[#012928]/10 py-4 text-left"
+              className="flex w-full items-center justify-between gap-3 border-b border-[#012928]/[0.07] py-2.5 text-left transition active:bg-[#012928]/[0.03]"
             >
-              <span className="min-w-0">
-                <span className="block truncate text-lg font-bold text-[#012928]">
-                  {equipo.nombre}
-                </span>
-                <span className="block text-sm font-medium text-[#012928]/60 tabular-nums">
+              <span className="min-w-0 flex-1 truncate text-[15px] leading-tight">
+                <span className="font-medium">{equipo.nombre}</span>
+                <span className="ml-1.5 text-[13px] tabular-nums text-[#012928]/40">
                   {num(equipo.potencia_kw * 1000, 0)} W
                 </span>
               </span>
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#012928] text-white">
-                <Plus className="h-7 w-7" strokeWidth={3} />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#012928]/[0.06] text-[#012928]">
+                <Plus className="h-[18px] w-[18px]" strokeWidth={2.5} />
               </span>
             </button>
           </li>
@@ -1191,31 +1236,33 @@ function DialogoLead({
 
   if (guardado) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-white px-6 text-center text-[#012928]">
-        <CheckCircle2 className="h-24 w-24 text-[#AFEB17]" strokeWidth={2.5} />
-        <p className="text-4xl font-black">Lead guardado</p>
-        <p className="max-w-sm text-lg font-semibold text-[#012928]/60">
-          Sale solo cuando haya internet. El contador de arriba lo lleva.
-        </p>
-        <div className="flex w-full max-w-md flex-col gap-3">
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-white px-6 text-center text-[#012928]">
+        <CheckCircle2 className="h-14 w-14 text-[#012928]" strokeWidth={1.75} />
+        <div>
+          <p className="text-[22px] font-semibold">Lead guardado</p>
+          <p className="mx-auto mt-1 max-w-xs text-[13px] leading-snug text-[#012928]/55">
+            Sale solo cuando haya internet. El contador de arriba lo lleva.
+          </p>
+        </div>
+        <div className="mt-2 flex w-full max-w-sm flex-col gap-2">
           {/* Paso 5 del guion: que se lleve el cálculo en su teléfono. Va como
               acción principal porque es lo que sigue con el cliente delante. */}
           {hayQr && (
             <button
               type="button"
               onClick={onMostrarQr}
-              className="flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-2xl font-black text-[#012928]"
+              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-[17px] font-semibold text-[#012928] transition active:opacity-90"
             >
-              <QrCode className="h-7 w-7" strokeWidth={2.5} />
+              <QrCode className="h-5 w-5" strokeWidth={2.5} />
               Pasarle el resumen
             </button>
           )}
           <button
             type="button"
             onClick={onSiguienteCliente}
-            className={`h-16 w-full rounded-2xl text-2xl font-black ${
+            className={`h-[52px] w-full rounded-full text-[17px] font-semibold transition active:opacity-90 ${
               hayQr
-                ? "border-2 border-[#012928]/20 text-[#012928]"
+                ? "border border-[#012928]/15 text-[#012928]"
                 : "bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-[#012928]"
             }`}
           >
@@ -1224,7 +1271,7 @@ function DialogoLead({
           <button
             type="button"
             onClick={onCerrar}
-            className="h-16 w-full rounded-2xl border-2 border-[#012928]/20 text-xl font-bold"
+            className="h-11 w-full text-[15px] font-medium text-[#012928]/55"
           >
             Volver al cálculo
           </button>
@@ -1235,21 +1282,11 @@ function DialogoLead({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white text-[#012928]">
-      <header className="flex h-16 shrink-0 items-center justify-between border-b-2 border-[#012928]/10 px-4">
-        <h2 className="text-xl font-black">Datos del cliente</h2>
-        <button
-          type="button"
-          onClick={onCerrar}
-          aria-label="Cerrar"
-          className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#012928]/10 text-[#012928]/60"
-        >
-          <X className="h-6 w-6" strokeWidth={3} />
-        </button>
-      </header>
+      <CabeceraHoja titulo="Datos del cliente" onCerrar={onCerrar} />
 
       <form onSubmit={enviar} className="flex min-h-0 flex-1 flex-col">
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
-          <label className="mb-1 block text-base font-bold" htmlFor="lead-nombre">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-4">
+          <label className="mb-1.5 block text-[13px] font-medium text-[#012928]/55" htmlFor="lead-nombre">
             Nombre
           </label>
           <input
@@ -1258,10 +1295,10 @@ function DialogoLead({
             onChange={(evento) => setNombre(evento.target.value)}
             autoComplete="off"
             autoCapitalize="words"
-            className="mb-4 h-16 w-full rounded-2xl border-2 border-[#012928]/20 px-4 text-2xl font-bold outline-none focus:border-[#012928]"
+            className="mb-4 h-[52px] w-full rounded-xl border border-[#012928]/15 px-3.5 text-[17px] outline-none transition focus:border-[#012928]"
           />
 
-          <label className="mb-1 block text-base font-bold" htmlFor="lead-telefono">
+          <label className="mb-1.5 block text-[13px] font-medium text-[#012928]/55" htmlFor="lead-telefono">
             WhatsApp
           </label>
           <input
@@ -1270,16 +1307,19 @@ function DialogoLead({
             onChange={(evento) => setTelefono(evento.target.value)}
             inputMode="tel"
             autoComplete="off"
-            className="h-16 w-full rounded-2xl border-2 border-[#012928]/20 px-4 text-2xl font-bold tabular-nums outline-none focus:border-[#012928]"
+            className="h-[52px] w-full rounded-xl border border-[#012928]/15 px-3.5 text-[17px] tabular-nums outline-none transition focus:border-[#012928]"
           />
           {/* El backend solo acepta dígitos con un "+" opcional. Se limpia solo,
               pero se muestra el resultado: el comercial tiene que ver el número
               que va a quedar guardado, con el cliente todavía delante. */}
-          <p className="mb-4 mt-1 text-sm font-semibold text-[#012928]/60">
+          <p className="mb-5 mt-1.5 text-[13px] text-[#012928]/55">
             {telefono.trim() === "" ? (
               "Se guarda solo el número. Los espacios y guiones se quitan."
             ) : telefonoOk ? (
-              <>Se guarda como <span className="font-black tabular-nums">{normalizado}</span></>
+              <>
+                Se guarda como{" "}
+                <span className="font-semibold tabular-nums text-[#012928]">{normalizado}</span>
+              </>
             ) : (
               "Faltan dígitos o hay letras: entre 6 y 15 números."
             )}
@@ -1288,22 +1328,22 @@ function DialogoLead({
           <button
             type="button"
             onClick={() => setPendienteVisita((valor) => !valor)}
-            className={`flex w-full items-center gap-3 rounded-2xl border-2 p-4 text-left ${
-              pendienteVisita
-                ? "border-[#F2C300] bg-[#F2C300]/15"
-                : "border-[#012928]/20"
+            className={`flex w-full items-center gap-3 rounded-xl border p-3.5 text-left transition ${
+              pendienteVisita ? "border-[#F2C300] bg-[#F2C300]/10" : "border-[#012928]/15"
             }`}
           >
             <span
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 ${
-                pendienteVisita ? "border-[#012928] bg-[#012928]" : "border-[#012928]/30"
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition ${
+                pendienteVisita ? "border-[#012928] bg-[#012928]" : "border-[#012928]/25"
               }`}
             >
-              {pendienteVisita && <Check className="h-5 w-5 text-white" strokeWidth={4} />}
+              {pendienteVisita && <Check className="h-4 w-4 text-white" strokeWidth={3} />}
             </span>
-            <span>
-              <span className="block text-lg font-black">Pendiente de visita</span>
-              <span className="block text-sm font-semibold text-[#012928]/60">
+            <span className="min-w-0">
+              <span className="block text-[15px] font-medium leading-tight">
+                Pendiente de visita
+              </span>
+              <span className="mt-0.5 block text-[13px] leading-snug text-[#012928]/55">
                 Hay que ir a verlo antes de cotizar.
               </span>
             </span>
@@ -1313,29 +1353,29 @@ function DialogoLead({
               backend. Con 80 leads de feria, marcarlo a todos ahoga a la gente
               que después tiene que hacer esas visitas. */}
           {pendienteVisita && (
-            <p className="mt-3 flex items-start gap-2 rounded-2xl border-2 border-[#F2C300] bg-[#F2C300]/15 p-3 text-base font-bold">
-              <AlertTriangle className="h-6 w-6 shrink-0" />
-              Esto crea una visita en el sistema y marca el lead como Alta. Dejalo para
-              clientes que valen el viaje, no para todos.
+            <p className="mt-2 flex items-start gap-2 rounded-xl bg-[#F2C300]/15 p-3 text-[13px] leading-snug">
+              <AlertTriangle className="h-4 w-4 shrink-0 translate-y-0.5" strokeWidth={2.5} />
+              Esto crea una visita en el sistema y marca el lead como Alta. Dejalo para clientes
+              que valen el viaje, no para todos.
             </p>
           )}
 
           {error && (
-            <p className="mt-3 rounded-2xl bg-[#0A052D] p-3 text-base font-bold text-white">
+            <p className="mt-3 rounded-xl bg-[#0A052D] p-3 text-[13px] font-medium text-white">
               {error}
             </p>
           )}
         </div>
 
-        <footer className="shrink-0 border-t-2 border-[#012928]/10 p-3">
+        <PieAccion>
           <button
             type="submit"
             disabled={!puedeGuardar}
-            className="flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-2xl font-black text-[#012928] disabled:from-[#012928]/15 disabled:to-[#012928]/15 disabled:text-[#012928]/40"
+            className="flex h-[52px] w-full items-center justify-center rounded-full bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-[17px] font-semibold text-[#012928] transition active:opacity-90 disabled:bg-none disabled:bg-[#012928]/10 disabled:text-[#012928]/35"
           >
-            {guardando ? <Loader2 className="h-7 w-7 animate-spin" /> : "Guardar lead"}
+            {guardando ? <Loader2 className="h-5 w-5 animate-spin" /> : "Guardar lead"}
           </button>
-        </footer>
+        </PieAccion>
       </form>
     </div>
   )
@@ -1370,11 +1410,13 @@ function PantallaQr({ enlace, onCerrar }: { enlace: string; onCerrar: () => void
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-white px-6 text-center text-[#012928]">
-      <p className="text-3xl font-black leading-tight">Escanealo con tu teléfono</p>
-      <p className="-mt-4 max-w-md text-lg font-semibold text-[#012928]/60">
-        Se te abre WhatsApp con el cálculo escrito. Solo tenés que enviarlo.
-      </p>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-white px-6 text-center text-[#012928]">
+      <div>
+        <p className="text-[22px] font-semibold leading-tight">Escanealo con tu teléfono</p>
+        <p className="mx-auto mt-1 max-w-xs text-[13px] leading-snug text-[#012928]/55">
+          Se te abre WhatsApp con el cálculo escrito. Solo tenés que enviarlo.
+        </p>
+      </div>
 
       {/* `marginSize` es la zona de silencio que la cámara necesita para
           encontrar el código. Corrección nivel L: la redundancia extra sirve
@@ -1393,7 +1435,7 @@ function PantallaQr({ enlace, onCerrar }: { enlace: string; onCerrar: () => void
       <button
         type="button"
         onClick={onCerrar}
-        className="h-16 w-full max-w-md rounded-2xl bg-[#012928] text-2xl font-black text-white"
+        className="h-[52px] w-full max-w-sm rounded-full bg-[#012928] text-[17px] font-semibold text-white transition active:opacity-90"
       >
         Listo
       </button>
@@ -1442,46 +1484,32 @@ function PanelCola({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white text-[#012928]">
-      <header className="flex h-16 shrink-0 items-center justify-between border-b-2 border-[#012928]/10 px-4">
-        <h2 className="text-xl font-black">
-          Sin enviar <span className="tabular-nums">({leads.length})</span>
-        </h2>
-        <button
-          type="button"
-          onClick={onCerrar}
-          aria-label="Cerrar"
-          className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#012928]/10 text-[#012928]/60"
-        >
-          <X className="h-6 w-6" strokeWidth={3} />
-        </button>
-      </header>
+      <CabeceraHoja titulo={`Sin enviar (${leads.length})`} onCerrar={onCerrar} />
 
-      <ul className="min-h-0 flex-1 overflow-y-auto p-4">
+      <ul className="min-h-0 flex-1 overflow-y-auto px-4 pt-3">
         {leads.length === 0 && (
-          <li className="flex flex-col items-center gap-4 py-16 text-center">
-            <CheckCircle2 className="h-20 w-20 text-[#AFEB17]" strokeWidth={2.5} />
-            <p className="text-2xl font-black">Todo enviado</p>
+          <li className="flex flex-col items-center gap-3 py-20 text-center">
+            <CheckCircle2 className="h-12 w-12 text-[#012928]" strokeWidth={1.75} />
+            <p className="text-[17px] font-semibold">Todo enviado</p>
           </li>
         )}
 
         {leads.map((lead) => (
-          <li
-            key={lead.id}
-            className="mb-3 rounded-2xl border-2 border-[#012928]/10 p-4"
-          >
-            <p className="text-xl font-black">{lead.cuerpo.nombre}</p>
-            <p className="text-base font-bold tabular-nums text-[#012928]/60">
+          <li key={lead.id} className="mb-2 rounded-xl border border-[#012928]/10 p-3.5">
+            <p className="text-[15px] font-medium">{lead.cuerpo.nombre}</p>
+            <p className="mt-0.5 text-[13px] tabular-nums text-[#012928]/55">
               {lead.cuerpo.telefono} · {lead.cuerpo.estado}
             </p>
-            <p className="mt-1 text-sm font-semibold text-[#012928]/60">
-              Guardado {new Date(lead.creadoEn).toLocaleTimeString("es-ES", {
+            <p className="mt-0.5 text-[12px] text-[#012928]/40">
+              Guardado{" "}
+              {new Date(lead.creadoEn).toLocaleTimeString("es-ES", {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
               {lead.intentos > 0 && ` · ${lead.intentos} intento${lead.intentos > 1 ? "s" : ""}`}
             </p>
             {lead.ultimoError && (
-              <p className="mt-2 rounded-xl bg-[#0A052D] p-2 text-sm font-bold text-white">
+              <p className="mt-2 rounded-lg bg-[#0A052D] px-2.5 py-2 text-[12px] leading-snug text-white">
                 {lead.ultimoError}
               </p>
             )}
@@ -1489,17 +1517,20 @@ function PanelCola({
         ))}
       </ul>
 
-      <footer className="shrink-0 border-t-2 border-[#012928]/10 p-3">
+      <PieAccion>
         <button
           type="button"
           onClick={reintentar}
           disabled={sincronizando || leads.length === 0}
-          className="flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-[#012928] text-2xl font-black text-white disabled:bg-[#012928]/15 disabled:text-[#012928]/40"
+          className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#012928] text-[17px] font-semibold text-white transition active:opacity-90 disabled:bg-[#012928]/10 disabled:text-[#012928]/35"
         >
-          <RefreshCw className={`h-7 w-7 ${sincronizando ? "animate-spin" : ""}`} strokeWidth={3} />
+          <RefreshCw
+            className={`h-5 w-5 ${sincronizando ? "animate-spin" : ""}`}
+            strokeWidth={2.5}
+          />
           Enviar ahora
         </button>
-      </footer>
+      </PieAccion>
     </div>
   )
 }
@@ -1533,29 +1564,17 @@ function PasoResultado({
 }) {
   return (
     <main className="flex min-h-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-4">
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+          <Cifra titulo="Consumo" valor={num(resultado.energiaDiaKwh)} unidad="kWh/día" />
+          <Cifra titulo="Inversor" valor={num(resultado.inversorKva)} unidad="kVA" />
           <Cifra
-            icono={<Zap className="h-5 w-5" />}
-            titulo="Consumo"
-            valor={num(resultado.energiaDiaKwh)}
-            unidad="kWh/día"
-          />
-          <Cifra
-            icono={<Zap className="h-5 w-5" />}
-            titulo="Inversor"
-            valor={num(resultado.inversorKva)}
-            unidad="kVA"
-          />
-          <Cifra
-            icono={<BatteryCharging className="h-5 w-5" />}
             titulo={`Baterías · ${horas} h`}
             valor={num(resultado.bateriaBancoKwh)}
             unidad="kWh"
             destacado
           />
           <Cifra
-            icono={<Sun className="h-5 w-5" />}
             titulo="Paneles"
             valor={String(resultado.numeroPaneles)}
             unidad={`de 600 W · ${num(resultado.panelesKwp)} kWp`}
@@ -1566,10 +1585,8 @@ function PasoResultado({
           <BloqueAmpliacion base={base} resultado={resultado} />
         ) : (
           <>
-            <h2 className="mb-2 mt-6 text-xl font-black">
-              {cubren.length === 1 ? "Kit que le sirve" : "Kits que le sirven"}
-            </h2>
-            <div className="grid gap-3 lg:grid-cols-3">
+            <Rotulo>{cubren.length === 1 ? "Kit que le sirve" : "Kits que le sirven"}</Rotulo>
+            <div className="grid gap-2 lg:grid-cols-3">
               {cubren.map((match) => (
                 <TarjetaKit key={match.kit.id} match={match} />
               ))}
@@ -1579,8 +1596,8 @@ function PasoResultado({
 
         {base && otrasBases.length > 0 && (
           <>
-            <h2 className="mb-2 mt-6 text-xl font-black">Otras bases posibles</h2>
-            <div className="grid gap-3 lg:grid-cols-2">
+            <Rotulo>Otras bases posibles</Rotulo>
+            <div className="grid gap-2 lg:grid-cols-2">
               {otrasBases.map((match) => (
                 <TarjetaKit key={match.kit.id} match={match} />
               ))}
@@ -1590,11 +1607,8 @@ function PasoResultado({
 
         {respaldo.length > 0 && (
           <>
-            <h2 className="mb-1 mt-6 text-xl font-black text-[#012928]/60">Solo respaldo</h2>
-            <p className="mb-2 text-sm font-semibold text-[#012928]/60">
-              No traen paneles: aguantan el apagón pero no generan.
-            </p>
-            <div className="grid gap-3 lg:grid-cols-2">
+            <Rotulo>Solo respaldo · no generan</Rotulo>
+            <div className="grid gap-2 lg:grid-cols-2">
               {respaldo.map((match) => (
                 <TarjetaKit key={match.kit.id} match={match} />
               ))}
@@ -1603,59 +1617,68 @@ function PasoResultado({
         )}
 
         {cubren.length === 0 && !base && (
-          <div className="mt-6 rounded-2xl bg-[#0A052D] p-5 text-white">
-            <p className="text-xl font-black">
+          <div className="mt-5 rounded-2xl bg-[#0A052D] p-4 text-white">
+            <p className="text-[17px] font-semibold leading-snug">
               Ningún kit del catálogo arranca este consumo.
             </p>
-            <p className="mt-1 text-base font-semibold opacity-80">
+            <p className="mt-1 text-[13px] text-white/60">
               Anotá los datos del cliente: este caso se cotiza a medida desde la oficina.
             </p>
           </div>
         )}
       </div>
 
-      <footer className="flex shrink-0 gap-3 border-t-2 border-[#012928]/10 bg-white p-3">
-        <button
-          type="button"
-          onClick={onAtras}
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-2 border-[#012928]/20 text-[#012928]"
-          aria-label="Volver"
-        >
-          <ArrowLeft className="h-7 w-7" strokeWidth={3} />
-        </button>
-        <button
-          type="button"
-          onClick={onCapturar}
-          className="flex h-16 flex-1 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-2xl font-black text-[#012928]"
-        >
-          <UserPlus className="h-7 w-7" strokeWidth={2.5} />
-          Guardar lead
-        </button>
-        {/* Para el visitante con prisa que no deja el número pero sí quiere
-            llevarse el cálculo. */}
-        {hayQr && (
+      <PieAccion>
+        <div className="flex gap-2">
           <button
             type="button"
-            onClick={onMostrarQr}
-            aria-label="Mostrar QR de WhatsApp"
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-2 border-[#012928] text-[#012928]"
+            onClick={onAtras}
+            className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full text-[#012928]/60 transition active:bg-[#012928]/[0.06]"
+            aria-label="Volver"
           >
-            <QrCode className="h-8 w-8" strokeWidth={2.5} />
+            <ArrowLeft className="h-5 w-5" strokeWidth={2.5} />
           </button>
-        )}
-      </footer>
+          <button
+            type="button"
+            onClick={onCapturar}
+            className="flex h-[52px] flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-[17px] font-semibold text-[#012928] transition active:opacity-90"
+          >
+            <UserPlus className="h-5 w-5" strokeWidth={2.5} />
+            Guardar lead
+          </button>
+          {/* Para el visitante con prisa que no deja el número pero sí quiere
+              llevarse el cálculo. */}
+          {hayQr && (
+            <button
+              type="button"
+              onClick={onMostrarQr}
+              aria-label="Mostrar QR de WhatsApp"
+              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border border-[#012928]/15 text-[#012928] transition active:bg-[#012928]/[0.06]"
+            >
+              <QrCode className="h-5 w-5" strokeWidth={2} />
+            </button>
+          )}
+        </div>
+      </PieAccion>
     </main>
   )
 }
 
+/** Rótulo de sección: pequeño y en mayúsculas, para no competir con las cifras. */
+function Rotulo({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#012928]/45">
+      {children}
+    </h2>
+  )
+}
+
 function Cifra({
-  icono,
   titulo,
   valor,
   unidad,
   destacado = false,
 }: {
-  icono: React.ReactNode
   titulo: string
   valor: string
   unidad: string
@@ -1663,22 +1686,25 @@ function Cifra({
 }) {
   return (
     <div
-      className={`rounded-2xl border-2 p-3 ${
-        destacado
-          ? "border-[#AFEB17] bg-gradient-to-br from-[#AFEB17] to-[#F2C300] text-[#012928]"
-          : "border-[#012928]/10 bg-white"
+      className={`rounded-2xl p-3 ${
+        destacado ? "bg-[#012928] text-white" : "border border-[#012928]/10 bg-white"
       }`}
     >
       <p
-        className={`flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide ${
-          destacado ? "opacity-90" : "text-[#012928]/60"
+        className={`text-[11px] font-semibold uppercase tracking-[0.08em] ${
+          destacado ? "text-white/55" : "text-[#012928]/45"
         }`}
       >
-        {icono}
         {titulo}
       </p>
-      <p className="text-[2.75rem] font-black leading-none tabular-nums">{valor}</p>
-      <p className={`text-sm font-semibold ${destacado ? "opacity-90" : "text-[#012928]/60"}`}>
+      <p
+        className={`mt-0.5 text-[30px] font-semibold leading-none tabular-nums tracking-tight ${
+          destacado ? "text-[#AFEB17]" : ""
+        }`}
+      >
+        {valor}
+      </p>
+      <p className={`mt-1 text-[12px] ${destacado ? "text-white/55" : "text-[#012928]/45"}`}>
         {unidad}
       </p>
     </div>
@@ -1690,27 +1716,27 @@ function TarjetaKit({ match }: { match: KitMatch }) {
   const estilo = ESTILO_ETIQUETA[etiqueta]
 
   return (
-    <article className="flex flex-col rounded-2xl border-2 border-[#012928]/10 bg-white p-4">
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-3xl font-black leading-none tabular-nums">
+    <article className="rounded-2xl border border-[#012928]/10 bg-white p-3.5">
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="text-[26px] font-semibold leading-none tabular-nums tracking-tight">
           {precio(kit.precio)}
-          <span className="ml-1 text-base font-bold text-[#012928]/40">{kit.moneda}</span>
+          <span className="ml-1 text-[13px] font-medium text-[#012928]/40">{kit.moneda}</span>
         </p>
-        <span className={`shrink-0 rounded-lg border px-2 py-1 text-xs font-black ${estilo.clase}`}>
+        <span
+          className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${estilo.clase}`}
+        >
           {estilo.texto}
         </span>
       </div>
 
-      <p className="mt-2 font-mono text-base font-bold leading-snug text-[#012928]">
-        {kit.resumen}
-      </p>
+      <p className="mt-1.5 font-mono text-[13px] leading-snug text-[#012928]/70">{kit.resumen}</p>
 
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold">
-        <Cobertura ok={match.cubreInversor} texto={`${num(kit.inversorKw)} kW inversor`} />
-        <Cobertura ok={match.cubreBaterias} texto={`${num(kit.bateriaKwh)} kWh baterías`} />
+      <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 text-[12px]">
+        <Cobertura ok={match.cubreInversor} texto={`${num(kit.inversorKw)} kW`} />
+        <Cobertura ok={match.cubreBaterias} texto={`${num(kit.bateriaKwh)} kWh`} />
         <Cobertura
           ok={match.cubrePaneles}
-          texto={kit.tienePaneles ? `${num(kit.panelesKwp)} kWp paneles` : "sin paneles"}
+          texto={kit.tienePaneles ? `${num(kit.panelesKwp)} kWp` : "sin paneles"}
         />
       </div>
     </article>
@@ -1719,8 +1745,16 @@ function TarjetaKit({ match }: { match: KitMatch }) {
 
 function Cobertura({ ok, texto }: { ok: boolean; texto: string }) {
   return (
-    <span className={`flex items-center gap-1 ${ok ? "text-[#012928]" : "text-[#012928]/40"}`}>
-      {ok ? <Check className="h-4 w-4" strokeWidth={3} /> : <X className="h-4 w-4" strokeWidth={3} />}
+    <span
+      className={`flex items-center gap-1 ${
+        ok ? "font-medium text-[#012928]/70" : "text-[#012928]/35"
+      }`}
+    >
+      {ok ? (
+        <Check className="h-3.5 w-3.5" strokeWidth={3} />
+      ) : (
+        <X className="h-3.5 w-3.5" strokeWidth={3} />
+      )}
       {texto}
     </span>
   )
@@ -1743,61 +1777,72 @@ function BloqueAmpliacion({
   const panelesFinal = kit.panelesKwp + ampliacion.panelExtraKwp
 
   return (
-    <section className="mt-6 rounded-3xl border-4 border-[#F2C300] bg-[#F2C300]/15 p-4">
-      <p className="flex items-center gap-2 text-lg font-black uppercase tracking-wide text-[#012928]">
-        <AlertTriangle className="h-6 w-6" />
-        Necesita ampliación
-      </p>
-      <p className="mt-1 text-base font-semibold text-[#012928]/70">
-        Ningún kit lo cubre de fábrica. Se parte de esta base y se le suma:
-      </p>
-
-      <div className="mt-3 grid gap-3 lg:grid-cols-2">
-        <div className="rounded-2xl border-2 border-[#F2C300] bg-white p-4">
-          <p className="text-sm font-black uppercase tracking-wide text-[#012928]/60">Base</p>
-          <p className="text-3xl font-black leading-none tabular-nums">
-            {precio(kit.precio)}
-            <span className="ml-1 text-base font-bold text-[#012928]/40">{kit.moneda}</span>
-          </p>
-          <p className="mt-2 font-mono text-base font-bold leading-snug">{kit.resumen}</p>
-        </div>
-
-        <div className="rounded-2xl border-2 border-[#F2C300] bg-white p-4">
-          <p className="text-sm font-black uppercase tracking-wide text-[#012928]/60">Se le agrega</p>
-          <ul className="mt-1 space-y-1">
-            {ampliacion.bateriasFaltantes > 0 && (
-              <li className="flex items-baseline gap-2 text-2xl font-black leading-tight">
-                <Plus className="h-5 w-5 shrink-0 text-[#012928]" strokeWidth={4} />
-                {ampliacion.bateriasFaltantes} batería
-                {ampliacion.bateriasFaltantes > 1 ? "s" : ""}
-                <span className="text-base font-bold text-[#012928]/60">
-                  de {num(kit.bateriaUnidadKwh)} kWh
-                </span>
-              </li>
-            )}
-            {ampliacion.panelesFaltantes > 0 && (
-              <li className="flex items-baseline gap-2 text-2xl font-black leading-tight">
-                <Plus className="h-5 w-5 shrink-0 text-[#012928]" strokeWidth={4} />
-                {ampliacion.panelesFaltantes} panel
-                {ampliacion.panelesFaltantes > 1 ? "es" : ""}
-                <span className="text-base font-bold text-[#012928]/60">
-                  de {num(kit.panelUnidadW, 0)} W
-                </span>
-              </li>
-            )}
-          </ul>
-        </div>
+    <section className="mt-5 overflow-hidden rounded-2xl border border-[#F2C300] bg-[#F2C300]/10">
+      <div className="flex items-center gap-2 bg-[#F2C300] px-3.5 py-2">
+        <AlertTriangle className="h-4 w-4 shrink-0 text-[#012928]" strokeWidth={2.5} />
+        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#012928]">
+          Necesita ampliación
+        </p>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-base font-bold text-[#012928]">
-        <span className="flex items-center gap-1.5">
-          <Check className="h-5 w-5 text-[#012928]" strokeWidth={3} />
-          Baterías: {num(bateriaFinal)} / {num(resultado.bateriaBancoKwh)} kWh
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Check className="h-5 w-5 text-[#012928]" strokeWidth={3} />
-          Paneles: {num(panelesFinal)} / {num(resultado.panelesKwp)} kWp
-        </span>
+      <div className="p-3.5">
+        <p className="text-[13px] text-[#012928]/70">
+          Ningún kit lo cubre de fábrica. Se parte de esta base y se le suma:
+        </p>
+
+        <div className="mt-3 grid gap-2 lg:grid-cols-2">
+          <div className="rounded-xl border border-[#012928]/10 bg-white p-3.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#012928]/45">
+              Base
+            </p>
+            <p className="mt-0.5 text-[26px] font-semibold leading-none tabular-nums tracking-tight">
+              {precio(kit.precio)}
+              <span className="ml-1 text-[13px] font-medium text-[#012928]/40">{kit.moneda}</span>
+            </p>
+            <p className="mt-1.5 font-mono text-[13px] leading-snug text-[#012928]/70">
+              {kit.resumen}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-[#012928]/10 bg-white p-3.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#012928]/45">
+              Se le agrega
+            </p>
+            <ul className="mt-1.5 space-y-1">
+              {ampliacion.bateriasFaltantes > 0 && (
+                <li className="flex items-baseline gap-1.5 text-[17px] leading-tight">
+                  <span className="font-semibold tabular-nums">
+                    +{ampliacion.bateriasFaltantes}
+                  </span>
+                  batería{ampliacion.bateriasFaltantes > 1 ? "s" : ""}
+                  <span className="text-[13px] text-[#012928]/50">
+                    de {num(kit.bateriaUnidadKwh)} kWh
+                  </span>
+                </li>
+              )}
+              {ampliacion.panelesFaltantes > 0 && (
+                <li className="flex items-baseline gap-1.5 text-[17px] leading-tight">
+                  <span className="font-semibold tabular-nums">+{ampliacion.panelesFaltantes}</span>
+                  panel{ampliacion.panelesFaltantes > 1 ? "es" : ""}
+                  <span className="text-[13px] text-[#012928]/50">
+                    de {num(kit.panelUnidadW, 0)} W
+                  </span>
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-medium text-[#012928]/70">
+          <span className="flex items-center gap-1">
+            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            Baterías {num(bateriaFinal)} / {num(resultado.bateriaBancoKwh)} kWh
+          </span>
+          <span className="flex items-center gap-1">
+            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            Paneles {num(panelesFinal)} / {num(resultado.panelesKwp)} kWp
+          </span>
+        </div>
       </div>
     </section>
   )
