@@ -40,6 +40,14 @@ export interface KitFeria {
   fotoUrl?: string
   /** Un kit sin paneles es respaldo puro: no genera, solo aguanta el apagón. */
   tienePaneles: boolean
+  /**
+   * Precio estimado de UNA batería y de UN panel dentro de este kit, en su
+   * misma moneda. Lo calcula `app/api/feria/kits/route.ts` repartiendo el
+   * precio final entre los renglones de materiales. `null` cuando el kit no
+   * trae ese componente o no vino el desglose.
+   */
+  precioBateriaUnidad: number | null
+  precioPanelUnidad: number | null
 }
 
 /** Cómo le queda un kit a un cliente concreto. */
@@ -116,6 +124,8 @@ export function aKitFeria(oferta: Record<string, any>): KitFeria | null {
     moneda: (oferta.moneda_pago || "USD").toUpperCase(),
     fotoUrl: oferta.foto_portada || undefined,
     tienePaneles: specs.panelesKwp > 0,
+    precioBateriaUnidad: Number(oferta.precio_bateria) || null,
+    precioPanelUnidad: Number(oferta.precio_panel) || null,
   }
 }
 
@@ -196,6 +206,14 @@ export interface Ampliacion {
   panelExtraKwp: number
   /** `false` cuando el kit ya cubre todo y no hace falta ampliar nada. */
   necesitaAmpliar: boolean
+  /**
+   * Costo estimado de lo que hay que sumarle, en la moneda del kit.
+   *
+   * `null` cuando falta el precio de alguno de los componentes que hacen falta:
+   * es preferible no mostrar número a mostrar uno incompleto, porque el
+   * comercial lo va a decir en voz alta delante del cliente.
+   */
+  costoEstimado: number | null
 }
 
 /**
@@ -221,12 +239,25 @@ export function calcularAmpliacion(
     unidadBateria > 0 ? Math.ceil(faltaBateriaKwh / unidadBateria) : 0
   const panelesFaltantes = Math.ceil(faltaPanelesKwp / (unidadPanelW / 1000))
 
+  // Solo se estima el costo si se conoce el precio de TODO lo que falta. Con
+  // un precio a medias el número quedaría corto y el comercial lo diría en voz
+  // alta como si fuera el total.
+  const faltaPrecioBateria = bateriasFaltantes > 0 && !kit.precioBateriaUnidad
+  const faltaPrecioPanel = panelesFaltantes > 0 && !kit.precioPanelUnidad
+
+  const costoEstimado =
+    faltaPrecioBateria || faltaPrecioPanel
+      ? null
+      : bateriasFaltantes * (kit.precioBateriaUnidad ?? 0) +
+        panelesFaltantes * (kit.precioPanelUnidad ?? 0)
+
   return {
     bateriasFaltantes,
     bateriaExtraKwh: bateriasFaltantes * unidadBateria,
     panelesFaltantes,
     panelExtraKwp: (panelesFaltantes * unidadPanelW) / 1000,
     necesitaAmpliar: bateriasFaltantes > 0 || panelesFaltantes > 0,
+    costoEstimado,
   }
 }
 

@@ -18,6 +18,13 @@ import { getBackendUrl } from "@/lib/backend-url";
 const CATALOGO =
   "/api/ofertas/confeccion/?tipo_oferta=generica&estado=aprobada_para_enviar";
 
+interface ItemOferta {
+  categoria?: string;
+  cantidad?: number;
+  precio?: number;
+  margen_asignado?: number;
+}
+
 interface OfertaConfeccion {
   id?: string;
   _id?: string;
@@ -27,6 +34,68 @@ interface OfertaConfeccion {
   precio_final?: number;
   moneda_pago?: string;
   foto_portada?: string;
+  items?: ItemOferta[];
+}
+
+/** "BATERÍAS" y "baterias" son la misma categoría. */
+function normalizar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .trim();
+}
+
+/**
+ * Precio de venta de una unidad de batería y de panel dentro del kit.
+ *
+ * De dónde sale: cada renglón de materiales trae `precio` (costo unitario) y
+ * `margen_asignado` (el margen de ese renglón completo), así que el precio de
+ * venta del renglón es `precio × cantidad + margen`. La suma de todos los
+ * renglones no da exactamente el `precio_final` de la oferta —queda un 6-7% por
+ * debajo, que es lo que la oferta agrega por encima de los materiales—, así que
+ * se reparte esa diferencia proporcionalmente. El resultado es "qué parte del
+ * precio que el cliente paga corresponde a una batería".
+ *
+ * Es una **estimación** y así se muestra en pantalla: sirve para que el
+ * comercial dé un orden de magnitud de la ampliación en el stand, no para
+ * cotizar.
+ */
+function preciosUnitarios(oferta: OfertaConfeccion): {
+  precio_bateria: number | null;
+  precio_panel: number | null;
+} {
+  const items = Array.isArray(oferta.items) ? oferta.items : [];
+  const precioFinal = Number(oferta.precio_final) || 0;
+
+  let totalRenglones = 0;
+  const porCategoria = new Map<string, { venta: number; cantidad: number }>();
+
+  for (const item of items) {
+    const cantidad = Number(item.cantidad) || 0;
+    const venta = (Number(item.precio) || 0) * cantidad + (Number(item.margen_asignado) || 0);
+    totalRenglones += venta;
+
+    const categoria = normalizar(item.categoria || "");
+    if (categoria !== "BATERIAS" && categoria !== "PANELES") continue;
+
+    const acumulado = porCategoria.get(categoria) || { venta: 0, cantidad: 0 };
+    porCategoria.set(categoria, {
+      venta: acumulado.venta + venta,
+      cantidad: acumulado.cantidad + cantidad,
+    });
+  }
+
+  // Sin renglones o sin precio final no hay nada que repartir.
+  const factor = totalRenglones > 0 && precioFinal > 0 ? precioFinal / totalRenglones : 0;
+
+  const unidad = (categoria: string): number | null => {
+    const linea = porCategoria.get(categoria);
+    if (!factor || !linea || linea.cantidad <= 0) return null;
+    return Math.round((linea.venta / linea.cantidad) * factor);
+  };
+
+  return { precio_bateria: unidad("BATERIAS"), precio_panel: unidad("PANELES") };
 }
 
 export async function GET() {
@@ -62,6 +131,9 @@ export async function GET() {
         precio_final: oferta.precio_final ?? 0,
         moneda_pago: oferta.moneda_pago || "USD",
         foto_portada: oferta.foto_portada || null,
+        // Se calculan acá y no en el cliente: es la única forma de aprovechar
+        // el desglose de materiales sin mandarle los 350 KB a la tablet.
+        ...preciosUnitarios(oferta),
       }));
 
     return NextResponse.json({

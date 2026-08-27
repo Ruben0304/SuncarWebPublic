@@ -64,10 +64,16 @@ import {
 import {
   armarLead,
   normalizarTelefono,
+  PROVINCIAS,
   telefonoValido,
   type ContextoLead,
 } from "@/lib/feria/lead"
-import { prepararOffline, type EstadoOffline } from "@/lib/feria/offline"
+import {
+  guardarFotos,
+  OFFLINE_INICIAL,
+  prepararOffline,
+  type EstadoOffline,
+} from "@/lib/feria/offline"
 import { construirResumen, enlaceWhatsapp, type ContextoResumen } from "@/lib/feria/whatsapp"
 import {
   aKitFeria,
@@ -171,7 +177,7 @@ export default function FeriaPage() {
   const [whatsapp, setWhatsapp] = useState("")
   /** El backend rechazó el token. No se expulsa solo: ver `sincronizar`. */
   const [sesionRechazada, setSesionRechazada] = useState(false)
-  const [offline, setOffline] = useState<EstadoOffline>({ listo: false, recursos: 0 })
+  const [offline, setOffline] = useState<EstadoOffline>(OFFLINE_INICIAL)
 
   useEffect(() => {
     setSesion(leerSesion())
@@ -220,10 +226,17 @@ export default function FeriaPage() {
         }
 
         setCatalogo(aplanarCatalogo(datosEquipos.data))
-        setKits(
-          (Array.isArray(datosKits.data) ? datosKits.data : [])
-            .map(aKitFeria)
-            .filter((kit: KitFeria | null): kit is KitFeria => kit !== null)
+
+        const listaKits = (Array.isArray(datosKits.data) ? datosKits.data : [])
+          .map(aKitFeria)
+          .filter((kit: KitFeria | null): kit is KitFeria => kit !== null)
+        setKits(listaKits)
+
+        // Las fotos solo se conocen ahora, con el catálogo ya en la mano.
+        guardarFotos(
+          listaKits
+            .map((kit: KitFeria) => kit.fotoUrl)
+            .filter((url: string | undefined): url is string => Boolean(url))
         )
       } catch {
         if (vivo) setError("No se pudo cargar el catálogo. Revisá la conexión.")
@@ -454,7 +467,7 @@ export default function FeriaPage() {
       />
 
       {paso === 1 && (
-        <PasoPerfil sesion={sesion} offline={offline} onElegir={elegirPerfil} />
+        <PasoPerfil offline={offline} onElegir={elegirPerfil} />
       )}
 
       {paso === 2 && (
@@ -794,17 +807,12 @@ function BotonIcono({
 /* ------------------------------------------------------------------ */
 
 function PasoPerfil({
-  sesion,
   offline,
   onElegir,
 }: {
-  sesion: SesionFeria
   offline: EstadoOffline
   onElegir: (perfil: PerfilFeria) => void
 }) {
-  const dias = diasRestantes(sesion)
-  const porVencer = dias <= 2
-
   return (
     <main className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-5">
       <h1 className="shrink-0 text-[22px] font-semibold leading-tight">
@@ -839,27 +847,52 @@ function PasoPerfil({
         })}
       </div>
 
-      {/* El estado del día. Se mira una vez, al abrir con wifi a las 8:30, y por
-          eso vive acá y no en la cabecera de todas las pantallas. */}
-      <div className="mt-4 flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1 text-[13px]">
-        <span className="flex items-center gap-1.5">
-          {offline.listo ? (
-            <>
-              <CheckCircle2 className="h-4 w-4 text-[#012928]" strokeWidth={2.5} />
-              <span className="text-[#012928]/60">Funciona sin red</span>
-            </>
-          ) : (
-            <>
-              <CloudOff className="h-4 w-4 text-[#0A052D]" strokeWidth={2.5} />
-              <span className="font-semibold text-[#0A052D]">Todavía no funciona sin red</span>
-            </>
-          )}
-        </span>
-        <span className={porVencer ? "font-semibold text-[#012928]" : "text-[#012928]/60"}>
-          Acceso: {dias} {dias === 1 ? "día" : "días"} · vence {fechaVencimiento(sesion)}
-        </span>
-      </div>
+      <EstadoDescarga offline={offline} />
     </main>
+  )
+}
+
+/**
+ * El ritual de las 8:30, con las tres fases visibles.
+ *
+ * Antes solo aparecía el check al final y no había forma de distinguir "está
+ * bajando" de "no arrancó". Ahora se ve la descarga en curso y recién después
+ * el check, que es lo que autoriza a guardar la tablet y bajar a la playa.
+ */
+function EstadoDescarga({ offline }: { offline: EstadoOffline }) {
+  if (offline.fase === "listo") {
+    return (
+      <p className="mt-4 flex shrink-0 items-center gap-1.5 text-[13px] text-[#012928]/60">
+        <CheckCircle2 className="h-4 w-4 text-[#012928]" strokeWidth={2.5} />
+        Funciona sin red · {offline.recursos} archivos guardados
+      </p>
+    )
+  }
+
+  if (offline.fase === "fallo") {
+    return (
+      <p className="mt-4 flex shrink-0 items-center gap-1.5 text-[13px] font-semibold text-[#0A052D]">
+        <CloudOff className="h-4 w-4" strokeWidth={2.5} />
+        No se pudo guardar para usar sin red
+      </p>
+    )
+  }
+
+  return (
+    <div className="mt-4 shrink-0">
+      <p className="flex items-center gap-1.5 text-[13px] text-[#012928]/60">
+        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.5} />
+        {offline.fase === "descargando"
+          ? "Descargando para trabajar sin red…"
+          : "Preparando el modo sin red…"}
+      </p>
+      {/* Barra indeterminada: el worker no informa progreso por archivo, y una
+          barra que avanza sola miente menos que un porcentaje inventado. */}
+      <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[#012928]/10">
+        <div className="h-full w-1/3 animate-[barrido_1.2s_ease-in-out_infinite] rounded-full bg-[#012928]" />
+      </div>
+      <style>{`@keyframes barrido{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}`}</style>
+    </div>
   )
 }
 
@@ -1135,16 +1168,17 @@ function DialogoAgregar({
     <div className="fixed inset-0 z-50 flex flex-col bg-white text-[#012928]">
       <CabeceraHoja titulo="Agregar equipo" onCerrar={onCerrar} />
 
-      {/* `-mx-4 px-4` deja que los chips se deslicen hasta el borde en vez de
-          cortarse contra el padding: se ve que la fila sigue. */}
+      {/* Las ocho categorías en varias líneas, no en scroll horizontal: con la
+          fila deslizable, "Agua y Servicios" —donde vive el calentador de agua—
+          quedaba fuera de pantalla y nadie la encontraba. */}
       <div className="shrink-0 border-b border-[#012928]/10 px-4 py-2.5">
-        <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex flex-wrap gap-1.5">
           {categorias.map((nombre) => (
             <button
               key={nombre}
               type="button"
               onClick={() => setCategoria(nombre)}
-              className={`h-9 shrink-0 whitespace-nowrap rounded-full px-3.5 text-[13px] font-medium transition ${
+              className={`h-9 rounded-full px-3 text-[13px] font-medium transition ${
                 categoria === nombre
                   ? "bg-[#012928] text-white"
                   : "bg-[#012928]/[0.06] text-[#012928]/60"
@@ -1201,13 +1235,21 @@ function DialogoLead({
   onSiguienteCliente,
 }: {
   hayQr: boolean
-  onGuardar: (datos: { nombre: string; telefono: string; pendienteVisita: boolean }) => Promise<void>
+  onGuardar: (datos: {
+    nombre: string
+    telefono: string
+    provincia: string
+    direccion: string
+    pendienteVisita: boolean
+  }) => Promise<void>
   onCerrar: () => void
   onMostrarQr: () => void
   onSiguienteCliente: () => void
 }) {
   const [nombre, setNombre] = useState("")
   const [telefono, setTelefono] = useState("")
+  const [provincia, setProvincia] = useState("")
+  const [direccion, setDireccion] = useState("")
   const [pendienteVisita, setPendienteVisita] = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
@@ -1225,7 +1267,7 @@ function DialogoLead({
     setError(null)
 
     try {
-      await onGuardar({ nombre, telefono, pendienteVisita })
+      await onGuardar({ nombre, telefono, provincia, direccion, pendienteVisita })
       setGuardado(true)
     } catch {
       setError("No se pudo guardar en la tablet. Anotalo en papel y avisá.")
@@ -1324,6 +1366,48 @@ function DialogoLead({
               "Faltan dígitos o hay letras: entre 6 y 15 números."
             )}
           </p>
+
+          {/* Provincia y dirección son opcionales pero es lo que después
+              permite repartir los leads: un cliente de Matanzas y uno de
+              Holguín no los llama la misma persona. */}
+          <label
+            className="mb-1.5 block text-[13px] font-medium text-[#012928]/55"
+            htmlFor="lead-provincia"
+          >
+            Provincia
+          </label>
+          <select
+            id="lead-provincia"
+            value={provincia}
+            onChange={(evento) => setProvincia(evento.target.value)}
+            className="mb-4 h-[52px] w-full appearance-none rounded-xl border border-[#012928]/15 bg-white bg-[length:16px] bg-[right_14px_center] bg-no-repeat px-3.5 text-[17px] outline-none transition focus:border-[#012928]"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23012928' stroke-width='2' stroke-linecap='round'><path d='m6 9 6 6 6-6'/></svg>\")",
+            }}
+          >
+            <option value="">Sin especificar</option>
+            {PROVINCIAS.map((nombreProvincia) => (
+              <option key={nombreProvincia} value={nombreProvincia}>
+                {nombreProvincia}
+              </option>
+            ))}
+          </select>
+
+          <label
+            className="mb-1.5 block text-[13px] font-medium text-[#012928]/55"
+            htmlFor="lead-direccion"
+          >
+            Dirección o zona <span className="text-[#012928]/35">· opcional</span>
+          </label>
+          <input
+            id="lead-direccion"
+            value={direccion}
+            onChange={(evento) => setDireccion(evento.target.value)}
+            autoComplete="off"
+            placeholder="Reparto, municipio, referencia…"
+            className="mb-5 h-[52px] w-full rounded-xl border border-[#012928]/15 px-3.5 text-[17px] outline-none transition placeholder:text-[#012928]/30 focus:border-[#012928]"
+          />
 
           <button
             type="button"
@@ -1716,30 +1800,64 @@ function TarjetaKit({ match }: { match: KitMatch }) {
   const estilo = ESTILO_ETIQUETA[etiqueta]
 
   return (
-    <article className="rounded-2xl border border-[#012928]/10 bg-white p-3.5">
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[26px] font-semibold leading-none tabular-nums tracking-tight">
-          {precio(kit.precio)}
-          <span className="ml-1 text-[13px] font-medium text-[#012928]/40">{kit.moneda}</span>
-        </p>
-        <span
-          className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${estilo.clase}`}
-        >
-          {estilo.texto}
-        </span>
-      </div>
+    <article className="flex gap-3 rounded-2xl border border-[#012928]/10 bg-white p-3.5">
+      <FotoKit url={kit.fotoUrl} nombre={kit.nombre} />
 
-      <p className="mt-1.5 font-mono text-[13px] leading-snug text-[#012928]/70">{kit.resumen}</p>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="text-[26px] font-semibold leading-none tabular-nums tracking-tight">
+            {precio(kit.precio)}
+            <span className="ml-1 text-[13px] font-medium text-[#012928]/40">{kit.moneda}</span>
+          </p>
+          <span
+            className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${estilo.clase}`}
+          >
+            {estilo.texto}
+          </span>
+        </div>
 
-      <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 text-[12px]">
-        <Cobertura ok={match.cubreInversor} texto={`${num(kit.inversorKw)} kW`} />
-        <Cobertura ok={match.cubreBaterias} texto={`${num(kit.bateriaKwh)} kWh`} />
-        <Cobertura
-          ok={match.cubrePaneles}
-          texto={kit.tienePaneles ? `${num(kit.panelesKwp)} kWp` : "sin paneles"}
-        />
+        <p className="mt-1.5 font-mono text-[13px] leading-snug text-[#012928]/70">{kit.resumen}</p>
+
+        <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 text-[12px]">
+          <Cobertura ok={match.cubreInversor} texto={`${num(kit.inversorKw)} kW`} />
+          <Cobertura ok={match.cubreBaterias} texto={`${num(kit.bateriaKwh)} kWh`} />
+          <Cobertura
+            ok={match.cubrePaneles}
+            texto={kit.tienePaneles ? `${num(kit.panelesKwp)} kWp` : "sin paneles"}
+          />
+        </div>
       </div>
     </article>
+  )
+}
+
+/**
+ * Miniatura del kit.
+ *
+ * Las fotos viven en S3 y el service worker las guarda aparte para que se vean
+ * sin red. Si alguna falta —o la tablet nunca las bajó— la tarjeta se muestra
+ * igual con un hueco neutro: nunca un ícono de imagen rota delante del cliente.
+ */
+function FotoKit({ url, nombre }: { url?: string; nombre: string }) {
+  const [falló, setFalló] = useState(false)
+
+  if (!url || falló) {
+    return (
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#012928]/[0.06]">
+        <Sun className="h-5 w-5 text-[#012928]/25" strokeWidth={2} />
+      </div>
+    )
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={url}
+      alt={nombre}
+      loading="lazy"
+      onError={() => setFalló(true)}
+      className="h-14 w-14 shrink-0 rounded-xl border border-[#012928]/10 object-cover"
+    />
   )
 }
 
@@ -1832,6 +1950,31 @@ function BloqueAmpliacion({
             </ul>
           </div>
         </div>
+
+        {/* Orden de magnitud de la ampliación. Se reparte el precio final del
+            kit entre sus materiales para sacar cuánto vale una batería y un
+            panel, así que es una estimación y se dice que lo es: el comercial
+            va a leer este número en voz alta. */}
+        {ampliacion.costoEstimado !== null && (
+          <div className="mt-2 rounded-xl bg-[#012928] p-3.5 text-white">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/55">
+              Estimado de la ampliación
+            </p>
+            <p className="mt-0.5 flex items-baseline gap-1.5">
+              <span className="text-[26px] font-semibold leading-none tabular-nums tracking-tight text-[#AFEB17]">
+                +{precio(ampliacion.costoEstimado)}
+              </span>
+              <span className="text-[13px] text-white/55">{kit.moneda}</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-white/55">
+              Con la base, el sistema queda en{" "}
+              <span className="font-semibold text-white">
+                {precio(kit.precio + ampliacion.costoEstimado)} {kit.moneda}
+              </span>
+              . Aproximado, a confirmar en oficina.
+            </p>
+          </div>
+        )}
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-medium text-[#012928]/70">
           <span className="flex items-center gap-1">

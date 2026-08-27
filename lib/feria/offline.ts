@@ -12,11 +12,16 @@
  */
 
 export interface EstadoOffline {
-  /** `true` cuando la página está guardada y abre sin red. */
-  listo: boolean
+  /**
+   * `esperando` mientras se registra el worker, `descargando` mientras guarda
+   * y `listo` cuando la tablet ya abre sin red. `fallo` si no se pudo.
+   */
+  fase: "esperando" | "descargando" | "listo" | "fallo"
   /** Cuántos recursos hay en la caché. Sirve para saber si algo quedó afuera. */
   recursos: number
 }
+
+export const OFFLINE_INICIAL: EstadoOffline = { fase: "esperando", recursos: 0 }
 
 const RUTA_WORKER = "/sw-feria.js"
 const ALCANCE = "/feria"
@@ -61,10 +66,13 @@ export function prepararOffline(alCambiarEstado: (estado: EstadoOffline) => void
   const alRecibirMensaje = (evento: MessageEvent) => {
     const datos = evento.data
     if (datos?.tipo === "precacheado") {
-      alCambiarEstado({ listo: datos.recursos > 0, recursos: datos.recursos })
+      alCambiarEstado({
+        fase: datos.recursos > 0 ? "listo" : "fallo",
+        recursos: datos.recursos ?? 0,
+      })
     }
     if (datos?.tipo === "estado") {
-      alCambiarEstado({ listo: Boolean(datos.listo), recursos: datos.recursos ?? 0 })
+      alCambiarEstado({ fase: datos.listo ? "listo" : "fallo", recursos: datos.recursos ?? 0 })
     }
   }
 
@@ -82,15 +90,33 @@ export function prepararOffline(alCambiarEstado: (estado: EstadoOffline) => void
       const worker = registro.active
       if (!worker) return
 
+      // A partir de acá el worker está bajando cosas: el comercial ve la barra
+      // en vez de un check que aparece de la nada.
+      alCambiarEstado({ fase: "descargando", recursos: 0 })
       worker.postMessage({ tipo: "precachear", urls: recursosCargados() })
-      worker.postMessage({ tipo: "estado" })
     } catch (error) {
       // El caso típico es que falte la cabecera `Service-Worker-Allowed`, que
       // es lo que habilita el scope acotado a /feria.
       console.error("No se pudo preparar el modo sin red:", error)
-      alCambiarEstado({ listo: false, recursos: 0 })
+      alCambiarEstado({ fase: "fallo", recursos: 0 })
     }
   })()
 
   return () => navigator.serviceWorker.removeEventListener("message", alRecibirMensaje)
+}
+
+/**
+ * Guarda las fotos de los kits para que se vean sin red.
+ *
+ * Van aparte del precacheo general porque viven en S3 —otro origen— y porque
+ * solo se conocen cuando ya llegó el catálogo. Es el mejor esfuerzo: si alguna
+ * falla, la tarjeta del kit se muestra igual sin miniatura.
+ */
+export function guardarFotos(urls: string[]): void {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return
+  if (urls.length === 0) return
+
+  navigator.serviceWorker.ready
+    .then((registro) => registro.active?.postMessage({ tipo: "fotos", urls }))
+    .catch(() => undefined)
 }

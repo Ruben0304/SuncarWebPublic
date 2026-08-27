@@ -46,9 +46,40 @@ const MAX_COMENTARIO = 2000
 /** El backend exige `^\+?\d{6,15}$`: solo dígitos y un "+" opcional al inicio. */
 const RE_TELEFONO = /^\+?\d{6,15}$/
 
+/**
+ * Provincias de Cuba con el nombre exacto que usa el backend
+ * (`application/services/codigos_geograficos.py`).
+ *
+ * Va como lista fija y no desde `/api/provincias/` por dos razones: ese
+ * endpoint exige token y, sobre todo, el stand trabaja sin red. Son 16 y no
+ * cambian.
+ */
+export const PROVINCIAS = [
+  "Pinar del Río",
+  "Artemisa",
+  "La Habana",
+  "Mayabeque",
+  "Matanzas",
+  "Villa Clara",
+  "Cienfuegos",
+  "Sancti Spíritus",
+  "Ciego de Ávila",
+  "Camagüey",
+  "Las Tunas",
+  "Holguín",
+  "Granma",
+  "Santiago de Cuba",
+  "Guantánamo",
+  "Isla de la Juventud",
+] as const
+
 export interface DatosLead {
   nombre: string
   telefono: string
+  /** Provincia de montaje. Vacío = no la dijo. */
+  provincia: string
+  /** Dirección o zona, en texto libre. */
+  direccion: string
   /** `true` cuando el comercial marcó que hay que ir a verlo. */
   pendienteVisita: boolean
 }
@@ -184,6 +215,11 @@ export interface CuerpoLead {
   comercial: string
   prioridad: "Ninguna" | "Baja" | "Media" | "Alta" | "Urgente"
   comentario: string
+  /** Provincia de montaje: es el filtro con el que se reparten los leads. */
+  provincia_montaje?: string
+  direccion?: string
+  /** Todos los leads del stand son de Cuba; el admin filtra por este campo. */
+  pais_contacto: string
 }
 
 /**
@@ -211,5 +247,10 @@ export function armarLead(datos: DatosLead, contexto: ContextoLead): CuerpoLead 
     comercial: contexto.sesion.nombre,
     prioridad: datos.pendienteVisita ? "Alta" : "Media",
     comentario: construirComentario(contexto),
+    // Los opcionales solo viajan si el comercial los llenó: mandar cadenas
+    // vacías ensucia el listado del admin sin aportar nada.
+    ...(datos.provincia ? { provincia_montaje: datos.provincia } : {}),
+    ...(datos.direccion.trim() ? { direccion: datos.direccion.trim() } : {}),
+    pais_contacto: "Cuba",
   }
 }

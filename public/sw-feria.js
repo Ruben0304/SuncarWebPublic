@@ -25,7 +25,7 @@
  * borra la caché vieja.
  */
 
-const VERSION = "feria-v2"
+const VERSION = "feria-v3"
 const CACHE = `suncar-${VERSION}`
 
 /**
@@ -134,7 +134,20 @@ self.addEventListener("fetch", (evento) => {
   if (pedido.method !== "GET") return
 
   const url = new URL(pedido.url)
-  if (url.origin !== self.location.origin) return
+
+  // Las fotos de los kits son de otro origen (S3). Se sirven de la caché si
+  // están guardadas; si no, se deja pasar el pedido tal cual y la tarjeta se
+  // muestra sin miniatura.
+  if (url.origin !== self.location.origin) {
+    if (pedido.destination === "image") {
+      evento.respondWith(
+        caches.open(CACHE).then((cache) =>
+          cache.match(pedido, SIN_VARY).then((guardada) => guardada || fetch(pedido))
+        )
+      )
+    }
+    return
+  }
 
   if (pedido.mode === "navigate") {
     evento.respondWith(redPrimero(pedido, "/feria"))
@@ -172,6 +185,26 @@ self.addEventListener("message", (evento) => {
       (async () => {
         const guardados = await guardarTodo([...ESENCIALES, ...(datos.urls || [])])
         evento.source?.postMessage({ tipo: "precacheado", recursos: guardados })
+      })()
+    )
+  }
+
+  /**
+   * Fotos de los kits. Viven en S3, o sea otro origen, así que se piden en
+   * `no-cors`: la respuesta es opaca (no se puede leer desde JS) pero sirve
+   * perfectamente para pintar un <img>, que es todo lo que hace falta.
+   */
+  if (datos?.tipo === "fotos") {
+    evento.waitUntil(
+      (async () => {
+        const cache = await caches.open(CACHE)
+        await Promise.allSettled(
+          (datos.urls || []).map(async (url) => {
+            if (await cache.match(url)) return
+            const respuesta = await fetch(url, { mode: "no-cors" })
+            await cache.put(url, respuesta)
+          })
+        )
       })()
     )
   }
