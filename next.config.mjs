@@ -13,6 +13,24 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // El service worker de /feria vive en la raíz pero solo debe controlar
+        // esa ruta: sin esta cabecera el navegador rechaza el scope acotado y
+        // habría que darle alcance sobre todo el sitio público.
+        source: "/sw-feria.js",
+        headers: [
+          {
+            key: "Service-Worker-Allowed",
+            value: "/feria",
+          },
+          {
+            // El propio worker nunca se cachea: es lo que permite publicar una
+            // versión nueva y que la tablet la tome al abrir con wifi.
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           {
