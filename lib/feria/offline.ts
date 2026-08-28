@@ -26,6 +26,33 @@ export const OFFLINE_INICIAL: EstadoOffline = { fase: "esperando", recursos: 0 }
 const RUTA_WORKER = "/sw-feria.js"
 const ALCANCE = "/feria"
 
+/**
+ * Le pide al navegador que no descarte lo guardado.
+ *
+ * Por defecto la caché y IndexedDB son "best-effort": si el sistema se queda
+ * corto de espacio, el navegador los borra sin avisar. En una tablet que pasa
+ * el fin de semana con leads sin enviar adentro, eso seria perderlos en
+ * silencio. `persist()` marca el almacenamiento como duradero.
+ *
+ * El navegador puede negarlo —Chrome lo concede segun el uso del sitio— y no
+ * pasa nada: es una capa extra, no un requisito.
+ */
+async function pedirAlmacenamientoDuradero(): Promise<void> {
+  try {
+    if (!navigator.storage?.persist) return
+    if (await navigator.storage.persisted()) return
+
+    const concedido = await navigator.storage.persist()
+    if (!concedido) {
+      console.warn(
+        "El navegador no marcó el almacenamiento como duradero: podría descartar la caché o los leads si se queda sin espacio."
+      )
+    }
+  } catch {
+    // Navegador sin soporte: se sigue igual.
+  }
+}
+
 /** Espera a que la página termine de cargar antes de mirar qué pidió. */
 function alTerminarDeCargar(): Promise<void> {
   if (document.readyState === "complete") return Promise.resolve()
@@ -80,6 +107,8 @@ export function prepararOffline(alCambiarEstado: (estado: EstadoOffline) => void
 
   ;(async () => {
     try {
+      await pedirAlmacenamientoDuradero()
+
       await navigator.serviceWorker.register(RUTA_WORKER, { scope: ALCANCE })
       const registro = await navigator.serviceWorker.ready
 
