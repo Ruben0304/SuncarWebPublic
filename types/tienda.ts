@@ -48,45 +48,19 @@ export interface ArticuloTienda {
   potenciaKW?: number | null;
 }
 
-export interface ArticulosTiendaResponse {
+/**
+ * Respuesta de `GET /api/productos/catalogo-web`. El backend ya entrega los
+ * artículos aplanados y filtrados por `habilitar_venta_web`, con la marca
+ * resuelta y la foto absoluta: aquí no se transforma nada.
+ */
+export interface CatalogoWebResponse {
   success: boolean;
   message: string;
   data: ArticuloTienda[];
-}
-
-// Tipos para las respuestas raw del backend de productos
-
-export interface BackendMarca {
-  _id: string;
-  nombre: string;
-}
-
-export interface BackendMaterial {
-  codigo: string;
-  descripcion?: string;
-  um?: string;
-  precio: number;
-  nombre?: string;
-  marca_id?: string;
-  foto?: string | null;
-  potenciaKW?: number;
-  habilitar_venta_web?: boolean;
-  precio_por_cantidad?: PrecioPorCantidad;
-  especificaciones?: EspecificacionesTecnicas;
-}
-
-export interface BackendCategoria {
-  id: string;
-  categoria: string;
-  materiales: BackendMaterial[];
-}
-
-export interface BackendProductosResponse {
-  success: boolean;
-  data: BackendCategoria[];
-}
-
-export interface BackendMarcasResponse {
-  success: boolean;
-  data: BackendMarca[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }

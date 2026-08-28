@@ -26,7 +26,7 @@ import {
   Eye,
 } from "lucide-react";
 import Image from "next/image";
-import { ArticuloTienda } from "@/types/tienda";
+import { ArticuloTienda, CatalogoWebResponse } from "@/types/tienda";
 import { useAOS } from "@/hooks/useAOS";
 import ProductDetailModal from "@/components/ProductDetailModal";
 import { isChristmasSeason } from "@/lib/christmas-utils";
@@ -34,6 +34,11 @@ import ShoppingCartComponent from "@/components/ShoppingCart";
 import { useCart } from "@/hooks/useCart";
 
 const SHOW_PRODUCTS_MAINTENANCE = false;
+
+/** Tope que acepta `/api/productos/catalogo-web` (Query(..., le=200)). */
+const CATALOGO_PAGE_SIZE = 200;
+/** Cortafuegos: 2000 artículos. Si se alcanza, toca paginar en la UI. */
+const MAX_CATALOGO_PAGES = 10;
 
 export default function TiendaPage() {
   const [filteredProductos, setFilteredProductos] = useState<ArticuloTienda[]>(
@@ -87,46 +92,81 @@ export default function TiendaPage() {
 
   const fetchProductos = async (
     filters?: { q?: string; categoria?: string | null },
+    signal?: AbortSignal,
   ) => {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (filters?.q) params.set("q", filters.q);
-      if (filters?.categoria) params.set("categoria", filters.categoria);
-      const query = params.toString();
       const base = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/productos/catalogo-web`;
-      const endpoint = query ? `${base}?${query}` : base;
-      const response = await fetch(endpoint);
 
-      if (!response.ok) {
-        throw new Error("Error al cargar los productos");
+      const buildUrl = (page: number) => {
+        const params = new URLSearchParams();
+        if (filters?.q) params.set("q", filters.q);
+        if (filters?.categoria) params.set("categoria", filters.categoria);
+        params.set("page", String(page));
+        params.set("limit", String(CATALOGO_PAGE_SIZE));
+        return `${base}?${params.toString()}`;
+      };
+
+      const fetchPage = async (page: number): Promise<CatalogoWebResponse> => {
+        const response = await fetch(buildUrl(page), { signal });
+        if (!response.ok) {
+          throw new Error("Error al cargar los productos");
+        }
+        const data: CatalogoWebResponse = await response.json();
+        if (!data.success || !Array.isArray(data.data)) {
+          throw new Error(data.message || "Error al procesar los productos");
+        }
+        return data;
+      };
+
+      // Esta vista agrupa el catálogo completo por categoría en carruseles: no
+      // tiene paginador. El backend topa `limit` en 200, así que pedimos la
+      // primera página y traemos el resto según `meta.totalPages`; si no,
+      // el catálogo se cortaba silenciosamente en el default de 50.
+      const primera = await fetchPage(1);
+      const totalPages = Math.min(
+        primera.meta?.totalPages ?? 1,
+        MAX_CATALOGO_PAGES,
+      );
+
+      let articulos = primera.data;
+      if (totalPages > 1) {
+        const restantes = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) => fetchPage(i + 2)),
+        );
+        articulos = articulos.concat(...restantes.map((r) => r.data));
       }
 
-      const data = await response.json();
-
-      if (data.success && Array.isArray(data.data)) {
-        setFilteredProductos(data.data);
-      } else {
-        throw new Error(data.message || "Error al procesar los productos");
-      }
+      setFilteredProductos(articulos);
+      setLoading(false);
     } catch (err) {
+      // Petición abortada: ya hay otra en curso, que ella maneje el spinner.
+      if (err instanceof DOMException && err.name === "AbortError") return;
       console.error("Error fetching productos:", err);
       setError(err instanceof Error ? err.message : "Error desconocido");
-    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // El debounce puede dejar dos búsquedas en vuelo; sin abort, la más lenta
+    // pisaba el resultado de la más reciente.
+    const controller = new AbortController();
     const timeout = setTimeout(() => {
-      fetchProductos({
-        q: searchTerm.trim(),
-        categoria: selectedCategoria,
-      });
+      fetchProductos(
+        {
+          q: searchTerm.trim(),
+          categoria: selectedCategoria,
+        },
+        controller.signal,
+      );
     }, 250);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [searchTerm, selectedCategoria]);
 
   const categorias = useMemo(() => {
