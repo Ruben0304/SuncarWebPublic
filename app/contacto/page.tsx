@@ -8,7 +8,7 @@ import Footer from "@/components/footer"
 import FooterChristmas from "@/components/footer-christmas"
 import dynamic from "next/dynamic"
 import { isChristmasSeason } from "@/lib/christmas-utils"
-import { useContactos } from "@/hooks/useContactos"
+import { useContacto } from "@/hooks/useContacto";
 
 // Importar el mapa dinámicamente para evitar problemas de SSR
 const StaticLocationMap = dynamic(() => import('@/components/StaticLocationMap'), {
@@ -25,6 +25,7 @@ const StaticLocationMap = dynamic(() => import('@/components/StaticLocationMap')
 
 
 export default function ContactPage() {
+  const { contacto } = useContacto()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -35,8 +36,6 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isChristmas, setIsChristmas] = useState(false)
-  const { contactos } = useContactos()
-  const contacto = contactos[0]
 
   useEffect(() => {
     setIsChristmas(isChristmasSeason())
@@ -67,8 +66,7 @@ ${formData.message}
 
 ¡Espero su respuesta!`
     
-    // Número de WhatsApp de Suncar
-    const whatsappNumber = "5363962417"
+    const whatsappNumber = contacto.whatsapp
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     
     setTimeout(() => {
@@ -328,7 +326,7 @@ ${formData.message}
             <StaticLocationMap 
               lat={23.123815}
               lng={-82.424488}
-              address="Calle 24, La Habana, Cuba"
+              address={contacto.direccion}
               height="500px"
             />
           </div>
@@ -337,7 +335,7 @@ ${formData.message}
           <div className="mt-8 text-center">
             <div className="inline-flex items-center gap-3 bg-gray-50 rounded-full px-6 py-3">
               <MapPin className="w-5 h-5 text-primary" />
-              <span className="font-semibold text-primary">Calle 24 entre 1ra y 3ra, Playa, La Habana, Cuba</span>
+              <span className="font-semibold text-primary">{contacto.direccion}</span>
             </div>
           </div>
         </div>

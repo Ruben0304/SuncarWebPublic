@@ -7,19 +7,19 @@ import Footer from "@/components/footer"
 import FooterChristmas from "@/components/footer-christmas"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { useContactos } from "@/hooks/useContactos"
+import { useContacto } from "@/hooks/useContacto"
 import TiendaAnimation from "@/components/TiendaAnimation"
 import { isChristmasSeason } from "@/lib/christmas-utils"
 
 export default function ProductosPage() {
-  const { contactos, loading } = useContactos()
+  const { contacto, cargando: loading } = useContacto()
   const [isChristmas, setIsChristmas] = useState(false)
 
   useEffect(() => {
     setIsChristmas(isChristmasSeason())
   }, [])
 
-  const whatsappNumber = contactos[0]?.telefono
+  const whatsappNumber = contacto.telefono
   const cleanWhatsappNumber = whatsappNumber?.replace(/\D/g, '')
   const whatsappMessage = encodeURIComponent("Hola, quiero enterarme cuando abran la tienda de productos fotovoltaicos")
   const whatsappLink = cleanWhatsappNumber ? `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage}` : null

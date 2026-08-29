@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import "../styles/nprogress.css";
 import ClientWrapper from "@/components/ClientWrapper";
 import ProgressBarSuspense from "@/components/ProgressBarSuspense";
+import { obtenerContacto } from "@/lib/contacto";
 
 const hostGrotesk = Host_Grotesk({
   subsets: ["latin"],
@@ -101,11 +102,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // El JSON-LD es lo que Google muestra en los resultados de búsqueda: si el
+  // telefono o la direccion se quedan viejos ahí, la gente llama a un número
+  // que ya no existe. Sale de la misma fuente que el resto de la web.
+  const contacto = await obtenerContacto();
+
   return (
     <html lang="es" className={hostGrotesk.variable}>
       <head>
@@ -121,14 +127,15 @@ export default function RootLayout({
               logo: "https://suncarsrl.com/images/logo.png",
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+5363962417",
+                telephone: contacto.telefono,
                 contactType: "customer service",
+                email: contacto.correo,
                 areaServed: "CU",
                 availableLanguage: "Spanish",
               },
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "Calle 24 entre 1ra y 3ra, Playa",
+                streetAddress: contacto.direccion,
                 addressLocality: "La Habana",
                 addressCountry: "CU",
               },

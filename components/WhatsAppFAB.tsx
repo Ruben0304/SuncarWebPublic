@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { X, Send } from 'lucide-react'
+import { MessageCircle, X, Send } from 'lucide-react'
 import { SiWhatsapp } from "@icons-pack/react-simple-icons"
 import { usePathname } from 'next/navigation'
 import { getCartOpenState } from '@/components/ShoppingCart'
+import { useContacto } from "@/hooks/useContacto";
 
 const WhatsAppFAB = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -12,7 +13,8 @@ const WhatsAppFAB = () => {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const pathname = usePathname()
 
-  const phoneNumber = "5363962417" // Número sin el +
+  const { contacto } = useContacto()
+  const phoneNumber = contacto.whatsapp
   const defaultMessage = "¡Hola! Me interesa conocer más sobre sus servicios de energía solar. ¿Podrían brindarme información?"
 
   // Verificar si el carrito está abierto cada 100ms

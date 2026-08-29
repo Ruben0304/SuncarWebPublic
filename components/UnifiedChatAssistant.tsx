@@ -3,13 +3,15 @@ import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { SiWhatsapp } from "@icons-pack/react-simple-icons";
 import { getCartOpenState } from "@/components/ShoppingCart";
+import { useContacto } from "@/hooks/useContacto";
 
 const UnifiedChatAssistant: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const pathname = usePathname();
 
   // WhatsApp config
-  const phoneNumber = "5363962417";
+  const { contacto } = useContacto();
+  const phoneNumber = contacto.whatsapp;
   const defaultWhatsAppMessage = "¡Hola! Me interesa conocer más sobre sus servicios de energía solar. ¿Podrían brindarme información?";
 
   // Verificar si el carrito está abierto cada 100ms

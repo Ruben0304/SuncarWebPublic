@@ -1,17 +1,12 @@
 import { NextResponse } from 'next/server';
+import { getBackendUrl } from '@/lib/backend-url';
 
 export async function GET() {
   try {
-    // Verificar que NEXT_PUBLIC_BACKEND_URL esté definida
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    
-    if (!backendUrl) {
-      console.error('NEXT_PUBLIC_BACKEND_URL no está definida en variables de entorno');
-      return NextResponse.json({
-        success: false,
-        message: 'Error de configuración del servidor'
-      }, { status: 500 });
-    }
+    // `getBackendUrl()` tiene fallback al backend de produccion: antes esto
+    // devolvia 500 cuando faltaba NEXT_PUBLIC_BACKEND_URL, y entonces toda la
+    // web caia al contacto de respaldo sin que nadie se enterara.
+    const backendUrl = getBackendUrl();
 
     // Llamar al endpoint del backend para obtener el primer contacto
     const targetUrl = `${backendUrl}/api/contactos/first`;

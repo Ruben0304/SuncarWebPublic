@@ -27,6 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useContacto } from "@/hooks/useContacto";
 
 // Variable global para compartir el estado del carrito
 let cartOpenState = false;
@@ -48,6 +49,7 @@ const MAX_PRODUCTOS_RECOMENDADOS = 5;
 type ProductoRecomendado = ArticuloTienda & { vendible: boolean };
 
 export default function ShoppingCartComponent() {
+  const { contacto } = useContacto();
   const [isOpen, setIsOpen] = useState(false);
   const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart } = useCart();
   const [recomendados, setRecomendados] = useState<ProductoRecomendado[]>([]);
@@ -157,7 +159,7 @@ export default function ShoppingCartComponent() {
       `\n\nEntiendo que el precio final depende de la cantidad, descuentos por volumen y recomendaciones técnicas del equipo.\n\n` +
       `¿Podrían confirmarme disponibilidad y enviarme una cotización personalizada?\n\nGracias!`;
 
-    const whatsappUrl = `https://wa.me/5363962417?text=${encodeURIComponent(finalMessage)}`;
+    const whatsappUrl = `https://wa.me/${contacto.whatsapp}?text=${encodeURIComponent(finalMessage)}`;
     window.open(whatsappUrl, '_blank');
   };
 

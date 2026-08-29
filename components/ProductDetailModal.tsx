@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "@/hooks/useCart";
+import { useContacto } from "@/hooks/useContacto";
 
 interface ProductDetailModalProps {
   producto: ArticuloTienda;
@@ -38,8 +39,8 @@ export default function ProductDetailModal({
   const productInCart = items.find((item) => item.producto.id === producto.id);
   const quantityInCart = productInCart ? productInCart.cantidad : 0;
 
-  // Obtener número de WhatsApp (usando número general temporalmente)
-  const whatsappNumber = "5363962417";
+  const { contacto } = useContacto();
+  const whatsappNumber = contacto.whatsapp;
   const cleanWhatsappNumber = whatsappNumber;
 
   // Parsear precio por cantidad
