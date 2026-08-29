@@ -1,16 +1,14 @@
 "use client";
 
 import { Mail, Phone, MapPin } from "lucide-react";
-import { useContactos } from "../hooks/useContactos";
+import { useContacto } from "@/hooks/useContacto";
 
 interface ContactInfoProps {
   className?: string;
 }
 
 export default function ContactInfo({ className = "" }: ContactInfoProps) {
-  const { contactos, loading, error } = useContactos();
-
-  const contacto = contactos[0];
+  const { contacto, cargando: loading } = useContacto();
 
   if (loading) {
     return (
@@ -35,10 +33,6 @@ export default function ContactInfo({ className = "" }: ContactInfoProps) {
         </div>
       </div>
     );
-  }
-
-  if (error || !contacto) {
-    return null;
   }
 
   return (

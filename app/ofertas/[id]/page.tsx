@@ -36,6 +36,7 @@ import { useClient } from "@/hooks/useClient";
 import CurrencySelector from "@/components/CurrencySelector";
 import { Currency } from "@/hooks/useCurrencyExchange";
 import { useAOS } from "@/hooks/useAOS";
+import { useContacto } from "@/hooks/useContacto";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
@@ -78,6 +79,7 @@ function extractGarantiaSection(texto: string): string | null {
 }
 
 export default function OfertaDetailPage() {
+  const { contacto } = useContacto();
   const params = useParams();
   const router = useRouter();
   const [oferta, setOferta] = useState<Oferta | null>(null);
@@ -733,7 +735,7 @@ export default function OfertaDetailPage() {
                       className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
                     >
                       <a
-                        href={`https://wa.me/5363962417?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} ¿Podrían darme más información?`)}`}
+                        href={`https://wa.me/${contacto.whatsapp}?text=${encodeURIComponent(`Hola! Me interesa la oferta: ${oferta.descripcion} por ${(isClient && oferta.precio_cliente ? oferta.precio_cliente : oferta.precio).toLocaleString()} ${formatCurrency(oferta.moneda)} ¿Podrían darme más información?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3"

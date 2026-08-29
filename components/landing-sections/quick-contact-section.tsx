@@ -1,7 +1,13 @@
 import Link from "next/link"
 import { SiWhatsapp, SiGooglemaps } from "@icons-pack/react-simple-icons"
 
-export default function QuickContactSection() {
+import { obtenerContacto } from "@/lib/contacto"
+
+// Componente de servidor: el contacto se resuelve al renderizar, sin parpadeo
+// en el cliente. Ver lib/contacto.ts.
+export default async function QuickContactSection() {
+    const contacto = await obtenerContacto()
+
     return (
         <section className="py-16 lg:py-20 bg-[#F2F2EF] relative overflow-hidden">
             {/* Decorative background elements */}
@@ -24,7 +30,7 @@ export default function QuickContactSection() {
                     <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
                         {/* WhatsApp Card */}
                         <a
-                            href="https://wa.me/5363962417"
+                            href={`https://wa.me/${contacto.whatsapp}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-green-100"
@@ -41,7 +47,7 @@ export default function QuickContactSection() {
                                         Escríbenos directamente
                                     </p>
                                     <p className="text-2xl font-bold bg-secondary-gradient bg-clip-text text-transparent">
-                                        +53 6396 2417
+                                        {contacto.telefono}
                                     </p>
                                 </div>
                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -71,8 +77,7 @@ export default function QuickContactSection() {
                                         Ver en Google Maps
                                     </p>
                                     <p className="text-lg font-semibold text-primary leading-relaxed">
-                                        Calle 24 entre 1ra y 3ra<br />
-                                        Playa, La Habana
+                                        {contacto.direccion}
                                     </p>
                                 </div>
                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
