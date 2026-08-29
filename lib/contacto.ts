@@ -68,6 +68,16 @@ export function aContacto(crudo: unknown): ContactoSuncar {
  * página: una dirección desactualizada es mejor que un error 500 en el inicio.
  */
 export async function obtenerContacto(): Promise<ContactoSuncar> {
+  // Red de seguridad: esta funcion es SOLO para componentes de servidor. Si un
+  // componente de cliente la usa —basta con que el archivo que lo importa
+  // lleve "use client"— y ademas es `async`, React lo reinvoca en bucle y cada
+  // vuelta dispara un fetch, hasta tumbar la pestaña. Devolver el fallback
+  // convierte ese desastre en un dato de respaldo. En cliente va useContacto().
+  if (typeof window !== "undefined") {
+    console.error("obtenerContacto() es de servidor: en cliente usá useContacto().")
+    return CONTACTO_FALLBACK
+  }
+
   try {
     const { getBackendUrl } = await import("@/lib/backend-url")
     const respuesta = await fetch(`${getBackendUrl()}/api/contactos/first`, {
