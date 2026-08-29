@@ -1,12 +1,20 @@
+"use client"
+
 import Link from "next/link"
 import { SiWhatsapp, SiGooglemaps } from "@icons-pack/react-simple-icons"
 
-import { obtenerContacto } from "@/lib/contacto"
+import { useContacto } from "@/hooks/useContacto"
 
-// Componente de servidor: el contacto se resuelve al renderizar, sin parpadeo
-// en el cliente. Ver lib/contacto.ts.
-export default async function QuickContactSection() {
-    const contacto = await obtenerContacto()
+/**
+ * Va como componente de CLIENTE, no de servidor.
+ *
+ * `app/page.tsx` lleva "use client", asi que todo lo que importe es cliente
+ * tambien. Si esta seccion se declara `async`, React recibe una promesa en vez
+ * de un elemento, la reinvoca sin parar y cada ciclo dispara un fetch: el
+ * navegador termina en ERR_INSUFFICIENT_RESOURCES y la pagina queda en blanco.
+ */
+export default function QuickContactSection() {
+    const { contacto } = useContacto()
 
     return (
         <section className="py-16 lg:py-20 bg-[#F2F2EF] relative overflow-hidden">
