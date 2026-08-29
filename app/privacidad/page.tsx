@@ -1,11 +1,16 @@
 import type { Metadata } from 'next'
+import { obtenerContacto } from "@/lib/contacto"
 
 export const metadata: Metadata = {
   title: 'Política de Privacidad - Suncar',
   description: 'Política de privacidad y protección de datos de Suncar',
 }
 
-export default function PrivacyPolicyPage() {
+export default async function PrivacyPolicyPage() {
+  // El correo de avisos legales sale de la misma fuente que el resto del
+  // sitio: si cambia la casilla de atención, cambia también acá.
+  const contacto = await obtenerContacto()
+
   return (
     <div className="min-h-screen bg-[#F2F2EF]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -229,7 +234,7 @@ export default function PrivacyPolicyPage() {
                 <strong>Suncar</strong>
               </p>
               <p className="text-gray-700 mb-2">
-                Correo electrónico: <a href="mailto:info@suncar.cu" className="text-[#AFEB17] hover:underline">info@suncar.cu</a>
+                Correo electrónico: <a href={`mailto:${contacto.correo}`} className="text-[#AFEB17] hover:underline">{contacto.correo}</a>
               </p>
               <p className="text-gray-700 mb-2">
                 Teléfono: <a href="tel:+5378261062" className="text-[#AFEB17] hover:underline">+53 78261062</a>
