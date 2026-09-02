@@ -32,8 +32,19 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 - `styles/` - Global CSS files
 
 ### Design System
-- **Primary color**: `#0F2B66` (corporate dark blue)
-- **Secondary gradient**: `#F26729` (orange) to `#FDB813` (yellow/gold)
+Brand palette — defined in `tailwind.config.ts`, which is the source of truth:
+- **Emerald Circuit** `#012928` (`primary`) — main text and dark surfaces
+- **Volt Green** `#AFEB17` (`volt-green`) — bright accent
+- **Solar Radiance** `#F2C300` (`solar-radiance`) — warm accent
+- **Midnight Voltage** `#0A052D` (`midnight`) — very dark surfaces
+- **Page background** `#F2F2EF` (set on `body` in `styles/globals.css`)
+- **Accent gradient**: `bg-gradient-to-r from-[#AFEB17] to-[#F2C300]`. Text on top of it goes in
+  `#012928` — both stops are very light and white text disappears on them. For the same reason,
+  never use this gradient as `bg-clip-text` on a light surface: the stops sit at 1.4–1.7:1 against
+  white. To highlight a phrase, put the gradient *behind* the text (add `box-decoration-clone` so
+  it survives line wrapping), never inside the glyphs.
+- The old blue/orange palette (`#0F2B66`, `#F26729`, `#FDB813`) is **obsolete** and no longer
+  appears anywhere in the codebase — not in colors, not in identifiers. Don't reintroduce it.
 - **Component library**: Radix UI with shadcn/ui styling
 - **Responsive design**: Mobile-first approach with Tailwind breakpoints
 

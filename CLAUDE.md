@@ -39,9 +39,12 @@ Brand palette — defined in `tailwind.config.ts`, which is the source of truth:
 - **Midnight Voltage** `#0A052D` (`midnight`) — very dark surfaces
 - **Page background** `#F2F2EF` (set on `body` in `styles/globals.css`)
 - **Accent gradient**: `bg-gradient-to-r from-[#AFEB17] to-[#F2C300]`. Text on top of it goes in
-  `#012928` — both stops are very light and white text disappears on them.
-- The old blue/orange palette (`#0F2B66`, `#F26729`, `#FDB813`) is **obsolete**. A few files still
-  carry leftovers; don't copy them into new work.
+  `#012928` — both stops are very light and white text disappears on them. For the same reason,
+  never use this gradient as `bg-clip-text` on a light surface: the stops sit at 1.4–1.7:1 against
+  white. To highlight a phrase, put the gradient *behind* the text (add `box-decoration-clone` so
+  it survives line wrapping), never inside the glyphs.
+- The old blue/orange palette (`#0F2B66`, `#F26729`, `#FDB813`) is **obsolete** and no longer
+  appears anywhere in the codebase — not in colors, not in identifiers. Don't reintroduce it.
 - **Component library**: Radix UI with shadcn/ui styling
 - **Responsive design**: Mobile-first approach with Tailwind breakpoints
 
