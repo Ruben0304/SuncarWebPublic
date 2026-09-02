@@ -11,17 +11,17 @@ const SolarHouseModel = dynamic(() => import("@/components/solar-house-model"), 
 })
 
 interface HeroSectionProps {
-    blueText: {
+    headlineLead: {
         displayText: string
         isComplete: boolean
     }
-    orangeText: {
+    headlineAccent: {
         displayText: string
         isComplete: boolean
     }
 }
 
-export default function HeroSectionChristmas({ blueText, orangeText }: HeroSectionProps) {
+export default function HeroSectionChristmas({ headlineLead, headlineAccent }: HeroSectionProps) {
     return (
         <section className="relative min-h-screen flex items-center px-4 py-24 md:px-6 lg:px-8 lg:py-0 overflow-hidden bg-gradient-to-br from-emerald-900 via-green-800 to-emerald-950">
             <div className="container mx-auto relative z-10">
@@ -36,12 +36,12 @@ export default function HeroSectionChristmas({ blueText, orangeText }: HeroSecti
                         <div className="space-y-3 lg:space-y-4 relative">
                             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold leading-loose">
                                 <span className="inline-block min-h-[1.2em] text-yellow-300 drop-shadow-lg">
-                                    {blueText.displayText}
-                                    {!blueText.isComplete && <span className="animate-pulse">|</span>}
+                                    {headlineLead.displayText}
+                                    {!headlineLead.isComplete && <span className="animate-pulse">|</span>}
                                 </span>
                                 <span className="block bg-gradient-to-r from-red-400 via-yellow-300 to-red-400 bg-clip-text text-transparent pb-2 min-h-[1.2em]">
-                                    {orangeText.displayText}
-                                    {!orangeText.isComplete && <span className="animate-pulse text-red-400">|</span>}
+                                    {headlineAccent.displayText}
+                                    {!headlineAccent.isComplete && <span className="animate-pulse text-red-400">|</span>}
                                 </span>
                             </h1>
                             <p className="text-base sm:text-lg md:text-xl text-white/90 leading-relaxed max-w-lg opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards, gentle-float 8s ease-in-out 1.9s infinite' }}>

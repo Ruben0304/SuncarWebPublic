@@ -11,17 +11,17 @@ const SolarHouseModel = dynamic(() => import("@/components/solar-house-model"), 
 })
 
 interface HeroSectionProps {
-    blueText: {
+    headlineLead: {
         displayText: string
         isComplete: boolean
     }
-    orangeText: {
+    headlineAccent: {
         displayText: string
         isComplete: boolean
     }
 }
 
-export default function HeroSection({ blueText, orangeText }: HeroSectionProps) {
+export default function HeroSection({ headlineLead, headlineAccent }: HeroSectionProps) {
     return (
         <section className="relative min-h-screen flex items-center px-4 py-24 md:px-6 lg:px-8 lg:py-0 overflow-hidden bg-[#F2F2EF]">
             <div className="container mx-auto">
@@ -31,12 +31,12 @@ export default function HeroSection({ blueText, orangeText }: HeroSectionProps) 
                         <div className="space-y-3 lg:space-y-4 relative">
                             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold text-[#012928] leading-loose">
                                 <span className="inline-block min-h-[1.2em]">
-                                    {blueText.displayText}
-                                    {!blueText.isComplete && <span className="animate-pulse">|</span>}
+                                    {headlineLead.displayText}
+                                    {!headlineLead.isComplete && <span className="animate-pulse">|</span>}
                                 </span>
                                 <span className="block bg-secondary-gradient bg-clip-text text-transparent pb-2 min-h-[1.2em]">
-                                    {orangeText.displayText}
-                                    {!orangeText.isComplete && <span className="animate-pulse text-[#012928]">|</span>}
+                                    {headlineAccent.displayText}
+                                    {!headlineAccent.isComplete && <span className="animate-pulse text-[#012928]">|</span>}
                                 </span>
                             </h1>
                             <p className="text-base sm:text-lg md:text-xl text-[#012928]/70 leading-relaxed max-w-lg opacity-0" style={{ animation: 'subtle-fade-in 0.8s ease-out 0.7s forwards' }}>

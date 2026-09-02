@@ -53,7 +53,7 @@ export default function HomePage() {
   }, [])
 
   // Typewriter effects sincronizados con el loader
-  const blueText = useTypewriter({
+  const headlineLead = useTypewriter({
     text: "Energía",
     speed: 120,
     delay: 300,
@@ -61,10 +61,10 @@ export default function HomePage() {
     isLoadingComplete
   })
 
-  const orangeText = useTypewriter({
+  const headlineAccent = useTypewriter({
     text: "que transforma.",
     speed: 120,
-    delay: blueText.isComplete ? 200 : 999999,
+    delay: headlineLead.isComplete ? 200 : 999999,
     waitForLoading: false,
     isLoadingComplete: true
   })
@@ -75,9 +75,9 @@ export default function HomePage() {
       <ScrollProgress />
 
       {isChristmas ? (
-        <HeroSectionChristmas blueText={blueText} orangeText={orangeText} />
+        <HeroSectionChristmas headlineLead={headlineLead} headlineAccent={headlineAccent} />
       ) : (
-        <HeroSection blueText={blueText} orangeText={orangeText} />
+        <HeroSection headlineLead={headlineLead} headlineAccent={headlineAccent} />
       )}
 
       {isChristmas && <ChristmasInstagramSection />}
