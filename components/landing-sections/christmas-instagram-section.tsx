@@ -27,7 +27,7 @@ export default function ChristmasInstagramSection() {
 
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                 Esta Navidad,{" "}
-                <span className="bg-gradient-to-r from-[#F26729] to-[#FDB813] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#AFEB17] to-[#F2C300] text-[#012928] px-2 rounded-lg box-decoration-clone">
                   ilumina tu hogar
                 </span>{" "}
                 con energía solar
