@@ -28,7 +28,6 @@ import {
   DollarSign,
   Info,
   MapPin,
-  Sparkles,
   Trophy,
   MessageCircle,
   X,
@@ -710,14 +709,6 @@ function OfertasContent() {
                                 </Badge>
                               </div>
 
-                              {oferta.marca && (
-                                <div className="absolute bottom-4 left-4">
-                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#F2C300]" />
-                                    {oferta.marca}
-                                  </div>
-                                </div>
-                              )}
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
@@ -855,14 +846,6 @@ function OfertasContent() {
                                 )}
                               </div>
 
-                              {oferta.marca && (
-                                <div className="absolute bottom-4 left-4">
-                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#F2C300]" />
-                                    {oferta.marca}
-                                  </div>
-                                </div>
-                              )}
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
@@ -1008,14 +991,6 @@ function OfertasContent() {
                             </div>
                           </div>
 
-                          {oferta.marca && (
-                            <div className="absolute bottom-4 left-4">
-                              <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                <Sparkles className="h-3 w-3 text-[#F2C300]" />
-                                {oferta.marca}
-                              </div>
-                            </div>
-                          )}
                         </div>
 
                         <CardContent className="p-6 flex flex-col">
