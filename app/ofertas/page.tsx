@@ -28,7 +28,6 @@ import {
   DollarSign,
   Info,
   MapPin,
-  Sparkles,
   Trophy,
   MessageCircle,
   X,
@@ -64,6 +63,42 @@ function extractMarca(items?: Array<{ categoria?: string; descripcion?: string }
   return marca.length > 0 ? marca.join(" ") : null;
 }
 
+// Suma la potencia (kW) de todos los inversores de la oferta, multiplicada por su
+// cantidad. Ej: 2x "Inversor 5kW Felicity Solar" -> 10.
+function extractPotenciaInversorTotal(
+  items?: Array<{ categoria?: string; descripcion?: string; cantidad?: number }>,
+): number | null {
+  if (!items || items.length === 0) return null;
+
+  let total = 0;
+  let found = false;
+
+  for (const item of items) {
+    if (item.categoria?.toUpperCase() !== "INVERSORES" || !item.descripcion) {
+      continue;
+    }
+
+    const match = item.descripcion.match(/(\d+(?:[.,]\d+)?)\s*kw/i);
+    if (!match) continue;
+
+    const potencia = parseFloat(match[1].replace(",", "."));
+    if (Number.isNaN(potencia)) continue;
+
+    const cantidad = item.cantidad && item.cantidad > 0 ? item.cantidad : 1;
+    total += potencia * cantidad;
+    found = true;
+  }
+
+  return found ? total : null;
+}
+
+// Formatea la potencia total como "5KW" / "10KW" para el badge de la tarjeta.
+function formatPotenciaInversor(total: number | null): string | null {
+  if (total === null) return null;
+  const rounded = Math.round(total * 100) / 100;
+  return `${rounded}KW`;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapBackendOferta(o: any): OfertaSimplificada {
   return {
@@ -71,6 +106,7 @@ function mapBackendOferta(o: any): OfertaSimplificada {
     descripcion: o.nombre_completo || o.nombre_oferta || "Oferta sin nombre",
     descripcion_detallada: o.nombre_completo || null,
     marca: extractMarca(o.items),
+    potenciaInversor: formatPotenciaInversor(extractPotenciaInversorTotal(o.items)),
     precio: o.precio_final,
     precio_cliente: null,
     imagen: o.foto_portada || null,
@@ -709,15 +745,6 @@ function OfertasContent() {
                                   DESCUENTO
                                 </Badge>
                               </div>
-
-                              {oferta.marca && (
-                                <div className="absolute bottom-4 left-4">
-                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#F2C300]" />
-                                    {oferta.marca}
-                                  </div>
-                                </div>
-                              )}
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
@@ -849,20 +876,11 @@ function OfertasContent() {
                                     AGOTADA
                                   </Badge>
                                 ) : (
-                                  <Badge className="bg-[#012928] text-white px-3 py-1 text-sm font-medium">
-                                    Oferta
+                                  <Badge className="bg-[#012928] text-white px-5 py-2.5 text-lg font-bold shadow-xl border-2 border-white">
+                                    {oferta.potenciaInversor ?? "OFERTA"}
                                   </Badge>
                                 )}
                               </div>
-
-                              {oferta.marca && (
-                                <div className="absolute bottom-4 left-4">
-                                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                    <Sparkles className="h-3 w-3 text-[#F2C300]" />
-                                    {oferta.marca}
-                                  </div>
-                                </div>
-                              )}
                             </div>
 
                             <CardContent className="p-6 flex flex-col">
@@ -1007,15 +1025,6 @@ function OfertasContent() {
                               </span>
                             </div>
                           </div>
-
-                          {oferta.marca && (
-                            <div className="absolute bottom-4 left-4">
-                              <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#012928] shadow-lg">
-                                <Sparkles className="h-3 w-3 text-[#F2C300]" />
-                                {oferta.marca}
-                              </div>
-                            </div>
-                          )}
                         </div>
 
                         <CardContent className="p-6 flex flex-col">

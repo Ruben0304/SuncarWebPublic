@@ -3,6 +3,7 @@ export interface OfertaSimplificada {
   descripcion: string;
   descripcion_detallada?: string | null;
   marca?: string | null;
+  potenciaInversor?: string | null;
   precio: number;
   precio_cliente?: number | null;
   imagen?: string | null;
