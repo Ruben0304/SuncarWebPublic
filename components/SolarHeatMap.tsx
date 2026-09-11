@@ -345,8 +345,8 @@ export default function SolarHeatMap({
           attributionControl={false}
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <HeatLayer points={heatPoints} />
           <TooltipMarkers points={heatPoints} />
