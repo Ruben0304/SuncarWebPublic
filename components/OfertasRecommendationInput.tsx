@@ -75,7 +75,7 @@ export default function OfertasRecommendationInput({
   return (
     <div className="w-full max-w-6xl mx-auto mb-8 md:mb-12 px-4">
       {/* Search Header */}
-      <div className="mb-6 md:mb-8 text-center" data-aos="fade-up">
+      <div className="mb-6 md:mb-8 text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#012928] leading-tight mb-3">
           Encuentra Tu Oferta Perfecta
         </h1>
@@ -90,7 +90,7 @@ export default function OfertasRecommendationInput({
 
       {/* Loading State - Componente transformado */}
       {loading ? (
-        <div className="relative" data-aos="fade-up" data-aos-delay="100">
+        <div className="relative">
           <div className="relative bg-gradient-to-r from-[#AFEB17]/5 via-[#F2C300]/5 to-[#AFEB17]/5 rounded-2xl border-2 border-[#AFEB17]/40 shadow-2xl overflow-hidden">
             {/* Animated Background */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
@@ -167,7 +167,7 @@ export default function OfertasRecommendationInput({
         </div>
       ) : (
         /* Search Container - Estado normal */
-        <div className="relative" data-aos="fade-up" data-aos-delay="100">
+        <div className="relative">
           <form onSubmit={handleSubmit}>
             <div className={`relative bg-white rounded-2xl border-2 transition-all duration-500 shadow-lg hover:shadow-xl ${isExpanded
               ? 'border-[#AFEB17]/40 shadow-[#AFEB17]/15'
