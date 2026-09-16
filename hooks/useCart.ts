@@ -7,9 +7,23 @@ export interface CartItem {
   cantidad: number;
 }
 
+/**
+ * Resultado de intentar agregar al carrito.
+ *
+ * `provincia_distinta` es el caso que importa: los precios y la disponibilidad
+ * son por provincia, así que un carrito con artículos de dos provincias no se
+ * puede cotizar —ni siquiera se sabría a qué número escribir—. Se rechaza el
+ * alta y la página avisa, en vez de dejar armar un pedido imposible.
+ */
+export type ResultadoAgregar =
+  | { ok: true }
+  | { ok: false; motivo: "provincia_distinta"; provinciaCarrito: string };
+
 interface CartStore {
   items: CartItem[];
-  addItem: (producto: ArticuloTienda, cantidad?: number) => void;
+  addItem: (producto: ArticuloTienda, cantidad?: number) => ResultadoAgregar;
+  /** Provincia de los artículos del carrito, o null si está vacío. */
+  getProvincia: () => string | null;
   removeItem: (productoId: string) => void;
   updateQuantity: (productoId: string, cantidad: number) => void;
   clearCart: () => void;
@@ -22,7 +36,25 @@ export const useCart = create<CartStore>()(
     (set, get) => ({
       items: [],
 
+      getProvincia: () => {
+        // Los carritos guardados antes de que existiera la venta por provincia
+        // no tienen el campo: se ignoran en vez de tratarlos como provincia
+        // propia, que bloquearía el carrito de alguien que sólo volvió a entrar.
+        const conProvincia = get().items.find((i) => i.producto.provincia);
+        return conProvincia?.producto.provincia ?? null;
+      },
+
       addItem: (producto, cantidad = 1) => {
+        const provinciaCarrito = get().getProvincia();
+        const provinciaProducto = producto.provincia ?? null;
+        if (
+          provinciaCarrito &&
+          provinciaProducto &&
+          provinciaCarrito !== provinciaProducto
+        ) {
+          return { ok: false, motivo: "provincia_distinta", provinciaCarrito };
+        }
+
         set((state) => {
           const existingItem = state.items.find(
             (item) => item.producto.id === producto.id,
@@ -42,6 +74,7 @@ export const useCart = create<CartStore>()(
             items: [...state.items, { producto, cantidad }],
           };
         });
+        return { ok: true };
       },
 
       removeItem: (productoId) => {

@@ -49,9 +49,22 @@ const MAX_PRODUCTOS_RECOMENDADOS = 5;
 type ProductoRecomendado = ArticuloTienda & { vendible: boolean };
 
 export default function ShoppingCartComponent() {
-  const { contacto } = useContacto();
   const [isOpen, setIsOpen] = useState(false);
-  const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart } = useCart();
+  const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart, getProvincia } = useCart();
+
+  // Provincia del carrito: de ella sale el número de WhatsApp al que se manda
+  // la cotización. Escribirle al comercial de La Habana por un pedido de Las
+  // Tunas es justo lo que esta pantalla tiene que evitar.
+  const provinciaCarrito = getProvincia();
+  const { contacto } = useContacto(provinciaCarrito);
+
+  // Un carrito con dos provincias no debería poder armarse (la guarda está en
+  // useCart), pero puede venir de localStorage de antes del cambio. Si pasa, se
+  // bloquea el envío en vez de mandar un pedido que nadie puede cotizar.
+  const provinciasEnCarrito = Array.from(
+    new Set(items.map((i) => i.producto.provincia).filter(Boolean) as string[]),
+  );
+  const carritoMixto = provinciasEnCarrito.length > 1;
   const [recomendados, setRecomendados] = useState<ProductoRecomendado[]>([]);
   const [ofertaId, setOfertaId] = useState<string | null>(null);
   const [precioOferta, setPrecioOferta] = useState<number | null>(null);
@@ -149,6 +162,7 @@ export default function ShoppingCartComponent() {
   const totalPrice = getTotalPrice();
 
   const handleWhatsAppCheckout = () => {
+    if (carritoMixto) return;
     const productList = items.map((item, index) =>
       `${index + 1}. ${item.producto.modelo} - ${item.cantidad} ${item.producto.unidad}${item.cantidad > 1 ? 's' : ''}`
     ).join('\n');
@@ -469,10 +483,30 @@ export default function ShoppingCartComponent() {
                   </span>
                 </div>
 
+                {carritoMixto && (
+                  <div className="rounded-xl border-2 border-amber-500 bg-amber-50 px-3 py-2.5">
+                    <p className="text-[13px] font-semibold text-amber-900">
+                      Tu carrito mezcla provincias
+                    </p>
+                    <p className="text-[12px] text-amber-800 mt-0.5">
+                      Los precios y el vendedor cambian según la provincia, así que
+                      no se puede cotizar un pedido mixto. Vacía el carrito y arma
+                      uno por provincia.
+                    </p>
+                    <button
+                      onClick={clearCart}
+                      className="mt-2 text-[12px] font-semibold text-amber-900 underline"
+                    >
+                      Vaciar carrito
+                    </button>
+                  </div>
+                )}
+
                 {/* CTA principal - altura 48px para mobile touch */}
                 <Button
                   onClick={handleWhatsAppCheckout}
-                  className="w-full h-12 bg-[#012928] text-white font-semibold shadow-lg active:scale-[0.98] transition-all text-[13px] rounded-xl"
+                  disabled={carritoMixto}
+                  className="w-full h-12 bg-[#012928] text-white font-semibold shadow-lg active:scale-[0.98] transition-all text-[13px] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Solicitar cotización por WhatsApp

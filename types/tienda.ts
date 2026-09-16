@@ -33,6 +33,18 @@ export interface PrecioPorCantidad {
   [cantidad: string]: number;
 }
 
+/** Una provincia que tiene algo a la venta (selector de la tienda). */
+export interface ProvinciaOferta {
+  codigo: string;
+  nombre: string;
+}
+
+export interface ProvinciasOfertaResponse {
+  success: boolean;
+  message: string;
+  data: ProvinciaOferta[];
+}
+
 export interface ArticuloTienda {
   id: string;
   categoria: string;
@@ -46,6 +58,12 @@ export interface ArticuloTienda {
   marca_id?: string | null;
   marca_nombre?: string | null;
   potenciaKW?: number | null;
+  /**
+   * Provincia desde la que se pidió el catálogo. La rellena el backend cuando
+   * se consulta con `?provincia=`, y es lo que permite detectar un carrito con
+   * artículos de dos provincias distintas.
+   */
+  provincia?: string | null;
 }
 
 /**

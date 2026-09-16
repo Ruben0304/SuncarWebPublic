@@ -24,9 +24,14 @@ import {
   Minus,
   ShoppingCart,
   Eye,
+  MapPin,
 } from "lucide-react";
 import Image from "next/image";
 import { ArticuloTienda, CatalogoWebResponse } from "@/types/tienda";
+import {
+  useProvinciaTienda,
+  useProvinciasConOferta,
+} from "@/hooks/useProvinciaTienda";
 import { useAOS } from "@/hooks/useAOS";
 import ProductDetailModal from "@/components/ProductDetailModal";
 import { isChristmasSeason } from "@/lib/christmas-utils";
@@ -62,6 +67,32 @@ export default function TiendaPage() {
   >({});
   const [showToast, setShowToast] = useState(false);
   const { addItem, items, updateQuantity } = useCart();
+  const { provincia, setProvincia } = useProvinciaTienda();
+  const { provincias: provinciasDisponibles } = useProvinciasConOferta();
+  const [avisoProvincia, setAvisoProvincia] = useState<string | null>(null);
+
+  const nombreProvincia = (codigo: string) =>
+    provinciasDisponibles.find((p) => p.codigo === codigo)?.nombre ?? codigo;
+
+  /**
+   * Alta en el carrito con la guarda de provincia. Si el carrito ya tiene
+   * artículos de otra provincia se rechaza y se avisa: mezclar provincias
+   * daría un pedido que nadie puede cotizar, porque el precio y el vendedor
+   * son distintos en cada una.
+   */
+  const agregarAlCarrito = (producto: ArticuloTienda) => {
+    const resultado = addItem(producto);
+    if (resultado.ok) {
+      showAddToCartNotification();
+      return;
+    }
+    setAvisoProvincia(
+      `Tu carrito tiene productos de ${nombreProvincia(resultado.provinciaCarrito)}. ` +
+        `Para comprar en ${nombreProvincia(provincia)}, vacíalo primero.`,
+    );
+    setTimeout(() => setAvisoProvincia(null), 6000);
+  };
+
 
   const getProductQuantityInCart = (productoId: string) => {
     const item = items.find((i) => i.producto.id === productoId);
@@ -103,6 +134,9 @@ export default function TiendaPage() {
         const params = new URLSearchParams();
         if (filters?.q) params.set("q", filters.q);
         if (filters?.categoria) params.set("categoria", filters.categoria);
+        // Sin `provincia` el backend devuelve el catálogo nacional; con ella,
+        // sólo lo que esa provincia vende y a su precio.
+        if (provincia) params.set("provincia", provincia);
         params.set("page", String(page));
         params.set("limit", String(CATALOGO_PAGE_SIZE));
         return `${base}?${params.toString()}`;
@@ -167,7 +201,7 @@ export default function TiendaPage() {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [searchTerm, selectedCategoria]);
+  }, [searchTerm, selectedCategoria, provincia]);
 
   const categorias = useMemo(() => {
     const categoriasSet = new Set<string>();
@@ -290,6 +324,35 @@ export default function TiendaPage() {
       <main className="pt-28 pb-16">
         <section className="px-4" data-aos="fade-up">
           <div className="max-w-7xl mx-auto space-y-6">
+            {/* Provincia: manda sobre TODO lo que se ve debajo. La tienda ya no
+                es nacional; cada provincia tiene su catálogo y sus precios. */}
+            {provinciasDisponibles.length > 0 && (
+              <div className="flex flex-wrap items-center gap-3 bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 px-6 py-4 shadow-sm">
+                <MapPin className="w-5 h-5 text-primary shrink-0" />
+                <span className="text-sm font-semibold text-slate-700">
+                  Comprando en:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {provinciasDisponibles.map((p) => (
+                    <button
+                      key={p.codigo}
+                      onClick={() => setProvincia(p.codigo)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        provincia === p.codigo
+                          ? "bg-[#012928] text-white"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }`}
+                    >
+                      {p.nombre}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-xs text-slate-500 w-full lg:w-auto lg:ml-auto">
+                  Los precios y la disponibilidad cambian según la provincia.
+                </span>
+              </div>
+            )}
+
             {/* Barra de búsqueda mejorada */}
             <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 p-6 shadow-sm">
               <div className="flex flex-col lg:flex-row gap-4">
@@ -529,8 +592,7 @@ export default function TiendaPage() {
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        showAddToCartNotification();
-                                        addItem(producto);
+                                        agregarAlCarrito(producto);
                                       }}
                                       className="w-10 h-full flex items-center justify-center active:bg-primary/10"
                                     >
@@ -542,8 +604,7 @@ export default function TiendaPage() {
                                     size="sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      showAddToCartNotification();
-                                      addItem(producto);
+                                      agregarAlCarrito(producto);
                                     }}
                                     className="w-full bg-[#012928] text-white h-9 text-[12px] font-semibold rounded-lg active:scale-[0.97]"
                                   >
@@ -702,8 +763,7 @@ export default function TiendaPage() {
                                           variant="ghost"
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            showAddToCartNotification();
-                                            addItem(producto);
+                                            agregarAlCarrito(producto);
                                           }}
                                           className="h-full px-2 hover:bg-primary/10 rounded-r-lg"
                                         >
@@ -718,8 +778,7 @@ export default function TiendaPage() {
                                       size="sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        showAddToCartNotification();
-                                        addItem(producto);
+                                        agregarAlCarrito(producto);
                                       }}
                                       className="bg-[#012928] text-white shadow-md hover:shadow-lg relative overflow-hidden h-9 text-sm px-3"
                                     >
@@ -836,6 +895,22 @@ export default function TiendaPage() {
       )}
 
       <ShoppingCartComponent />
+
+      {avisoProvincia && (
+        <div className="fixed top-24 right-4 z-[100] max-w-sm animate-in slide-in-from-right duration-300">
+          <div className="bg-white border-2 border-amber-500 rounded-xl shadow-2xl px-5 py-4 flex items-start gap-3">
+            <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center shrink-0">
+              <MapPin className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900">
+                Carrito de otra provincia
+              </p>
+              <p className="text-sm text-gray-600">{avisoProvincia}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showToast && (
         <div className="fixed top-24 right-4 z-[100] animate-in slide-in-from-right duration-300">
