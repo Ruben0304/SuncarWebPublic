@@ -71,6 +71,22 @@ export default function TiendaPage() {
   const { provincias: provinciasDisponibles } = useProvinciasConOferta();
   const [avisoProvincia, setAvisoProvincia] = useState<string | null>(null);
 
+  /**
+   * Provincia que se manda al backend.
+   *
+   * Solo se envía si está CONFIRMADA en la lista de provincias con oferta. Sin
+   * esta guarda, una tienda cuya tabla de disponibilidad aún no está poblada
+   * —por ejemplo si la web se despliega antes de sembrarla— pediría
+   * `?provincia=03`, el backend no encontraría nada y el catálogo saldría
+   * vacío. Mientras no haya confirmación se pide el catálogo nacional, que es
+   * el comportamiento de siempre.
+   */
+  const provinciaEfectiva = provinciasDisponibles.some(
+    (p) => p.codigo === provincia,
+  )
+    ? provincia
+    : null;
+
   const nombreProvincia = (codigo: string) =>
     provinciasDisponibles.find((p) => p.codigo === codigo)?.nombre ?? codigo;
 
@@ -136,7 +152,7 @@ export default function TiendaPage() {
         if (filters?.categoria) params.set("categoria", filters.categoria);
         // Sin `provincia` el backend devuelve el catálogo nacional; con ella,
         // sólo lo que esa provincia vende y a su precio.
-        if (provincia) params.set("provincia", provincia);
+        if (provinciaEfectiva) params.set("provincia", provinciaEfectiva);
         params.set("page", String(page));
         params.set("limit", String(CATALOGO_PAGE_SIZE));
         return `${base}?${params.toString()}`;
@@ -201,7 +217,7 @@ export default function TiendaPage() {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [searchTerm, selectedCategoria, provincia]);
+  }, [searchTerm, selectedCategoria, provinciaEfectiva]);
 
   const categorias = useMemo(() => {
     const categoriasSet = new Set<string>();
