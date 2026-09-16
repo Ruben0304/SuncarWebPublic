@@ -50,13 +50,15 @@ type ProductoRecomendado = ArticuloTienda & { vendible: boolean };
 
 export default function ShoppingCartComponent() {
   const [isOpen, setIsOpen] = useState(false);
-  const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart, getProvincia } = useCart();
+  const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart } = useCart();
 
-  // Provincia del carrito: de ella sale el número de WhatsApp al que se manda
-  // la cotización. Escribirle al comercial de La Habana por un pedido de Las
-  // Tunas es justo lo que esta pantalla tiene que evitar.
-  const provinciaCarrito = getProvincia();
-  const { contacto } = useContacto(provinciaCarrito);
+  // La cotización se manda al contacto NACIONAL a propósito. Ya existe el
+  // contacto por provincia en el backend y `useContacto` sabe pedirlo —acepta
+  // el código de provincia como argumento—, pero todavía no está decidido qué
+  // número atiende cada provincia, y mandar el pedido a un número sin dueño es
+  // peor que mandarlo al central. Cuando se decida, es una línea:
+  // `useContacto(useCart.getState().getProvincia())`.
+  const { contacto } = useContacto();
 
   // Un carrito con dos provincias no debería poder armarse (la guarda está en
   // useCart), pero puede venir de localStorage de antes del cambio. Si pasa, se
