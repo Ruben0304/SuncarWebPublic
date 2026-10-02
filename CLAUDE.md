@@ -9,6 +9,12 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
 ## Development Commands
 
 - **Development server**: `npm run dev` (Next.js development mode)
+- **Local work (since 2026-10-01)**: run on port 3001 against the local backend. `.env.local` (per
+  developer, not in git) must set
+  `BACKEND_URL`/`NEXT_PUBLIC_BACKEND_URL=http://localhost:8000` and `BACKEND_AUTH_TOKEN`; without it
+  `lib/backend-url.ts` falls back to `https://api.suncarsrl.com` (production). The repo is connected to
+  the boss's Railway only during a release (while connected, a push to `main` deploys); never push unless
+  asked. See `../SunCarBackend/docs/DESARROLLO_LOCAL.md`
 - **Build**: `npm run build` (Production build)
 - **Start**: `npm run start` (Start production server)
 - **Lint**: `npm run lint` (Next.js built-in ESLint)
