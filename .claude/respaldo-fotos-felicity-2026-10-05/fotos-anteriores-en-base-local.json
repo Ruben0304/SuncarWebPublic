@@ -1,0 +1,66 @@
+{
+ "INVERSORES|10005": {
+  "nombre": "INVERSOR FELICITY 3KW OFF GRID",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/33f058ef-05d2-49e0-8d13-63a913870265.png"
+ },
+ "INVERSORES|10006": {
+  "nombre": "INVERSOR FELICITY 5KW OFF GRID",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/36886a3f-d596-489d-8e81-7791f0742e2a.png"
+ },
+ "INVERSORES|IVCM1024-LV": {
+  "nombre": "Inversor 1kw 110V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/4886e136-2276-4d37-873c-d22db6b93040.jpg"
+ },
+ "INVERSORES|10002": {
+  "nombre": "INVERSOR FELICITY 50KW ON GRID",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/03ea89a8-552a-4959-9d01-e3a88519b430.png"
+ },
+ "BATERÍAS|10": {
+  "nombre": "BATERIA FELICITY 2.56KWH 25.6V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/a27c121d-12c9-40c8-bfcc-f6fad80dfcd4.png"
+ },
+ "BATERÍAS|11": {
+  "nombre": "BATERIA FELICITY 5.12KWH 51.2V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/7dd8ac3e-f5bd-4604-83f1-f4dda2742abd.png"
+ },
+ "BATERÍAS|12": {
+  "nombre": "BATERIA FELICITY 10KWH 51.2V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/143917f5-1d0e-4648-b922-e8cd40133e7a.png"
+ },
+ "BATERÍAS|FLA 48300": {
+  "nombre": "BATERÍA FELICITY 15KWH 51.2V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/4e26fef0-c83f-4086-96dc-edca0a801659.png"
+ },
+ "BATERÍAS|14": {
+  "nombre": "BATERÍA FELICITY 25KWH 51.2V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/aed0467c-7d6c-4d81-8637-80956bc5d850.png"
+ },
+ "BATERÍAS|34566533221": {
+  "nombre": "BATERÍA FELICITY 5KWH 25.6V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/50c0a4a5-40bd-41b8-b849-8a180f5b5711.png"
+ },
+ "BATERÍAS|FLA 48350": {
+  "nombre": "BATERIA FELICITY 17.5KWH 51.2V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/6fe15467-c21c-4831-94fd-9836f6d86d1a.jpg"
+ },
+ "BATERÍAS|FLA 48300TG2": {
+  "nombre": "BATERIA FELICITY 15KW 51.2V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/f7fba51f-a0ee-435a-a8f1-ea09ac2915b6.jpg"
+ },
+ "BATERÍAS|FLB 48314TG1": {
+  "nombre": "BATERIA FELICITY 16KW 51.2V",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/52f5c2ee-f9b6-4c40-bea6-f06be88299a0.jpg"
+ },
+ "BATERÍAS|BTCB0606": {
+  "nombre": "CAJA COMBINADORA BATERIA FELICITY",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/879539a7-fd3d-46dd-a188-e3d79dd9fbc0.png"
+ },
+ "BATERÍAS|BTCB0303": {
+  "nombre": "CAJA COMBINADORA DE BATERIA",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/95d89b16-2fee-43a2-9fce-fdb61e92b038.jpg"
+ },
+ "MATERIAL VARIO|20": {
+  "nombre": "CAJA COMBINADORA DE PANELES",
+  "foto_anterior": "https://s3.suncarsrl.com:443/materiales/958ce339-8c4e-41e6-8fd4-847060db7ed2.png"
+ }
+}

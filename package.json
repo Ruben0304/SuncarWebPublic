@@ -80,6 +80,7 @@
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
+    "@types/google.maps": "^3.66.5",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",

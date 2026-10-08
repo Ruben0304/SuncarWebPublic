@@ -46,7 +46,9 @@ export default function NavigationChristmas() {
   const isActive = (href: string, matchHrefs?: string[]) => {
     if (!pathname) return false;
     const targets = matchHrefs && matchHrefs.length > 0 ? matchHrefs : [href];
-    return targets.some((target) => {
+    return targets.some((destino) => {
+      // El destino puede traer ?query (p. ej. /ofertas?modo=armar): se compara la ruta.
+      const target = destino.split("?")[0];
       if (target === "/") return pathname === "/";
       return pathname.startsWith(target);
     });
@@ -187,7 +189,7 @@ export default function NavigationChristmas() {
     { name: "Blog", href: "/blog" },
     { name: "Solar Survivor", href: "/solar-survivor" },
     { name: "Calculadora de Kw", href: "/calculadora" },
-    { name: "Recomendador de ofertas", href: "/ofertas", badge: "IA" },
+    { name: "Recomendador de ofertas", href: "/ofertas?modo=armar", badge: "IA" },
     { name: "Testimonios", href: "/testimonios" },
     { name: "Sobre Nosotros", href: "/sobre-nosotros" },
     { name: "Galeria", href: "/galeria" },
@@ -426,7 +428,7 @@ export default function NavigationChristmas() {
                                   </Link>
                                   <div className="border-t border-red-400/20 my-2"></div>
                                   <Link
-                                    href="/ofertas"
+                                    href="/ofertas?modo=armar"
                                     className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-white hover:bg-red-600/30 hover:text-yellow-300 transition-colors duration-200"
                                     onClick={() => setShowAppsDropdown(false)}
                                   >

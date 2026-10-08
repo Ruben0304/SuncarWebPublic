@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import GoogleMapView from "@/components/maps/GoogleMapView";
+import { ESTILO_OSCURO } from "@/components/maps/dark-style";
+import {
+  crearCapaCalor,
+  crearCapaHtml,
+  type NodoHtml,
+} from "@/components/maps/overlays";
 
 interface MunicipioStatApiItem {
   provincia: string;
@@ -36,8 +41,9 @@ interface SolarHeatMapProps {
   onStatsLoaded?: (municipios: number) => void;
 }
 
-const DEFAULT_ENDPOINT = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/clientes/estadisticas/kw-instalados-por-municipio`;
-const MAP_CENTER: [number, number] = [21.6, -78.8];
+// Por la ruta de la propia web, sin CORS (ver NightLightsMap).
+const DEFAULT_ENDPOINT = "/api/clientes/estadisticas/kw-instalados-por-municipio";
+const MAP_CENTER = { lat: 21.6, lng: -78.8 };
 
 function normalizeText(value: string): string {
   return value
@@ -80,92 +86,79 @@ function getFeatureCentroid(feature: Feature): [number, number] | null {
   return null;
 }
 
-function TooltipMarkers({ points }: { points: HeatPoint[] }) {
-  if (points.length === 0) return null;
+const DEGRADADO_CALOR = {
+  0.0: "#00441b",
+  0.2: "#238b45",
+  0.35: "#41ae76",
+  0.5: "#fee08b",
+  0.65: "#fdae61",
+  0.8: "#f46d43",
+  0.9: "#d73027",
+  1.0: "#a50026",
+};
 
-  // Create invisible icon
-  const invisibleIcon =
-    typeof window !== "undefined"
-      ? L.divIcon({
-          className: "",
-          html: '<div style="width:30px;height:30px;background:transparent;cursor:pointer"></div>',
-          iconSize: [30, 30],
-        })
-      : undefined;
-
-  if (!invisibleIcon) return null;
-
-  return (
-    <>
-      {points.map((point, idx) => (
-        <Marker
-          key={idx}
-          position={[point.lat, point.lng]}
-          icon={invisibleIcon}
-        >
-          <Popup className="custom-popup">
-            <div className="text-xs">
-              <p className="font-bold text-blue-500">{point.municipio}</p>
-              <p className="text-gray-600 text-[10px]">{point.provincia}</p>
-              <p className="text-gray-900 font-semibold mt-1">
-                {point.totalKw.toFixed(1)} kW
-              </p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </>
-  );
+function contenidoPopup(point: HeatPoint): HTMLElement {
+  const caja = document.createElement("div");
+  caja.style.cssText = "font-size:12px;padding:2px 4px";
+  const municipio = document.createElement("p");
+  municipio.textContent = point.municipio;
+  municipio.style.cssText = "margin:0;font-weight:700;color:#3b82f6";
+  const provincia = document.createElement("p");
+  provincia.textContent = point.provincia;
+  provincia.style.cssText = "margin:0;font-size:10px;color:#4b5563";
+  const total = document.createElement("p");
+  total.textContent = `${point.totalKw.toFixed(1)} kW`;
+  total.style.cssText = "margin:4px 0 0;font-weight:600;color:#111827";
+  caja.append(municipio, provincia, total);
+  return caja;
 }
 
-function HeatLayer({ points }: { points: HeatPoint[] }) {
-  const map = useMap();
-  const heatLayerRef = useRef<ReturnType<typeof L.heatLayer> | null>(null);
-
+/** Mancha de calor y zonas de toque con la ficha de cada municipio. */
+function CapasCalor({
+  map,
+  points,
+}: {
+  map: google.maps.Map | null;
+  points: HeatPoint[];
+}) {
   useEffect(() => {
-    if (points.length === 0) return;
+    if (!map || points.length === 0) return;
 
-    require("leaflet.heat");
-
-    if (heatLayerRef.current) {
-      map.removeLayer(heatLayerRef.current);
-      heatLayerRef.current = null;
-    }
-
-    const heatData: [number, number, number][] = points.map((p) => [
-      p.lat,
-      p.lng,
-      p.intensity,
-    ]);
-
-    const layer = L.heatLayer(heatData, {
+    const calor = crearCapaCalor({
       radius: 30,
       blur: 25,
-      maxZoom: 10,
-      max: 1.0,
       minOpacity: 0.3,
-      gradient: {
-        0.0: "#00441b",
-        0.2: "#238b45",
-        0.35: "#41ae76",
-        0.5: "#fee08b",
-        0.65: "#fdae61",
-        0.8: "#f46d43",
-        0.9: "#d73027",
-        1.0: "#a50026",
-      },
+      gradient: DEGRADADO_CALOR,
     });
+    calor.setMap(map);
+    calor.setPuntos(
+      points.map((p) => ({ lat: p.lat, lng: p.lng, intensity: p.intensity })),
+    );
+    // Google solo redibuja al cambiar el zoom: tras mover el mapa se repinta.
+    const alReposo = map.addListener("idle", () => calor.draw());
 
-    layer.addTo(map);
-    heatLayerRef.current = layer;
+    const info = new google.maps.InfoWindow();
+    const zonas = crearCapaHtml(true);
+    zonas.setMap(map);
+    const nodos: NodoHtml[] = points.map((p) => {
+      const el = document.createElement("div");
+      el.style.cursor = "pointer";
+      el.addEventListener("click", () => {
+        info.setContent(contenidoPopup(p));
+        info.setPosition({ lat: p.lat, lng: p.lng });
+        info.open({ map });
+      });
+      return { lat: p.lat, lng: p.lng, el, ancho: 30, alto: 30 };
+    });
+    zonas.setNodos(nodos);
 
     return () => {
-      if (heatLayerRef.current) {
-        map.removeLayer(heatLayerRef.current);
-        heatLayerRef.current = null;
-      }
+      alReposo.remove();
+      info.close();
+      calor.setMap(null);
+      zonas.setMap(null);
     };
-  }, [points, map]);
+  }, [map, points]);
 
   return null;
 }
@@ -179,6 +172,7 @@ export default function SolarHeatMap({
   const [stats, setStats] = useState<MunicipioStatApiItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
   // Load data
   useEffect(() => {
@@ -331,26 +325,27 @@ export default function SolarHeatMap({
           </div>
         )}
 
-        <MapContainer
-          center={MAP_CENTER}
-          zoom={7}
-          minZoom={6}
-          maxZoom={10}
-          style={{ height, width: "100%" }}
+        <GoogleMapView
+          onMap={setMap}
           className="rounded-2xl lg:rounded-3xl"
-          scrollWheelZoom={false}
-          dragging={true}
-          doubleClickZoom={false}
-          zoomControl={true}
-          attributionControl={false}
-        >
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-          />
-          <HeatLayer points={heatPoints} />
-          <TooltipMarkers points={heatPoints} />
-        </MapContainer>
+          style={{ height, width: "100%" }}
+          options={() => ({
+            center: MAP_CENTER,
+            zoom: 7,
+            minZoom: 6,
+            maxZoom: 10,
+            styles: ESTILO_OSCURO,
+            backgroundColor: "#080808",
+            gestureHandling: "cooperative",
+            disableDefaultUI: true,
+            zoomControl: true,
+            zoomControlOptions: {
+              position: google.maps.ControlPosition.LEFT_TOP,
+            },
+            disableDoubleClickZoom: true,
+          })}
+        />
+        <CapasCalor map={map} points={heatPoints} />
 
         {/* Bottom gradient for visual depth */}
         <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/40 to-transparent z-10 pointer-events-none rounded-b-2xl lg:rounded-b-3xl" />

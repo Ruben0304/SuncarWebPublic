@@ -16,23 +16,15 @@ import HeroSection from "@/components/landing-sections/hero-section"
 import HeroSectionChristmas from "@/components/landing-sections/hero-section-christmas"
 import ChristmasInstagramSection from "@/components/landing-sections/christmas-instagram-section"
 import QuickContactSection from "@/components/landing-sections/quick-contact-section"
+import KitsSection from "@/components/landing-sections/kits-section"
+import ProductosSueltosSection from "@/components/landing-sections/productos-sueltos-section"
 
 const TrustedPartnersSection = dynamic(() => import("@/components/landing-sections/trusted-partners-section"), {
   ssr: false,
   loading: () => null
 })
 
-const ServicesSection = dynamic(() => import("@/components/landing-sections/services-section"), {
-  ssr: false,
-  loading: () => null
-})
-
 const FelicityPartnershipSection = dynamic(() => import("@/components/landing-sections/felicity-partnership-section"), {
-  ssr: false,
-  loading: () => null
-})
-
-const BrandsSection = dynamic(() => import("@/components/landing-sections/brands-section"), {
   ssr: false,
   loading: () => null
 })
@@ -86,16 +78,13 @@ export default function HomePage() {
         <TrustedPartnersSection />
       </LazySection>
 
-      <LazySection minHeight={760} rootMargin="240px">
-        <ServicesSection />
-      </LazySection>
+      {/* Sin LazySection: van en el HTML inicial y la foto trae su placeholder borroso */}
+      <KitsSection />
+
+      <ProductosSueltosSection />
 
       <LazySection minHeight={560} rootMargin="240px">
         <FelicityPartnershipSection />
-      </LazySection>
-
-      <LazySection minHeight={520} rootMargin="240px">
-        <BrandsSection />
       </LazySection>
 
       <LazySection minHeight={720} rootMargin="300px">

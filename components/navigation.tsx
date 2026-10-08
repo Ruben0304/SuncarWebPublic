@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
       { name: "Calculadora de Kw", href: "/calculadora" },
       {
         name: "Recomendador de ofertas",
-        href: "/ofertas",
+        href: "/ofertas?modo=armar",
         badge: "IA",
         badgeVariant: "ia",
       },
@@ -100,7 +100,9 @@ export default function Navigation() {
   const isActive = (href: string, matchHrefs?: string[]) => {
     if (!pathname) return false;
     const targets = matchHrefs && matchHrefs.length > 0 ? matchHrefs : [href];
-    return targets.some((target) => {
+    return targets.some((destino) => {
+      // El destino puede traer ?query (p. ej. /ofertas?modo=armar): se compara la ruta.
+      const target = destino.split("?")[0];
       if (target === "/") return pathname === "/";
       return pathname.startsWith(target);
     });

@@ -5,14 +5,14 @@ import React, { useEffect, useRef, useState } from "react"
 
 // Partner Item Component for Carousel (Desktop)
 const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
-  <div className="flex items-center justify-center flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-    <div className="relative w-full h-36 sm:h-40 md:h-48 lg:h-56 group">
+  <div className="flex items-center justify-center flex-shrink-0 w-[140px] lg:w-[170px]">
+    <div className="relative w-full h-20 lg:h-24 group">
       <div className="absolute inset-0 bg-gradient-to-br from-[#012928]/5 to-[#AFEB17]/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
       <Image
         src={src}
         alt={alt}
         fill
-        sizes="(max-width: 640px) 240px, (max-width: 1024px) 280px, 320px"
+        sizes="(max-width: 1024px) 140px, 170px"
         className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
       />
     </div>
@@ -21,13 +21,13 @@ const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
 
 // Partner Item Component for Grid (Mobile) - rotating fade
 const PartnerItemGrid = ({ src, alt, visible }: { src: string; alt: string; visible: boolean }) => (
-  <div className="flex items-center justify-center p-3">
-    <div className="relative w-full h-20">
+  <div className="flex items-center justify-center p-1.5">
+    <div className="relative w-full h-14">
       <Image
         src={src}
         alt={alt}
         fill
-        sizes="33vw"
+        sizes="25vw"
         className="w-full h-full object-contain filter grayscale-[20%]"
         style={{
           opacity: visible ? 0.85 : 0,
@@ -38,7 +38,7 @@ const PartnerItemGrid = ({ src, alt, visible }: { src: string; alt: string; visi
   </div>
 )
 
-const GRID_SIZE = 9
+const GRID_SIZE = 12
 
 // Hook que maneja la rotación de logos en el grid móvil
 function useRotatingGrid(items: { src: string; alt: string }[]) {
@@ -257,13 +257,13 @@ export default function TrustedPartnersSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-[#F2F2EF] relative overflow-hidden">
+    <section ref={sectionRef} className="py-12 sm:py-16 lg:py-20 bg-[#F2F2EF] relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#012928]/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="text-center mb-12 lg:mb-16">
+        <div className="text-center mb-8 lg:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#012928] mb-3 lg:mb-4">
             Confían en Nosotros
           </h2>
@@ -275,7 +275,7 @@ export default function TrustedPartnersSection() {
 
         {/* Mobile Grid - Visible only on mobile, logos rotate with fade */}
         <div className="block md:hidden max-w-4xl mx-auto">
-          <div className="grid grid-cols-3 gap-2 px-4">
+          <div className="grid grid-cols-4 gap-1 px-2">
             {slots.map((partnerIndex, slotIndex) => {
               const partner = partners[partnerIndex]
               return (
@@ -291,7 +291,7 @@ export default function TrustedPartnersSection() {
         </div>
 
         {/* Desktop Carousel - Two Rows - Hidden on mobile */}
-        <div className="hidden md:block relative max-w-7xl mx-auto space-y-4 md:space-y-6">
+        <div className="hidden md:block relative max-w-7xl mx-auto space-y-1">
           {/* Gradient fade left */}
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#F2F2EF] via-[#F2F2EF]/80 to-transparent z-10 pointer-events-none"></div>
 
@@ -309,7 +309,7 @@ export default function TrustedPartnersSection() {
               msOverflowStyle: "none"
             }}
           >
-            <div className="flex gap-4 md:gap-6 lg:gap-8 py-4" style={{ width: "max-content" }}>
+            <div className="flex gap-3 lg:gap-4 py-2" style={{ width: "max-content" }}>
               {/* First set */}
               {partnersRow1.map((partner, index) => (
                 <PartnerItem key={`row1-set1-${index}`} src={partner.src} alt={partner.alt} />
@@ -332,7 +332,7 @@ export default function TrustedPartnersSection() {
               msOverflowStyle: "none"
             }}
           >
-            <div className="flex gap-4 md:gap-6 lg:gap-8 py-4" style={{ width: "max-content" }}>
+            <div className="flex gap-3 lg:gap-4 py-2" style={{ width: "max-content" }}>
               {/* First set */}
               {partnersRow2.map((partner, index) => (
                 <PartnerItem key={`row2-set1-${index}`} src={partner.src} alt={partner.alt} />
@@ -346,7 +346,7 @@ export default function TrustedPartnersSection() {
         </div>
 
         {/* Bottom decorative line */}
-        <div className="mt-12 lg:mt-20 flex items-center justify-center gap-2">
+        <div className="mt-8 lg:mt-12 flex items-center justify-center gap-2">
           <div className="h-px w-12 sm:w-20 bg-gradient-to-r from-transparent to-gray-300"></div>
           <div className="flex gap-2">
             <div className="w-2 h-2 rounded-full bg-primary/30"></div>

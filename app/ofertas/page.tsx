@@ -13,8 +13,15 @@ export default async function OfertasPage({ searchParams }: OfertasPageProps) {
     obtenerOfertasPublicas(),
   ]);
   const marca = Array.isArray(params.marca) ? params.marca[0] : params.marca;
+  const modo = Array.isArray(params.modo) ? params.modo[0] : params.modo;
+  const kit = Array.isArray(params.kit) ? params.kit[0] : params.kit;
 
   return (
-    <OfertasContent initialOfertas={initialOfertas} marcaParam={marca ?? null} />
+    <OfertasContent
+      initialOfertas={initialOfertas}
+      marcaParam={marca ?? null}
+      modoParam={modo ?? null}
+      kitParam={kit ?? null}
+    />
   );
 }

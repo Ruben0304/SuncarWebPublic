@@ -1,17 +1,13 @@
-import OfertaDetalle from "./oferta-detalle";
-import { obtenerOfertaPublica } from "@/lib/ofertas/ofertas-publicas-server";
+import { redirect } from "next/navigation";
 
-interface OfertaDetailPageProps {
-  params: Promise<{ id: string }>;
-}
-
-// La oferta se pide en el servidor para que el HTML ya la traiga: con
-// conexiones lentas se ve sin esperar a que baje y arranque todo el JS.
-export default async function OfertaDetailPage({
+// La pantalla de detalle del kit ya no existe: todo ocurre en "Comprar un kit".
+// Los enlaces que quedan por ahí (carrito, tienda, mensajes compartidos) llevan
+// al configurador con ese kit ya elegido.
+export default async function OfertaPage({
   params,
-}: OfertaDetailPageProps) {
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
-  const initialOferta = await obtenerOfertaPublica(id);
-
-  return <OfertaDetalle ofertaId={id} initialOferta={initialOferta} />;
+  redirect(`/ofertas?kit=${encodeURIComponent(id)}`);
 }

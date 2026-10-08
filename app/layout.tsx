@@ -5,6 +5,8 @@ import "../styles/nprogress.css";
 import ClientWrapper from "@/components/ClientWrapper";
 import ProgressBarSuspense from "@/components/ProgressBarSuspense";
 import { obtenerContacto } from "@/lib/contacto";
+import { GOOGLE_MAPS_API_KEY } from "@/lib/google-maps/server";
+import { GoogleMapsProvider } from "@/components/maps/GoogleMapsProvider";
 
 const hostGrotesk = Host_Grotesk({
   subsets: ["latin"],
@@ -198,7 +200,9 @@ export default async function RootLayout({
       </head>
       <body className="overflow-x-hidden">
         <ProgressBarSuspense />
-        <ClientWrapper>{children}</ClientWrapper>
+        <GoogleMapsProvider apiKey={GOOGLE_MAPS_API_KEY}>
+          <ClientWrapper>{children}</ClientWrapper>
+        </GoogleMapsProvider>
       </body>
     </html>
   );

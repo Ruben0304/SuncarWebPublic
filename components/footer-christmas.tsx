@@ -57,7 +57,7 @@ export default function FooterChristmas() {
           <div className="space-y-3 lg:space-y-4">
             <div className="flex items-center space-x-3">
               <div className="relative w-8 h-8 lg:w-10 lg:h-10">
-                <img src="/images/logo navidad.png" alt="Suncar Logo Navidad" className="object-contain rounded-lg" />
+                <Image src="/images/logo navidad.png" alt="Suncar Logo Navidad" fill sizes="40px" className="object-contain rounded-lg" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg lg:text-xl font-bold text-yellow-300 drop-shadow-lg">SUNCAR</span>

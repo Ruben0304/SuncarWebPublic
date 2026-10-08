@@ -1,0 +1,228 @@
+/* Sin tamaño propio: lo decide quien la usa. Overflow visible para que el
+   cielo y el terreno rellenen todo el contenedor, más allá del viewBox. */
+.casa {
+  display: block;
+  overflow: visible;
+}
+
+.casa [data-zona] {
+  transition: opacity 0.45s ease;
+}
+
+.atenuada {
+  opacity: 0.22;
+}
+
+.resaltada {
+  opacity: 1;
+}
+
+/* Energía circulando por los cables */
+.flujo {
+  stroke-dasharray: 5 13;
+  animation: fluir 1.1s linear infinite;
+}
+
+.flujoAc {
+  animation-duration: 1.5s;
+}
+
+@keyframes fluir {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+
+/* Aspas del ventilador: su caja está centrada en el cubo */
+.aspas {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Un diseño por orientación; los dos llegan en el HTML */
+.soloVertical {
+  display: none;
+}
+
+.soloHorizontal {
+  display: block;
+}
+
+@media (orientation: portrait) {
+  .soloVertical {
+    display: block;
+  }
+
+  .soloHorizontal {
+    display: none;
+  }
+}
+
+/* Intro: el letrero sale solo, grande y centrado en la pantalla; luego viaja
+   a su sitio achicándose, sale la flecha y por último aparece la casa.
+   Quien lo usa da --dx/--dy (del sitio del letrero al centro de la pantalla),
+   --s (su tamaño al inicio) y --demora (cuándo entra la casa). */
+.viajar {
+  animation: viajar 0.9s cubic-bezier(0.65, 0, 0.35, 1) 1.9s both;
+}
+
+@keyframes viajar {
+  from {
+    transform: translate(var(--dx), var(--dy)) scale(var(--s));
+  }
+}
+
+.brotar {
+  animation: brotar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+@keyframes brotar {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* La flecha sale del letrero y luego señala la casa */
+.flecha {
+  animation: flecha 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 2.85s both;
+}
+
+@keyframes flecha {
+  from {
+    opacity: 0;
+    transform: translate(22px, -22px);
+  }
+}
+
+.senalar {
+  animation: senalar 0.9s ease-in-out 3.3s infinite alternate;
+}
+
+@keyframes senalar {
+  to {
+    transform: translate(-4px, 4px);
+  }
+}
+
+/* La casa espera oculta a que el letrero termine */
+.casaOculta {
+  opacity: 0;
+}
+
+.casaEntrar {
+  animation: casaEntrar 0.9s ease-out var(--demora, 0s) both;
+}
+
+@keyframes casaEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+/* La nube de los kits flota despacio */
+.flotar {
+  animation: flotar 4s ease-in-out infinite alternate;
+}
+
+@keyframes flotar {
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+/* Solo opacidad: el <g> ya lleva su posición en el atributo transform */
+.aparecer {
+  animation: aparecer 0.5s ease-out calc(var(--demora, 0s) + 0.3s) both;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Botón de categoría: un halo que respira para invitar a tocarlo */
+.pin {
+  cursor: pointer;
+  outline: none;
+}
+
+.pin .halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: respirar 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.pin .boton {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pin:hover .boton,
+.pin:focus-visible .boton {
+  transform: scale(1.12);
+}
+
+.pin:focus-visible .anillo {
+  stroke: #012928;
+  stroke-width: 3;
+}
+
+.pin:active .boton {
+  transform: scale(0.92);
+}
+
+@keyframes respirar {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  70%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+.carga {
+  opacity: 0.55;
+  animation: cargar 1.6s ease-in-out infinite;
+}
+
+@keyframes cargar {
+  50% {
+    opacity: 1;
+  }
+}
+
+.led {
+  animation: cargar 1.2s ease-in-out infinite alternate;
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flujo,
+  .aspas,
+  .flotar,
+  .viajar,
+  .brotar,
+  .flecha,
+  .senalar,
+  .casaEntrar,
+  .aparecer,
+  .pin .halo,
+  .carga,
+  .led {
+    animation: none;
+  }
+}

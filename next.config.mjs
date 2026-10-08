@@ -62,11 +62,11 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.googleapis.com https://*.gstatic.com https://*.google.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' blob: https://*.suncarsrl.com https://*.supabase.co https://www.google-analytics.com https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://lottie.host wss:",
+              "connect-src 'self' blob: https://*.suncarsrl.com https://*.supabase.co https://www.google-analytics.com https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://lottie.host https://*.googleapis.com https://*.google.com https://*.gstatic.com wss:",
               "worker-src 'self' blob:",
               "media-src 'self' blob: https://*.suncarsrl.com https://*.supabase.co",
               "frame-src 'self' https://www.google.com",
@@ -83,7 +83,10 @@ const nextConfig = {
   // Next.js image optimization
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 86400,
+    // Tope en 1920: nadie recibe la versión de 3840px, que en Cuba solo gasta datos.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    // Las imágenes casi no cambian: 30 días en caché evita re-optimizarlas y re-descargarlas.
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: "https",

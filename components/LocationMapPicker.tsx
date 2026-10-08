@@ -1,51 +1,13 @@
 "use client"
 
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-
-// Fix for default markers in React-Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-})
+import GoogleMapView from '@/components/maps/GoogleMapView'
 
 interface LocationMapPickerProps {
   onLocationChange: (lat: number, lng: number, address: string) => void
   initialLat?: number
   initialLng?: number
   height?: string
-}
-
-// Component to handle map clicks
-function LocationMarker({ position, onPositionChange }: { 
-  position: [number, number], 
-  onPositionChange: (position: [number, number]) => void 
-}) {
-  const map = useMapEvents({
-    click(e) {
-      const newPosition: [number, number] = [e.latlng.lat, e.latlng.lng]
-      onPositionChange(newPosition)
-    },
-  })
-
-  return position ? (
-    <Marker 
-      position={position} 
-      draggable={true}
-      eventHandlers={{
-        dragend: (e) => {
-          const marker = e.target
-          const position = marker.getLatLng()
-          const newPosition: [number, number] = [position.lat, position.lng]
-          onPositionChange(newPosition)
-        },
-      }}
-    />
-  ) : null
 }
 
 export default function LocationMapPicker({ 
@@ -57,6 +19,10 @@ export default function LocationMapPicker({
   const [position, setPosition] = useState<[number, number]>([initialLat, initialLng])
   const [address, setAddress] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
+  const onLocationChangeRef = useRef(onLocationChange)
+  onLocationChangeRef.current = onLocationChange
 
   // Function to format and clean the address
   const formatAddress = (addressData: any): string => {
@@ -108,13 +74,13 @@ export default function LocationMapPicker({
       const laHabanaCount = (cleanedAddress.match(/La Habana/gi) || []).length
       if (laHabanaCount > 1) {
         // Keep only the last "La Habana" reference
-        const parts = cleanedAddress.split(', ')
-        const filteredParts = parts.filter((part, index) => {
+        const parts: string[] = cleanedAddress.split(', ')
+        const filteredParts = parts.filter((part: string, index: number) => {
           const isLaHabana = part.toLowerCase().includes('la habana')
           if (!isLaHabana) return true
           // Keep only if it's the last occurrence
           const remainingParts = parts.slice(index + 1)
-          return !remainingParts.some(p => p.toLowerCase().includes('la habana'))
+          return !remainingParts.some((p: string) => p.toLowerCase().includes('la habana'))
         })
         cleanedAddress = filteredParts.join(', ')
       }
@@ -123,40 +89,77 @@ export default function LocationMapPicker({
     }
   }
 
-  // Reverse geocoding function to get address from coordinates
+  // Dirección a partir de coordenadas: Google primero, y Nominatim si falla.
   const reverseGeocode = useCallback(async (lat: number, lng: number) => {
     setLoading(true)
+    const publicar = (texto: string) => {
+      setAddress(texto)
+      onLocationChangeRef.current(lat, lng, texto)
+    }
     try {
-      // Using OpenStreetMap's Nominatim service for reverse geocoding
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
-      )
-      const data = await response.json()
-      
-      if (data && (data.display_name || data.address)) {
-        const formattedAddress = formatAddress(data)
-        setAddress(formattedAddress)
-        onLocationChange(lat, lng, formattedAddress)
-      } else {
-        const fallbackAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`
-        setAddress(fallbackAddress)
-        onLocationChange(lat, lng, fallbackAddress)
+      let texto = ''
+      try {
+        const { results } = await new google.maps.Geocoder().geocode({
+          location: { lat, lng },
+          language: 'es',
+        })
+        // Los "plus codes" (87XJ+4F) no le dicen nada al cliente.
+        const mejor = results.find((r) => !r.types.includes('plus_code')) ?? results[0]
+        texto = mejor?.formatted_address ?? ''
+      } catch {
+        // Geocoding API no disponible: se usa Nominatim.
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+        )
+        const data = await response.json()
+        if (data && (data.display_name || data.address)) texto = formatAddress(data)
       }
+      publicar(texto || `${lat.toFixed(6)}, ${lng.toFixed(6)}`)
     } catch (error) {
       console.error('Error in reverse geocoding:', error)
-      const fallbackAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`
-      setAddress(fallbackAddress)
-      onLocationChange(lat, lng, fallbackAddress)
+      publicar(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
     } finally {
       setLoading(false)
     }
-  }, [onLocationChange])
+  }, [])
 
   // Handle position changes
   const handlePositionChange = useCallback((newPosition: [number, number]) => {
     setPosition(newPosition)
+    markerRef.current && (markerRef.current.position = { lat: newPosition[0], lng: newPosition[1] })
     reverseGeocode(newPosition[0], newPosition[1])
   }, [reverseGeocode])
+
+  // Marcador arrastrable y clic en el mapa
+  useEffect(() => {
+    if (!map) return
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+      map,
+      position: { lat: initialLat, lng: initialLng },
+      gmpDraggable: true,
+      title: 'Arrastra para elegir la ubicación',
+    })
+    markerRef.current = marker
+    const alSoltar = () => {
+      const p = marker.position as google.maps.LatLngLiteral | google.maps.LatLng | null
+      if (!p) return
+      const lat = typeof p.lat === 'function' ? p.lat() : p.lat
+      const lng = typeof p.lng === 'function' ? p.lng() : p.lng
+      handlePositionChange([lat, lng])
+    }
+    marker.addEventListener('gmp-dragend', alSoltar)
+    const alHacerClic = map.addListener('click', (e: google.maps.MapMouseEvent) => {
+      if (e.latLng) handlePositionChange([e.latLng.lat(), e.latLng.lng()])
+    })
+    return () => {
+      marker.removeEventListener('gmp-dragend', alSoltar)
+      alHacerClic.remove()
+      marker.map = null
+      markerRef.current = null
+    }
+    // el punto de partida solo cuenta al crear el mapa
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map])
 
   // Initialize with default position - set default address without geocoding
   useEffect(() => {
@@ -168,21 +171,21 @@ export default function LocationMapPicker({
   return (
     <div className="space-y-4">
       <div className="relative">
-        <MapContainer
-          center={position}
-          zoom={13}
-          style={{ height, width: '100%' }}
+        <GoogleMapView
+          librerias={['marker']}
+          onMap={setMap}
           className="rounded-lg border border-gray-300 z-0"
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <LocationMarker 
-            position={position} 
-            onPositionChange={handlePositionChange}
-          />
-        </MapContainer>
+          style={{ height, width: '100%' }}
+          options={{
+            center: { lat: position[0], lng: position[1] },
+            zoom: 13,
+            // DEMO_MAP_ID habilita los marcadores avanzados sin crear un estilo en la consola.
+            mapId: 'DEMO_MAP_ID',
+            gestureHandling: 'greedy',
+            mapTypeControl: false,
+            streetViewControl: false,
+          }}
+        />
         
         {/* Loading overlay */}
         {loading && (

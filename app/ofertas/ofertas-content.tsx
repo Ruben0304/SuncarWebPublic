@@ -25,7 +25,6 @@ import {
   Eye,
   ArrowRight,
   Loader2,
-  DollarSign,
   Info,
   MapPin,
   Trophy,
@@ -33,6 +32,7 @@ import {
   X,
   Tag,
   Percent,
+  ChevronLeft,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -43,11 +43,15 @@ import {
 import { useClient } from "@/hooks/useClient";
 import { Currency } from "@/hooks/useCurrencyExchange";
 import OfertasRecommendationInput from "@/components/OfertasRecommendationInput";
+import ArmarKit from "@/components/ofertas/ArmarKit";
+import NotasLegales from "@/components/ofertas/NotasLegales";
+import { kitsConfigurables } from "@/lib/ofertas/configurador";
 import { recomendadorService } from "@/services/api/recomendadorService";
 import {
   OFERTAS_PUBLICAS_QUERY,
+  cargarPotencias,
   formatearPrecio,
-  mapOfertaSimplificada,
+  mapOfertasPublicas,
 } from "@/lib/ofertas/ofertas-publicas";
 
 // Solo lo usa el recomendador: fuera de la carga inicial de la página.
@@ -110,11 +114,17 @@ interface OfertasContentProps {
   // null si el servidor no pudo traer los kits: entonces se piden desde aquí.
   initialOfertas: OfertaSimplificada[] | null;
   marcaParam: string | null;
+  /** "lista" abre directo el listado; si no, se abre "Comprar un kit". */
+  modoParam?: string | null;
+  /** Número del kit a dejar elegido en "Comprar un kit" (?kit=OF-…). */
+  kitParam?: string | null;
 }
 
 export default function OfertasContent({
   initialOfertas,
   marcaParam,
+  modoParam,
+  kitParam,
 }: OfertasContentProps) {
   const router = useRouter();
 
@@ -133,6 +143,22 @@ export default function OfertasContent({
     marcaParam,
   );
   const [isChristmas, setIsChristmas] = useState(false);
+  // "Comprar un kit" es lo primero que se ve. Los enlaces del menú por marca
+  // (?marca=…) y ?modo=lista llevan directo al listado.
+  const [modo, setModo] = useState<"lista" | "armar">(
+    modoParam === "lista" || (marcaParam && !kitParam) ? "lista" : "armar",
+  );
+  const [kitElegido, setKitElegido] = useState<string | null>(kitParam ?? null);
+  // Al navegar entre /ofertas y /ofertas?modo=… (desde el menú o la portada)
+  // la página no se vuelve a montar: se sincroniza la vista con la URL.
+  useEffect(() => {
+    setModo(modoParam === "lista" || (marcaParam && !kitParam) ? "lista" : "armar");
+    setKitElegido(kitParam ?? null);
+  }, [modoParam, marcaParam, kitParam]);
+  const cambiarModo = useCallback((nuevo: "lista" | "armar") => {
+    setModo(nuevo);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
   const { isClient } = useClient();
 
   // Estados del recomendador
@@ -251,14 +277,24 @@ export default function OfertasContent({
       selectedBrandKey,
     ]);
 
+  // "Comprar un kit" necesita al menos dos kits con inversor y batería legibles
+  // para que haya algo que elegir; si no, solo existe el listado.
+  const puedeArmar = useMemo(
+    () => kitsConfigurables(ofertas).length >= 2,
+    [ofertas],
+  );
+  const enArmar = modo === "armar" && puedeArmar;
+  const enLista = !enArmar;
+
   const fetchOfertas = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        `${BACKEND_URL}/api/ofertas/confeccion/?${OFERTAS_PUBLICAS_QUERY}`,
-      );
+      const [response, potencias] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/ofertas/confeccion/?${OFERTAS_PUBLICAS_QUERY}`),
+        cargarPotencias(BACKEND_URL),
+      ]);
       if (!response.ok) {
         setError(`Error al cargar ofertas (${response.status})`);
         return;
@@ -266,7 +302,7 @@ export default function OfertasContent({
 
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
-        setOfertas(data.data.map(mapOfertaSimplificada));
+        setOfertas(mapOfertasPublicas(data.data, potencias));
       } else {
         setError(data.message || "Error al cargar ofertas");
       }
@@ -314,16 +350,23 @@ export default function OfertasContent({
     return moneda.toUpperCase();
   };
 
+  // Elegir un kit del listado lo abre en "Comprar un kit" con sus opciones ya
+  // elegidas. Un kit que el configurador no entiende pasa al contacto.
   const navigateToOfertaDetalle = useCallback(
     (ofertaId?: string | null) => {
       if (!ofertaId) {
         return;
       }
 
-      saveOfertasScrollPosition();
-      router.push(`/ofertas/${ofertaId}`);
+      const oferta = ofertas.find((o) => o.id === ofertaId);
+      if (oferta?.config) {
+        setKitElegido(ofertaId);
+        cambiarModo("armar");
+        return;
+      }
+      router.push("/contacto");
     },
-    [router],
+    [ofertas, cambiarModo, router],
   );
 
   const handleOfertaCardKeyDown = useCallback(
@@ -420,8 +463,35 @@ export default function OfertasContent({
         {isChristmas ? <NavigationChristmas /> : <Navigation />}
         <div className="min-h-screen bg-[#F2F2EF] pt-32 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Configurador: es la entrada; el listado se abre desde su pie */}
+            {!loading && !error && enArmar && (
+              <ArmarKit
+                key={kitElegido ?? "nuevo"}
+                ofertas={ofertas}
+                kitInicial={kitElegido}
+                onVerListado={() => cambiarModo("lista")}
+              />
+            )}
+
+            {/* Volver al configurador desde el listado */}
+            {!loading && !error && enLista && puedeArmar && (
+              <div className="mx-auto mb-6 max-w-6xl px-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setKitElegido(null);
+                    cambiarModo("armar");
+                  }}
+                  className="inline-flex items-center gap-1 rounded-full bg-white px-4 py-2 text-sm font-medium text-[#012928] shadow-sm transition-colors hover:bg-[#F5F5F7]"
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                  Comprar un kit
+                </button>
+              </div>
+            )}
+
             {/* AI Recommendation Input */}
-            {!loading && !error && ofertas.length > 0 && (
+            {!loading && !error && enLista && ofertas.length > 0 && (
               <OfertasRecommendationInput
                 onSearch={handleRecommendationSearch}
                 loading={isRecommendationLoading}
@@ -430,7 +500,7 @@ export default function OfertasContent({
             )}
 
             {/* Recommendation Results Banner */}
-            {showRecommendations && recommendationData && (
+            {enLista && showRecommendations && recommendationData && (
               <div className="mb-8 px-4">
                 <div className="bg-gradient-to-r from-[#AFEB17]/5 via-[#F2C300]/5 to-[#AFEB17]/5 border-2 border-[#AFEB17]/25 rounded-2xl p-4 sm:p-6 shadow-xl">
                   <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -477,7 +547,7 @@ export default function OfertasContent({
             )}
 
             {/* Recommendation Error */}
-            {recommendationError && (
+            {enLista && recommendationError && (
               <div className="mb-8 px-4">
                 <div className="bg-red-50 border border-[#AFEB17]/20 rounded-2xl p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -556,6 +626,7 @@ export default function OfertasContent({
             {/* Offers Grid - SIEMPRE muestra las dos secciones separadas cuando NO hay recomendaciones */}
             {!loading &&
               !error &&
+              enLista &&
               !showRecommendations &&
               filteredOfertas.length > 0 && (
                 <>
@@ -606,7 +677,7 @@ export default function OfertasContent({
                             tabIndex={oferta.id ? 0 : -1}
                             aria-label={
                               oferta.id
-                                ? `Ver detalles de ${oferta.descripcion}`
+                                ? `Elegir el kit ${oferta.descripcion}`
                                 : undefined
                             }
                             onClick={() => navigateToOfertaDetalle(oferta.id)}
@@ -713,7 +784,7 @@ export default function OfertasContent({
                                 className="w-full bg-[#012928] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
                               >
                                 <Eye className="w-4 h-4 mr-2" />
-                                Ver Detalles
+                                Elegir este kit
                               </Button>
                             </CardContent>
                           </Card>
@@ -735,7 +806,7 @@ export default function OfertasContent({
                             tabIndex={oferta.id ? 0 : -1}
                             aria-label={
                               oferta.id
-                                ? `Ver detalles de ${oferta.descripcion}`
+                                ? `Elegir el kit ${oferta.descripcion}`
                                 : undefined
                             }
                             onClick={() => navigateToOfertaDetalle(oferta.id)}
@@ -846,7 +917,7 @@ export default function OfertasContent({
                                 className="w-full bg-[#012928] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
                               >
                                 <Eye className="w-4 h-4 mr-2" />
-                                Ver Detalles
+                                Elegir este kit
                               </Button>
                             </CardContent>
                           </Card>
@@ -860,6 +931,7 @@ export default function OfertasContent({
             {/* Vista de Recomendaciones - cuando el usuario usa el recomendador */}
             {!loading &&
               !error &&
+              enLista &&
               showRecommendations &&
               recommendationData &&
               filteredOfertas.length > 0 && (
@@ -873,7 +945,7 @@ export default function OfertasContent({
                         tabIndex={oferta.id ? 0 : -1}
                         aria-label={
                           oferta.id
-                            ? `Ver detalles de ${oferta.descripcion}`
+                            ? `Elegir el kit ${oferta.descripcion}`
                             : undefined
                         }
                         onClick={() => navigateToOfertaDetalle(oferta.id)}
@@ -966,7 +1038,7 @@ export default function OfertasContent({
                             className="w-full bg-[#012928] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 group-hover:shadow-lg pointer-events-none"
                           >
                             <Eye className="w-4 h-4 mr-2" />
-                            Ver Detalles
+                            Elegir este kit
                           </Button>
                         </CardContent>
                       </Card>
@@ -975,131 +1047,8 @@ export default function OfertasContent({
                 </>
               )}
 
-            {/* Info de precios - Se muestra siempre que hay ofertas */}
-            {!loading && !error && filteredOfertas.length > 0 && (
-              <div
-                className="px-4 mt-6 mb-10"
-              >
-                <div className="max-w-3xl mx-auto space-y-3">
-                  {/* Nota Legal sobre Monedas */}
-                  <div className="flex items-start gap-3 bg-gradient-to-r from-[#F2C300]/5 to-[#F2C300]/5 backdrop-blur border-2 border-[#F2C300]/40 px-4 py-3 rounded-xl shadow-md text-xs sm:text-sm text-gray-800">
-                    <DollarSign className="w-5 h-5 text-[#F2C300] mt-0.5 flex-shrink-0" />
-                    <div className="leading-relaxed">
-                      <p className="font-semibold text-[#012928] mb-1">
-                        Precios en Moneda Extranjera:
-                      </p>
-                      <p>
-                        Los precios expresados en USD son{" "}
-                        <span className="font-semibold">
-                          referenciales internacionales
-                        </span>{" "}
-                        y aplican para:
-                      </p>
-                      <ul className="list-disc list-inside mt-1 space-y-0.5 text-gray-700">
-                        <li>Pagos desde el exterior</li>
-                        <li>Opciones de financiamiento internacional</li>
-                      </ul>
-                      <p className="mt-2 text-gray-700">
-                        Para pagos en Cuba, los precios se cobrarán en{" "}
-                        <span className="font-semibold">
-                          monedas locales al tipo de cambio vigente
-                        </span>
-                        .
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 bg-white/80 backdrop-blur border border-blue-100 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-600">
-                    <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <p className="leading-relaxed">
-                      Los precios publicados son referenciales y pueden
-                      ajustarse ligeramente (al alza o a la baja) según las
-                      características finales de cada proyecto. Te avisaremos
-                      con antelación si aplica algún ajuste.
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3 bg-gradient-to-r from-[#AFEB17]/5 to-[#F2C300]/5 backdrop-blur border border-[#AFEB17]/25 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
-                    <MessageCircle className="w-4 h-4 text-[#012928] mt-0.5 flex-shrink-0" />
-                    <p className="leading-relaxed">
-                      <span className="font-semibold text-[#012928]">
-                        Importante:
-                      </span>{" "}
-                      La información aquí presentada es solo referencial. Le
-                      recomendamos hablar primero con nuestros profesionales
-                      para recibir asesoría personalizada y obtener detalles
-                      precisos sobre su proyecto solar.
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3 bg-gradient-to-r from-green-50 to-emerald-50 backdrop-blur border border-green-200 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
-                    <MapPin className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <div className="leading-relaxed">
-                      <p className="mb-2">
-                        <span className="font-semibold text-green-700">
-                          Cobertura de servicio:
-                        </span>{" "}
-                        Brindamos servicio garantizado en{" "}
-                        <span className="font-semibold">
-                          La Habana y sus municipios
-                        </span>
-                        .
-                      </p>
-                      <p className="text-gray-600">
-                        Para otras provincias, existe disponibilidad según cada
-                        caso. Le invitamos a contactarnos indicando su provincia
-                        para evaluar las opciones de servicio y coordinar la
-                        mejor solución para su proyecto.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 bg-gradient-to-r from-purple-50 to-pink-50 backdrop-blur border border-purple-200 px-4 py-3 rounded-xl shadow-sm text-xs sm:text-sm text-gray-700">
-                    <Info className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                    <p className="leading-relaxed">
-                      Los presupuestos tienen una validez de{" "}
-                      <span className="font-semibold text-purple-700">
-                        10 días naturales
-                      </span>{" "}
-                      a partir de su emisión.
-                    </p>
-                  </div>
-
-                  {/* Financing Marketing Banner - Movido al final */}
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Star className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed">
-                          <span className="font-semibold text-blue-700">
-                            ¿Sabías que
-                          </span>{" "}
-                          algunas ofertas puedes optarlas por
-                          <span className="font-semibold text-blue-700">
-                            {" "}
-                            pago a plazo
-                          </span>{" "}
-                          a través de un familiar en España?
-                        </p>
-                        <p className="text-gray-600 text-xs sm:text-sm mt-1">
-                          Consulta disponibilidad en cada oferta.
-                        </p>
-                      </div>
-                      <div className="flex-shrink-0 mt-2 sm:mt-0">
-                        <div className="flex items-center gap-2 text-xs sm:text-sm bg-blue-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
-                          <MapPin className="w-3 h-3 text-blue-600" />
-                          <span className="text-blue-700 font-medium">
-                            desde España
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Condiciones al pie, con el estilo de las notas de Apple */}
+            {!loading && !error && filteredOfertas.length > 0 && <NotasLegales />}
 
             {/* Empty State */}
             {!loading && !error && ofertas.length === 0 && (

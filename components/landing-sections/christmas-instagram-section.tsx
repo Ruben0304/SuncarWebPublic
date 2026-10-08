@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Play } from "lucide-react"
 
 // Instagram Icon Component
@@ -54,9 +55,12 @@ export default function ChristmasInstagramSection() {
                 {/* Header - Instagram style */}
                 <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200">
                   <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center p-1 shadow-sm">
-                    <img
+                    <Image
                       src="/images/logo navidad.png"
                       alt="Suncar Logo"
+                      width={200}
+                      height={215}
+                      sizes="32px"
                       className="w-full h-full object-contain rounded-sm"
                     />
                   </div>
@@ -71,10 +75,13 @@ export default function ChristmasInstagramSection() {
                   className="relative aspect-square cursor-pointer group overflow-hidden"
                   onClick={handleClick}
                 >
-                  <img
+                  {/* El PNG original pesa ~1 MB: Next lo sirve en AVIF/WebP a 320px */}
+                  <Image
                     src="https://s3.suncarsrl.com/web/reel%20cuervo.png"
                     alt="Reel Navideño Suncar"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="320px"
+                    className="object-cover"
                   />
 
                   {/* Play Button Overlay */}

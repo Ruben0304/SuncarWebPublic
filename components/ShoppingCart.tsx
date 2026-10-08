@@ -33,6 +33,11 @@ import { useContacto } from "@/hooks/useContacto";
 let cartOpenState = false;
 export const getCartOpenState = () => cartOpenState;
 
+const EVENTO_ABRIR = 'suncar:abrir-carrito';
+
+/** Abre el carrito desde cualquier parte de la página (p. ej. la casa de /productos). */
+export const abrirCarrito = () => window.dispatchEvent(new Event(EVENTO_ABRIR));
+
 interface RecomendadorCarritoResponse {
   success: boolean;
   message: string;
@@ -48,8 +53,20 @@ interface RecomendadorCarritoResponse {
 const MAX_PRODUCTOS_RECOMENDADOS = 5;
 type ProductoRecomendado = ArticuloTienda & { vendible: boolean };
 
-export default function ShoppingCartComponent() {
+interface ShoppingCartProps {
+  /** Para páginas que ponen su propio botón y llaman a `abrirCarrito()`. */
+  ocultarBoton?: boolean;
+}
+
+export default function ShoppingCartComponent({ ocultarBoton = false }: ShoppingCartProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const abrir = () => setIsOpen(true);
+    window.addEventListener(EVENTO_ABRIR, abrir);
+    return () => window.removeEventListener(EVENTO_ABRIR, abrir);
+  }, []);
+
   const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart } = useCart();
 
   // La cotización se manda al contacto NACIONAL a propósito. Ya existe el
@@ -182,18 +199,20 @@ export default function ShoppingCartComponent() {
   return (
     <>
       {/* Botón flotante del carrito */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[60] w-[52px] h-[52px] md:w-[60px] md:h-[60px] bg-[#012928] text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center group"
-        aria-label="Abrir carrito de compras"
-      >
-        <ShoppingCart className="w-6 h-6 md:w-7 md:h-7" />
-        {totalItems > 0 && (
-          <Badge className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-red-500 text-white border-2 border-white min-w-[22px] h-[22px] md:min-w-[26px] md:h-[26px] rounded-full flex items-center justify-center px-1 md:px-1.5 text-[10px] md:text-xs font-bold shadow-lg animate-pulse">
-            {totalItems}
-          </Badge>
-        )}
-      </button>
+      {!ocultarBoton && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[60] w-[52px] h-[52px] md:w-[60px] md:h-[60px] bg-[#012928] text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center group"
+          aria-label="Abrir carrito de compras"
+        >
+          <ShoppingCart className="w-6 h-6 md:w-7 md:h-7" />
+          {totalItems > 0 && (
+            <Badge className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-red-500 text-white border-2 border-white min-w-[22px] h-[22px] md:min-w-[26px] md:h-[26px] rounded-full flex items-center justify-center px-1 md:px-1.5 text-[10px] md:text-xs font-bold shadow-lg animate-pulse">
+              {totalItems}
+            </Badge>
+          )}
+        </button>
+      )}
 
       {/* Overlay + Drawer */}
       {isOpen && (

@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { GeoJsonObject, Feature, Polygon, MultiPolygon } from "geojson";
-import L, { type Layer, type PathOptions } from "leaflet";
-import {
-  GeoJSON,
-  MapContainer,
-  Marker,
-  TileLayer,
-  ZoomControl,
-} from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import GoogleMapView from "@/components/maps/GoogleMapView";
+import { ESTILO_OSCURO } from "@/components/maps/dark-style";
+import { crearCapaHtml, type CapaHtml } from "@/components/maps/overlays";
 
 interface MunicipioStatApiItem {
   provincia: string;
@@ -55,8 +49,11 @@ interface NightLightsMapProps {
   onStatsLoaded?: (municipios: number) => void;
 }
 
-const ENDPOINT = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/clientes/estadisticas/kw-equipos-por-municipio-publico`;
-const MAP_CENTER: [number, number] = [21.6, -78.8];
+// Por la ruta de la propia web (app/api/clientes/estadisticas): el backend solo
+// acepta CORS de suncarsrl.com, así que desde localhost o un dominio de prueba
+// la llamada directa fallaba con "Failed to fetch".
+const ENDPOINT = "/api/clientes/estadisticas/kw-equipos-por-municipio-publico";
+const MAP_CENTER = { lat: 21.6, lng: -78.8 };
 
 function normalizeText(value: string): string {
   return value
@@ -99,27 +96,30 @@ function getFeatureCentroid(feature: Feature): [number, number] | null {
   return null;
 }
 
-function buildGlowIcon(
-  point: HeatPoint,
-  index: number,
-  lightsOn: boolean,
-): L.DivIcon {
+function glowVars(point: HeatPoint, index: number, lightsOn: boolean) {
   const glowSize = 16 + point.intensity * 36;
   const coreSize = 4 + point.intensity * 8;
   const glowOpacity = lightsOn ? 0.2 + point.intensity * 0.7 : 0;
   const pulseDuration = 3.4 - point.intensity * 1.1;
   const pulseDelay = (index % 9) * 0.25;
+  return { glowSize, coreSize, glowOpacity, pulseDuration, pulseDelay };
+}
 
-  return L.divIcon({
-    className: "city-light-icon-wrapper",
-    iconSize: [glowSize, glowSize],
-    iconAnchor: [glowSize / 2, glowSize / 2],
-    html: `<div class="city-light-icon ${lightsOn ? "is-on" : "is-off"}" style="--glow-size:${glowSize.toFixed(
-      2,
-    )}px; --core-size:${coreSize.toFixed(2)}px; --glow-opacity:${glowOpacity.toFixed(
-      2,
-    )}; --pulse-duration:${pulseDuration.toFixed(2)}s; --pulse-delay:${pulseDelay.toFixed(2)}s;"></div>`,
-  });
+function aplicarGlow(icono: HTMLElement, point: HeatPoint, index: number, lightsOn: boolean) {
+  const v = glowVars(point, index, lightsOn);
+  icono.className = `city-light-icon ${lightsOn ? "is-on" : "is-off"}`;
+  icono.style.cssText = `--glow-size:${v.glowSize.toFixed(2)}px; --core-size:${v.coreSize.toFixed(
+    2,
+  )}px; --glow-opacity:${v.glowOpacity.toFixed(2)}; --pulse-duration:${v.pulseDuration.toFixed(
+    2,
+  )}s; --pulse-delay:${v.pulseDelay.toFixed(2)}s;`;
+}
+
+interface TooltipEstado {
+  x: number;
+  y: number;
+  point: HeatPoint | null;
+  nombre: string;
 }
 
 export default function NightLightsMap({
@@ -134,11 +134,11 @@ export default function NightLightsMap({
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [tooltip, setTooltip] = useState<TooltipEstado | null>(null);
+  const contenedor = useRef<HTMLDivElement>(null);
+  const glowLayer = useRef<CapaHtml | null>(null);
+  const glowNodos = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -260,103 +260,137 @@ export default function NightLightsMap({
     return map;
   }, [heatPoints]);
 
-  const glowMarkers = useMemo(
-    () =>
-      heatPoints.map((point, index) => ({
-        ...point,
-        icon: buildGlowIcon(point, index, lightsOn),
-      })),
-    [heatPoints, lightsOn],
-  );
+  const estadoRef = useRef({ lightsOn, pointByMunicipio });
+  estadoRef.current = { lightsOn, pointByMunicipio };
 
-  const getMunicipioStyle = (feature?: Feature): PathOptions => {
-    const shapeName = String(
-      (feature?.properties as Record<string, unknown> | undefined)?.shapeName ??
-        "",
-    );
-    const point = pointByMunicipio.get(normalizeText(shapeName));
+  const nombreDe = (feature: google.maps.Data.Feature) =>
+    String(feature.getProperty("shapeName") ?? "");
+
+  const estiloMunicipio = (
+    feature: google.maps.Data.Feature,
+  ): google.maps.Data.StyleOptions => {
+    const point = pointByMunicipio.get(normalizeText(nombreDe(feature)));
     const ratio = point?.intensity ?? 0;
 
     if (!lightsOn) {
+      // Apagado: la isla se ve gris y las divisiones de los municipios se leen.
       return {
-        color: "#0f172a",
-        weight: 0.8,
-        fillColor: "#030712",
-        fillOpacity: point ? 0.06 : 0.02,
+        strokeColor: "#94a3b8",
+        strokeOpacity: point ? 0.6 : 0.42,
+        strokeWeight: 0.9,
+        fillColor: "#94a3b8",
+        fillOpacity: point ? 0.12 : 0.05,
+        clickable: true,
       };
     }
-
     if (!point) {
       return {
-        color: "rgba(100,116,139,0.22)",
-        weight: 0.8,
+        strokeColor: "#64748b",
+        strokeOpacity: 0.22,
+        strokeWeight: 0.8,
         fillColor: "#0f172a",
         fillOpacity: 0.03,
+        clickable: true,
       };
     }
-
     return {
-      color: "rgba(251,191,36,0.40)",
-      weight: 1.1,
+      strokeColor: "#fbbf24",
+      strokeOpacity: 0.4,
+      strokeWeight: 1.1,
       fillColor: "#f59e0b",
       fillOpacity: Math.min(0.18 + ratio * 0.42, 0.72),
+      clickable: true,
     };
   };
 
-  const onEachMunicipio = (feature: Feature, layer: Layer) => {
-    if (!("bindTooltip" in layer)) return;
-
-    const shapeName = String(
-      (feature.properties as Record<string, unknown> | undefined)?.shapeName ??
-        "",
-    );
-    const point = pointByMunicipio.get(normalizeText(shapeName));
-
-    const tooltipHtml = point
-      ? `
-      <div class="municipio-tooltip-content">
-        <p class="municipio-tooltip-title">${point.municipio}</p>
-        <p class="municipio-tooltip-subtitle">${point.provincia}</p>
-        <p><span>Paneles:</span> ${point.panelesKw.toFixed(1)} kW</p>
-        <p><span>Inversores:</span> ${point.inversoresKw.toFixed(1)} kW</p>
-        <p><span>Baterias:</span> ${point.bateriasKw.toFixed(1)} kW</p>
-      </div>`
-      : `
-      <div class="municipio-tooltip-content">
-        <p class="municipio-tooltip-title">${shapeName || "Municipio"}</p>
-        <p class="municipio-tooltip-empty">Sin instalaciones registradas</p>
-      </div>`;
-
-    const interactiveLayer = layer as Layer & {
-      bindTooltip: (content: string, options?: L.TooltipOptions) => Layer;
-      setStyle?: (style: PathOptions) => void;
-      bringToFront?: () => Layer;
-      on: Layer["on"];
-    };
-
-    interactiveLayer.bindTooltip(tooltipHtml, {
-      sticky: true,
-      direction: "top",
-      opacity: 1,
-      className: "municipio-kw-tooltip",
-    });
-
-    interactiveLayer.on({
-      mouseover: () => {
-        interactiveLayer.setStyle?.({
-          weight: 1.8,
-          color: lightsOn ? "#fde68a" : "#94a3b8",
-          fillOpacity: lightsOn
-            ? Math.min((point?.intensity ?? 0.2) + 0.35, 0.8)
-            : 0.12,
+  // Municipios: se cargan una vez y se restilan al prender o apagar las luces.
+  useEffect(() => {
+    if (!map || !geoJsonData) return;
+    const features = map.data.addGeoJson(geoJsonData);
+    const escuchas = [
+      map.data.addListener("mouseover", (e: google.maps.Data.MouseEvent) => {
+        const { lightsOn: on, pointByMunicipio: puntos } = estadoRef.current;
+        const point = puntos.get(normalizeText(nombreDe(e.feature)));
+        map.data.overrideStyle(e.feature, {
+          strokeWeight: 1.8,
+          strokeColor: on ? "#fde68a" : "#94a3b8",
+          strokeOpacity: 1,
+          fillOpacity: on ? Math.min((point?.intensity ?? 0.2) + 0.35, 0.8) : 0.12,
         });
-        interactiveLayer.bringToFront?.();
-      },
-      mouseout: () => {
-        interactiveLayer.setStyle?.(getMunicipioStyle(feature));
-      },
+      }),
+      map.data.addListener("mousemove", (e: google.maps.Data.MouseEvent) => {
+        const caja = contenedor.current?.getBoundingClientRect();
+        const evento = e.domEvent as MouseEvent | undefined;
+        if (!caja || !evento || typeof evento.clientX !== "number") return;
+        const nombre = nombreDe(e.feature);
+        setTooltip({
+          x: evento.clientX - caja.left,
+          y: evento.clientY - caja.top,
+          point: estadoRef.current.pointByMunicipio.get(normalizeText(nombre)) ?? null,
+          nombre,
+        });
+      }),
+      map.data.addListener("mouseout", (e: google.maps.Data.MouseEvent) => {
+        map.data.revertStyle(e.feature);
+        setTooltip(null);
+      }),
+    ];
+    return () => {
+      escuchas.forEach((l) => l.remove());
+      features.forEach((f) => map.data.remove(f));
+    };
+  }, [map, geoJsonData]);
+
+  useEffect(() => {
+    map?.data.setStyle((feature) => estiloMunicipio(feature));
+    // el estilo depende de lo prendido y de los datos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, lightsOn, pointByMunicipio]);
+
+  // Luces de cada municipio: los nodos se crean con los datos y, al prender o
+  // apagar, solo cambian de clase para que la transición se vea.
+  useEffect(() => {
+    if (!map) return;
+    const capa = crearCapaHtml(false);
+    capa.setMap(map);
+    glowLayer.current = capa;
+    return () => {
+      capa.setMap(null);
+      glowLayer.current = null;
+    };
+  }, [map]);
+
+  useEffect(() => {
+    const capa = glowLayer.current;
+    if (!capa) return;
+    glowNodos.current = heatPoints.map((point, index) => {
+      const envoltorio = document.createElement("div");
+      envoltorio.className = "city-light-icon-wrapper";
+      const icono = document.createElement("div");
+      aplicarGlow(icono, point, index, estadoRef.current.lightsOn);
+      envoltorio.appendChild(icono);
+      return envoltorio;
     });
-  };
+    capa.setNodos(
+      heatPoints.map((point, index) => {
+        const tam = glowVars(point, index, true).glowSize;
+        return {
+          lat: point.lat,
+          lng: point.lng,
+          el: glowNodos.current[index],
+          ancho: tam,
+          alto: tam,
+        };
+      }),
+    );
+  }, [map, heatPoints]);
+
+  useEffect(() => {
+    glowNodos.current.forEach((envoltorio, index) => {
+      const icono = envoltorio.firstElementChild as HTMLElement | null;
+      if (icono) aplicarGlow(icono, heatPoints[index], index, lightsOn);
+    });
+  }, [lightsOn, heatPoints]);
 
   const totalMunicipios = useMemo(() => {
     if (typeof apiTotalMunicipios === "number" && apiTotalMunicipios >= 0) {
@@ -397,50 +431,52 @@ export default function NightLightsMap({
         className={`relative transition-[filter] duration-1000 ${
           lightsOn
             ? "brightness-100 saturate-[1.1]"
-            : "brightness-[0.46] saturate-[0.8]"
+            : "brightness-[0.9] saturate-[0.8]"
         }`}
       >
-        {!isMounted ? (
-          <div style={{ height, width: "100%" }} className="rounded-2xl lg:rounded-3xl bg-[#0A052D]" />
-        ) : <MapContainer
-          center={MAP_CENTER}
-          zoom={7}
-          minZoom={6}
-          maxZoom={10}
-          style={{ height, width: "100%" }}
-          className="rounded-2xl lg:rounded-3xl"
-          scrollWheelZoom={false}
-          dragging={true}
-          doubleClickZoom
-          touchZoom
-          keyboard
-          zoomControl={false}
-          attributionControl={false}
-        >
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+        <div ref={contenedor} className="relative">
+          <GoogleMapView
+            onMap={setMap}
+            className="rounded-2xl bg-[#0A052D] lg:rounded-3xl"
+            style={{ height, width: "100%" }}
+            options={() => ({
+              center: MAP_CENTER,
+              zoom: 7,
+              minZoom: 6,
+              maxZoom: 10,
+              styles: ESTILO_OSCURO,
+              backgroundColor: "#080808",
+              gestureHandling: "cooperative",
+              disableDefaultUI: true,
+              zoomControl: true,
+              zoomControlOptions: {
+                position: google.maps.ControlPosition.RIGHT_BOTTOM,
+              },
+              keyboardShortcuts: true,
+            })}
           />
-          {geoJsonData && (
-            <GeoJSON
-              key={`${lightsOn}-${heatPoints.length}`}
-              data={geoJsonData}
-              style={(feature) => getMunicipioStyle(feature as Feature)}
-              onEachFeature={(feature, layer) =>
-                onEachMunicipio(feature as Feature, layer)
-              }
-            />
+          {tooltip && (
+            <div
+              className="municipio-kw-tooltip"
+              style={{ left: tooltip.x, top: tooltip.y }}
+            >
+              {tooltip.point ? (
+                <div className="municipio-tooltip-content">
+                  <p className="municipio-tooltip-title">{tooltip.point.municipio}</p>
+                  <p className="municipio-tooltip-subtitle">{tooltip.point.provincia}</p>
+                  <p><span>Paneles:</span> {tooltip.point.panelesKw.toFixed(1)} kW</p>
+                  <p><span>Inversores:</span> {tooltip.point.inversoresKw.toFixed(1)} kW</p>
+                  <p><span>Baterias:</span> {tooltip.point.bateriasKw.toFixed(1)} kW</p>
+                </div>
+              ) : (
+                <div className="municipio-tooltip-content">
+                  <p className="municipio-tooltip-title">{tooltip.nombre || "Municipio"}</p>
+                  <p className="municipio-tooltip-empty">Sin instalaciones registradas</p>
+                </div>
+              )}
+            </div>
           )}
-          {glowMarkers.map((point) => (
-            <Marker
-              key={point.key}
-              position={[point.lat, point.lng]}
-              icon={point.icon}
-              interactive={false}
-            />
-          ))}
-          <ZoomControl position="bottomright" />
-        </MapContainer>}
+        </div>
 
         <div
           className="pointer-events-none absolute inset-0 transition-opacity duration-1000"
@@ -530,11 +566,11 @@ export default function NightLightsMap({
           transform: scale(0.6);
         }
 
-        .municipio-kw-tooltip .leaflet-tooltip-content {
-          margin: 0;
-        }
-
         .municipio-kw-tooltip {
+          position: absolute;
+          z-index: 20;
+          pointer-events: none;
+          transform: translate(-50%, calc(-100% - 14px));
           border: 1px solid rgba(251, 191, 36, 0.35);
           border-radius: 12px;
           background: rgba(2, 6, 23, 0.94);

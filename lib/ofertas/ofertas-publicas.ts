@@ -1,10 +1,30 @@
 import type { Oferta, OfertaSimplificada } from "@/types/ofertas";
+import { extraerConfigKit, type PotenciasCatalogo } from "./configurador";
+import { construirInstalacion, type MaterialCatalogo } from "./instalacion";
 
 // Mapeo de los kits publicados, compartido por el render en servidor y la
 // recarga desde el navegador para que ambos produzcan exactamente lo mismo.
 
 export const OFERTAS_PUBLICAS_QUERY =
   "tipo_oferta=generica&estado=aprobada_para_enviar";
+
+/**
+ * Id con el que el backend sirve el detalle público de un kit.
+ *
+ * Desde que se cerraron los datos públicos (backend 57b51992) el detalle solo
+ * se entrega por el id de Mongo, pero las URLs de la web usan el número de
+ * oferta (OF-20260902-002), que es el que se comparte. Si llega un número, se
+ * busca su id en la lista pública de kits.
+ */
+export function idDeDetalle(
+  ofertaId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  listaPublica: any[] | null | undefined,
+): string | null {
+  if (/^[0-9a-f]{24}$/i.test(ofertaId)) return ofertaId;
+  const kit = listaPublica?.find((o) => o?.numero_oferta === ofertaId);
+  return kit?.id ?? kit?._id ?? null;
+}
 
 const PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
@@ -13,6 +33,7 @@ interface ItemBackend {
   descripcion?: string;
   foto?: string | null;
   cantidad?: number | null;
+  material_codigo?: string | null;
 }
 
 // Suma la potencia (kW) de todos los inversores de la oferta, multiplicada por su
@@ -84,9 +105,27 @@ export function formatearPrecio(valor: number): string {
   return `${signo}${agrupado}${decimalesUtiles ? `,${decimalesUtiles}` : ""}`;
 }
 
+/**
+ * Términos de cara al cliente final. El backend pide el tipo de negocio
+ * (BTB o BTC) y sin él responde 422, así que las garantías no salían.
+ */
+export const RUTA_TERMINOS_PUBLICOS = "/api/terminos-condiciones/activo?tipo_negocio=BTC";
+
+/** La garantía de la respuesta de términos: su campo propio, o la sección del texto. */
+export function garantiaDeTerminos(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  respuesta: any,
+): string | null {
+  const datos = respuesta?.success ? respuesta.data : null;
+  const propia = typeof datos?.garantia === "string" ? datos.garantia.trim() : "";
+  if (propia) return propia.replace(/\s*\n\s*/g, " ");
+  return typeof datos?.texto === "string" ? extraerSeccionGarantia(datos.texto) : null;
+}
+
 export function extraerSeccionGarantia(texto: string): string | null {
   const normalized = texto.replace(/\r\n/g, "\n").trim();
-  const headerMatch = /(?:^|\n)\s*GARANT[ÍI]A\s*(?:\n+|:\s*)/i.exec(normalized);
+  // El título puede venir numerado: "4. GARANTÍA".
+  const headerMatch = /(?:^|\n)\s*(?:\d+[.)]\s*)?GARANT[ÍI]A\s*(?:\n+|:\s*)/i.exec(normalized);
   if (!headerMatch) return null;
   const remaining = normalized.slice(headerMatch.index + headerMatch[0].length);
   const sectionLines: string[] = [];
@@ -103,10 +142,70 @@ export function extraerSeccionGarantia(texto: string): string | null {
   return text.length > 0 ? text : null;
 }
 
+/** Categorías del catálogo de las que sale la potencia de cada kit. */
+export const CATEGORIAS_POTENCIA = ["INVERSORES", "BATERÍAS", "PANELES"];
+
+export const rutaCatalogoLite = (categoria: string) =>
+  `/api/productos/lite?categoria=${encodeURIComponent(categoria)}`;
+
+/** codigo → potenciaKW, a partir de las respuestas de /api/productos/lite. */
+export function potenciasDeCatalogo(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  respuestas: any[],
+): PotenciasCatalogo {
+  const potencias: PotenciasCatalogo = new Map();
+  for (const respuesta of respuestas) {
+    if (!respuesta?.success || !Array.isArray(respuesta.data)) continue;
+    for (const grupo of respuesta.data) {
+      for (const m of grupo.materiales ?? []) {
+        const kw = parseFloat(m?.potenciaKW);
+        if (m?.codigo && Number.isFinite(kw) && kw > 0) {
+          potencias.set(String(m.codigo), kw);
+        }
+      }
+    }
+  }
+  return potencias;
+}
+
+/** Desde el navegador: pide el catálogo; si falla, se lee de las descripciones. */
+export async function cargarPotencias(baseUrl: string): Promise<PotenciasCatalogo> {
+  const respuestas = await Promise.all(
+    CATEGORIAS_POTENCIA.map((c) =>
+      fetch(`${baseUrl}${rutaCatalogoLite(c)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    ),
+  );
+  return potenciasDeCatalogo(respuestas);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapOfertaSimplificada(o: any): OfertaSimplificada {
+  return mapOferta(o);
+}
+
+/**
+ * Los kits publicados, con su configuración leída de la potencia del
+ * catálogo. Aparte de `mapOfertaSimplificada` porque esa se usa directamente
+ * en `.map(...)`, y un segundo parámetro recibiría el índice.
+ */
+export function mapOfertasPublicas(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  lista: any[],
+  potencias?: PotenciasCatalogo,
+): OfertaSimplificada[] {
+  return lista.map((o) => mapOferta(o, potencias));
+}
+
+function mapOferta(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  o: any,
+  potencias?: PotenciasCatalogo,
+): OfertaSimplificada {
   return {
     id: o.numero_oferta || o.id || o._id || null,
+    idInterno: o.id || o._id || null,
     descripcion: o.nombre_completo || o.nombre_oferta || "Oferta sin nombre",
     descripcion_detallada: o.nombre_completo || null,
     marca: extraerMarca(o.items),
@@ -125,13 +224,33 @@ export function mapOfertaSimplificada(o: any): OfertaSimplificada {
     pdf: null,
     is_active:
       o.tipo_oferta === "generica" && o.estado === "aprobada_para_enviar",
+    categorias: extraerCategorias(o.items),
+    config: extraerConfigKit(o.items, o.nombre_completo, potencias),
   };
+}
+
+// Sin tildes: el inventario escribe "BATERÍAS" y a veces "BATERIAS".
+function extraerCategorias(items?: ItemBackend[] | null): string[] {
+  const categorias = new Set<string>();
+  for (const item of items ?? []) {
+    if (!item.categoria) continue;
+    categorias.add(
+      item.categoria
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toUpperCase()
+        .trim(),
+    );
+  }
+  return Array.from(categorias);
 }
 
 export function mapOfertaDetalle(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   o: any,
   garantiaTexto: string | null,
+  /** Fotos y nombres por código de material; sin él se dibuja sin fotos. */
+  catalogo?: Map<string, MaterialCatalogo>,
 ): Oferta {
   const materiales: ItemBackend[] = o.materiales || o.items || [];
   return {
@@ -156,5 +275,9 @@ export function mapOfertaDetalle(
     })),
     is_active:
       o.tipo_oferta === "generica" && o.estado === "aprobada_para_enviar",
+    instalacion: construirInstalacion(
+      materiales.map((item) => ({ ...item, foto: normalizarUrlImagen(item.foto) })),
+      catalogo,
+    ),
   };
 }
