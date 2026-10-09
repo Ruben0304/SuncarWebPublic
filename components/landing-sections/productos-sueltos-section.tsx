@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
+import Revelar from "./revelar"
 import { ZONAS, type ZonaId } from "@/components/tienda/zonas"
 
 // Cada tarjeta abre directamente su catálogo en /productos (el hash elige la zona).
@@ -16,7 +17,7 @@ const categorias = destacados.map((d) => ({ ...d, ...ZONAS.find((z) => z.id === 
 
 export default function ProductosSueltosSection() {
   return (
-    <section className="py-12 sm:py-16 lg:py-24 bg-[#F2F2EF]">
+    <section className="pt-4 pb-12 sm:pt-6 sm:pb-16 lg:pt-8 lg:pb-24 bg-[#F2F2EF]">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="mb-10 flex flex-col gap-6 lg:mb-14 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
@@ -24,7 +25,7 @@ export default function ProductosSueltosSection() {
               Tienda online
             </span>
             <h2 className="text-3xl font-bold leading-tight text-[#012928] sm:text-4xl lg:text-5xl">
-              Productos sueltos
+              Productos en venta
             </h2>
             <p className="text-base leading-relaxed text-[#012928]/70 lg:text-lg">
               ¿Ya tienes tu sistema o quieres ampliarlo? Compra solo la pieza que te hace falta, con
@@ -43,11 +44,15 @@ export default function ProductosSueltosSection() {
 
         <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
           {categorias.map((categoria, i) => (
-            <Link
+            // En móvil (2 columnas) la quinta tarjeta ocupa la fila entera en vez de quedar sola.
+            <Revelar
               key={categoria.id}
+              retraso={(i % 5) * 90}
+              className={i === categorias.length - 1 && categorias.length % 2 ? "col-span-2 lg:col-span-1" : ""}
+            >
+            <Link
               href={`/productos#${categoria.id}`}
-              // En móvil (2 columnas) la quinta tarjeta ocupa la fila entera en vez de quedar sola.
-              className={`${i === categorias.length - 1 && categorias.length % 2 ? "col-span-2 lg:col-span-1" : ""} group flex flex-col overflow-hidden rounded-3xl border border-[#012928]/10 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(1,41,40,0.45)]`}
+              className={`group flex h-full flex-col overflow-hidden rounded-3xl border border-[#012928]/10 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(1,41,40,0.45)]`}
             >
               <div className="relative flex h-40 items-center justify-center bg-[radial-gradient(circle_at_50%_60%,#ffffff_0%,#ECEDE8_75%)] sm:h-52">
                 <Image
@@ -67,6 +72,7 @@ export default function ProductosSueltosSection() {
                 <p className="text-xs leading-snug text-[#012928]/60 sm:text-sm">{categoria.frase}</p>
               </div>
             </Link>
+            </Revelar>
           ))}
         </div>
       </div>

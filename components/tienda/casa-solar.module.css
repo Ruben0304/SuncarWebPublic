@@ -128,16 +128,6 @@
   }
 }
 
-/* La nube de los kits flota despacio */
-.flotar {
-  animation: flotar 4s ease-in-out infinite alternate;
-}
-
-@keyframes flotar {
-  to {
-    transform: translateY(-6px);
-  }
-}
 
 /* Solo opacidad: el <g> ya lleva su posición en el atributo transform */
 .aparecer {
@@ -213,7 +203,6 @@
 @media (prefers-reduced-motion: reduce) {
   .flujo,
   .aspas,
-  .flotar,
   .viajar,
   .brotar,
   .flecha,

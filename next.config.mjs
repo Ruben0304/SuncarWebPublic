@@ -6,6 +6,9 @@ const nextConfig = {
   poweredByHeader: false, // Remove X-Powered-By header
   reactStrictMode: true, // Enable React strict mode
 
+  // Solo en desarrollo: deja probar desde el móvil por la red local (si no, Next bloquea sus recursos)
+  allowedDevOrigins: ["192.168.*.*"],
+
   typescript: {
     ignoreBuildErrors: true,
   },

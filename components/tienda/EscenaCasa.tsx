@@ -1,7 +1,6 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   BatteryCharging,
   Boxes,
@@ -32,11 +31,14 @@ export const ICONOS: Record<ZonaId, LucideIcon> = {
 // Por debajo (px por unidad del dibujo) los nombres completos no caben y el
 // botón usa el corto.
 const ESCALA_NOMBRE_COMPLETO = 0.7;
-// Con la casa más pequeña que esto (móvil en horizontal) el letrero tapa la nube.
-const ESCALA_CON_LETRERO = 0.6;
-// El letrero se dibuja a 160 × 64 px y se amplía a este factor.
+// Con la casa más pequeña que esto el letrero tapa demasiado dibujo.
+const ESCALA_CON_LETRERO = 0.4;
+// El letrero se dibuja a 160 × 64 px.
 const ANCHO_LETRERO = 160;
-const TAMANO_LETRERO = 1.4;
+// En el diseño vertical el letrero se encoge con la casa hasta este mínimo
+// en pantallas pequeñas.
+const ESCALA_REFERENCIA_VERTICAL = 0.7;
+const AJUSTE_MINIMO_VERTICAL = 0.75;
 // En la intro el letrero ocupa este ancho (px), sin pasar del 80 % de la pantalla.
 const ANCHO_LETRERO_INTRO = 520;
 // Cuándo entra la casa: tras el viaje del letrero y su flecha (ver el CSS).
@@ -57,7 +59,7 @@ export default function EscenaCasa({ onElegir }: EscenaCasaProps) {
       <Escena
         diseno={DISENO_MOVIL}
         prefijo="vertical"
-        className={`${s.soloVertical} absolute inset-x-3 bottom-[2svh] top-20`}
+        className={`${s.soloVertical} absolute inset-x-1 bottom-[2svh] top-20`}
         onElegir={onElegir}
       />
       <Escena
@@ -78,18 +80,6 @@ const alPulsar = (accion: () => void) => (e: React.KeyboardEvent) => {
   }
 };
 
-/** Nube de 160 × 88 px centrada en el origen; el texto va en su base. */
-function FormaNube() {
-  return (
-    <>
-      <rect x="-80" y="-14" width="160" height="44" rx="22" />
-      <circle cx="-38" cy="-14" r="26" />
-      <circle cx="10" cy="-24" r="34" />
-      <circle cx="50" cy="-8" r="22" />
-    </>
-  );
-}
-
 interface EscenaProps {
   diseno: Diseno;
   prefijo: string;
@@ -105,10 +95,13 @@ interface Medida {
   dy: number;
   /** Tamaño del letrero en la intro respecto al final. */
   s: number;
+  /** Tamaño final del letrero (px por unidad base). */
+  letrero: number;
+  /** Si la casa se ve lo bastante grande para dibujar el letrero. */
+  conLetrero: boolean;
 }
 
 function Escena({ diseno, prefijo, className, onElegir }: EscenaProps) {
-  const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   // null mientras no se ha medido o si esta escena está oculta.
   const [medida, setMedida] = useState<Medida | null>(null);
@@ -139,15 +132,25 @@ function Escena({ diseno, prefijo, className, onElegir }: EscenaProps) {
         caja.bottom -
         diseno.caja.h * k +
         (diseno.letrero.y - diseno.caja.y) * k;
+      const ajuste = vertical
+        ? Math.min(
+            1,
+            Math.max(AJUSTE_MINIMO_VERTICAL, k / ESCALA_REFERENCIA_VERTICAL),
+          )
+        : 1;
+      const letrero = diseno.escalas.letrero * ajuste;
+      const conLetrero = k >= ESCALA_CON_LETRERO;
       const pantalla = (el.parentElement ?? el).getBoundingClientRect();
       const anchoIntro = Math.min(pantalla.width * 0.8, ANCHO_LETRERO_INTRO);
       setMedida({
         k,
-        dx: (pantalla.left + pantalla.width / 2 - x) / TAMANO_LETRERO,
-        dy: (pantalla.top + pantalla.height / 2 - y) / TAMANO_LETRERO,
-        s: Math.max(1, anchoIntro / (ANCHO_LETRERO * TAMANO_LETRERO)),
+        dx: (pantalla.left + pantalla.width / 2 - x) / letrero,
+        dy: (pantalla.top + pantalla.height / 2 - y) / letrero,
+        s: Math.max(1, anchoIntro / (ANCHO_LETRERO * letrero)),
+        letrero,
+        conLetrero,
       });
-      setConIntro((antes) => antes ?? k >= ESCALA_CON_LETRERO);
+      setConIntro((antes) => antes ?? conLetrero);
     };
     medir();
     const ro = new ResizeObserver(() => medir());
@@ -158,28 +161,41 @@ function Escena({ diseno, prefijo, className, onElegir }: EscenaProps) {
   const k = medida?.k ?? null;
   const u = (px: number) => px / (k ?? 1);
   const completo = k !== null && k >= ESCALA_NOMBRE_COMPLETO;
+  // En el diseño vertical (móvil de pie) los nombres van siempre completos,
+  // en dos líneas si hace falta.
+  const vertical = diseno === DISENO_MOVIL;
 
-  /** Pastilla blanca con el nombre, centrada bajo un botón (en px). */
-  const nombreBajo = (nombre: string, y: number) => {
-    const ancho = 16 + nombre.length * 6.6;
+  /** Pastilla blanca con el nombre, centrada bajo un botón (en px). Con
+   * `partir`, los nombres de varias palabras van en dos líneas. */
+  const nombreBajo = (nombre: string, y: number, partir = false) => {
+    const lineas = partir ? nombre.split(" ") : [nombre];
+    const ancho = 16 + Math.max(...lineas.map((l) => l.length)) * 6.6;
+    const alto = 6 + lineas.length * 14;
     return (
       <g transform={`translate(${-ancho / 2} ${y})`} pointerEvents="none">
-        <rect width={ancho} height="20" rx="10" fill="#fff" fillOpacity=".92" />
-        <text
-          x={ancho / 2}
-          y="14"
-          textAnchor="middle"
-          fontSize="11.5"
-          fontWeight={700}
-          fill="#012928"
-        >
-          {nombre}
-        </text>
+        <rect
+          width={ancho}
+          height={alto}
+          rx={Math.min(10, alto / 2)}
+          fill="#fff"
+          fillOpacity=".92"
+        />
+        {lineas.map((linea, i) => (
+          <text
+            key={i}
+            x={ancho / 2}
+            y={14 + i * 14}
+            textAnchor="middle"
+            fontSize="11.5"
+            fontWeight={700}
+            fill="#012928"
+          >
+            {linea}
+          </text>
+        ))}
       </g>
     );
   };
-
-  const irAKits = () => router.push("/ofertas");
 
   return (
     <div
@@ -201,61 +217,11 @@ function Escena({ diseno, prefijo, className, onElegir }: EscenaProps) {
         {k !== null && (
           // Todo lo de aquí dentro se dibuja en px de pantalla: escala 1/k.
           <>
-            {/* Nube: lleva a los kits con instalación */}
-            <g
-              transform={`translate(${diseno.nube.x} ${diseno.nube.y}) scale(${u(1)})`}
-            >
-              <g
-                role="link"
-                tabIndex={0}
-                aria-label="Ver kits completos con instalación"
-                className={`${s.pin} ${s.aparecer}`}
-                onClick={irAKits}
-                onKeyDown={alPulsar(irAKits)}
-              >
-                <g className={s.flotar}>
-                  <g className={s.boton}>
-                    <g transform="scale(1.25)">
-                      <g
-                        fill="#012928"
-                        opacity=".12"
-                        transform="translate(3 6)"
-                      >
-                        <FormaNube />
-                      </g>
-                      <g fill="#fff">
-                        <FormaNube />
-                      </g>
-                      <text
-                        y="6"
-                        textAnchor="middle"
-                        fontSize="13.5"
-                        fontWeight={700}
-                        fill="#012928"
-                      >
-                        Ver kits completos
-                      </text>
-                      <text
-                        y="22"
-                        textAnchor="middle"
-                        fontSize="10.5"
-                        fontWeight={600}
-                        fill="#012928"
-                        fillOpacity=".55"
-                      >
-                        con instalación →
-                      </text>
-                    </g>
-                  </g>
-                </g>
-              </g>
-            </g>
-
             {/* Letrero: sale solo y grande en el centro, viaja a su sitio
                 y señala la casa */}
-            {medida && k >= ESCALA_CON_LETRERO && (
+            {medida && medida.conLetrero && (
               <g
-                transform={`translate(${diseno.letrero.x} ${diseno.letrero.y}) scale(${u(TAMANO_LETRERO)})`}
+                transform={`translate(${diseno.letrero.x} ${diseno.letrero.y}) scale(${u(medida.letrero)})`}
                 pointerEvents="none"
               >
                 <g
@@ -336,7 +302,7 @@ function Escena({ diseno, prefijo, className, onElegir }: EscenaProps) {
               >
                 <circle cy="-22" r="30" fill="transparent" />
                 <g className={s.boton}>
-                  <g transform="scale(0.8)">
+                  <g transform={`scale(${diseno.escalas.carrito})`}>
                     <ellipse rx="34" ry="3.5" fill="#2B2218" opacity=".25" />
                     {/* Panel solar asomando del carrito */}
                     <polygon
@@ -372,7 +338,7 @@ function Escena({ diseno, prefijo, className, onElegir }: EscenaProps) {
                     <circle cx="16" cy="-4" r="4" fill="#2A2E33" />
                   </g>
                   {enCarrito > 0 && (
-                    <g transform="translate(18 -40)">
+                    <g transform={`translate(${22.5 * diseno.escalas.carrito} ${-50 * diseno.escalas.carrito})`}>
                       <circle
                         r="10"
                         fill="#AFEB17"
@@ -437,7 +403,11 @@ function Escena({ diseno, prefijo, className, onElegir }: EscenaProps) {
                         strokeWidth={2.2}
                       />
                     </g>
-                    {nombreBajo(completo ? zona.nombre : zona.corto, 23)}
+                    {nombreBajo(
+                      completo || vertical ? zona.nombre : zona.corto,
+                      23,
+                      vertical,
+                    )}
                   </g>
                 </g>
               );

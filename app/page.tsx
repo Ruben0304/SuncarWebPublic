@@ -74,7 +74,7 @@ export default function HomePage() {
 
       {isChristmas && <ChristmasInstagramSection />}
 
-      <LazySection minHeight={420} rootMargin="220px">
+      <LazySection minHeight={560} rootMargin="220px">
         <TrustedPartnersSection />
       </LazySection>
 

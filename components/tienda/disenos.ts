@@ -51,12 +51,13 @@ export interface Escenario {
   cablesAc: string[];
 }
 
-/** La casa de la tienda: con sus botones, la nube, el letrero y el carrito. */
+/** La casa de la tienda: con sus botones, el letrero y el carrito. */
 export interface Diseno extends Escenario {
   /** Un botón por zona; los de equipos van sobre el centro del equipo. */
   pines: { zona: ZonaId; x: number; y: number }[];
-  nube: { x: number; y: number };
   letrero: { x: number; y: number };
+  /** Tamaño en pantalla del letrero y del carrito respecto a su dibujo base. */
+  escalas: { letrero: number; carrito: number };
   carrito: { x: number; y: number };
 }
 
@@ -105,13 +106,15 @@ export const DISENO_ESCRITORIO: Diseno = {
     { zona: "baterias", x: 596, y: 580 },
     { zona: "inversor", x: 790, y: 500 },
   ],
-  nube: { x: 620, y: 168 },
   letrero: { x: 900, y: 225 },
+  escalas: { letrero: 1.4, carrito: 0.8 },
   carrito: { x: 950, y: 630 },
 };
 
 export const DISENO_MOVIL: Diseno = {
-  caja: { x: 30, y: -160, w: 590, h: 1240 },
+  // Ceñida a la casa: de ancho justo y con el cielo mínimo para el
+  // letrero, para que en un móvil vertical la casa salga lo más grande posible.
+  caja: { x: 50, y: 60, w: 550, h: 1000 },
   suelo: 1000,
   bloques: [
     {
@@ -150,7 +153,8 @@ export const DISENO_MOVIL: Diseno = {
     { zona: "baterias", x: 170, y: 954 },
     { zona: "inversor", x: 390, y: 890 },
   ],
-  nube: { x: 200, y: -20 },
-  letrero: { x: 440, y: 180 },
-  carrito: { x: 560, y: 1004 },
+  letrero: { x: 360, y: 140 },
+  escalas: { letrero: 1, carrito: 0.5 },
+  // En la acera, fuera de la casa (su pared derecha está en x = 484).
+  carrito: { x: 558, y: 1004 },
 };

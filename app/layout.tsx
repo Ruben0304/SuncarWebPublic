@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import "../styles/nprogress.css";
 import ClientWrapper from "@/components/ClientWrapper";
 import ProgressBarSuspense from "@/components/ProgressBarSuspense";
+import InitialLoader from "@/components/InitialLoader";
 import { obtenerContacto } from "@/lib/contacto";
 import { GOOGLE_MAPS_API_KEY } from "@/lib/google-maps/server";
 import { GoogleMapsProvider } from "@/components/maps/GoogleMapsProvider";
@@ -199,6 +200,7 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Suncar" />
       </head>
       <body className="overflow-x-hidden">
+        <InitialLoader />
         <ProgressBarSuspense />
         <GoogleMapsProvider apiKey={GOOGLE_MAPS_API_KEY}>
           <ClientWrapper>{children}</ClientWrapper>

@@ -5,13 +5,15 @@
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import "@google/model-viewer"
+import { POSTER_CASA } from "@/lib/poster-casa"
+import RayosSolares from "@/components/rayos-solares"
 
-const POSTER = "https://s3.suncarsrl.com/web/3d_placeholder_navidad.png"
+const POSTER = POSTER_CASA
 
 // model-viewer no usa next/image: se le pasa la URL del optimizador para que el
 // póster llegue en AVIF/WebP y al ancho de la pantalla, no el PNG original.
 const posterOptimizado = () => {
-    const ancho = typeof window !== "undefined" && window.innerWidth < 768 ? 640 : 1080
+    const ancho = typeof window !== "undefined" && window.innerWidth < 768 ? 640 : 1200
     return `/_next/image?url=${encodeURIComponent(POSTER)}&w=${ancho}&q=75`
 }
 
@@ -19,9 +21,7 @@ export default function SolarHouseModel() {
     const modelViewerRef = useRef<any>(null)
     const containerRef = useRef<HTMLDivElement>(null)
     const [isFullscreen, setIsFullscreen] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
     const [webGLError, setWebGLError] = useState(false)
-
     useEffect(() => {
         // Check if WebGL is available
         const canvas = document.createElement('canvas')
@@ -29,7 +29,6 @@ export default function SolarHouseModel() {
 
         if (!gl) {
             setWebGLError(true)
-            setIsLoading(false)
             return
         }
 
@@ -37,14 +36,9 @@ export default function SolarHouseModel() {
         const modelViewer = modelViewerRef.current
 
         if (modelViewer) {
-            modelViewer.addEventListener('load', () => {
-                setIsLoading(false)
-            })
-
             modelViewer.addEventListener('error', (error: any) => {
                 console.error('Error loading 3D model:', error)
                 setWebGLError(true)
-                setIsLoading(false)
             })
         }
 
@@ -76,7 +70,7 @@ export default function SolarHouseModel() {
     // Si WebGL no está disponible, mostrar imagen estática
     if (webGLError) {
         return (
-            <div className="relative w-full h-full min-h-[500px] md:min-h-[600px] lg:min-h-[700px] pt-12">
+            <div className="relative w-full h-full min-h-[460px] md:min-h-[520px] lg:min-h-[680px] pt-12">
                 <div className="absolute inset-0 flex items-center justify-center">
                     <Image
                         src={POSTER}
@@ -96,10 +90,12 @@ export default function SolarHouseModel() {
     }
 
     return (
-        <div ref={containerRef} className="relative w-full h-full min-h-[500px] md:min-h-[600px] lg:min-h-[700px] pt-12 group">
+        <div ref={containerRef} className={`relative w-full pt-12 group ${isFullscreen ? "" : "lg:w-[135%] lg:-ml-[17.5%]"}`}>
             <model-viewer
                 ref={modelViewerRef}
-                src="https://s3.suncarsrl.com/3dmodels/solar_house.glb"
+                // Versión suave (~310 KB). Hay otras dos sin cargar: solar_house_ligero.glb (~240 KB, simplificada de más: el sol y
+                // las curvas se ven poligonales) y solar_house_calidad.glb (~490 KB, la de más calidad, sin tele ni ajustes).
+                src="/3dmodels/solar_house.glb"
                 poster={posterOptimizado()}
                 alt="Modelo 3D de casa con paneles solares - Suncar"
                 camera-controls
@@ -108,15 +104,16 @@ export default function SolarHouseModel() {
                 touch-action="pan-y"
                 shadow-intensity="0"
                 exposure="1"
-                camera-orbit="0deg 75deg 72%"
+                camera-orbit="0deg 88deg 85%"
+                // Centro del modelo (25, 171, 40) con el objetivo 35 más abajo: la casa sube un poco dentro del visor.
+                camera-target="25m 136m 40m"
                 field-of-view="25deg"
-                max-camera-orbit="auto 90deg auto"
-                min-camera-orbit="auto 50deg auto"
+                max-camera-orbit="auto 90deg 85%"
+                min-camera-orbit="auto 50deg 85%"
                 interpolation-decay="200"
                 style={{
                     width: '100%',
-                    height: '100%',
-                    minHeight: '500px',
+                    overflow: 'visible',
                     backgroundColor: 'transparent',
                     '--poster-color': 'transparent',
                     '--progress-bar-color': 'transparent'
@@ -125,8 +122,14 @@ export default function SolarHouseModel() {
                 reveal="auto"
                 ar
                 ar-modes="webxr scene-viewer quick-look"
-                className="w-full h-full bg-transparent"
+                className={`w-full bg-transparent ${isFullscreen ? "h-screen" : "h-[480px] md:h-[600px] lg:h-[760px]"}`}
             >
+
+                {/* Puntos anclados al modelo (en sus unidades): el sol y el centro de cada grupo de paneles.
+                    RayosSolares dibuja entre ellos. */}
+                <div slot="hotspot-sol" data-position="120.5m 319.8m 58.8m" data-normal="0m 0m 1m" className="pointer-events-none h-0 w-0" />
+                <div slot="hotspot-paneles-1" data-position="-56m 246.6m 75.7m" data-normal="0m 1m 0m" className="pointer-events-none h-0 w-0" />
+                <div slot="hotspot-paneles-2" data-position="61.8m 162m 74.2m" data-normal="0m 1m 0m" className="pointer-events-none h-0 w-0" />
 
                 {/* AR button */}
                 <button
@@ -168,25 +171,21 @@ export default function SolarHouseModel() {
                 </div>
             </model-viewer>
 
-            {/* Subtle Loading Indicator */}
-            <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-500 ${isLoading ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="bg-white/80 backdrop-blur-md px-6 py-3 rounded-full shadow-lg flex items-center gap-3 border border-white/50">
-                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-sm font-medium text-primary/80">Cargando modelo interactivo 3D...</span>
-                </div>
-            </div>
+            <RayosSolares contenedor={containerRef} />
 
             {/* Floating particles around the model */}
+            <div className="hidden md:contents">
             <div className="floating-particle particle-1" style={{ top: '10%', left: '20%' }}></div>
             <div className="floating-particle particle-2" style={{ top: '30%', right: '15%' }}></div>
             <div className="floating-particle particle-3" style={{ bottom: '20%', left: '10%' }}></div>
             <div className="floating-particle particle-4" style={{ bottom: '40%', right: '20%' }}></div>
             <div className="floating-particle particle-5" style={{ top: '60%', left: '5%' }}></div>
             <div className="floating-particle particle-6" style={{ top: '20%', right: '5%' }}></div>
+            </div>
 
             {/* Decorative elements */}
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary-gradient rounded-full opacity-20 blur-xl animate-pulse pointer-events-none"></div>
-            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse animation-delay-500 pointer-events-none"></div>
+            <div className="hidden md:block absolute -top-4 -right-4 w-24 h-24 bg-secondary-gradient rounded-full opacity-20 blur-xl animate-pulse pointer-events-none"></div>
+            <div className="hidden md:block absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse animation-delay-500 pointer-events-none"></div>
         </div>
     )
 }

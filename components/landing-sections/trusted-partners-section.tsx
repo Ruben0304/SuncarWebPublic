@@ -2,17 +2,25 @@
 
 import Image from "next/image"
 import React, { useEffect, useRef, useState } from "react"
+import { ArrowRight } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 // Partner Item Component for Carousel (Desktop)
 const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
-  <div className="flex items-center justify-center flex-shrink-0 w-[140px] lg:w-[170px]">
-    <div className="relative w-full h-20 lg:h-24 group">
+  <div className="flex items-center justify-center flex-shrink-0 w-[160px] lg:w-[200px]">
+    <div className="relative w-full h-28 lg:h-36 group">
       <div className="absolute inset-0 bg-gradient-to-br from-[#012928]/5 to-[#AFEB17]/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
       <Image
         src={src}
         alt={alt}
         fill
-        sizes="(max-width: 1024px) 140px, 170px"
+        sizes="(max-width: 1024px) 160px, 200px"
         className="relative w-full h-full object-contain transition-all duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100 filter grayscale-[20%] group-hover:grayscale-0"
       />
     </div>
@@ -21,13 +29,13 @@ const PartnerItem = ({ src, alt }: { src: string; alt: string }) => (
 
 // Partner Item Component for Grid (Mobile) - rotating fade
 const PartnerItemGrid = ({ src, alt, visible }: { src: string; alt: string; visible: boolean }) => (
-  <div className="flex items-center justify-center p-1.5">
-    <div className="relative w-full h-14">
+  <div className="flex items-center justify-center p-2">
+    <div className="relative w-full h-20">
       <Image
         src={src}
         alt={alt}
         fill
-        sizes="25vw"
+        sizes="34vw"
         className="w-full h-full object-contain filter grayscale-[20%]"
         style={{
           opacity: visible ? 0.85 : 0,
@@ -38,7 +46,7 @@ const PartnerItemGrid = ({ src, alt, visible }: { src: string; alt: string; visi
   </div>
 )
 
-const GRID_SIZE = 12
+const GRID_SIZE = 9
 
 // Hook que maneja la rotación de logos en el grid móvil
 function useRotatingGrid(items: { src: string; alt: string }[]) {
@@ -116,6 +124,7 @@ export default function TrustedPartnersSection() {
   const scrollRef2 = useRef<HTMLDivElement>(null)
   const shouldAnimateRef = useRef(true)
   const { slots, fadingSlot } = useRotatingGrid(partners)
+  const [verTodos, setVerTodos] = useState(false)
 
   // Auto-scroll para el carrusel de partners con dos filas en direcciones opuestas
   useEffect(() => {
@@ -275,7 +284,7 @@ export default function TrustedPartnersSection() {
 
         {/* Mobile Grid - Visible only on mobile, logos rotate with fade */}
         <div className="block md:hidden max-w-4xl mx-auto">
-          <div className="grid grid-cols-4 gap-1 px-2">
+          <div className="grid grid-cols-3 gap-2 px-2">
             {slots.map((partnerIndex, slotIndex) => {
               const partner = partners[partnerIndex]
               return (
@@ -291,7 +300,8 @@ export default function TrustedPartnersSection() {
         </div>
 
         {/* Desktop Carousel - Two Rows - Hidden on mobile */}
-        <div className="hidden md:block relative max-w-7xl mx-auto space-y-1">
+        {/* A sangre: ocupa todo el ancho de la ventana, no solo el del contenedor de la sección */}
+        <div className="hidden md:block relative left-1/2 w-screen -translate-x-1/2 space-y-2">
           {/* Gradient fade left */}
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#F2F2EF] via-[#F2F2EF]/80 to-transparent z-10 pointer-events-none"></div>
 
@@ -309,7 +319,7 @@ export default function TrustedPartnersSection() {
               msOverflowStyle: "none"
             }}
           >
-            <div className="flex gap-3 lg:gap-4 py-2" style={{ width: "max-content" }}>
+            <div className="flex gap-1 lg:gap-2 py-2" style={{ width: "max-content" }}>
               {/* First set */}
               {partnersRow1.map((partner, index) => (
                 <PartnerItem key={`row1-set1-${index}`} src={partner.src} alt={partner.alt} />
@@ -332,7 +342,7 @@ export default function TrustedPartnersSection() {
               msOverflowStyle: "none"
             }}
           >
-            <div className="flex gap-3 lg:gap-4 py-2" style={{ width: "max-content" }}>
+            <div className="flex gap-1 lg:gap-2 py-2" style={{ width: "max-content" }}>
               {/* First set */}
               {partnersRow2.map((partner, index) => (
                 <PartnerItem key={`row2-set1-${index}`} src={partner.src} alt={partner.alt} />
@@ -343,6 +353,18 @@ export default function TrustedPartnersSection() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Enlace a la lista completa (en móvil solo se ven 9 a la vez) */}
+        <div className="mt-6 lg:mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVerTodos(true)}
+            className="inline-flex items-center gap-1.5 text-sm lg:text-base font-semibold text-[#012928] underline underline-offset-4 decoration-2 decoration-[#AFEB17] hover:decoration-[#012928] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#012928]/40 rounded-sm"
+          >
+            Ver más
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
         </div>
 
         {/* Bottom decorative line */}
@@ -356,6 +378,39 @@ export default function TrustedPartnersSection() {
           <div className="h-px w-12 sm:w-20 bg-gradient-to-l from-transparent to-gray-300"></div>
         </div>
       </div>
+
+      {/* Lista completa, fija (sin carrusel) */}
+      <Dialog open={verTodos} onOpenChange={setVerTodos}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-[#F2F2EF]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#012928]">Confían en Nosotros</DialogTitle>
+            <DialogDescription className="text-[#012928]/70">
+              Las empresas que han confiado en nuestra experiencia y tecnología solar
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+            {partners.map((partner) => (
+              <li
+                key={partner.src}
+                className="flex flex-col items-center gap-2 rounded-xl bg-white p-3 shadow-sm ring-1 ring-[#012928]/5"
+              >
+                <div className="relative h-20 w-full">
+                  <Image
+                    src={partner.src}
+                    alt={partner.alt}
+                    fill
+                    sizes="(max-width: 640px) 45vw, 200px"
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-center text-xs font-medium text-[#012928]/80">
+                  {partner.alt.replace(/ - Cliente de Suncar$/, "")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
