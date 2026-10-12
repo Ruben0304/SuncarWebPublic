@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, MapPin, MessageCircle } from "lucide-react";
+import { ChevronDown, ChevronLeft, MapPin, MessageCircle } from "lucide-react";
 import { ICONOS } from "./EscenaCasa";
 import { TarjetaFantasma, TarjetaKit, TarjetaProducto } from "./Tarjetas";
 import { ZONAS, ZONAS_POR_ID, kitsDeZona, productosDeZona, type Zona, type ZonaId } from "./zonas";
@@ -91,7 +91,7 @@ export default function CatalogoZona({
 
   const propios = useMemo(() => productosDeZona(zona, productos), [zona, productos]);
   const suyos = useMemo(() => kitsDeZona(zona, kits), [zona, kits]);
-  const total = propios.length + suyos.length;
+  const total = propios.length || suyos.length;
 
   return (
     <div
@@ -216,26 +216,46 @@ export default function CatalogoZona({
           ) : null}
 
           {suyos.length > 0 && (
-            <div className="mt-8">
-              <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
-                Incluido en estos kits con instalación
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {suyos.map((k, i) => (
-                  <TarjetaKit
-                    key={k.id ?? i}
-                    kit={k}
-                    className={t.entrar}
-                    style={{
-                      animationDelay: `${(Math.min(i, 8) + (propios.length ? 3 : 0)) * 45}ms`,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+            <KitsIncluidos key={zonaId} kits={suyos} hayProductos={propios.length > 0} />
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+/** Los kits cargan muchas imágenes: solo se montan cuando el cliente los pide. */
+function KitsIncluidos({ kits, hayProductos }: { kits: OfertaSimplificada[]; hayProductos: boolean }) {
+  const [visibles, setVisibles] = useState(false);
+
+  if (!visibles) {
+    return (
+      <button
+        type="button"
+        onClick={() => setVisibles(true)}
+        className="mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#012928] ring-1 ring-[#012928]/[0.08] transition-transform active:scale-[0.98]"
+      >
+        Ver kits donde está incluido ({kits.length})
+        <ChevronDown className="h-4 w-4" />
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-8">
+      <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
+        Incluido en estos kits con instalación
+      </h3>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {kits.map((k, i) => (
+          <TarjetaKit
+            key={k.id ?? i}
+            kit={k}
+            className={t.entrar}
+            style={{ animationDelay: `${(Math.min(i, 8) + (hayProductos ? 3 : 0)) * 45}ms` }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
