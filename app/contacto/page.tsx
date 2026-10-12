@@ -324,8 +324,8 @@ ${formData.message}
           
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             <StaticLocationMap 
-              lat={23.123815}
-              lng={-82.424488}
+              lat={23.129769}
+              lng={-82.414698}
               address={contacto.direccion}
               height="500px"
             />

@@ -68,7 +68,7 @@ export default function QuickContactSection() {
 
                         {/* Location Card */}
                         <a
-                            href="https://www.google.com/maps?q=23.123815,-82.424488"
+                            href="https://www.google.com/maps?q=23.129769,-82.414698"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group bg-gradient-to-br from-[#012928]/5 to-[#F2C300]/10 rounded-2xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-[#012928]/10"
