@@ -4,12 +4,10 @@ import { useState } from "react";
 import { ArticuloTienda } from "@/types/tienda";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   X,
   Package,
   Zap,
-  Shield,
   Info,
   ChevronDown,
   ChevronUp,
@@ -212,34 +210,6 @@ export default function ProductDetailModal({
                       <Package className="w-16 h-16 md:w-24 md:h-24 text-gray-300" />
                     </div>
                   )}
-                </div>
-
-                {/* Características destacadas */}
-                <div className="grid grid-cols-3 gap-2 md:gap-3">
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardContent className="p-2 md:p-4 text-center">
-                      <Zap className="w-4 h-4 md:w-6 md:h-6 text-blue-600 mx-auto mb-1 md:mb-2" />
-                      <p className="text-[10px] md:text-xs font-semibold text-blue-900">
-                        Alta Eficiencia
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-green-50 border-green-200">
-                    <CardContent className="p-2 md:p-4 text-center">
-                      <Shield className="w-4 h-4 md:w-6 md:h-6 text-green-600 mx-auto mb-1 md:mb-2" />
-                      <p className="text-[10px] md:text-xs font-semibold text-green-900">
-                        Garantía
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-purple-50 border-purple-200">
-                    <CardContent className="p-2 md:p-4 text-center">
-                      <Package className="w-4 h-4 md:w-6 md:h-6 text-purple-600 mx-auto mb-1 md:mb-2" />
-                      <p className="text-[10px] md:text-xs font-semibold text-purple-900">
-                        Calidad
-                      </p>
-                    </CardContent>
-                  </Card>
                 </div>
               </div>
 
