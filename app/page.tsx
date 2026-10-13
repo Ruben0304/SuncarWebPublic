@@ -18,6 +18,7 @@ import ChristmasInstagramSection from "@/components/landing-sections/christmas-i
 import QuickContactSection from "@/components/landing-sections/quick-contact-section"
 import KitsSection from "@/components/landing-sections/kits-section"
 import ProductosSueltosSection from "@/components/landing-sections/productos-sueltos-section"
+import OficinasSection from "@/components/landing-sections/oficinas-section"
 
 const TrustedPartnersSection = dynamic(() => import("@/components/landing-sections/trusted-partners-section"), {
   ssr: false,
@@ -90,6 +91,8 @@ export default function HomePage() {
       <LazySection minHeight={720} rootMargin="300px">
         <BlackoutSection />
       </LazySection>
+
+      <OficinasSection />
 
       <QuickContactSection />
 
