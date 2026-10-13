@@ -34,6 +34,8 @@ export interface OfertaSimplificada {
   is_active?: boolean;
   /** Categorías de sus materiales, sin tildes y en mayúsculas (PANELES, BATERIAS…). */
   categorias?: string[] | null;
+  /** Códigos de material que lleva el kit: de aquí sale "Se suele comprar junto con". */
+  codigos?: string[] | null;
   /** null si el kit no trae inversor con potencia: no entra en "Armar mi kit". */
   config?: ConfigKit | null;
 }

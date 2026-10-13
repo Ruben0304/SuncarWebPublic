@@ -21,15 +21,23 @@ import {
 import Image from "next/image";
 import { useCart } from "@/hooks/useCart";
 import { useContacto } from "@/hooks/useContacto";
+import { TarjetaProducto } from "@/components/tienda/Tarjetas";
 
 interface ProductDetailModalProps {
   producto: ArticuloTienda;
   onClose: () => void;
+  /** "Se suele comprar junto con": sin ellos (o vacío) el bloque no sale. */
+  recomendados?: ArticuloTienda[];
+  onVerRecomendado?: (producto: ArticuloTienda) => void;
+  onAgregarRecomendado?: (producto: ArticuloTienda) => void;
 }
 
 export default function ProductDetailModal({
   producto,
   onClose,
+  recomendados = [],
+  onVerRecomendado,
+  onAgregarRecomendado,
 }: ProductDetailModalProps) {
   const [showAllSpecs, setShowAllSpecs] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState<string | null>(null);
@@ -465,6 +473,28 @@ export default function ProductDetailModal({
                 )}
               </div>
             </div>
+
+            {recomendados.length > 0 && onVerRecomendado && onAgregarRecomendado && (
+              <div className="mt-6 border-t border-slate-200 pt-5 md:mt-8 md:pt-6">
+                <h4 className="text-base md:text-lg font-bold text-slate-900">
+                  Se suele comprar junto con
+                </h4>
+                <p className="mb-3 text-xs text-slate-500 md:mb-4 md:text-sm">
+                  Va en los mismos kits de instalación que este producto
+                </p>
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                  {recomendados.map((p) => (
+                    <TarjetaProducto
+                      key={p.id}
+                      producto={p}
+                      onAgregar={onAgregarRecomendado}
+                      onVer={onVerRecomendado}
+                      compacta
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

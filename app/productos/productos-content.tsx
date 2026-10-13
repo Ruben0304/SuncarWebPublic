@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, MapPin } from "lucide-react";
 import Navigation from "@/components/navigation";
 import NavigationChristmas from "@/components/navigation-christmas";
@@ -11,6 +11,7 @@ import ShoppingCartComponent from "@/components/ShoppingCart";
 import EscenaCasa from "@/components/tienda/EscenaCasa";
 import CatalogoZona from "@/components/tienda/CatalogoZona";
 import { ZONAS, type ZonaId } from "@/components/tienda/zonas";
+import { compradosJuntos } from "@/components/tienda/comprados-juntos";
 import t from "@/components/tienda/tienda.module.css";
 import { useCart } from "@/hooks/useCart";
 import { useCatalogoWeb } from "@/hooks/useCatalogoWeb";
@@ -127,6 +128,11 @@ export default function ProductosContent({ initialKits }: ProductosContentProps)
     [addItem, nombreProvincia, provincia],
   );
 
+  const recomendados = useMemo(
+    () => (detalle ? compradosJuntos(detalle, productos, kits) : []),
+    [detalle, productos, kits],
+  );
+
   return (
     <div className="min-h-screen bg-[#F2F2EF]">
       {isChristmas ? <NavigationChristmas /> : <Navigation />}
@@ -161,7 +167,15 @@ export default function ProductosContent({ initialKits }: ProductosContentProps)
       {/* Por encima del catálogo a pantalla completa */}
       {detalle && (
         <div className="relative z-[90]">
-          <ProductDetailModal producto={detalle} onClose={() => setDetalle(null)} />
+          {/* key: al saltar a un recomendado, la ficha empieza de cero */}
+          <ProductDetailModal
+            key={detalle.id}
+            producto={detalle}
+            onClose={() => setDetalle(null)}
+            recomendados={recomendados}
+            onVerRecomendado={setDetalle}
+            onAgregarRecomendado={agregar}
+          />
         </div>
       )}
 

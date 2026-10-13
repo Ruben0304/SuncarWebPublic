@@ -225,6 +225,7 @@ function mapOferta(
     is_active:
       o.tipo_oferta === "generica" && o.estado === "aprobada_para_enviar",
     categorias: extraerCategorias(o.items),
+    codigos: extraerCodigos(o.items),
     config: extraerConfigKit(o.items, o.nombre_completo, potencias),
   };
 }
@@ -243,6 +244,15 @@ function extraerCategorias(items?: ItemBackend[] | null): string[] {
     );
   }
   return Array.from(categorias);
+}
+
+function extraerCodigos(items?: ItemBackend[] | null): string[] {
+  const codigos = new Set<string>();
+  for (const item of items ?? []) {
+    const codigo = item.material_codigo?.toString().trim();
+    if (codigo) codigos.add(codigo);
+  }
+  return Array.from(codigos);
 }
 
 export function mapOfertaDetalle(
