@@ -450,7 +450,7 @@ export default function ProductDetailModal({
                   Se suele comprar junto con
                 </h4>
                 <p className="mb-3 text-xs text-slate-500 md:mb-4 md:text-sm">
-                  Va en los mismos kits de instalación que este producto
+                  Lo que otros clientes suelen llevar junto a este producto
                 </p>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                   {recomendados.map((p) => (

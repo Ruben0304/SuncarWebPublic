@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Check, MapPin } from "lucide-react";
 import Navigation from "@/components/navigation";
 import NavigationChristmas from "@/components/navigation-christmas";
@@ -11,10 +11,10 @@ import ShoppingCartComponent from "@/components/ShoppingCart";
 import EscenaCasa from "@/components/tienda/EscenaCasa";
 import CatalogoZona from "@/components/tienda/CatalogoZona";
 import { ZONAS, type ZonaId } from "@/components/tienda/zonas";
-import { compradosJuntos } from "@/components/tienda/comprados-juntos";
 import t from "@/components/tienda/tienda.module.css";
 import { useCart } from "@/hooks/useCart";
 import { useCatalogoWeb } from "@/hooks/useCatalogoWeb";
+import { useCompradosJuntos } from "@/hooks/useCompradosJuntos";
 import { useProvinciaTienda, useProvinciasConOferta } from "@/hooks/useProvinciaTienda";
 import { isChristmasSeason } from "@/lib/christmas-utils";
 import { OFERTAS_PUBLICAS_QUERY, mapOfertaSimplificada } from "@/lib/ofertas/ofertas-publicas";
@@ -128,10 +128,7 @@ export default function ProductosContent({ initialKits }: ProductosContentProps)
     [addItem, nombreProvincia, provincia],
   );
 
-  const recomendados = useMemo(
-    () => (detalle ? compradosJuntos(detalle, productos, kits) : []),
-    [detalle, productos, kits],
-  );
+  const recomendados = useCompradosJuntos(detalle, provinciaEfectiva, productos, kits);
 
   return (
     <div className="min-h-screen bg-[#F2F2EF]">
