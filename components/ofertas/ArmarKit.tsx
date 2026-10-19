@@ -10,6 +10,7 @@ import {
   ChevronDown,
   CirclePlus,
 } from "lucide-react";
+import { ChipVoltaje } from "@/components/ofertas/ChipVoltaje";
 import ElegirConIA from "@/components/ofertas/ElegirConIA";
 import { ModalElementos, ModalGarantias } from "@/components/ofertas/ModalesKit";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
@@ -48,6 +49,7 @@ import {
   normalizar,
   opciones,
   seleccionDeKit,
+  voltajesDisponibles,
   type GrupoKit,
   type KitConfigurable,
   type OpcionKit,
@@ -516,6 +518,10 @@ export default function ArmarKit({
         .seleccion,
   );
   const [editando, setEditando] = useState<PasoKit | null>(null);
+  // Solo decide algo si hay dos kits iguales que se diferencian en el voltaje.
+  const [voltajeElegido, setVoltajeElegido] = useState<number | null>(
+    kitDeInicio?.voltaje ?? null,
+  );
   const [dudaAbierta, setDudaAbierta] = useState<PasoKit | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [iaAbierta, setIaAbierta] = useState(false);
@@ -562,6 +568,7 @@ export default function ArmarKit({
   /** Una sugerencia de la IA: deja el configurador exactamente en ese kit. */
   const aplicarKit = (k: KitConfigurable) => {
     aplicar(seleccionDeKit(k.config));
+    setVoltajeElegido(k.voltaje);
     setIaAbierta(false);
     requestAnimationFrame(() =>
       rejilla.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
@@ -602,6 +609,7 @@ export default function ArmarKit({
 
   const reiniciar = () => {
     setSeleccion(normalizar(kits, SELECCION_VACIA).seleccion);
+    setVoltajeElegido(null);
     setEditando(null);
     setExplicando(null);
     setAviso(null);
@@ -622,8 +630,9 @@ export default function ArmarKit({
   /** Posición entre los tres bloques que ve el cliente: inversor, batería, paneles. */
   const indiceVisible = GRUPOS.indexOf(GRUPO_DE[pasoVisible]);
 
-  const kit = kitElegido(kits, seleccion);
-  const referencia = kitReferencia(kits, seleccion);
+  const kit = kitElegido(kits, seleccion, voltajeElegido);
+  const referencia = kitReferencia(kits, seleccion, voltajeElegido);
+  const voltajes = voltajesDisponibles(kits, seleccion);
   const compatibles = kitsCompatibles(kits, seleccion);
   const precioMinimo = compatibles.length
     ? Math.min(...compatibles.map((k) => k.precio))
@@ -651,10 +660,11 @@ export default function ArmarKit({
       : etiquetaPotenciaBateria(o.config);
   };
   const resumen = GRUPOS.map((g) => ({ grupo: g, texto: textoGrupo(g) }));
-  const textoKit = resumen
-    .filter((r) => r.texto)
-    .map((r) => r.texto)
-    .join(" + ");
+  const textoKit =
+    resumen
+      .filter((r) => r.texto)
+      .map((r) => r.texto)
+      .join(" + ") + (kit?.voltaje ? `, a ${kit.voltaje} V` : "");
 
   const enlaceWhatsApp = (texto: string) =>
     `https://wa.me/${contacto.whatsapp}?text=${encodeURIComponent(texto)}`;
@@ -885,6 +895,42 @@ export default function ArmarKit({
                     <dd className="text-right font-semibold text-[#012928]">{texto}</dd>
                   </div>
                 ))}
+                {kit.voltaje && (
+                  <div className="flex items-center justify-between gap-4 py-3">
+                    <dt id="armar-voltaje" className="text-[#6e6e73]">
+                      Voltaje
+                    </dt>
+                    <dd>
+                      {voltajes.length > 1 ? (
+                        <div
+                          role="radiogroup"
+                          aria-labelledby="armar-voltaje"
+                          className="flex rounded-full bg-[#F5F5F7] p-0.5"
+                        >
+                          {voltajes.map((v) => (
+                            <button
+                              key={v}
+                              type="button"
+                              role="radio"
+                              aria-checked={kit.voltaje === v}
+                              onClick={() => setVoltajeElegido(v)}
+                              className={cn(
+                                "rounded-full px-3 py-1.5 text-sm font-semibold transition-colors",
+                                kit.voltaje === v
+                                  ? "bg-white text-[#012928] shadow-sm"
+                                  : "text-[#6e6e73] hover:text-[#012928]",
+                              )}
+                            >
+                              {v} V
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <ChipVoltaje voltaje={kit.voltaje} />
+                      )}
+                    </dd>
+                  </div>
+                )}
               </dl>
 
               <p className="mt-5 text-[28px] font-semibold leading-[1.14] tracking-[.007em] text-[#012928]">

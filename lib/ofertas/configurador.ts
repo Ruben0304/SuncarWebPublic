@@ -112,6 +112,8 @@ export interface KitConfigurable {
   precio: number;
   moneda: string;
   config: ConfigKit;
+  /** 110 o 220 V; null en los kits de antes del campo. */
+  voltaje: number | null;
 }
 
 export function kitsConfigurables(
@@ -128,6 +130,7 @@ export function kitsConfigurables(
       precio: o.precio,
       moneda: o.moneda,
       config: o.config,
+      voltaje: o.voltaje ?? null,
     });
   }
   return kits;
@@ -314,16 +317,34 @@ export function kitsCompatibles(
   );
 }
 
-/** El kit final cuando ya están los tres pasos; el más barato si hubiera dos iguales. */
+/**
+ * El kit final cuando ya están los tres pasos; el más barato si hubiera dos
+ * iguales. Si esos dos solo se diferencian en el voltaje, manda el que eligió
+ * el cliente (si ese voltaje no existe para lo elegido, se ignora).
+ */
 export function kitElegido(
   kits: KitConfigurable[],
   sel: SeleccionKit,
+  voltaje: number | null = null,
 ): KitConfigurable | null {
   if (!PASOS.every((p) => sel[p])) return null;
   const coinciden = kitsCompatibles(kits, sel);
-  return coinciden.length
-    ? coinciden.reduce((a, b) => (b.precio < a.precio ? b : a))
+  const conVoltaje = voltaje ? coinciden.filter((k) => k.voltaje === voltaje) : [];
+  const lista = conVoltaje.length ? conVoltaje : coinciden;
+  return lista.length
+    ? lista.reduce((a, b) => (b.precio < a.precio ? b : a))
     : null;
+}
+
+/** Voltajes entre los que se puede elegir cuando el kit ya está armado (de menor a mayor). */
+export function voltajesDisponibles(
+  kits: KitConfigurable[],
+  sel: SeleccionKit,
+): number[] {
+  if (!PASOS.every((p) => sel[p])) return [];
+  const voltajes = new Set<number>();
+  for (const k of kitsCompatibles(kits, sel)) if (k.voltaje) voltajes.add(k.voltaje);
+  return Array.from(voltajes).sort((a, b) => a - b);
 }
 
 /**
@@ -334,8 +355,9 @@ export function kitElegido(
 export function kitReferencia(
   kits: KitConfigurable[],
   sel: SeleccionKit,
+  voltaje: number | null = null,
 ): KitConfigurable | null {
-  const final = kitElegido(kits, sel);
+  const final = kitElegido(kits, sel, voltaje);
   if (final) return final;
   const candidatos = kitsCompatibles(kits, sel);
   const lista = candidatos.length ? candidatos : kits;

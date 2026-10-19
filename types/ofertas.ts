@@ -38,6 +38,8 @@ export interface OfertaSimplificada {
   codigos?: string[] | null;
   /** null si el kit no trae inversor con potencia: no entra en "Armar mi kit". */
   config?: ConfigKit | null;
+  /** 110 o 220 V. Los kits publicados antes de que existiera el campo no lo traen. */
+  voltaje?: number | null;
 }
 
 export interface OfertaElemento {
@@ -83,6 +85,8 @@ export interface Oferta {
   descuentos?: string | null;
   pdf?: string | null;
   terminos_condiciones_texto?: string | null;
+  /** 110 o 220 V; null en los kits de antes del campo. */
+  voltaje?: number | null;
   garantias: string[];
   elementos: OfertaElemento[];
   is_active?: boolean;

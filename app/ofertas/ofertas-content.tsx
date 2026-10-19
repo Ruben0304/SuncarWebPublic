@@ -44,6 +44,7 @@ import { useClient } from "@/hooks/useClient";
 import { Currency } from "@/hooks/useCurrencyExchange";
 import OfertasRecommendationInput from "@/components/OfertasRecommendationInput";
 import ArmarKit from "@/components/ofertas/ArmarKit";
+import { ChipVoltaje } from "@/components/ofertas/ChipVoltaje";
 import NotasLegales from "@/components/ofertas/NotasLegales";
 import { kitsConfigurables } from "@/lib/ofertas/configurador";
 import { recomendadorService } from "@/services/api/recomendadorService";
@@ -719,6 +720,7 @@ export default function OfertasContent({
                               <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                                 {oferta.descripcion}
                               </h3>
+                              <ChipVoltaje voltaje={oferta.voltaje} className="mb-3 self-start" />
 
                               <div className="mb-6 flex-1">
                                 {/* Currency Selector and Price Display - COMENTADO: API agotada */}
@@ -852,6 +854,7 @@ export default function OfertasContent({
                               <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                                 {oferta.descripcion}
                               </h3>
+                              <ChipVoltaje voltaje={oferta.voltaje} className="mb-3 self-start" />
 
                               <div className="mb-6 flex-1">
                                 {/* Currency Selector and Price Display - COMENTADO: API agotada */}
@@ -994,6 +997,7 @@ export default function OfertasContent({
                           <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                             {oferta.descripcion}
                           </h3>
+                          <ChipVoltaje voltaje={oferta.voltaje} className="mb-3 self-start" />
 
                           <div className="mb-6 flex-1">
                             {/* Mostrar precio simple sin conversión */}

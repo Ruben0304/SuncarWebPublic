@@ -32,11 +32,13 @@ const FILA =
 
 function resumenDe(kit: KitConfigurable): string {
   const c = kit.config;
-  return [
-    etiquetaPotenciaInversor(c),
-    etiquetaPotenciaBateria(c),
-    c.paneles > 0 ? etiquetaPaneles(c) : "sin paneles",
-  ].join(" + ");
+  return (
+    [
+      etiquetaPotenciaInversor(c),
+      etiquetaPotenciaBateria(c),
+      c.paneles > 0 ? etiquetaPaneles(c) : "sin paneles",
+    ].join(" + ") + (kit.voltaje ? ` · ${kit.voltaje} V` : "")
+  );
 }
 
 interface Props {

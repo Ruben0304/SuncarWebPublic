@@ -227,7 +227,14 @@ function mapOferta(
     categorias: extraerCategorias(o.items),
     codigos: extraerCodigos(o.items),
     config: extraerConfigKit(o.items, o.nombre_completo, potencias),
+    voltaje: voltajeDe(o.voltaje),
   };
+}
+
+/** 110 o 220; cualquier otra cosa (o nada, en los kits de antes) es null. */
+function voltajeDe(valor: unknown): number | null {
+  const numero = Number(valor);
+  return numero === 110 || numero === 220 ? numero : null;
 }
 
 // Sin tildes: el inventario escribe "BATERÍAS" y a veces "BATERIAS".
@@ -276,6 +283,7 @@ export function mapOfertaDetalle(
     descuentos: null,
     pdf: null,
     terminos_condiciones_texto: garantiaTexto,
+    voltaje: voltajeDe(o.voltaje),
     garantias: garantiaTexto ? [garantiaTexto] : [],
     elementos: materiales.map((item) => ({
       categoria: item.categoria || null,
