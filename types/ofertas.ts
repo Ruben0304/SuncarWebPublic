@@ -43,7 +43,11 @@ export interface OfertaSimplificada {
 }
 
 export interface OfertaElemento {
+  /** material_codigo del inventario: junta dos líneas del mismo material. */
+  codigo?: string | null;
   categoria?: string | null;
+  /** Sección de la confección (INVERSORES, MPPT, BATERIAS…), sin tildes. */
+  seccion?: string | null;
   foto?: string | null;
   descripcion?: string | null;
   cantidad?: number | null;

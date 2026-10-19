@@ -30,6 +30,7 @@ const PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
 interface ItemBackend {
   categoria?: string;
+  seccion?: string | null;
   descripcion?: string;
   foto?: string | null;
   cantidad?: number | null;
@@ -286,7 +287,9 @@ export function mapOfertaDetalle(
     voltaje: voltajeDe(o.voltaje),
     garantias: garantiaTexto ? [garantiaTexto] : [],
     elementos: materiales.map((item) => ({
+      codigo: item.material_codigo?.toString().trim() || null,
       categoria: item.categoria || null,
+      seccion: item.seccion || null,
       foto: normalizarUrlImagen(item.foto),
       descripcion: item.descripcion || null,
       cantidad: item.cantidad || null,

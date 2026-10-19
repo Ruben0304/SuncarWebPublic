@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { CheckCircle, Image as ImageIcon, Loader2, Package, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Oferta } from "@/types/ofertas";
+import { ChipVoltaje } from "@/components/ofertas/ChipVoltaje";
+import { ordenarElementosKit } from "@/lib/ofertas/elementos-kit";
+import type { Oferta, OfertaElemento } from "@/types/ofertas";
 
 // Los dos modales de la oferta: "Ver qué trae el kit" y "Ver garantías del
 // kit". Tienen el mismo cuerpo que antes tenían las tarjetas de la página, con
@@ -80,9 +82,100 @@ function Estado({ oferta, cargando, error }: Pick<Props, "oferta" | "cargando" |
   return null;
 }
 
+/** Una línea del kit: foto, categoría y nombre; la cantidad solo en los equipos principales. */
+function ElementoKit({
+  elemento,
+  compacto,
+  fotoRota,
+  onFotoRota,
+}: {
+  elemento: OfertaElemento;
+  /** Material complementario: más pequeño y sin cantidad. */
+  compacto?: boolean;
+  fotoRota: boolean;
+  onFotoRota: () => void;
+}) {
+  const hayFoto = Boolean(elemento.foto) && !fotoRota;
+  const lado = compacto ? "h-11 w-11" : "h-16 w-16";
+  return (
+    <div
+      className={
+        compacto
+          ? "flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/70 p-2.5"
+          : "flex items-start gap-4 rounded-lg border bg-gray-50 p-4 transition-colors hover:bg-gray-100"
+      }
+    >
+      {hayFoto ? (
+        <div
+          className={`relative ${lado} flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white`}
+        >
+          <Image
+            src={elemento.foto as string}
+            alt={elemento.descripcion || "Elemento"}
+            fill
+            className="object-contain p-1"
+            sizes={compacto ? "44px" : "64px"}
+            quality={60}
+            onError={onFotoRota}
+          />
+        </div>
+      ) : (
+        <div
+          className={`flex ${lado} flex-shrink-0 items-center justify-center rounded-lg border border-[#F2C300]/25 bg-[#F2C300]/15`}
+        >
+          <ImageIcon
+            className={`${compacto ? "h-4 w-4" : "h-6 w-6"} text-[#F2C300]/80`}
+            aria-hidden="true"
+          />
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        {elemento.categoria && (
+          <Badge
+            variant="outline"
+            className={compacto ? "mb-1 px-1.5 py-0 text-[10px]" : "mb-2 text-xs"}
+          >
+            {elemento.categoria}
+          </Badge>
+        )}
+        {elemento.descripcion &&
+          (compacto ? (
+            <p className="text-sm leading-snug text-gray-800">{elemento.descripcion}</p>
+          ) : (
+            <h4 className="mb-1 font-semibold text-gray-900">{elemento.descripcion}</h4>
+          ))}
+        {!compacto && elemento.cantidad && (
+          <p className="text-sm text-gray-600">
+            Cantidad: <span className="font-medium">{elemento.cantidad}</span>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ModalElementos({ oferta, descripcion, cargando, error, abierto, onCerrar }: Props) {
   const [fotosRotas, setFotosRotas] = useState<Record<string, boolean>>({});
   const estado = Estado({ oferta, cargando, error });
+  const { principales, ademas } = useMemo(
+    () => ordenarElementosKit(oferta?.elementos ?? []),
+    [oferta],
+  );
+  const clave = (e: OfertaElemento, i: number) =>
+    `${i}-${e.codigo || ""}-${e.categoria || ""}-${e.descripcion || ""}`;
+  const pintar = (lista: OfertaElemento[], compacto: boolean) =>
+    lista.map((elemento, index) => {
+      const k = clave(elemento, index);
+      return (
+        <ElementoKit
+          key={k}
+          elemento={elemento}
+          compacto={compacto}
+          fotoRota={Boolean(fotosRotas[k])}
+          onFotoRota={() => setFotosRotas((prev) => ({ ...prev, [k]: true }))}
+        />
+      );
+    });
 
   return (
     <Modal
@@ -94,53 +187,36 @@ export function ModalElementos({ oferta, descripcion, cargando, error, abierto, 
     >
       {estado ? (
         estado
-      ) : oferta && oferta.elementos && oferta.elementos.length > 0 ? (
-        <div className="space-y-4">
-          {oferta.elementos.map((elemento, index) => {
-            const clave = `${index}-${elemento.categoria || ""}-${elemento.descripcion || ""}`;
-            const hayFoto = Boolean(elemento.foto) && !fotosRotas[clave];
-            return (
-              <div
-                key={clave}
-                className="rounded-lg border bg-gray-50 p-4 transition-colors hover:bg-gray-100"
-              >
-                <div className="flex items-start gap-4">
-                  {hayFoto ? (
-                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white">
-                      <Image
-                        src={elemento.foto as string}
-                        alt={elemento.descripcion || "Elemento"}
-                        fill
-                        className="object-contain p-1"
-                        sizes="64px"
-                        quality={60}
-                        onError={() => setFotosRotas((prev) => ({ ...prev, [clave]: true }))}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg border border-[#F2C300]/25 bg-[#F2C300]/15">
-                      <ImageIcon className="h-6 w-6 text-[#F2C300]/80" aria-hidden="true" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    {elemento.categoria && (
-                      <Badge variant="outline" className="mb-2 text-xs">
-                        {elemento.categoria}
-                      </Badge>
-                    )}
-                    {elemento.descripcion && (
-                      <h4 className="mb-1 font-semibold text-gray-900">{elemento.descripcion}</h4>
-                    )}
-                    {elemento.cantidad && (
-                      <p className="text-sm text-gray-600">
-                        Cantidad: <span className="font-medium">{elemento.cantidad}</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
+      ) : principales.length + ademas.length > 0 ? (
+        <div>
+          {oferta?.voltaje && (
+            <p className="mb-4 flex items-center gap-2 text-sm text-gray-600">
+              <ChipVoltaje voltaje={oferta.voltaje} />
+              Kit para instalaciones de {oferta.voltaje} V
+            </p>
+          )}
+          {principales.length > 0 && <div className="space-y-4">{pintar(principales, false)}</div>}
+
+          {ademas.length > 0 && (
+            <section aria-labelledby="kit-ademas" className={principales.length > 0 ? "mt-7" : ""}>
+              <div className="mb-3 flex items-center gap-3">
+                <span className="h-px flex-1 bg-gray-200" aria-hidden="true" />
+                <h3
+                  id="kit-ademas"
+                  className="text-xs font-semibold uppercase tracking-[0.08em] text-gray-500"
+                >
+                  {principales.length > 0 ? "Además incluye" : "Incluye"}
+                </h3>
+                <span className="h-px flex-1 bg-gray-200" aria-hidden="true" />
               </div>
-            );
-          })}
+              <div className="grid gap-2 sm:grid-cols-2">{pintar(ademas, true)}</div>
+            </section>
+          )}
+
+          <p className="mt-6 border-t border-gray-100 pt-4 text-[11px] leading-relaxed text-gray-500">
+            El material complementario puede diferir del que aparece en las fotos, y la cantidad
+            a utilizar se determina según las características de cada instalación.
+          </p>
         </div>
       ) : (
         <p className="italic text-gray-500">No hay elementos especificados para esta oferta.</p>
