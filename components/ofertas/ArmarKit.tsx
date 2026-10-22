@@ -10,7 +10,7 @@ import {
   ChevronDown,
   CirclePlus,
 } from "lucide-react";
-import { ChipVoltaje } from "@/components/ofertas/ChipVoltaje";
+import { ChipVoltaje, etiquetaVoltaje } from "@/components/ofertas/ChipVoltaje";
 import ElegirConIA from "@/components/ofertas/ElegirConIA";
 import { ModalElementos, ModalGarantias } from "@/components/ofertas/ModalesKit";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
@@ -664,7 +664,7 @@ export default function ArmarKit({
     resumen
       .filter((r) => r.texto)
       .map((r) => r.texto)
-      .join(" + ") + (kit?.voltaje ? `, a ${kit.voltaje} V` : "");
+      .join(" + ") + (kit?.voltaje ? `, a ${etiquetaVoltaje(kit.voltaje)}` : "");
 
   const enlaceWhatsApp = (texto: string) =>
     `https://wa.me/${contacto.whatsapp}?text=${encodeURIComponent(texto)}`;
@@ -921,7 +921,7 @@ export default function ArmarKit({
                                   : "text-[#6e6e73] hover:text-[#012928]",
                               )}
                             >
-                              {v} V
+                              {etiquetaVoltaje(v)}
                             </button>
                           ))}
                         </div>

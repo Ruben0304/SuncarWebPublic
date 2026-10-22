@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ChipVoltaje } from "@/components/ofertas/ChipVoltaje";
+import { ChipVoltaje, etiquetaVoltaje } from "@/components/ofertas/ChipVoltaje";
 import { ordenarElementosKit } from "@/lib/ofertas/elementos-kit";
 import type { Oferta, OfertaElemento } from "@/types/ofertas";
 
@@ -192,7 +192,7 @@ export function ModalElementos({ oferta, descripcion, cargando, error, abierto, 
           {oferta?.voltaje && (
             <p className="mb-4 flex items-center gap-2 text-sm text-gray-600">
               <ChipVoltaje voltaje={oferta.voltaje} />
-              Kit para instalaciones de {oferta.voltaje} V
+              Kit para instalaciones de {etiquetaVoltaje(oferta.voltaje)}
             </p>
           )}
           {principales.length > 0 && <div className="space-y-4">{pintar(principales, false)}</div>}
