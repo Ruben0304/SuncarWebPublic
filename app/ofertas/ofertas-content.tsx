@@ -255,6 +255,15 @@ export default function OfertasContent({
         }
       });
 
+      // Los kits con etiqueta («Más vendida»…) van primero; dentro de cada grupo
+      // se respeta el orden que eligió la persona.
+      const conEtiqueta = (oferta: OfertaSimplificada) =>
+        (oferta.etiquetas?.length ?? 0) > 0;
+      filtered = [
+        ...filtered.filter(conEtiqueta),
+        ...filtered.filter((oferta) => !conEtiqueta(oferta)),
+      ];
+
       const tieneDescuento = (oferta: OfertaSimplificada) =>
         Boolean(
           oferta.descuentos &&
