@@ -16,6 +16,12 @@ export interface ConfigKit {
   bateriaCodigo: string | null;
 }
 
+/** Un listón de la tarjeta de un kit («Más vendida»…). Lo pone el equipo desde el panel. */
+export interface EtiquetaOferta {
+  texto: string;
+  color: "volt" | "solar" | "esmeralda" | "medianoche";
+}
+
 export interface OfertaSimplificada {
   id?: string | null;
   /** id de Mongo: el recomendador de IA responde con este, no con el número de oferta. */
@@ -40,6 +46,8 @@ export interface OfertaSimplificada {
   config?: ConfigKit | null;
   /** 110 o 220 V. Los kits publicados antes de que existiera el campo no lo traen. */
   voltaje?: number | null;
+  /** Listones de la esquina de la tarjeta; vacío si el kit no tiene. */
+  etiquetas?: EtiquetaOferta[];
 }
 
 export interface OfertaElemento {

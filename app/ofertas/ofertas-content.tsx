@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
+import { EtiquetasOferta } from "@/components/ofertas/EtiquetasOferta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/navigation";
@@ -698,6 +699,7 @@ export default function OfertasContent({
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <EtiquetasOferta etiquetas={oferta.etiquetas} />
 
                               {/* Status Badge - top left corner */}
                               <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -836,6 +838,7 @@ export default function OfertasContent({
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <EtiquetasOferta etiquetas={oferta.etiquetas} />
 
                               <div className="absolute top-4 left-4">
                                 {oferta.is_active === false ? (
@@ -968,6 +971,7 @@ export default function OfertasContent({
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <EtiquetasOferta etiquetas={oferta.etiquetas} className="top-[4.75rem]" />
 
                           {/* Status badges - top left corner */}
                           <div className="absolute top-4 left-4 flex flex-col gap-2">

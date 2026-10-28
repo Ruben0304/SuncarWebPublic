@@ -1,4 +1,4 @@
-import type { Oferta, OfertaSimplificada } from "@/types/ofertas";
+import type { EtiquetaOferta, Oferta, OfertaSimplificada } from "@/types/ofertas";
 import { extraerConfigKit, type PotenciasCatalogo } from "./configurador";
 import { construirInstalacion, type MaterialCatalogo } from "./instalacion";
 
@@ -229,7 +229,30 @@ function mapOferta(
     codigos: extraerCodigos(o.items),
     config: extraerConfigKit(o.items, o.nombre_completo, potencias),
     voltaje: voltajeDe(o.voltaje),
+    etiquetas: etiquetasDe(o.etiquetas),
   };
+}
+
+const COLORES_ETIQUETA = ["volt", "solar", "esmeralda", "medianoche"] as const;
+
+/** Hasta 3 listones con texto; un color desconocido cae a «volt» en vez de ocultar la etiqueta. */
+export function etiquetasDe(valor: unknown): EtiquetaOferta[] {
+  if (!Array.isArray(valor)) return [];
+  const salida: EtiquetaOferta[] = [];
+  for (const e of valor) {
+    const texto = String((e as { texto?: unknown })?.texto ?? "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!texto) continue;
+    const color = (e as { color?: unknown })?.color;
+    salida.push({
+      texto,
+      color: (COLORES_ETIQUETA as readonly unknown[]).includes(color)
+        ? (color as EtiquetaOferta["color"])
+        : "volt",
+    });
+  }
+  return salida.slice(0, 3);
 }
 
 /** 110 o 220; cualquier otra cosa (o nada, en los kits de antes) es null. */
