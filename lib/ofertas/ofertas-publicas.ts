@@ -235,7 +235,7 @@ function mapOferta(
 
 const COLORES_ETIQUETA = ["volt", "solar", "esmeralda", "medianoche"] as const;
 
-/** Hasta 3 listones con texto; un color desconocido cae a «volt» en vez de ocultar la etiqueta. */
+/** Un solo listón por kit, con texto; un color desconocido cae a «volt» en vez de ocultar la etiqueta. */
 export function etiquetasDe(valor: unknown): EtiquetaOferta[] {
   if (!Array.isArray(valor)) return [];
   const salida: EtiquetaOferta[] = [];
@@ -245,14 +245,16 @@ export function etiquetasDe(valor: unknown): EtiquetaOferta[] {
       .trim();
     if (!texto) continue;
     const color = (e as { color?: unknown })?.color;
+    const prioridad = (e as { prioridad?: unknown })?.prioridad;
     salida.push({
       texto,
       color: (COLORES_ETIQUETA as readonly unknown[]).includes(color)
         ? (color as EtiquetaOferta["color"])
         : "volt",
+      ...(typeof prioridad === "number" ? { prioridad } : {}),
     });
   }
-  return salida.slice(0, 3);
+  return salida.slice(0, 1);
 }
 
 /** 110 o 220; cualquier otra cosa (o nada, en los kits de antes) es null. */

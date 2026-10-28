@@ -20,6 +20,8 @@ export interface ConfigKit {
 export interface EtiquetaOferta {
   texto: string;
   color: "volt" | "solar" | "esmeralda" | "medianoche";
+  /** Mayor = va antes en la lista. La fija el equipo en el catálogo de etiquetas. */
+  prioridad?: number;
 }
 
 export interface OfertaSimplificada {

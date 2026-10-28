@@ -255,14 +255,14 @@ export default function OfertasContent({
         }
       });
 
-      // Los kits con etiqueta («Más vendida»…) van primero; dentro de cada grupo
-      // se respeta el orden que eligió la persona.
-      const conEtiqueta = (oferta: OfertaSimplificada) =>
-        (oferta.etiquetas?.length ?? 0) > 0;
-      filtered = [
-        ...filtered.filter(conEtiqueta),
-        ...filtered.filter((oferta) => !conEtiqueta(oferta)),
-      ];
+      // Los kits con etiqueta («Más vendida»…) van primero, y entre ellos los de la
+      // etiqueta con más prioridad. Dentro de cada grupo se respeta el orden que
+      // eligió la persona (el sort de JS es estable).
+      const prioridadEtiqueta = (oferta: OfertaSimplificada) =>
+        oferta.etiquetas?.length ? (oferta.etiquetas[0].prioridad ?? 0) : -1e9;
+      filtered = [...filtered].sort(
+        (a, b) => prioridadEtiqueta(b) - prioridadEtiqueta(a),
+      );
 
       const tieneDescuento = (oferta: OfertaSimplificada) =>
         Boolean(
