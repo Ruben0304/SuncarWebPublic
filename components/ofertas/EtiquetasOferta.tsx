@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import type { EtiquetaOferta } from "@/types/ofertas";
 
 // Fondo del listón, color del texto y la sombra del pliegue, todos de la paleta de la marca.
-const ESTILOS: Record<
+export const ESTILOS: Record<
   EtiquetaOferta["color"],
   { fondo: string; texto: string; pliegue: string }
 > = {

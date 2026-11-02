@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { EtiquetasOferta } from "@/components/ofertas/EtiquetasOferta";
+import { OfertasPrincipales } from "@/components/ofertas/OfertasPrincipales";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/navigation";
@@ -475,6 +476,9 @@ export default function OfertasContent({
         <div className="min-h-screen bg-[#F2F2EF] pt-32 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Configurador: es la entrada; el listado se abre desde su pie */}
+            {!loading && !error && enArmar && (
+              <OfertasPrincipales ofertas={ofertas} onElegir={navigateToOfertaDetalle} />
+            )}
             {!loading && !error && enArmar && (
               <ArmarKit
                 key={kitElegido ?? "nuevo"}
