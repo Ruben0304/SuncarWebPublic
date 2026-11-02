@@ -1,0 +1,137 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { obtenerOfertaPublica } from "@/lib/ofertas/ofertas-publicas-server";
+import { formatearPrecio } from "@/lib/ofertas/ofertas-publicas";
+import { obtenerContacto } from "@/lib/contacto";
+
+// Hoy (Next) esta misma ruta -app/ofertas/[id]/page.tsx- solo redirige al
+// configurador: no hay ficha real, ni metadata, ni JSON-LD por kit. Esta es
+// la página real que falta. "slug" acepta el número de oferta público
+// (OF-20260902-002, el que se comparte) o el id de Mongo: obtenerOfertaPublica
+// ya resuelve ambos.
+const { slug } = Astro.params;
+const oferta = slug ? await obtenerOfertaPublica(slug) : null;
+
+if (!oferta) {
+  return new Response(null, { status: 404 });
+}
+
+const contacto = await obtenerContacto();
+const whatsappMensaje = encodeURIComponent(`Hola, me interesa el kit ${oferta.descripcion}`);
+const whatsappLink = `https://wa.me/${contacto.whatsapp}?text=${whatsappMensaje}`;
+
+const precioTexto = `${formatearPrecio(oferta.precio)} ${oferta.moneda}`;
+const descripcionCorta =
+  oferta.terminos_condiciones_texto ??
+  `Kit solar ${oferta.descripcion} por ${precioTexto}. Instalación profesional de SunCar en Cuba.`;
+
+// Product + Offer: lo que Google necesita para un resultado enriquecido de
+// producto (precio, moneda, disponibilidad) en las búsquedas de kits.
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: oferta.descripcion,
+  description: descripcionCorta,
+  image: oferta.imagen ? [oferta.imagen] : undefined,
+  offers: {
+    "@type": "Offer",
+    priceCurrency: oferta.moneda,
+    price: oferta.precio,
+    availability: oferta.is_active
+      ? "https://schema.org/InStock"
+      : "https://schema.org/OutOfStock",
+    url: new URL(`/ofertas/${slug}`, "https://suncarsrl.com").toString(),
+  },
+};
+
+const agrupado = new Map<string, typeof oferta.elementos>();
+for (const el of oferta.elementos) {
+  const cat = el.categoria ?? "Otros";
+  if (!agrupado.has(cat)) agrupado.set(cat, []);
+  agrupado.get(cat)!.push(el);
+}
+---
+
+<BaseLayout
+  title={oferta.descripcion}
+  description={descripcionCorta}
+  path={`/ofertas/${slug}`}
+  ogImage={oferta.imagen ?? undefined}
+  structuredData={[productJsonLd]}
+>
+  <div class="min-h-screen bg-[#F2F2EF]">
+    <header class="bg-[#012928] px-6 py-5">
+      <a href="/" class="text-white font-semibold">SunCar Cuba</a>
+    </header>
+
+    <main class="mx-auto max-w-4xl px-6 py-12">
+      <nav class="mb-6 text-sm text-gray-500">
+        <a href="/ofertas" class="hover:underline">Kits</a> / <span>{oferta.descripcion}</span>
+      </nav>
+
+      <div class="grid gap-10 md:grid-cols-2">
+        {oferta.imagen && (
+          <img
+            src={oferta.imagen}
+            alt={oferta.descripcion}
+            width="600"
+            height="600"
+            class="w-full rounded-2xl object-cover"
+            loading="eager"
+          />
+        )}
+
+        <div>
+          {/* oferta.marca no se muestra: extraerMarca() lee palabras con mayúscula
+              de la descripción del inversor, y esa descripción trae texto de
+              ficha técnica ("Capacity: ... Voltage: ..."), no el nombre de marca. */}
+          <h1 class="text-3xl font-bold text-[#012928]">{oferta.descripcion}</h1>
+
+          <p class="mt-4 text-3xl font-bold text-[#012928]">{precioTexto}</p>
+          {oferta.financiamiento && (
+            <p class="mt-1 text-sm text-gray-600">Con opciones de financiamiento</p>
+          )}
+
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-6 inline-flex items-center justify-center rounded-2xl bg-[#012928] px-8 py-3.5 font-semibold text-white transition-transform hover:scale-[1.02]"
+          >
+            Quiero este kit
+          </a>
+
+          {oferta.garantias.length > 0 && (
+            <div class="mt-8 rounded-xl bg-white p-4 text-sm text-gray-700 shadow-sm">
+              <p class="font-semibold text-[#012928]">Garantía</p>
+              {oferta.garantias.map((g) => <p class="mt-1">{g}</p>)}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {agrupado.size > 0 && (
+        <section class="mt-12">
+          <h2 class="text-xl font-bold text-[#012928]">Qué incluye este kit</h2>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            {Array.from(agrupado.entries()).map(([categoria, items]) => (
+              <div class="rounded-xl bg-white p-4 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  {categoria}
+                </p>
+                <ul class="mt-2 space-y-1 text-sm text-gray-700">
+                  {items.map((item) => (
+                    <li>
+                      {item.cantidad ? `${item.cantidad}x ` : ""}
+                      {item.descripcion}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+  </div>
+</BaseLayout>

@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import InitialLoader from "../../components/InitialLoader";
+import OfertasPageApp from "../../components/OfertasPageApp";
+import { obtenerOfertasPublicas } from "@/lib/ofertas/ofertas-publicas-server";
+
+// Misma experiencia que hoy en Next (armar kit, recomendador con IA,
+// listado): para SEO, cada kit tiene además su propia URL en
+// /ofertas/[slug], y este listado entra al sitemap-ofertas.xml dinámico.
+const initialOfertas = await obtenerOfertasPublicas();
+const marcaParam = Astro.url.searchParams.get("marca");
+const modoParam = Astro.url.searchParams.get("modo");
+const kitParam = Astro.url.searchParams.get("kit");
+---
+
+<BaseLayout
+  title="Kits solares completos"
+  description="Arma tu kit fotovoltaico a medida o elegí uno de nuestros kits completos: inversor, batería y paneles, con financiamiento disponible en Cuba."
+  path="/ofertas"
+>
+  <InitialLoader client:load />
+  <OfertasPageApp
+    initialOfertas={initialOfertas}
+    marcaParam={marcaParam}
+    modoParam={modoParam}
+    kitParam={kitParam}
+    client:load
+  />
+</BaseLayout>

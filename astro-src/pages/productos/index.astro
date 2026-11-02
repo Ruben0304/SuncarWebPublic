@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import InitialLoader from "../../components/InitialLoader";
+import ProductosPageApp from "../../components/ProductosPageApp";
+import { obtenerOfertasPublicas } from "@/lib/ofertas/ofertas-publicas-server";
+
+// Misma experiencia que hoy en Next (casa SVG interactiva, catálogo por
+// zona): para SEO, los productos sueltos tienen además su propia URL en
+// /productos/[id], y este listado entra al sitemap-productos.xml dinámico.
+const initialKits = await obtenerOfertasPublicas();
+---
+
+<BaseLayout
+  title="Tienda de productos fotovoltaicos"
+  description="Paneles solares, inversores, baterías y accesorios para tu sistema fotovoltaico. Toca cada parte de la casa para ver los productos disponibles en tu provincia."
+  path="/productos"
+>
+  <InitialLoader client:load />
+  <ProductosPageApp initialKits={initialKits} client:load />
+</BaseLayout>

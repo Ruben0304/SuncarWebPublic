@@ -1,0 +1,125 @@
+---
+import "@fontsource/host-grotesk/400.css";
+import "@fontsource/host-grotesk/500.css";
+import "@fontsource/host-grotesk/600.css";
+import "@fontsource/host-grotesk/700.css";
+import "../../styles/globals.css";
+import { obtenerContacto } from "../../lib/contacto";
+
+export interface Props {
+  /** Sin "| SunCar Cuba": eso lo pone esta misma plantilla (salvo fullTitle). */
+  title: string;
+  description: string;
+  /** Ruta relativa, ej: "/productos". Default: la URL actual. */
+  path?: string;
+  ogImage?: string;
+  /** JSON-LD extra de la página (Product, BreadcrumbList...), además del Organization global. */
+  structuredData?: Record<string, unknown>[];
+  noindex?: boolean;
+  /** Para el home: el título ya es el completo ("SunCar Cuba - ..."), sin sufijo. */
+  fullTitle?: boolean;
+}
+
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  ogImage = "/images/hero-suncar.jpg",
+  structuredData = [],
+  noindex = false,
+  fullTitle: isFullTitle = false,
+} = Astro.props;
+
+const siteUrl = "https://suncarsrl.com";
+const canonical = new URL(path, siteUrl).toString();
+const fullTitle = isFullTitle ? title : `${title} | SunCar Cuba`;
+
+// Mismo JSON-LD que antes en app/layout.tsx: si el teléfono/dirección quedan
+// viejos aquí, la gente llama a un número que ya no existe.
+const contacto = await obtenerContacto();
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "SunCar Cuba",
+  alternateName: "Suncar",
+  url: siteUrl,
+  logo: `${siteUrl}/images/logo.png`,
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: contacto.telefono,
+    contactType: "customer service",
+    email: contacto.correo,
+    areaServed: "CU",
+    availableLanguage: "Spanish",
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: contacto.direccion,
+    addressLocality: "La Habana",
+    addressCountry: "CU",
+  },
+  sameAs: [
+    "https://facebook.com/SunCarCuba",
+    "https://instagram.com/SunCarCuba",
+    "https://linkedin.com/company/suncar-cuba",
+  ],
+};
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow" />
+    )}
+
+    <meta name="geo.region" content="CU" />
+    <meta name="geo.country" content="Cuba" />
+    <meta name="geo.placename" content="La Habana" />
+    <meta name="ICBM" content="23.1136,-82.3666" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CU" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="SunCar Cuba" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).toString()} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@SunCarCuba" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, siteUrl).toString()} />
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Suncar" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
+    {structuredData.map((entry) => (
+      <script type="application/ld+json" set:html={JSON.stringify(entry)} />
+    ))}
+
+    <style is:global>
+      /* styles/globals.css (compartido con Next) espera esta variable; allá
+         la define next/font/google, aquí @fontsource/host-grotesk. */
+      :root {
+        --font-host-grotesk: "Host Grotesk", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="overflow-x-hidden">
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import InitialLoader from "../components/InitialLoader";
+import HomePageApp from "../components/HomePageApp";
+---
+
+<BaseLayout
+  title="SunCar Cuba - Paneles Solares y Baterías en Cuba"
+  description="Soluciona los problemas eléctricos de tu hogar con energía solar confiable. SunCar Cuba ofrece sistemas de paneles solares y baterías que garantizan electricidad 24/7, incluso durante apagones. Instalación profesional en Cuba."
+  path="/"
+  fullTitle
+>
+  <InitialLoader client:load />
+  <HomePageApp client:load />
+</BaseLayout>

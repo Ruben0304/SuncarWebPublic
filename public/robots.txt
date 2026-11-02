@@ -45,3 +45,5 @@ Allow: /
 
 # Sitemap
 Sitemap: https://suncarsrl.com/sitemap.xml
+Sitemap: https://suncarsrl.com/sitemap-ofertas.xml
+Sitemap: https://suncarsrl.com/sitemap-productos.xml

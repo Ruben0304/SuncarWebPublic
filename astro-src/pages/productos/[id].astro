@@ -1,0 +1,114 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { obtenerArticuloTiendaPublico } from "@/lib/tienda/catalogo-publico-server";
+import { formatearPrecio } from "@/lib/ofertas/ofertas-publicas";
+import { obtenerContacto } from "@/lib/contacto";
+
+const { id } = Astro.params;
+const producto = id ? await obtenerArticuloTiendaPublico(id) : null;
+
+if (!producto) {
+  return new Response(null, { status: 404 });
+}
+
+const contacto = await obtenerContacto();
+const whatsappMensaje = encodeURIComponent(`Hola, me interesa ${producto.modelo}`);
+const whatsappLink = `https://wa.me/${contacto.whatsapp}?text=${whatsappMensaje}`;
+
+const precioTexto = `$${formatearPrecio(producto.precio)}`;
+const descripcionCorta =
+  producto.descripcion_uso ??
+  `${producto.modelo}${producto.marca_nombre ? ` de ${producto.marca_nombre}` : ""}, disponible en Cuba por ${precioTexto}.`;
+
+// Mismas claves que especificaciones trae del backend: se listan tal cual,
+// sin intentar traducir cada posible atributo (especificaciones es un
+// registro abierto, [key: string]: ... en types/tienda.ts).
+const specEntries = Object.entries(producto.especificaciones ?? {}).filter(
+  ([, v]) => v !== undefined && v !== null && v !== "",
+);
+
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: producto.modelo,
+  description: descripcionCorta,
+  image: producto.foto ? [producto.foto] : undefined,
+  brand: producto.marca_nombre ? { "@type": "Brand", name: producto.marca_nombre } : undefined,
+  category: producto.categoria,
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "USD",
+    price: producto.precio,
+    availability: "https://schema.org/InStock",
+    url: new URL(`/productos/${id}`, "https://suncarsrl.com").toString(),
+  },
+};
+---
+
+<BaseLayout
+  title={producto.modelo}
+  description={descripcionCorta}
+  path={`/productos/${id}`}
+  ogImage={producto.foto ?? undefined}
+  structuredData={[productJsonLd]}
+>
+  <div class="min-h-screen bg-[#F2F2EF]">
+    <header class="bg-[#012928] px-6 py-5">
+      <a href="/" class="text-white font-semibold">SunCar Cuba</a>
+    </header>
+
+    <main class="mx-auto max-w-4xl px-6 py-12">
+      <nav class="mb-6 text-sm text-gray-500">
+        <a href="/productos" class="hover:underline">Productos</a> / <span>{producto.categoria}</span>
+      </nav>
+
+      <div class="grid gap-10 md:grid-cols-2">
+        {producto.foto && (
+          <img
+            src={producto.foto}
+            alt={producto.modelo}
+            width="500"
+            height="500"
+            class="w-full rounded-2xl object-cover"
+            loading="eager"
+          />
+        )}
+
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">{producto.categoria}</p>
+          <h1 class="mt-1 text-3xl font-bold text-[#012928]">{producto.modelo}</h1>
+          {producto.marca_nombre && <p class="mt-1 text-gray-500">{producto.marca_nombre}</p>}
+
+          <p class="mt-4 text-3xl font-bold text-[#012928]">{precioTexto}</p>
+
+          {producto.descripcion_uso && (
+            <p class="mt-4 text-gray-700">{producto.descripcion_uso}</p>
+          )}
+
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-6 inline-flex items-center justify-center rounded-2xl bg-[#012928] px-8 py-3.5 font-semibold text-white transition-transform hover:scale-[1.02]"
+          >
+            Quiero este producto
+          </a>
+        </div>
+      </div>
+
+      {specEntries.length > 0 && (
+        <section class="mt-12">
+          <h2 class="text-xl font-bold text-[#012928]">Especificaciones técnicas</h2>
+          <dl class="mt-4 grid gap-x-8 gap-y-2 rounded-xl bg-white p-6 shadow-sm sm:grid-cols-2">
+            {specEntries.map(([clave, valor]) => (
+              <div class="flex justify-between gap-4 border-b border-gray-100 py-2 text-sm">
+                <dt class="text-gray-500">{clave.replace(/_/g, " ")}</dt>
+                <dd class="font-medium text-[#012928]">{String(valor)}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+    </main>
+  </div>
+</BaseLayout>
