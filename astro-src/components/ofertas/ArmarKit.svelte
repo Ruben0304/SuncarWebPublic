@@ -9,7 +9,9 @@
   import Escaparate from "./Escaparate.svelte";
   import FilaOpcion from "./FilaOpcion.svelte";
   import FilaResuelta from "./FilaResuelta.svelte";
+  import ChipVoltaje from "./ChipVoltaje.svelte";
   import IconoWhatsApp from "./IconoWhatsApp.svelte";
+  import { etiquetaVoltaje } from "./voltaje";
   import ModalElementos from "./ModalElementos.svelte";
   import ModalGarantias from "./ModalGarantias.svelte";
 
@@ -230,6 +232,34 @@
                 <dd class="text-right font-semibold text-[#012928]">{texto}</dd>
               </div>
             {/each}
+            {#if estado.kit?.voltaje}
+              <div class="flex items-center justify-between gap-4 py-3">
+                <dt id="armar-voltaje" class="text-[#6e6e73]">Voltaje</dt>
+                <dd>
+                  {#if estado.voltajes.length > 1}
+                    <div role="radiogroup" aria-labelledby="armar-voltaje" class="flex rounded-full bg-[#F5F5F7] p-0.5">
+                      {#each estado.voltajes as v (v)}
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={estado.kit.voltaje === v}
+                          onclick={() => (estado.voltajeElegido = v)}
+                          class={`rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
+                            estado.kit.voltaje === v
+                              ? "bg-white text-[#012928] shadow-sm"
+                              : "text-[#6e6e73] hover:text-[#012928]"
+                          }`}
+                        >
+                          {etiquetaVoltaje(v)}
+                        </button>
+                      {/each}
+                    </div>
+                  {:else}
+                    <ChipVoltaje voltaje={estado.kit.voltaje} />
+                  {/if}
+                </dd>
+              </div>
+            {/if}
           </dl>
 
           <p class="mt-5 text-[28px] font-semibold leading-[1.14] tracking-[.007em] text-[#012928]">

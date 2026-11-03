@@ -2,6 +2,7 @@
   import Loader2 from "lucide-svelte/icons/loader-circle";
   import X from "lucide-svelte/icons/x";
   import Markdown from "~/components/ui/Markdown.svelte";
+  import { etiquetaVoltaje } from "./voltaje";
   import {
     etiquetaPaneles,
     etiquetaPotenciaBateria,
@@ -28,11 +29,13 @@
 
   function resumenDe(kit: KitConfigurable): string {
     const c = kit.config;
-    return [
-      etiquetaPotenciaInversor(c),
-      etiquetaPotenciaBateria(c),
-      c.paneles > 0 ? etiquetaPaneles(c) : "sin paneles",
-    ].join(" + ");
+    return (
+      [
+        etiquetaPotenciaInversor(c),
+        etiquetaPotenciaBateria(c),
+        c.paneles > 0 ? etiquetaPaneles(c) : "sin paneles",
+      ].join(" + ") + (kit.voltaje ? ` · ${etiquetaVoltaje(kit.voltaje)}` : "")
+    );
   }
 
   interface Props {

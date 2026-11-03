@@ -4,6 +4,8 @@
   import { formatearPrecio } from "@/lib/ofertas/ofertas-publicas";
   import type { OfertaSimplificada } from "@/types/ofertas";
   import { atributosImagen } from "./imagen";
+  import ChipVoltaje from "./ChipVoltaje.svelte";
+  import EtiquetasOferta from "./EtiquetasOferta.svelte";
 
   interface Props {
     oferta: OfertaSimplificada;
@@ -61,6 +63,7 @@
       class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
     />
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <EtiquetasOferta etiquetas={oferta.etiquetas} class={variante === "recomendada" ? "top-[4.75rem]" : ""} />
 
     {#if variante === "descuento"}
       <div class="absolute top-4 left-4 flex flex-col gap-2">
@@ -106,6 +109,7 @@
     <h3 class="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
       {oferta.descripcion}
     </h3>
+    <ChipVoltaje voltaje={oferta.voltaje} class="mb-3 self-start" />
 
     <div class="mb-6 flex-1">
       <div class="space-y-3">

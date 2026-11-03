@@ -20,6 +20,7 @@ import {
   kitElegido,
   kitReferencia,
   kitsCompatibles,
+  voltajesDisponibles,
   kitsConfigurables,
   normalizar,
   opciones,
@@ -38,6 +39,7 @@ import type { Oferta, OfertaSimplificada } from "@/types/ofertas";
 // que existe como kit publicado; el resultado es siempre un kit real, el mismo
 // que se ve en el listado.
 
+import { etiquetaVoltaje } from "./voltaje";
 export const PASO_INFO: Record<
   PasoKit,
   { titulo: string; subtitulo: string; nombre: string; sinKit: string }
@@ -150,6 +152,8 @@ export class EstadoArmarKit {
   readonly kitDeInicio: KitConfigurable | null;
 
   seleccion = $state.raw<SeleccionKit>(SELECCION_VACIA);
+  // Solo decide algo si hay dos kits iguales que se diferencian en el voltaje.
+  voltajeElegido = $state<number | null>(null);
   editando = $state<PasoKit | null>(null);
   dudaAbierta = $state<PasoKit | null>(null);
   aviso = $state<string | null>(null);
@@ -181,8 +185,10 @@ export class EstadoArmarKit {
   /** Posición entre los tres bloques que ve el cliente: inversor, batería, paneles. */
   indiceVisible = $derived(GRUPOS.indexOf(GRUPO_DE[this.pasoVisible]));
 
-  kit = $derived.by(() => kitElegido(this.kits, this.seleccion));
-  referencia = $derived.by(() => kitReferencia(this.kits, this.seleccion));
+  kit = $derived.by(() => kitElegido(this.kits, this.seleccion, this.voltajeElegido));
+  referencia = $derived.by(() => kitReferencia(this.kits, this.seleccion, this.voltajeElegido));
+  /** Voltajes entre los que se puede elegir cuando el kit ya está armado. */
+  voltajes = $derived.by(() => voltajesDisponibles(this.kits, this.seleccion));
   precioMinimo = $derived.by(() => {
     const compatibles = kitsCompatibles(this.kits, this.seleccion);
     return compatibles.length ? Math.min(...compatibles.map((k) => k.precio)) : null;
@@ -200,7 +206,7 @@ export class EstadoArmarKit {
     this.resumen
       .filter((r) => r.texto)
       .map((r) => r.texto)
-      .join(" + "),
+      .join(" + ") + (this.kit?.voltaje ? `, a ${etiquetaVoltaje(this.kit.voltaje)}` : ""),
   );
 
   enlaceSolicitar = $derived(
@@ -249,6 +255,7 @@ export class EstadoArmarKit {
       this.kits,
       this.kitDeInicio ? seleccionDeKit(this.kitDeInicio.config) : SELECCION_VACIA,
     ).seleccion;
+    this.voltajeElegido = this.kitDeInicio?.voltaje ?? null;
   }
 
   private enlaceWhatsApp(texto: string) {
@@ -295,6 +302,7 @@ export class EstadoArmarKit {
   /** Una sugerencia de la IA: deja el configurador exactamente en ese kit. */
   aplicarKit(k: KitConfigurable) {
     this.aplicar(seleccionDeKit(k.config));
+    this.voltajeElegido = k.voltaje;
     this.iaAbierta = false;
   }
 
@@ -309,6 +317,7 @@ export class EstadoArmarKit {
 
   reiniciar() {
     this.seleccion = normalizar(this.kits, SELECCION_VACIA).seleccion;
+    this.voltajeElegido = null;
     this.editando = null;
     this.explicando = null;
     this.aviso = null;

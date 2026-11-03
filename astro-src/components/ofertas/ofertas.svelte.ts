@@ -25,6 +25,11 @@ const tieneDescuento = (oferta: OfertaSimplificada) =>
     oferta.descuentos && typeof oferta.descuentos === "string" && oferta.descuentos.trim().length > 0,
   );
 
+// Los kits con etiqueta («Más vendida»…) van primero, y entre ellos los de la etiqueta con
+// más prioridad. Dentro de cada grupo se respeta el orden por precio (el sort es estable).
+const prioridadEtiqueta = (oferta: OfertaSimplificada) =>
+  oferta.etiquetas?.length ? (oferta.etiquetas[0].prioridad ?? 0) : -1e9;
+
 /**
  * Estado de /ofertas: los kits, la vista (configurador o listado), el
  * recomendador de IA y el filtro por marca. El menú y la portada enlazan con
@@ -69,7 +74,10 @@ export class EstadoOfertas {
       };
     }
 
-    const todas = this.ofertas.filter(coincideMarca).sort((a, b) => a.precio - b.precio);
+    const todas = this.ofertas
+      .filter(coincideMarca)
+      .sort((a, b) => a.precio - b.precio)
+      .sort((a, b) => prioridadEtiqueta(b) - prioridadEtiqueta(a));
     return {
       todas,
       conDescuento: todas.filter(tieneDescuento),
