@@ -1,4 +1,4 @@
-import type { Oferta, OfertaSimplificada } from "@/types/ofertas";
+import type { EtiquetaOferta, Oferta, OfertaSimplificada } from "@/types/ofertas";
 import { extraerConfigKit, type PotenciasCatalogo } from "./configurador";
 import { construirInstalacion, type MaterialCatalogo } from "./instalacion";
 
@@ -30,6 +30,7 @@ const PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
 interface ItemBackend {
   categoria?: string;
+  seccion?: string | null;
   descripcion?: string;
   foto?: string | null;
   cantidad?: number | null;
@@ -227,7 +228,39 @@ function mapOferta(
     categorias: extraerCategorias(o.items),
     codigos: extraerCodigos(o.items),
     config: extraerConfigKit(o.items, o.nombre_completo, potencias),
+    voltaje: voltajeDe(o.voltaje),
+    etiquetas: etiquetasDe(o.etiquetas),
   };
+}
+
+const COLORES_ETIQUETA = ["volt", "solar", "esmeralda", "medianoche"] as const;
+
+/** Un solo listón por kit, con texto; un color desconocido cae a «volt» en vez de ocultar la etiqueta. */
+export function etiquetasDe(valor: unknown): EtiquetaOferta[] {
+  if (!Array.isArray(valor)) return [];
+  const salida: EtiquetaOferta[] = [];
+  for (const e of valor) {
+    const texto = String((e as { texto?: unknown })?.texto ?? "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!texto) continue;
+    const color = (e as { color?: unknown })?.color;
+    const prioridad = (e as { prioridad?: unknown })?.prioridad;
+    salida.push({
+      texto,
+      color: (COLORES_ETIQUETA as readonly unknown[]).includes(color)
+        ? (color as EtiquetaOferta["color"])
+        : "volt",
+      ...(typeof prioridad === "number" ? { prioridad } : {}),
+    });
+  }
+  return salida.slice(0, 1);
+}
+
+/** 110 o 220; cualquier otra cosa (o nada, en los kits de antes) es null. */
+function voltajeDe(valor: unknown): number | null {
+  const numero = Number(valor);
+  return numero === 110 || numero === 220 ? numero : null;
 }
 
 // Sin tildes: el inventario escribe "BATERÍAS" y a veces "BATERIAS".
@@ -276,9 +309,12 @@ export function mapOfertaDetalle(
     descuentos: null,
     pdf: null,
     terminos_condiciones_texto: garantiaTexto,
+    voltaje: voltajeDe(o.voltaje),
     garantias: garantiaTexto ? [garantiaTexto] : [],
     elementos: materiales.map((item) => ({
+      codigo: item.material_codigo?.toString().trim() || null,
       categoria: item.categoria || null,
+      seccion: item.seccion || null,
       foto: normalizarUrlImagen(item.foto),
       descripcion: item.descripcion || null,
       cantidad: item.cantidad || null,

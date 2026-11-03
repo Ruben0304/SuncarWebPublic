@@ -11,6 +11,7 @@ import {
   type KitConfigurable,
 } from "@/lib/ofertas/configurador";
 import { formatearPrecio } from "@/lib/ofertas/ofertas-publicas";
+import { etiquetaVoltaje } from "@/components/ofertas/ChipVoltaje";
 import type { OfertaSimplificada, RecomendadorData } from "@/types/ofertas";
 
 // "Elegir con IA": el cliente cuenta qué necesita y el recomendador (el mismo
@@ -32,11 +33,13 @@ const FILA =
 
 function resumenDe(kit: KitConfigurable): string {
   const c = kit.config;
-  return [
-    etiquetaPotenciaInversor(c),
-    etiquetaPotenciaBateria(c),
-    c.paneles > 0 ? etiquetaPaneles(c) : "sin paneles",
-  ].join(" + ");
+  return (
+    [
+      etiquetaPotenciaInversor(c),
+      etiquetaPotenciaBateria(c),
+      c.paneles > 0 ? etiquetaPaneles(c) : "sin paneles",
+    ].join(" + ") + (kit.voltaje ? ` · ${etiquetaVoltaje(kit.voltaje)}` : "")
+  );
 }
 
 interface Props {

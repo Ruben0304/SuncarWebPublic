@@ -16,6 +16,14 @@ export interface ConfigKit {
   bateriaCodigo: string | null;
 }
 
+/** Un listón de la tarjeta de un kit («Más vendida»…). Lo pone el equipo desde el panel. */
+export interface EtiquetaOferta {
+  texto: string;
+  color: "volt" | "solar" | "esmeralda" | "medianoche";
+  /** Mayor = va antes en la lista. La fija el equipo en el catálogo de etiquetas. */
+  prioridad?: number;
+}
+
 export interface OfertaSimplificada {
   id?: string | null;
   /** id de Mongo: el recomendador de IA responde con este, no con el número de oferta. */
@@ -38,10 +46,18 @@ export interface OfertaSimplificada {
   codigos?: string[] | null;
   /** null si el kit no trae inversor con potencia: no entra en "Armar mi kit". */
   config?: ConfigKit | null;
+  /** 110 o 220 V. Los kits publicados antes de que existiera el campo no lo traen. */
+  voltaje?: number | null;
+  /** Listones de la esquina de la tarjeta; vacío si el kit no tiene. */
+  etiquetas?: EtiquetaOferta[];
 }
 
 export interface OfertaElemento {
+  /** material_codigo del inventario: junta dos líneas del mismo material. */
+  codigo?: string | null;
   categoria?: string | null;
+  /** Sección de la confección (INVERSORES, MPPT, BATERIAS…), sin tildes. */
+  seccion?: string | null;
   foto?: string | null;
   descripcion?: string | null;
   cantidad?: number | null;
@@ -83,6 +99,8 @@ export interface Oferta {
   descuentos?: string | null;
   pdf?: string | null;
   terminos_condiciones_texto?: string | null;
+  /** 110 o 220 V; null en los kits de antes del campo. */
+  voltaje?: number | null;
   garantias: string[];
   elementos: OfertaElemento[];
   is_active?: boolean;

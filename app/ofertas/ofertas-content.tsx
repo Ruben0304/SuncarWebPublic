@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
+import { EtiquetasOferta } from "@/components/ofertas/EtiquetasOferta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/navigation";
@@ -44,6 +45,7 @@ import { useClient } from "@/hooks/useClient";
 import { Currency } from "@/hooks/useCurrencyExchange";
 import OfertasRecommendationInput from "@/components/OfertasRecommendationInput";
 import ArmarKit from "@/components/ofertas/ArmarKit";
+import { ChipVoltaje } from "@/components/ofertas/ChipVoltaje";
 import NotasLegales from "@/components/ofertas/NotasLegales";
 import { kitsConfigurables } from "@/lib/ofertas/configurador";
 import { recomendadorService } from "@/services/api/recomendadorService";
@@ -252,6 +254,15 @@ export default function OfertasContent({
             return 0;
         }
       });
+
+      // Los kits con etiqueta («Más vendida»…) van primero, y entre ellos los de la
+      // etiqueta con más prioridad. Dentro de cada grupo se respeta el orden que
+      // eligió la persona (el sort de JS es estable).
+      const prioridadEtiqueta = (oferta: OfertaSimplificada) =>
+        oferta.etiquetas?.length ? (oferta.etiquetas[0].prioridad ?? 0) : -1e9;
+      filtered = [...filtered].sort(
+        (a, b) => prioridadEtiqueta(b) - prioridadEtiqueta(a),
+      );
 
       const tieneDescuento = (oferta: OfertaSimplificada) =>
         Boolean(
@@ -697,6 +708,7 @@ export default function OfertasContent({
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <EtiquetasOferta etiquetas={oferta.etiquetas} />
 
                               {/* Status Badge - top left corner */}
                               <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -719,6 +731,7 @@ export default function OfertasContent({
                               <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                                 {oferta.descripcion}
                               </h3>
+                              <ChipVoltaje voltaje={oferta.voltaje} className="mb-3 self-start" />
 
                               <div className="mb-6 flex-1">
                                 {/* Currency Selector and Price Display - COMENTADO: API agotada */}
@@ -834,6 +847,7 @@ export default function OfertasContent({
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <EtiquetasOferta etiquetas={oferta.etiquetas} />
 
                               <div className="absolute top-4 left-4">
                                 {oferta.is_active === false ? (
@@ -852,6 +866,7 @@ export default function OfertasContent({
                               <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                                 {oferta.descripcion}
                               </h3>
+                              <ChipVoltaje voltaje={oferta.voltaje} className="mb-3 self-start" />
 
                               <div className="mb-6 flex-1">
                                 {/* Currency Selector and Price Display - COMENTADO: API agotada */}
@@ -965,6 +980,7 @@ export default function OfertasContent({
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <EtiquetasOferta etiquetas={oferta.etiquetas} className="top-[4.75rem]" />
 
                           {/* Status badges - top left corner */}
                           <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -994,6 +1010,7 @@ export default function OfertasContent({
                           <h3 className="text-lg font-bold text-[#012928] mb-3 leading-snug break-words">
                             {oferta.descripcion}
                           </h3>
+                          <ChipVoltaje voltaje={oferta.voltaje} className="mb-3 self-start" />
 
                           <div className="mb-6 flex-1">
                             {/* Mostrar precio simple sin conversión */}
