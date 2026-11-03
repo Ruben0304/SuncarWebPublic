@@ -1,0 +1,20 @@
+---
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import Tarjeta from "~/components/tarjeta/Tarjeta.svelte";
+
+// Página personal del trabajador: sin menú, pie ni WhatsApp corporativo a
+// propósito (la tarjeta es de la persona, no del sitio).
+const { slug } = Astro.params;
+---
+
+<SiteLayout
+  title="Tarjeta de presentación"
+  description="Tarjeta de presentación digital de Suncar Cuba."
+  path={`/tarjeta/${slug}`}
+  noindex
+  nav={false}
+  footer={false}
+  chat={false}
+>
+  <Tarjeta slug={slug as string} client:load />
+</SiteLayout>

@@ -1,0 +1,51 @@
+/* Curva de las hojas de iOS: arranca rápida y se posa suave. */
+.entrar {
+  animation: entrar 0.55s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+}
+
+.pop {
+  animation: pop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pop {
+  40% {
+    transform: scale(1.18);
+  }
+}
+
+.brillo {
+  background-size: 200% 100%;
+  animation: brillo 1.4s linear infinite;
+}
+
+@keyframes brillo {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.sinBarra {
+  scrollbar-width: none;
+}
+
+.sinBarra::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entrar,
+  .pop,
+  .brillo {
+    animation: none;
+  }
+}

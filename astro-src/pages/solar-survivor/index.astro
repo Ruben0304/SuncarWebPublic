@@ -1,0 +1,544 @@
+---
+export const prerender = true;
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import { imageSrcset, optimizedImage } from "@/lib/image";
+import AlertTriangle from "lucide-svelte/icons/triangle-alert";
+import ArrowLeft from "lucide-svelte/icons/arrow-left";
+import Battery from "lucide-svelte/icons/battery";
+import ChevronDown from "lucide-svelte/icons/chevron-down";
+import Download from "lucide-svelte/icons/download";
+import Droplet from "lucide-svelte/icons/droplet";
+import Gauge from "lucide-svelte/icons/gauge";
+import Home from "lucide-svelte/icons/house";
+import Lightbulb from "lucide-svelte/icons/lightbulb";
+import Moon from "lucide-svelte/icons/moon";
+import Play from "lucide-svelte/icons/play";
+import Star from "lucide-svelte/icons/star";
+import Sun from "lucide-svelte/icons/sun";
+import Target from "lucide-svelte/icons/target";
+import Trophy from "lucide-svelte/icons/trophy";
+import Users from "lucide-svelte/icons/users";
+import Wifi from "lucide-svelte/icons/wifi";
+import Wind from "lucide-svelte/icons/wind";
+import Zap from "lucide-svelte/icons/zap";
+
+// Toda la animación depende del scroll. En vez de hidratar un framework para
+// eso, un script de pocas líneas copia `scrollY` a la variable CSS `--sy` y
+// cada estilo de abajo es una fórmula `calc()` sobre ella (los mismos números
+// que tenía la versión de React).
+const apkUrl = "https://s3.suncarsrl.com/files/Solar%20Survivor.apk";
+const appStoreUrl = "https://apps.apple.com/tr/app/solarsurvivor/id6755047736";
+const logoUrl = "https://s3.suncarsrl.com/web/logo-juego.png";
+const sy = "var(--sy)";
+
+const particles = [
+  { left: 10, top: 20, size: 2, delay: 0, duration: 20 },
+  { left: 25, top: 15, size: 3, delay: 1, duration: 22 },
+  { left: 45, top: 30, size: 1, delay: 2, duration: 18 },
+  { left: 60, top: 10, size: 2, delay: 3, duration: 25 },
+  { left: 75, top: 40, size: 3, delay: 0.5, duration: 21 },
+  { left: 15, top: 60, size: 2, delay: 1.5, duration: 19 },
+  { left: 35, top: 70, size: 1, delay: 2.5, duration: 23 },
+  { left: 55, top: 55, size: 3, delay: 3.5, duration: 20 },
+  { left: 80, top: 65, size: 2, delay: 4, duration: 24 },
+  { left: 20, top: 85, size: 1, delay: 0.8, duration: 22 },
+  { left: 50, top: 90, size: 2, delay: 1.8, duration: 19 },
+  { left: 70, top: 80, size: 3, delay: 2.8, duration: 21 },
+  { left: 90, top: 25, size: 2, delay: 3.8, duration: 23 },
+  { left: 5, top: 45, size: 1, delay: 4.5, duration: 18 },
+  { left: 85, top: 50, size: 3, delay: 1.2, duration: 25 },
+  { left: 30, top: 5, size: 2, delay: 2.2, duration: 20 },
+  { left: 65, top: 35, size: 1, delay: 3.2, duration: 22 },
+  { left: 40, top: 95, size: 2, delay: 4.2, duration: 19 },
+  { left: 95, top: 75, size: 3, delay: 0.3, duration: 24 },
+  { left: 12, top: 50, size: 2, delay: 1.3, duration: 21 },
+];
+
+const ctaParticles = [
+  { left: 15, top: 20, delay: 0 },
+  { left: 35, top: 15, delay: 0.5 },
+  { left: 55, top: 25, delay: 1 },
+  { left: 75, top: 18, delay: 1.5 },
+  { left: 25, top: 45, delay: 2 },
+  { left: 45, top: 50, delay: 2.5 },
+  { left: 65, top: 55, delay: 0.3 },
+  { left: 85, top: 48, delay: 0.8 },
+  { left: 10, top: 70, delay: 1.3 },
+  { left: 30, top: 75, delay: 1.8 },
+  { left: 50, top: 80, delay: 2.3 },
+  { left: 70, top: 72, delay: 2.8 },
+  { left: 90, top: 78, delay: 0.6 },
+  { left: 20, top: 35, delay: 1.1 },
+  { left: 80, top: 90, delay: 1.6 },
+];
+
+const features = [
+  {
+    Icon: AlertTriangle,
+    title: "Simulador de Apagones",
+    description: "Enfrenta situaciones reales de cortes eléctricos y toma decisiones críticas para mantener tu hogar funcionando.",
+    color: "from-[#012928] to-[#AFEB17]",
+    delay: 0,
+  },
+  {
+    Icon: Sun,
+    title: "Gestión Solar",
+    description: "Administra tus paneles solares y baterías. Decide cuándo almacenar energía y cuándo usarla estratégicamente.",
+    color: "from-[#F2C300] to-[#AFEB17]",
+    delay: 100,
+  },
+  {
+    Icon: Lightbulb,
+    title: "Electrodomésticos Estratégicos",
+    description: "Decide qué equipos conectar: refrigerador, ventilador, internet, televisión. Cada uno afecta tu energía y confort.",
+    color: "from-[#012928] to-[#023d3a]",
+    delay: 200,
+  },
+  {
+    Icon: Gauge,
+    title: "Medidor de Confort",
+    description: "Mantén el balance perfecto entre higiene, alimentación, entretenimiento y bienestar familiar.",
+    color: "from-[#F2C300] to-[#AFEB17]",
+    delay: 300,
+  },
+  {
+    Icon: Trophy,
+    title: "Sistema de Puntuación",
+    description: "Gana puntos por decisiones inteligentes. Compite por el mejor puntaje y desbloquea logros épicos.",
+    color: "from-[#012928] to-[#023d3a]",
+    delay: 400,
+  },
+  {
+    Icon: Target,
+    title: "Situaciones Difíciles",
+    description: "Enfrenta escenarios desafiantes: días nublados, averías, emergencias familiares. ¿Podrás sobrevivir?",
+    color: "from-[#F2C300] to-[#AFEB17]",
+    delay: 500,
+  },
+];
+
+const metrics = [
+  { Icon: Droplet, label: "Higiene", color: "from-[#012928] to-[#023d3a]", value: 85 },
+  { Icon: Home, label: "Alimentos", color: "from-[#AFEB17] to-[#F2C300]", value: 92 },
+  { Icon: Wifi, label: "Internet", color: "from-[#012928] to-[#023d3a]", value: 78 },
+  { Icon: Users, label: "Familia", color: "from-[#F2C300] to-[#AFEB17]", value: 88 },
+];
+
+const equipos = ["Refrigerador", "Ventilador", "Router WiFi", "Televisión"];
+const iconosEquipos = [Lightbulb, Wind, Battery];
+const iconoManzana =
+  "M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z";
+---
+
+<SiteLayout
+  title="Solar Survivor"
+  description="Solar Survivor: el simulador de energía solar de Suncar Cuba."
+  path="/solar-survivor"
+  nav={false}
+  footer={false}
+  chat={false}
+>
+  <div id="ss-raiz" class="relative min-h-screen bg-black overflow-hidden" style="--sy:0">
+    <!-- Fondo animado -->
+    <div class="fixed inset-0 z-0">
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-[#012928] via-[#023d3a] to-black transition-opacity duration-1000"
+        style={`opacity: calc(1 - ${sy} / 1000)`}
+      >
+      </div>
+      <div
+        class="absolute inset-0 bg-gradient-to-tr from-[#012928]/60 via-transparent to-[#012928]/40"
+        style={`opacity: min(1, ${sy} / 500)`}
+      >
+      </div>
+
+      <div class="absolute inset-0 opacity-40">
+        {particles.map((p) => (
+          <div
+            class="absolute rounded-full bg-gradient-to-br from-[#AFEB17]/20 to-[#F2C300]/20 animate-float-particle"
+            style={`left: ${p.left}%; top: ${p.top}%; width: ${p.size}px; height: ${p.size}px; animation-delay: ${p.delay}s; animation-duration: ${p.duration}s`}
+          >
+          </div>
+        ))}
+      </div>
+
+      <div
+        class="absolute top-20 right-20 w-[600px] h-[600px] bg-[#F2C300]/10 rounded-full blur-3xl transition-opacity duration-1000"
+        style={`opacity: calc(0.5 - ${sy} / 2000)`}
+      >
+      </div>
+      <div
+        class="absolute bottom-20 left-20 w-[500px] h-[500px] bg-[#AFEB17]/10 rounded-full blur-3xl transition-opacity duration-1000"
+        style={`opacity: min(0.5, ${sy} / 1000)`}
+      >
+      </div>
+    </div>
+
+    <a
+      href="/"
+      class="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white hover:bg-white/20 transition-all duration-300 group"
+    >
+      <ArrowLeft class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+      <span class="text-sm font-semibold">Volver</span>
+    </a>
+
+    <div class="relative z-10">
+      <!-- Hero -->
+      <section class="relative min-h-screen flex items-center justify-center px-4 py-20">
+        <div
+          id="ss-hero"
+          class="container mx-auto text-center transition-all duration-1500 opacity-0 translate-y-20"
+        >
+          <div
+            class="relative mb-8 md:mb-12 transition-all duration-700"
+            style={`transform: scale(max(0.6, 1 - ${sy} / 2500)); opacity: calc(1 - ${sy} / 800)`}
+          >
+            <div class="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto animate-float">
+              <img
+                src={optimizedImage(logoUrl, 768)}
+                srcset={imageSrcset(logoUrl, [384, 768, 1152])}
+                sizes="(max-width: 640px) 192px, (max-width: 768px) 256px, (max-width: 1024px) 320px, 384px"
+                alt="Solar Survivor Logo"
+                width={384}
+                height={384}
+                fetchpriority="high"
+                decoding="async"
+                class="absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
+              />
+
+              <div class="absolute inset-0 bg-gradient-to-r from-[#AFEB17]/15 to-[#F2C300]/15 rounded-full blur-3xl animate-pulse -z-10"></div>
+            </div>
+          </div>
+
+          <div
+            class="px-4"
+            style={`transform: translateY(calc(${sy} * 0.1px)); opacity: calc(1 - ${sy} / 600)`}
+          >
+            <h1 class="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 relative">
+              <span class="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#F2C300] via-[#AFEB17] to-[#F2C300] animate-gradient-x">
+                SOLAR SURVIVOR
+              </span>
+            </h1>
+
+            <p class="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/80 mb-6 md:mb-8 font-light tracking-wide animate-fade-in-up animation-delay-500">
+              Sobrevive a los apagones. Domina la energía solar.
+            </p>
+
+            <p class="text-base sm:text-lg md:text-xl text-[#AFEB17]/90 mb-8 md:mb-12 max-w-3xl mx-auto animate-fade-in-up animation-delay-1000 px-4">
+              Un simulador de apagones donde cada decisión cuenta. Gestiona tus paneles solares,
+              conecta electrodomésticos estratégicamente y mantén el confort de tu familia.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-1500">
+              <a
+                href={apkUrl}
+                target="_blank"
+                rel="noopener"
+                class="group relative px-6 sm:px-8 md:px-12 py-4 md:py-6 bg-gradient-to-r from-[#012928] via-[#AFEB17] to-[#012928] text-white text-lg sm:text-xl md:text-2xl font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-[#AFEB17]/40 transition-all duration-500 transform hover:scale-105 overflow-hidden"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                <div class="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                  <Download class="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:animate-bounce" />
+                  <span>Descargar APK</span>
+                  <Zap class="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:rotate-12 transition-transform" />
+                </div>
+              </a>
+
+              <a
+                href={appStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group relative px-6 sm:px-8 md:px-12 py-4 md:py-6 bg-white/10 backdrop-blur-md border border-white/20 text-white text-lg sm:text-xl md:text-2xl font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-white/20 hover:bg-white/20 transition-all duration-500 transform hover:scale-105 overflow-hidden"
+              >
+                <div class="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" viewBox="0 0 24 24" fill="currentColor">
+                    <path d={iconoManzana}></path>
+                  </svg>
+                  <span>App Store</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div
+            class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce transition-opacity duration-500"
+            style={`opacity: calc(1 - ${sy} / 300)`}
+          >
+            <ChevronDown class="w-8 h-8 text-white/50" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Características -->
+      <section class="relative py-32 px-4">
+        <div class="container mx-auto">
+          <div
+            class="transition-all duration-1000"
+            style={`transform: translateY(max(0px, 100px - ${sy} * 0.3px)); opacity: min(1, (${sy} - 200) / 400)`}
+          >
+            <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-12 md:mb-20 text-transparent bg-clip-text bg-gradient-to-r from-[#F2C300] to-[#AFEB17] px-4">
+              Características del Juego
+            </h2>
+          </div>
+
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
+            {features.map((feature, index) => (
+              <div
+                class="group relative bg-white/5 backdrop-blur-md rounded-xl md:rounded-2xl p-5 sm:p-6 md:p-8 border border-white/10 hover:border-white/30 transition-all duration-700 hover:scale-105 hover:-translate-y-2"
+                style={`transform: translateY(max(0px, 40px - (${sy} - 400) * 0.15px)); opacity: min(1, (${sy} - ${400 + index * 50}) / 300); transition-delay: ${feature.delay}ms`}
+              >
+                <div class={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 rounded-xl md:rounded-2xl transition-opacity duration-700 blur-xl`}></div>
+
+                <div class={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-lg md:rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 md:mb-6 text-white group-hover:scale-110 transition-transform duration-500`}>
+                  <feature.Icon class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />
+                </div>
+
+                <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-4">{feature.title}</h3>
+                <p class="text-sm sm:text-base text-white/70 leading-relaxed">{feature.description}</p>
+
+                <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 border-t-2 border-r-2 border-white/5 rounded-tr-xl md:rounded-tr-2xl transition-colors duration-500 group-hover:border-white/20"></div>
+                <div class="absolute bottom-0 left-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 border-b-2 border-l-2 border-white/5 rounded-bl-xl md:rounded-bl-2xl transition-colors duration-500 group-hover:border-white/20"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Sistema de confort -->
+      <section class="relative py-16 md:py-24 lg:py-32 px-4 bg-gradient-to-b from-transparent via-[#012928]/30 to-transparent">
+        <div class="container mx-auto">
+          <div
+            class="transition-all duration-1000"
+            style={`transform: translateY(max(0px, 100px - (${sy} - 1200) * 0.3px)); opacity: min(1, (${sy} - 1200) / 400)`}
+          >
+            <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-6 md:mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#F2C300] to-[#AFEB17] px-4">
+              Sistema de Confort
+            </h2>
+
+            <p class="text-base sm:text-lg md:text-xl text-center text-white/80 mb-12 md:mb-20 max-w-3xl mx-auto px-4">
+              Mantén el equilibrio perfecto en estos aspectos vitales para sobrevivir
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto">
+            {metrics.map((metric, index) => (
+              <div
+                class="relative group transition-all duration-700"
+                style={`transform: translateY(max(0px, 80px - (${sy} - 1500) * 0.15px - ${index * 10}px)) scale(min(1, (${sy} - 1500 + ${index * 50}) / 300)); opacity: min(1, (${sy} - 1500 + ${index * 50}) / 300)`}
+              >
+                <div class="bg-white/5 backdrop-blur-md rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 border border-white/10 hover:border-white/30 transition-all duration-700 text-center hover:scale-110 hover:-translate-y-2">
+                  <div class={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br ${metric.color} flex items-center justify-center mx-auto mb-3 md:mb-4 text-white group-hover:rotate-12 transition-transform duration-500`}>
+                    <metric.Icon class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
+                  </div>
+                  <h3 class="text-sm sm:text-base md:text-xl font-bold text-white mb-2">{metric.label}</h3>
+
+                  <div class="w-full h-1.5 md:h-2 bg-white/10 rounded-full overflow-hidden mt-3 md:mt-4">
+                    <div
+                      class={`h-full bg-gradient-to-r ${metric.color} transition-all duration-1000`}
+                      style={`width: min(${metric.value}%, (${sy} - 1600) / 10 * 1%)`}
+                    >
+                    </div>
+                  </div>
+                  <p class="text-xs text-white/70 mt-2">{metric.value}% óptimo</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Jugabilidad -->
+      <section class="relative py-16 md:py-24 lg:py-32 px-4">
+        <div class="container mx-auto max-w-6xl">
+          <div
+            class="transition-all duration-1000"
+            style={`transform: translateY(max(0px, 100px - (${sy} - 2200) * 0.3px)); opacity: min(1, (${sy} - 2200) / 400)`}
+          >
+            <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-center mb-12 md:mb-20 text-transparent bg-clip-text bg-gradient-to-r from-[#AFEB17] to-[#F2C300] px-4">
+              Jugabilidad Épica
+            </h2>
+          </div>
+
+          <div class="space-y-16 md:space-y-24 lg:space-y-32">
+            <!-- Ciclo día/noche -->
+            <div
+              class="grid md:grid-cols-2 gap-8 md:gap-12 items-center transition-all duration-1000"
+              style={`transform: translateX(max(-100px, -100px + (${sy} - 2400) * 0.2px)); opacity: min(1, (${sy} - 2400) / 400)`}
+            >
+              <div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4 md:mb-6 flex items-center gap-3 md:gap-4">
+                  <Sun class="w-8 h-8 md:w-10 md:h-10 text-[#F2C300]" />
+                  Ciclo Día/Noche
+                </h3>
+                <p class="text-base sm:text-lg text-white/80 leading-relaxed mb-4 md:mb-6">
+                  Durante el día, tus paneles solares generan energía que puedes usar inmediatamente o almacenar en baterías.
+                  Cuando cae la noche o hay un apagón, dependerás de tu energía almacenada.
+                </p>
+                <div class="flex gap-3 md:gap-4">
+                  <div class="flex-1 bg-gradient-to-br from-[#F2C300] to-[#AFEB17] rounded-lg md:rounded-xl p-3 md:p-4 text-white transform hover:scale-105 transition-transform duration-500">
+                    <Sun class="w-6 h-6 md:w-8 md:h-8 mb-2" />
+                    <div class="text-xs sm:text-sm font-semibold">Día</div>
+                    <div class="text-[10px] sm:text-xs opacity-80">Generar energía</div>
+                  </div>
+                  <div class="flex-1 bg-gradient-to-br from-[#012928] to-[#023d3a] rounded-lg md:rounded-xl p-3 md:p-4 text-white transform hover:scale-105 transition-transform duration-500">
+                    <Moon class="w-6 h-6 md:w-8 md:h-8 mb-2" />
+                    <div class="text-xs sm:text-sm font-semibold">Noche</div>
+                    <div class="text-[10px] sm:text-xs opacity-80">Usar baterías</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="relative h-64 md:h-80 bg-gradient-to-b from-[#F2C300]/10 to-[#012928]/30 rounded-xl md:rounded-2xl overflow-hidden border border-white/10">
+                <div class="absolute inset-0 flex items-center justify-center gap-8 md:gap-12">
+                  <Sun class="w-24 h-24 md:w-28 md:h-28 text-[#F2C300] animate-spin-slow drop-shadow-[0_0_18px_rgba(242,195,0,0.4)]" />
+                  <Moon class="w-24 h-24 md:w-28 md:h-28 text-white/80 animate-spin-reverse drop-shadow-[0_0_18px_rgba(255,255,255,0.25)]" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Gestión de equipos -->
+            <div
+              class="grid md:grid-cols-2 gap-8 md:gap-12 items-center transition-all duration-1000"
+              style={`transform: translateX(min(100px, 100px - (${sy} - 2800) * 0.2px)); opacity: min(1, (${sy} - 2800) / 400)`}
+            >
+              <div class="order-2 md:order-1 relative h-64 md:h-80 bg-gradient-to-br from-[#012928]/20 to-[#023d3a]/20 rounded-xl md:rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center">
+                <div class="grid grid-cols-3 gap-3 md:gap-4 p-6 md:p-8">
+                  {iconosEquipos.map((Icono, i) => (
+                    <div
+                      class="w-16 h-16 md:w-20 md:h-20 bg-white/5 rounded-lg md:rounded-xl flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer group border border-white/10 hover:border-white/30"
+                      style={`transform: scale(min(1, (${sy} - ${2900 + i * 100}) / 200)); opacity: min(1, (${sy} - ${2900 + i * 100}) / 200)`}
+                    >
+                      <Icono class="w-8 h-8 md:w-10 md:h-10 text-[#AFEB17] group-hover:scale-125 transition-transform duration-500" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div class="order-1 md:order-2">
+                <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4 md:mb-6 flex items-center gap-3 md:gap-4">
+                  <Battery class="w-8 h-8 md:w-10 md:h-10 text-[#AFEB17]" />
+                  Gestión de Equipos
+                </h3>
+                <p class="text-base sm:text-lg text-white/80 leading-relaxed mb-4 md:mb-6">
+                  Conecta y desconecta electrodomésticos según tu energía disponible.
+                  ¿Priorizas el refrigerador para conservar alimentos o el ventilador para mantener el confort?
+                  Cada decisión tiene consecuencias.
+                </p>
+                <div class="space-y-2">
+                  {equipos.map((item, i) => (
+                    <div
+                      class="flex items-center justify-between bg-white/5 rounded-lg p-2.5 md:p-3 border border-white/10 hover:border-white/30 transition-all duration-500 hover:translate-x-2"
+                      style={`transform: translateX(max(-50px, -50px + (${sy} - ${3000 + i * 50}) * 0.1px)); opacity: min(1, (${sy} - ${3000 + i * 50}) / 200)`}
+                    >
+                      <span class="text-sm sm:text-base text-white font-semibold">{item}</span>
+                      <div class="flex items-center gap-1.5 md:gap-2">
+                        <Zap class="w-3.5 h-3.5 md:w-4 md:h-4 text-[#F2C300]" />
+                        <span class="text-[#F2C300] text-xs sm:text-sm">{50 + i * 30}W</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA final -->
+      <section class="relative py-16 md:py-24 lg:py-32 px-4">
+        <div
+          class="container mx-auto max-w-4xl text-center transition-all duration-1000"
+          style={`transform: scale(min(1, (${sy} - 3400) / 400)); opacity: min(1, (${sy} - 3400) / 400)`}
+        >
+          <div class="relative bg-gradient-to-br from-[#012928]/20 via-[#AFEB17]/15 to-[#012928]/20 backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 border border-[#AFEB17]/30 overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+              {ctaParticles.map((p) => (
+                <Zap
+                  class="absolute text-[#F2C300] animate-float-particle"
+                  style={`left: ${p.left}%; top: ${p.top}%; animation-delay: ${p.delay}s; width: 20px; height: 20px`}
+                />
+              ))}
+            </div>
+
+            <div class="relative z-10">
+              <Star class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-[#F2C300] mx-auto mb-4 md:mb-6 animate-spin-slow" />
+
+              <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 md:mb-6 px-4">
+                ¿Listo para el Desafío?
+              </h2>
+
+              <p class="text-base sm:text-lg md:text-xl text-white/80 mb-8 md:mb-10 px-4">
+                Descarga Solar Survivor ahora y demuestra que puedes sobrevivir
+                a cualquier apagón con energía solar inteligente.
+              </p>
+
+              <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a
+                  href={apkUrl}
+                  target="_blank"
+                  rel="noopener"
+                  class="group relative px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-7 bg-gradient-to-r from-[#012928] via-[#AFEB17] to-[#012928] text-white text-lg sm:text-xl md:text-2xl font-black rounded-full shadow-2xl hover:shadow-[#AFEB17]/40 transition-all duration-500 transform hover:scale-110 overflow-hidden"
+                >
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  <div class="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                    <Download class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 group-hover:animate-bounce" />
+                    <span>DESCARGAR APK</span>
+                    <Play class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 group-hover:scale-125 transition-transform" />
+                  </div>
+                </a>
+
+                <a
+                  href={appStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="group relative px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-7 bg-white/10 backdrop-blur-md border border-white/30 text-white text-lg sm:text-xl md:text-2xl font-black rounded-full shadow-2xl hover:bg-white/20 hover:shadow-white/20 transition-all duration-500 transform hover:scale-110 overflow-hidden"
+                >
+                  <div class="relative flex items-center gap-2 sm:gap-3 md:gap-4 z-10">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" viewBox="0 0 24 24" fill="currentColor">
+                      <path d={iconoManzana}></path>
+                    </svg>
+                    <span>APP STORE</span>
+                  </div>
+                </a>
+              </div>
+
+              <p class="text-xs sm:text-sm text-white/60 mt-4 md:mt-6 px-4">
+                Compatible con Android 5.0 o superior • Tamaño: ~10MB
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="h-32"></div>
+    </div>
+  </div>
+</SiteLayout>
+
+<script>
+  // Copia el scroll a --sy (una vez por fotograma) y da la entrada del hero.
+  const raiz = document.getElementById("ss-raiz");
+  const hero = document.getElementById("ss-hero");
+  let pendiente = false;
+
+  const actualizar = () => {
+    pendiente = false;
+    raiz?.style.setProperty("--sy", String(window.scrollY));
+  };
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (pendiente) return;
+      pendiente = true;
+      requestAnimationFrame(actualizar);
+    },
+    { passive: true },
+  );
+  actualizar();
+
+  setTimeout(() => {
+    hero?.classList.remove("opacity-0", "translate-y-20");
+    hero?.classList.add("opacity-100", "translate-y-0");
+  }, 100);
+</script>

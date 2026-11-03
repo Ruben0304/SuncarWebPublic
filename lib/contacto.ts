@@ -78,21 +78,25 @@ export async function obtenerContacto(): Promise<ContactoSuncar> {
     return CONTACTO_FALLBACK
   }
 
-  try {
-    const { getBackendUrl } = await import("@/lib/backend-url")
-    const respuesta = await fetch(`${getBackendUrl()}/api/contactos/first`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer suncar-token-2025",
-      },
-      next: { revalidate: 3600 },
-    })
-
-    if (!respuesta.ok) return CONTACTO_FALLBACK
-
-    const datos = await respuesta.json()
-    return aContacto(datos?.data)
-  } catch {
-    return CONTACTO_FALLBACK
-  }
+  // `next.revalidate` solo vale en Next: `memo` da la misma hora de caché en
+  // cualquier servidor. El fallback no se guarda, así que se reintenta enseguida.
+  const { memo } = await import("@/lib/memo")
+  const contacto = await memo<ContactoSuncar | null>("contacto", 3600 * 1000, async () => {
+    try {
+      const { getBackendUrl } = await import("@/lib/backend-url")
+      const respuesta = await fetch(`${getBackendUrl()}/api/contactos/first`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer suncar-token-2025",
+        },
+        signal: AbortSignal.timeout(5000),
+        next: { revalidate: 3600 },
+      })
+      if (!respuesta.ok) return null
+      return aContacto((await respuesta.json())?.data)
+    } catch {
+      return null
+    }
+  })
+  return contacto ?? CONTACTO_FALLBACK
 }

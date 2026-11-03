@@ -1,0 +1,71 @@
+---
+export const prerender = true;
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import VideoSlider from "~/components/testimonios/VideoSlider.svelte";
+---
+
+<SiteLayout
+  title="Testimonios de Clientes - Opiniones Reales"
+  description="Lee las experiencias reales de clientes que han solucionado sus problemas eléctricos con Suncar Cuba. Testimonios de familias y empresas satisfechas con nuestros sistemas de energía solar."
+  path="/testimonios"
+>
+  <!-- Hero -->
+  <section class="relative py-20 lg:py-24 bg-gradient-to-br from-[#011818] via-[#012928] to-[#011818] overflow-hidden">
+    <div class="container mx-auto px-4 md:px-6 lg:px-8">
+      <div class="text-center text-white space-y-6" style="margin-top: 100px">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+          <span class="block animate-fade-in-up">Lo Que Dicen</span>
+          <span class="block bg-secondary-gradient bg-clip-text text-transparent animate-fade-in-up animation-delay-200">
+            Nuestros Clientes
+          </span>
+        </h1>
+        <p class="text-lg lg:text-xl text-green-100/80 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-400">
+          Historias reales de familias cubanas que han transformado sus
+          hogares con energía solar y han logrado independencia energética
+        </p>
+      </div>
+    </div>
+
+    <div class="absolute top-20 left-10 w-2 h-2 bg-white/30 rounded-full animate-bounce animation-delay-1000"></div>
+    <div class="absolute top-40 right-20 w-3 h-3 bg-white/20 rounded-full animate-bounce animation-delay-1200"></div>
+    <div class="absolute bottom-40 left-20 w-1 h-1 bg-white/40 rounded-full animate-bounce animation-delay-800"></div>
+  </section>
+
+  <!-- Testimonios en video -->
+  <section class="py-16 lg:py-20 bg-[#F2F2EF]">
+    <div class="container mx-auto px-4 md:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">Testimonios en Video</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Escucha directamente de nuestros clientes satisfechos sobre su
+          experiencia con SunCar
+        </p>
+      </div>
+
+      <VideoSlider client:visible />
+    </div>
+  </section>
+
+  <!-- Cierre (el botón de cotización está deshabilitado temporalmente) -->
+  <section class="py-16 lg:py-20 bg-primary">
+    <div class="container mx-auto px-4 md:px-6 lg:px-8 text-center">
+      <div class="max-w-3xl mx-auto space-y-6">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          ¿Quieres Ser Nuestro Próximo Cliente Satisfecho?
+        </h2>
+        <p class="text-lg text-green-100/80">
+          Únete a cientos de familias cubanas que ya disfrutan de los
+          beneficios de la energía solar
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/servicios"
+            class="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300 text-center"
+          >
+            Ver Servicios
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</SiteLayout>

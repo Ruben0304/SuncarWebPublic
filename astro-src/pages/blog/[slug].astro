@@ -1,0 +1,85 @@
+---
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import Articulo from "~/components/blog/Articulo.svelte";
+import ArticuloCliente from "~/components/blog/ArticuloCliente.svelte";
+import { CATEGORIAS_INFO } from "~/lib/blog";
+import { obtenerBlog } from "~/lib/blogServer";
+import { markdownAHtml } from "~/lib/blogMarkdown";
+
+const { slug } = Astro.params;
+const resultado = slug ? await obtenerBlog(slug) : null;
+
+if (resultado?.estado === "no_existe") {
+  return new Response(null, { status: 404 });
+}
+
+// resultado null: el backend no respondió. La página sale con el título
+// genérico y la isla pide el artículo desde el navegador.
+const blog = resultado?.estado === "ok" ? resultado.blog : null;
+const html = blog ? markdownAHtml(blog.contenido) : "";
+
+const siteUrl = "https://suncarsrl.com";
+const descripcion = blog
+  ? blog.seo_meta_descripcion || blog.resumen
+  : "Artículo del blog de energía solar de Suncar Cuba.";
+
+const blogPostingJsonLd = blog && {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: blog.titulo,
+  description: descripcion,
+  image: blog.imagen_principal ? [blog.imagen_principal, ...(blog.imagenes_adicionales ?? [])] : undefined,
+  datePublished: blog.fecha_publicacion ?? blog.fecha_creacion,
+  dateModified: blog.fecha_actualizacion ?? blog.fecha_publicacion ?? blog.fecha_creacion,
+  author: { "@type": "Person", name: blog.autor },
+  publisher: {
+    "@type": "Organization",
+    name: "Suncar Cuba",
+    logo: { "@type": "ImageObject", url: `${siteUrl}/images/logo.png` },
+  },
+  mainEntityOfPage: { "@type": "WebPage", "@id": new URL(`/blog/${blog.slug}`, siteUrl).toString() },
+  articleSection: CATEGORIAS_INFO[blog.categoria]?.label,
+  keywords: blog.tags?.length ? blog.tags.join(", ") : undefined,
+  inLanguage: "es",
+};
+---
+
+<SiteLayout
+  title={blog ? blog.titulo : "Blog"}
+  description={descripcion}
+  path={`/blog/${slug}`}
+  ogImage={blog?.imagen_principal ?? undefined}
+  structuredData={blogPostingJsonLd ? [blogPostingJsonLd] : []}
+>
+  {blog ? <Articulo {blog} {html} /> : <ArticuloCliente slug={slug as string} client:load />}
+</SiteLayout>
+
+<script>
+  import { toast } from "~/lib/toast.svelte";
+
+  // Un solo atendedor para todos los botones "Compartir" del artículo, estén
+  // en el HTML del servidor o en el de la isla de respaldo.
+  document.addEventListener("click", async (e) => {
+    const boton = (e.target as Element).closest<HTMLElement>("[data-compartir]");
+    if (!boton) return;
+    const datos = {
+      title: boton.dataset.titulo || "Artículo de Suncar",
+      text: boton.dataset.resumen || "",
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(datos);
+      } catch {
+        // el usuario canceló el diálogo de compartir
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(datos.url);
+      toast("Enlace copiado al portapapeles", { tipo: "exito" });
+    } catch {
+      toast("No se pudo copiar el enlace", { tipo: "error" });
+    }
+  });
+</script>

@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteLayout from "~/layouts/SiteLayout.astro";
 import { obtenerOfertaPublica } from "@/lib/ofertas/ofertas-publicas-server";
 import { formatearPrecio } from "@/lib/ofertas/ofertas-publicas";
 import { obtenerContacto } from "@/lib/contacto";
@@ -23,7 +23,7 @@ const whatsappLink = `https://wa.me/${contacto.whatsapp}?text=${whatsappMensaje}
 const precioTexto = `${formatearPrecio(oferta.precio)} ${oferta.moneda}`;
 const descripcionCorta =
   oferta.terminos_condiciones_texto ??
-  `Kit solar ${oferta.descripcion} por ${precioTexto}. Instalación profesional de SunCar en Cuba.`;
+  `Kit solar ${oferta.descripcion} por ${precioTexto}. Instalación profesional de Suncar en Cuba.`;
 
 // Product + Offer: lo que Google necesita para un resultado enriquecido de
 // producto (precio, moneda, disponibilidad) en las búsquedas de kits.
@@ -52,19 +52,15 @@ for (const el of oferta.elementos) {
 }
 ---
 
-<BaseLayout
+<SiteLayout
   title={oferta.descripcion}
   description={descripcionCorta}
   path={`/ofertas/${slug}`}
   ogImage={oferta.imagen ?? undefined}
   structuredData={[productJsonLd]}
 >
-  <div class="min-h-screen bg-[#F2F2EF]">
-    <header class="bg-[#012928] px-6 py-5">
-      <a href="/" class="text-white font-semibold">SunCar Cuba</a>
-    </header>
-
-    <main class="mx-auto max-w-4xl px-6 py-12">
+  <div class="min-h-screen">
+    <main class="mx-auto max-w-4xl px-6 pb-12 pt-32">
       <nav class="mb-6 text-sm text-gray-500">
         <a href="/ofertas" class="hover:underline">Kits</a> / <span>{oferta.descripcion}</span>
       </nav>
@@ -134,4 +130,4 @@ for (const el of oferta.elementos) {
       )}
     </main>
   </div>
-</BaseLayout>
+</SiteLayout>

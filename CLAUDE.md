@@ -15,12 +15,34 @@ This is a **Suncar solar energy company landing page** built with **Next.js 15, 
   `lib/backend-url.ts` falls back to `https://api.suncarsrl.com` (production). The repo is connected to
   the boss's Railway only during a release (while connected, a push to `main` deploys); never push unless
   asked. See `../SunCarBackend/docs/DESARROLLO_LOCAL.md`
-- **Build**: `npm run build` (Production build)
-- **Start**: `npm run start` (Start production server)
+- **Build**: `npm run build` (`astro build`; el sitio corre en Astro, el código de Next sigue en `app/` y se compila con `npm run build:next`)
+- **Start**: `npm run start` (`node server.mjs`: Express + Astro, con brotli/gzip, cabeceras de seguridad y `/healthz`)
+- **Dev (Astro)**: `npm run dev:astro` (puerto 4322); **pruebas de humo** de un sitio ya corriendo: `npm run smoke -- <url>`
+- **Node**: >= 22.23.4 (Astro 7); `.node-version` fija 24 para Railway
+- **Railway**: `railway.json` define el arranque y el health check. `NEXT_PUBLIC_BACKEND_URL` debe existir en el *build* (se inlinea en el JS del navegador)
 - **Lint**: `npm run lint` (Next.js built-in ESLint)
 
 ## Architecture & Structure
 
+### El sitio actual: Astro + Svelte (`astro-src/`)
+Sin React en el navegador. Todo lo que sirve `npm run build` / `npm start` sale de `astro-src/`;
+`app/`, `components/`, `hooks/` de la raíz son el sitio anterior en Next.js (aún compila con
+`build:next`) y solo se reutilizan sus módulos de TypeScript puro (`lib/`, `services/`, `types/`).
+
+- `layouts/BaseLayout.astro`: `<head>`, SEO y JSON-LD. `layouts/SiteLayout.astro`: BaseLayout + el
+  chrome (cargador, menú, WhatsApp flotante, avisos, pie), que vive solo ahí.
+- **Una página = `SiteLayout` + su contenido**: HTML estático en el `.astro` (lo preferido: cero JS)
+  o una sola isla Svelte (`client:load`/`client:visible`). Opciones `nav`/`footer`/`chat={false}`.
+- Un `.astro` NUNCA debe pasar hijos interactivos a una isla: llegan como HTML estático
+  (`<astro-slot>`) y no se hidratan. `npm run smoke` lo detecta.
+- `components/{chrome,home,ui}` y `components/<pagina>/`; `lib/` = ayudantes de Svelte (estado con
+  runas en `*.svelte.ts`, p. ej. `cart.svelte.ts`, `contacto.svelte.ts`, `toast.svelte.ts`).
+- Alias: `~/` = `astro-src/`, `@/` = raíz del repo. Svelte 5 con runas; iconos de `lucide-svelte`.
+- Imágenes por `/_image` (`@/lib/image`: `optimizedImage`, `imageSrcset`). No usar `zustand` ni
+  nada de `@/hooks` o `@/components/ui` (arrastran React).
+- Páginas con datos del servidor (blog, ofertas, ficha de producto) son SSR con `memo` de `lib/memo.ts`.
+
+### Sitio anterior (Next.js)
 ### Core Framework
 - **Next.js 15** with App Router (`app/` directory structure)
 - **React 19** with client-side components

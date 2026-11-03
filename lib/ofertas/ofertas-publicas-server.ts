@@ -1,4 +1,5 @@
 import { getBackendUrl } from "@/lib/backend-url";
+import { memo } from "@/lib/memo";
 import type { Oferta, OfertaSimplificada } from "@/types/ofertas";
 import {
   CATEGORIAS_POTENCIA,
@@ -28,6 +29,13 @@ const LIMITE_MS = 5000;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function pedirJson(ruta: string): Promise<any | null> {
+  // `next.revalidate` solo existe en Next; `memo` da el mismo minuto de caché
+  // (y una sola llamada si llegan varias visitas a la vez) en cualquier servidor.
+  return memo(`ofertas:${ruta}`, REVALIDAR_SEGUNDOS * 1000, () => pedirJsonSinCache(ruta));
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function pedirJsonSinCache(ruta: string): Promise<any | null> {
   let temporizador: ReturnType<typeof setTimeout> | undefined;
   const peticion = fetch(`${getBackendUrl()}${ruta}`, {
     headers: { accept: "application/json" },

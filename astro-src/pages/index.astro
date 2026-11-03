@@ -1,15 +1,30 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import InitialLoader from "../components/InitialLoader";
-import HomePageApp from "../components/HomePageApp";
+export const prerender = true;
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import ScrollProgress from "~/components/chrome/ScrollProgress.svelte";
+import Hero from "~/components/home/Hero.svelte";
+import TrustedPartners from "~/components/home/TrustedPartners.svelte";
+import Kits from "~/components/home/Kits.svelte";
+import ProductosSueltos from "~/components/home/ProductosSueltos.svelte";
+import Felicity from "~/components/home/Felicity.svelte";
+import Blackout from "~/components/home/Blackout.svelte";
+import Oficinas from "~/components/home/Oficinas.svelte";
+import QuickContact from "~/components/home/QuickContact.svelte";
 ---
 
-<BaseLayout
-  title="SunCar Cuba - Paneles Solares y Baterías en Cuba"
-  description="Soluciona los problemas eléctricos de tu hogar con energía solar confiable. SunCar Cuba ofrece sistemas de paneles solares y baterías que garantizan electricidad 24/7, incluso durante apagones. Instalación profesional en Cuba."
+<SiteLayout
+  title="Suncar Cuba - Paneles Solares y Baterías en Cuba"
+  description="Soluciona los problemas eléctricos de tu hogar con energía solar confiable. Suncar Cuba ofrece sistemas de paneles solares y baterías que garantizan electricidad 24/7, incluso durante apagones. Instalación profesional en Cuba."
   path="/"
   fullTitle
 >
-  <InitialLoader client:load />
-  <HomePageApp client:load />
-</BaseLayout>
+  <ScrollProgress client:load />
+  <Hero client:load />
+  <TrustedPartners client:visible />
+  <Kits client:load />
+  <ProductosSueltos client:load />
+  <Felicity client:visible />
+  <Blackout client:visible />
+  <Oficinas client:visible />
+  <QuickContact client:visible />
+</SiteLayout>

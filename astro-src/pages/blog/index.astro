@@ -1,0 +1,65 @@
+---
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import BlogListado from "~/components/blog/BlogListado.svelte";
+import { CATEGORIAS_INFO, esCategoria } from "~/lib/blog";
+import { obtenerBlogs } from "~/lib/blogServer";
+
+// Los artículos se piden aquí, en el servidor (caché de un minuto), para que
+// el HTML ya los traiga. Si el backend no responde, `blogs` es null y la isla
+// los pide desde el navegador como antes.
+const blogs = await obtenerBlogs();
+const param = Astro.url.searchParams.get("categoria");
+const categoria = esCategoria(param) ? param : null;
+const info = categoria ? CATEGORIAS_INFO[categoria] : null;
+---
+
+<SiteLayout
+  title="Blog de Energía Solar"
+  description="Artículos sobre energía solar, paneles fotovoltaicos, baterías y ahorro energético en Cuba."
+  path="/blog"
+>
+  <section class="relative min-h-[60vh] flex items-center justify-center px-4 py-24 md:px-6 lg:px-8 bg-gradient-to-br from-[#012928] via-[#023d3a] to-[#012928] overflow-hidden">
+    <div class="absolute top-20 left-10 w-32 h-32 bg-secondary-gradient rounded-full opacity-20 blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-10 right-20 w-40 h-40 bg-[#AFEB17]/20 rounded-full opacity-30 blur-3xl animate-pulse animation-delay-1000"></div>
+
+    <div class="container mx-auto text-center relative z-10">
+      <div class="space-y-6 max-w-4xl mx-auto">
+        {info && (
+          <div class="mb-4">
+            <a href="/blog" class="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm">
+              ← Volver a todos los artículos
+            </a>
+          </div>
+        )}
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+          {info ? (
+            <span class="flex items-center justify-center gap-3">
+              <span class="text-5xl">{info.icon}</span>
+              {info.label}
+            </span>
+          ) : (
+            <>
+              Blog de
+              <span class="block bg-secondary-gradient bg-clip-text text-transparent mt-2 leading-tight pb-1">
+                Energía Solar
+              </span>
+            </>
+          )}
+        </h1>
+        <p class="text-lg sm:text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+          {info
+            ? `Artículos sobre ${info.label.toLowerCase()}`
+            : "Información, consejos y novedades sobre energía solar, instalaciones fotovoltaicas y sostenibilidad"}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {
+    blogs ? (
+      <BlogListado inicial={blogs} categoria={categoria} />
+    ) : (
+      <BlogListado inicial={null} categoria={categoria} client:load />
+    )
+  }
+</SiteLayout>

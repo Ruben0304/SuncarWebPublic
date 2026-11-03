@@ -1,4 +1,5 @@
 import { getBackendUrl } from "@/lib/backend-url";
+import { memo } from "@/lib/memo";
 import type { ArticuloTienda, CatalogoWebResponse } from "@/types/tienda";
 
 /**
@@ -22,7 +23,11 @@ async function pedirPagina(page: number, provincia: string | null): Promise<Cata
 
     const respuesta = await fetch(
       `${getBackendUrl()}/api/productos/catalogo-web?${params}`,
-      { headers: { accept: "application/json" }, next: { revalidate: REVALIDAR_SEGUNDOS } },
+      {
+        headers: { accept: "application/json" },
+        signal: AbortSignal.timeout(8000),
+        next: { revalidate: REVALIDAR_SEGUNDOS },
+      },
     );
     if (!respuesta.ok) return null;
     return (await respuesta.json()) as CatalogoWebResponse;
@@ -33,6 +38,14 @@ async function pedirPagina(page: number, provincia: string | null): Promise<Cata
 
 /** Catálogo nacional (sin filtrar por provincia): el que ve un buscador. */
 export async function obtenerCatalogoWebPublico(): Promise<ArticuloTienda[]> {
+  // Un catálogo vacío no se guarda (memo ignora null): se reintenta en la próxima.
+  return (await memo("catalogo-web", REVALIDAR_SEGUNDOS * 1000, async () => {
+    const articulos = await traerCatalogo();
+    return articulos.length ? articulos : null;
+  })) ?? [];
+}
+
+async function traerCatalogo(): Promise<ArticuloTienda[]> {
   const primera = await pedirPagina(1, null);
   if (!primera?.success || !Array.isArray(primera.data)) return [];
 

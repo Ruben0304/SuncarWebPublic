@@ -1,0 +1,37 @@
+---
+/**
+ * Plantilla de TODAS las páginas del sitio. Una página es esto más su
+ * contenido: o HTML estático en un .astro, o una sola isla de Svelte.
+ *
+ * El "chrome" (cargador inicial, menú, WhatsApp flotante, pie) vive acá y
+ * solo acá, así ninguna página lo repite ni lo envuelve a su manera.
+ */
+import BaseLayout, { type Props as BaseProps } from "./BaseLayout.astro";
+import InitialLoader from "~/components/chrome/InitialLoader.svelte";
+import Navigation from "~/components/chrome/Navigation.svelte";
+import ChatWidget from "~/components/chrome/ChatWidget.svelte";
+import Footer from "~/components/chrome/Footer.svelte";
+import Toaster from "~/components/ui/Toaster.svelte";
+
+export interface Props extends BaseProps {
+  /** false en pantallas que no llevan menú (p. ej. la tarjeta personal). */
+  nav?: boolean;
+  /** false donde no va el pie de página. */
+  footer?: boolean;
+  /** false donde el WhatsApp corporativo flotante no corresponde. */
+  chat?: boolean;
+}
+
+const { nav = true, footer = true, chat = true, ...base } = Astro.props;
+---
+
+<BaseLayout {...base}>
+  <InitialLoader client:load />
+  {chat && <ChatWidget client:idle />}
+  <Toaster client:idle />
+  <div class="min-h-screen bg-[#F2F2EF] overflow-x-hidden">
+    {nav && <Navigation client:load />}
+    <slot />
+    {footer && <Footer client:visible />}
+  </div>
+</BaseLayout>

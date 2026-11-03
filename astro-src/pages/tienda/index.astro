@@ -1,0 +1,61 @@
+---
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import Lottie from "~/components/ui/Lottie.svelte";
+import { obtenerContacto } from "@/lib/contacto";
+
+// "Tienda Física" del menú: la tienda aún no abre, así que es una página de
+// «próximamente» con aviso por WhatsApp. La tienda online es /productos.
+const contacto = await obtenerContacto();
+const mensaje = encodeURIComponent("Hola, quiero enterarme cuando abran la tienda de productos fotovoltaicos");
+const whatsappLink = `https://wa.me/${contacto.whatsapp}?text=${mensaje}`;
+---
+
+<SiteLayout
+  title="Tienda física - Próximamente"
+  description="Estamos afinando los últimos detalles para abrir nuestra primera tienda de productos fotovoltaicos en Playa, La Habana. Escríbenos y te avisamos apenas abramos."
+  path="/tienda"
+>
+  <main class="pt-28 pb-20 px-4">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-12 flex justify-center">
+        <div class="w-full max-w-md md:max-w-lg">
+          <div class="w-full h-full flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[500px]">
+            <Lottie client:visible src="https://s3.suncarsrl.com/lottie/tienda.lottie" class="w-full h-auto" />
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center bg-white/80 backdrop-blur rounded-3xl shadow-xl border border-white/50 p-10 md:p-16">
+        <span class="inline-block mx-auto mb-6 bg-[#012928] text-white px-4 py-1 text-sm rounded-full font-semibold">
+          Próximamente
+        </span>
+        <h1 class="text-4xl md:text-5xl font-bold text-primary mb-6">Nuestra tienda está casi lista</h1>
+        <p class="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+          Estamos afinando los últimos detalles para abrir nuestra primera tienda de productos fotovoltaicos.
+          Queremos ofrecerte equipos de calidad y componentes de alto rendimiento a lo largo de todo el país para
+          que puedas impulsar tus proyectos con energía solar confiable. Muy pronto estará disponible en Esquina 42 y 21, Municipio Playa, Provincia La Habana 📍.
+        </p>
+        <div class="text-base text-gray-600 leading-relaxed mb-10">
+          Mientras tanto, nuestro equipo está listo para asesorarte y diseñar soluciones a la medida.
+          Si deseas recibir una notificación apenas abramos, escríbenos y con gusto te mantendremos al tanto.
+        </div>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full sm:w-auto rounded-2xl bg-[#012928] text-white font-semibold px-8 py-3 shadow-lg shadow-[#AFEB17]/20 transition-transform hover:scale-[1.02] text-center"
+          >
+            Avísame cuando esté listo
+          </a>
+          <a
+            href="/ofertas"
+            class="w-full sm:w-auto rounded-2xl border border-primary/30 text-primary font-semibold px-8 py-3 hover:border-primary hover:bg-primary/5 transition-colors"
+          >
+            Ver kits completos
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</SiteLayout>

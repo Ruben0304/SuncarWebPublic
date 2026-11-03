@@ -1,0 +1,14 @@
+---
+export const prerender = true;
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import Calculadora from "~/components/calculadora/Calculadora.svelte";
+---
+
+<SiteLayout
+  title="Calculadora de Consumo Energético"
+  description="Calcula el consumo energético de tu hogar y descubre el sistema solar que necesitas con nuestra calculadora gratuita."
+  path="/calculadora"
+  nav={false}
+>
+  <Calculadora client:load />
+</SiteLayout>

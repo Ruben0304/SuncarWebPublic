@@ -1,0 +1,13 @@
+---
+export const prerender = true;
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import Galeria from "~/components/galeria/Galeria.svelte";
+---
+
+<SiteLayout
+  title="Galería de Instalaciones"
+  description="Fotos reales de instalaciones de paneles solares y sistemas de energía solar de Suncar en hogares y negocios de Cuba."
+  path="/galeria"
+>
+  <Galeria client:load />
+</SiteLayout>

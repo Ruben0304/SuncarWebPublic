@@ -7,7 +7,7 @@ import "../../styles/globals.css";
 import { obtenerContacto } from "../../lib/contacto";
 
 export interface Props {
-  /** Sin "| SunCar Cuba": eso lo pone esta misma plantilla (salvo fullTitle). */
+  /** Sin "| Suncar Cuba": eso lo pone esta misma plantilla (salvo fullTitle). */
   title: string;
   description: string;
   /** Ruta relativa, ej: "/productos". Default: la URL actual. */
@@ -16,7 +16,7 @@ export interface Props {
   /** JSON-LD extra de la página (Product, BreadcrumbList...), además del Organization global. */
   structuredData?: Record<string, unknown>[];
   noindex?: boolean;
-  /** Para el home: el título ya es el completo ("SunCar Cuba - ..."), sin sufijo. */
+  /** Para el home: el título ya es el completo ("Suncar Cuba - ..."), sin sufijo. */
   fullTitle?: boolean;
 }
 
@@ -32,7 +32,7 @@ const {
 
 const siteUrl = "https://suncarsrl.com";
 const canonical = new URL(path, siteUrl).toString();
-const fullTitle = isFullTitle ? title : `${title} | SunCar Cuba`;
+const fullTitle = isFullTitle ? title : `${title} | Suncar Cuba`;
 
 // Mismo JSON-LD que antes en app/layout.tsx: si el teléfono/dirección quedan
 // viejos aquí, la gente llama a un número que ya no existe.
@@ -41,7 +41,7 @@ const contacto = await obtenerContacto();
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "SunCar Cuba",
+  name: "Suncar Cuba",
   alternateName: "Suncar",
   url: siteUrl,
   logo: `${siteUrl}/images/logo.png`,
@@ -89,7 +89,7 @@ const organizationJsonLd = {
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_CU" />
     <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="SunCar Cuba" />
+    <meta property="og:site_name" content="Suncar Cuba" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(ogImage, siteUrl).toString()} />
