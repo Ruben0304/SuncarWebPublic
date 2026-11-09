@@ -11,6 +11,7 @@
   import ErrorRecomendacion from "./ErrorRecomendacion.svelte";
   import ListaOfertas from "./ListaOfertas.svelte";
   import NotasLegales from "./NotasLegales.svelte";
+  import OfertasPrincipales from "./OfertasPrincipales.svelte";
   import RecomendacionInput from "./RecomendacionInput.svelte";
   import { EstadoOfertas, type PropsOfertas } from "./ofertas.svelte";
 
@@ -37,6 +38,8 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Configurador: es la entrada; el listado se abre desde su pie -->
     {#if mostrandoContenido && estado.enArmar}
+      <!-- Los kits con etiqueta («Más vendida», «Del momento»…), pasando solos encima del configurador -->
+      <OfertasPrincipales ofertas={estado.ofertas} onelegir={(id) => estado.elegirOferta(id)} />
       {#key estado.kitElegido ?? "nuevo"}
         <ArmarKit
           ofertas={estado.ofertas}
