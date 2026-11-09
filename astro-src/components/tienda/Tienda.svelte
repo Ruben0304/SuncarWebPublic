@@ -20,12 +20,16 @@
   interface Props {
     // null si el servidor no pudo traer los kits: entonces se piden desde aquí.
     initialKits: OfertaSimplificada[] | null;
+    // /productos/[id]: la página llega con la ficha de ese producto ya abierta.
+    initialProducto?: ArticuloTienda | null;
   }
-  let { initialKits }: Props = $props();
+  let { initialKits, initialProducto = null }: Props = $props();
 
   let kits = $state.raw<OfertaSimplificada[]>(untrack(() => initialKits) ?? []);
   let zona = $state<ZonaId | null>(null);
-  let detalle = $state.raw<ArticuloTienda | null>(null);
+  let detalle = $state.raw<ArticuloTienda | null>(untrack(() => initialProducto));
+  // Entró por /productos/<id> (Google, un enlace): no hay catálogo al que volver atrás.
+  const entradaDirecta = untrack(() => initialProducto) !== null;
   let aviso = $state.raw<Aviso | null>(null);
 
   const zonaDelHash = (): ZonaId | null => {
@@ -55,10 +59,19 @@
   // del móvil lo cierra en vez de salir de la página, y el enlace se comparte.
   onMount(() => {
     zona = zonaDelHash();
+    // Cada ficha tiene su entrada en el historial (/productos/<id>) con el
+    // producto guardado: atrás/adelante cambian de ficha o vuelven al catálogo.
+    if (entradaDirecta) {
+      window.history.replaceState({ __suncarFicha: true, n: 1, producto: $state.snapshot(detalle) }, "");
+    }
     const alVolver = () => {
+      const estado = window.history.state;
+      if (estado?.__suncarFicha) {
+        detalle = estado.producto;
+        return;
+      }
+      detalle = null;
       zona = zonaDelHash();
-      // Atrás con la ficha abierta: cierra la ficha (su entrada ya no es la actual).
-      if (!window.history.state?.__suncarFicha) detalle = null;
     };
     window.addEventListener("popstate", alVolver);
     return () => window.removeEventListener("popstate", alVolver);
@@ -71,15 +84,26 @@
     zona = z;
   }
 
-  // La ficha es una pantalla con entrada propia en el historial: el botón atrás
-  // del móvil vuelve al catálogo. Saltar a un recomendado no suma otra entrada.
+  // La ficha es una pantalla con URL propia (/productos/<id>) y entrada en el
+  // historial: el botón atrás del móvil vuelve al catálogo. `n` cuenta las
+  // fichas apiladas para cerrar de una vez, aunque se haya saltado entre recomendados.
   function abrirFicha(producto: ArticuloTienda) {
-    if (!detalle) window.history.pushState({ __suncarFicha: true }, "");
+    const n = (window.history.state?.__suncarFicha ? window.history.state.n : 0) + 1;
+    window.history.pushState(
+      { __suncarFicha: true, n, producto: $state.snapshot(producto) },
+      "",
+      `/productos/${encodeURIComponent(producto.id)}`,
+    );
     detalle = producto;
   }
 
   function cerrarFicha() {
-    if (window.history.state?.__suncarFicha) window.history.back();
+    if (entradaDirecta) {
+      window.location.assign("/productos");
+      return;
+    }
+    const estado = window.history.state;
+    if (estado?.__suncarFicha) window.history.go(-estado.n);
     else detalle = null;
   }
 
@@ -107,6 +131,17 @@
       })
       .catch(() => {});
     return () => controlador.abort();
+  });
+
+  // La pestaña lleva el nombre del producto mientras su ficha está abierta.
+  $effect(() => {
+    const producto = detalle;
+    if (!producto) return;
+    const anterior = document.title;
+    document.title = `${producto.modelo} | Suncar Cuba`;
+    return () => {
+      document.title = anterior;
+    };
   });
 
   $effect(() => {
@@ -144,7 +179,9 @@
 </script>
 
 <main>
-  <h1 class="sr-only">Tienda Suncar: toca cada parte de la casa para ver sus productos</h1>
+  {#if !detalle}
+    <h1 class="sr-only">Tienda Suncar: toca cada parte de la casa para ver sus productos</h1>
+  {/if}
   <section class="relative h-[100svh] min-h-[520px] overflow-hidden">
     <EscenaCasa onelegir={abrirZona} />
   </section>

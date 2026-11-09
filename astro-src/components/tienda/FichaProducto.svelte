@@ -156,7 +156,7 @@
         <ChevronLeft class="h-5 w-5" />
       </button>
       <div class="min-w-0 flex-1">
-        <h2 class="text-base font-bold text-gray-900 md:text-xl">Detalles del Producto</h2>
+        <p class="text-base font-bold text-gray-900 md:text-xl">Detalles del Producto</p>
         <div class="mt-0.5 flex items-center gap-1.5">
           <span class={`${BADGE} bg-primary`}>{producto.categoria}</span>
           {#if producto.marca_nombre}
@@ -194,7 +194,7 @@
       <!-- Información del producto -->
       <div class="space-y-4 md:space-y-6">
         <div>
-          <h3 class="mb-2 text-xl font-bold text-gray-900 md:text-2xl lg:text-3xl">{producto.modelo}</h3>
+          <h1 class="mb-2 text-xl font-bold text-gray-900 md:text-2xl lg:text-3xl">{producto.modelo}</h1>
           {#if producto.potenciaKW != null}
             <div class="mb-2 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
               <Zap class="h-4 w-4" />
@@ -348,11 +348,12 @@
 
               <!-- Especificaciones adicionales (colapsables) -->
               {#if hiddenSpecs.length > 0}
-                {#if showAllSpecs}
+                <!-- Siempre en el HTML (Google las lee); plegadas hasta que se piden -->
+                <div class:hidden={!showAllSpecs} class="space-y-1.5 md:space-y-2">
                   {#each hiddenSpecs as [key, value] (key)}
                     {@render especificacion(key, value)}
                   {/each}
-                {/if}
+                </div>
 
                 <button
                   type="button"
