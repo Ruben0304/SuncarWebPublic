@@ -5,6 +5,7 @@
   import { carrito, cerrarCarrito, hidratarCarrito } from "~/lib/cart.svelte";
   import { ZONAS, type ZonaId } from "@/components/tienda/zonas";
   import { OFERTAS_PUBLICAS_QUERY, mapOfertaSimplificada } from "@/lib/ofertas/ofertas-publicas";
+  import { urlProducto } from "@/lib/tienda/url-producto";
   import type { ArticuloTienda } from "@/types/tienda";
   import type { OfertaSimplificada } from "@/types/ofertas";
   import AvisoAgregado, { type Aviso } from "./AvisoAgregado.svelte";
@@ -92,7 +93,7 @@
     window.history.pushState(
       { __suncarFicha: true, n, producto: $state.snapshot(producto) },
       "",
-      `/productos/${encodeURIComponent(producto.id)}`,
+      urlProducto(producto.id),
     );
     detalle = producto;
   }
