@@ -2,7 +2,7 @@
   // Tienda de /productos: la casa solar interactiva (cada parte abre el
   // catálogo de su zona), la ficha del producto, el carrito y los avisos.
   import { onMount, untrack } from "svelte";
-  import { carrito, hidratarCarrito } from "~/lib/cart.svelte";
+  import { carrito, cerrarCarrito, hidratarCarrito } from "~/lib/cart.svelte";
   import { ZONAS, type ZonaId } from "@/components/tienda/zonas";
   import { OFERTAS_PUBLICAS_QUERY, mapOfertaSimplificada } from "@/lib/ofertas/ofertas-publicas";
   import type { ArticuloTienda } from "@/types/tienda";
@@ -55,7 +55,11 @@
   // del móvil lo cierra en vez de salir de la página, y el enlace se comparte.
   onMount(() => {
     zona = zonaDelHash();
-    const alVolver = () => (zona = zonaDelHash());
+    const alVolver = () => {
+      zona = zonaDelHash();
+      // Atrás con la ficha abierta: cierra la ficha (su entrada ya no es la actual).
+      if (!window.history.state?.__suncarFicha) detalle = null;
+    };
     window.addEventListener("popstate", alVolver);
     return () => window.removeEventListener("popstate", alVolver);
   });
@@ -65,6 +69,18 @@
     if (zonaDelHash()) window.history.replaceState(window.history.state, "", `#${z}`);
     else window.history.pushState({ __suncarZona: true }, "", `#${z}`);
     zona = z;
+  }
+
+  // La ficha es una pantalla con entrada propia en el historial: el botón atrás
+  // del móvil vuelve al catálogo. Saltar a un recomendado no suma otra entrada.
+  function abrirFicha(producto: ArticuloTienda) {
+    if (!detalle) window.history.pushState({ __suncarFicha: true }, "");
+    detalle = producto;
+  }
+
+  function cerrarFicha() {
+    if (window.history.state?.__suncarFicha) window.history.back();
+    else detalle = null;
   }
 
   function cerrarZona() {
@@ -148,7 +164,7 @@
     oncambiar={abrirZona}
     oncerrar={cerrarZona}
     onagregar={agregar}
-    onver={(p) => (detalle = p)}
+    onver={abrirFicha}
     atajoEscape={detalle === null}
   />
 {/if}
@@ -159,16 +175,25 @@
   {#key detalle.id}
     <FichaProducto
       producto={detalle}
-      onclose={() => (detalle = null)}
+      onclose={cerrarFicha}
       recomendados={comprados.lista}
-      onverrecomendado={(p) => (detalle = p)}
+      onverrecomendado={abrirFicha}
       onagregarrecomendado={agregar}
     />
   {/key}
 {/if}
 
 <!-- En la casa el carrito está dibujado en la acera; en el catálogo, flotante -->
-<CarritoDrawer />
+<CarritoDrawer
+  provincia={provinciaEfectiva}
+  catalogo={catalogo.productos}
+  {kits}
+  onagregar={agregar}
+  onver={(p) => {
+    cerrarCarrito();
+    abrirFicha(p);
+  }}
+/>
 {#if zona}
   <CarritoBoton />
 {/if}

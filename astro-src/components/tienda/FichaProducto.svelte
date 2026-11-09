@@ -1,7 +1,9 @@
 <script lang="ts">
-  // Ficha del producto en un modal: precios por volumen, carrito, compra por
+  // Ficha del producto a pantalla completa (no es un modal: en el móvil no se
+  // usa bien): precios por volumen, carrito, compra por
   // WhatsApp, especificaciones y «Se suele comprar junto con».
   import ChevronDown from "lucide-svelte/icons/chevron-down";
+  import ChevronLeft from "lucide-svelte/icons/chevron-left";
   import ChevronUp from "lucide-svelte/icons/chevron-up";
   import Info from "lucide-svelte/icons/info";
   import Minus from "lucide-svelte/icons/minus";
@@ -9,10 +11,8 @@
   import Plus from "lucide-svelte/icons/plus";
   import ShoppingCart from "lucide-svelte/icons/shopping-cart";
   import TrendingDown from "lucide-svelte/icons/trending-down";
-  import X from "lucide-svelte/icons/x";
   import Zap from "lucide-svelte/icons/zap";
-  import Modal from "~/components/ui/Modal.svelte";
-  import { carrito } from "~/lib/cart.svelte";
+  import { abrirCarrito, carrito } from "~/lib/cart.svelte";
   import { useContacto } from "~/lib/contacto.svelte";
   import { imagenResponsive } from "~/lib/imagenes";
   import TarjetaProducto from "./TarjetaProducto.svelte";
@@ -30,6 +30,15 @@
 
   let showAllSpecs = $state(false);
   let selectedQuantity = $state<string | null>(null);
+
+  // Pantalla propia: bloquea el scroll de lo que hay debajo y Escape vuelve atrás.
+  $effect(() => {
+    const anterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = anterior;
+    };
+  });
 
   const quantityInCart = $derived(carrito.cantidadDe(producto.id));
   const datos = useContacto();
@@ -109,6 +118,17 @@
     "inline-flex h-auto items-center justify-between gap-2 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors md:py-2.5";
 </script>
 
+{#snippet verCarrito(ancho = "")}
+  <button
+    type="button"
+    onclick={abrirCarrito}
+    class={`${ancho} inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md border-2 border-primary bg-white px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/5 md:h-12 md:px-8 md:text-base`}
+  >
+    <ShoppingCart class="h-4 w-4" />
+    Ver carrito · ${carrito.totalPrice.toLocaleString()}
+  </button>
+{/snippet}
+
 {#snippet especificacion(clave: string, valor: unknown)}
   <div class={FILA_SPEC}>
     <span class="text-xs font-medium text-slate-700 md:text-sm">{formatSpecName(clave)}</span>
@@ -116,22 +136,28 @@
   </div>
 {/snippet}
 
-<Modal
-  open={true}
-  {onclose}
-  label="Detalles del producto"
-  class="max-w-5xl md:rounded-3xl animate-in zoom-in-95 duration-200"
-  cerrarVisible={false}
+<svelte:window onkeydown={(e) => e.key === "Escape" && onclose()} />
+
+<div
+  role="dialog"
+  aria-modal="true"
+  aria-label="Detalles del producto"
+  class="fixed inset-0 z-[65] overflow-y-auto overscroll-contain bg-[#F2F2EF]"
 >
   <!-- Header -->
-  <div class="sticky top-0 z-10 flex items-center justify-between rounded-t-2xl border-b border-gray-200 bg-white px-3 py-3 md:rounded-t-3xl md:px-6 md:py-4">
-    <div class="flex items-center gap-2 md:gap-3">
-      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 md:h-10 md:w-10">
-        <Package class="h-4 w-4 text-primary md:h-5 md:w-5" />
-      </div>
-      <div>
+  <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-5xl items-center gap-3 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] md:px-6">
+      <button
+        type="button"
+        onclick={onclose}
+        aria-label="Volver"
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-[#012928] ring-1 ring-[#012928]/[0.08] transition-transform active:scale-90"
+      >
+        <ChevronLeft class="h-5 w-5" />
+      </button>
+      <div class="min-w-0 flex-1">
         <h2 class="text-base font-bold text-gray-900 md:text-xl">Detalles del Producto</h2>
-        <div class="mt-0.5 flex items-center gap-1.5 md:mt-1">
+        <div class="mt-0.5 flex items-center gap-1.5">
           <span class={`${BADGE} bg-primary`}>{producto.categoria}</span>
           {#if producto.marca_nombre}
             <span class={`${BADGE} bg-blue-600`}>{producto.marca_nombre}</span>
@@ -139,18 +165,10 @@
         </div>
       </div>
     </div>
-    <button
-      type="button"
-      onclick={onclose}
-      aria-label="Cerrar"
-      class="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors hover:bg-gray-100 md:h-10 md:w-10"
-    >
-      <X class="h-4 w-4" />
-    </button>
   </div>
 
   <!-- Content -->
-  <div class="p-3 md:p-6 lg:p-8">
+  <div class="mx-auto max-w-5xl p-3 pb-[max(2rem,env(safe-area-inset-bottom))] md:p-6 lg:p-8">
     <div class="grid gap-4 md:grid-cols-2 md:gap-8">
       <!-- Imagen del producto -->
       <div class="space-y-3 md:space-y-4">
@@ -299,12 +317,19 @@
             <button
               type="button"
               onclick={handleWhatsAppContact}
-              class={`inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#012928] px-8 text-xs font-semibold text-white shadow-lg transition-all hover:shadow-xl md:h-12 md:text-base ${quantityInCart > 0 ? "col-span-2" : ""}`}
+              class="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#012928] px-4 text-xs font-semibold text-white shadow-lg transition-all hover:shadow-xl md:h-12 md:px-8 md:text-base"
             >
               <ShoppingCart class="h-4 w-4" />
               Comprar ya
             </button>
+            <!-- Con este producto en el carrito, «Ver carrito» ocupa el sitio de «Al Carrito» -->
+            {#if quantityInCart > 0}
+              {@render verCarrito()}
+            {/if}
           </div>
+          {#if quantityInCart === 0 && carrito.totalItems > 0}
+            {@render verCarrito("w-full")}
+          {/if}
         </div>
 
         <!-- Especificaciones técnicas -->
@@ -363,4 +388,4 @@
       </div>
     {/if}
   </div>
-</Modal>
+</div>
