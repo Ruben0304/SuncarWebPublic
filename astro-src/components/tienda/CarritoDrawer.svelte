@@ -16,13 +16,33 @@
   // número atiende cada provincia, y mandar el pedido a un número sin dueño es
   // peor que mandarlo al central. Cuando se decida, es una línea:
   // useContacto(() => carrito.provincia).
+  import type { ArticuloTienda } from "@/types/tienda";
+  import type { OfertaSimplificada } from "@/types/ofertas";
   import { useContacto } from "~/lib/contacto.svelte";
   import CarritoItem from "./CarritoItem.svelte";
-  import CarritoRecomendado from "./CarritoRecomendado.svelte";
+  import TarjetaProducto from "./TarjetaProducto.svelte";
+  import { useCompradosJuntosCarrito } from "./compradosJuntos.svelte";
   import { useRecomendadorCarrito } from "./recomendadorCarrito.svelte";
 
+  interface Props {
+    provincia: string | null;
+    catalogo: ArticuloTienda[];
+    kits: OfertaSimplificada[];
+    onagregar: (producto: ArticuloTienda) => void;
+    onver: (producto: ArticuloTienda) => void;
+  }
+  let { provincia, catalogo, kits, onagregar, onver }: Props = $props();
+
   const datos = useContacto();
+  // La oferta de instalación sale del recomendador del backend; «Comprados
+  // juntos», igual que en la ficha del producto.
   const recomendador = useRecomendadorCarrito(carritoAbierto);
+  const comprados = useCompradosJuntosCarrito(
+    carritoAbierto,
+    () => provincia,
+    () => catalogo,
+    () => kits,
+  );
 
   const items = $derived(carrito.items);
   const totalItems = $derived(carrito.totalItems);
@@ -148,18 +168,25 @@
             <h3 class="text-[13px] font-semibold text-slate-800">Comprados juntos</h3>
           </div>
 
-          {#if recomendador.cargando}
+          {#if comprados.cargando}
             <div class="flex items-center gap-2 px-4 py-3 text-xs text-slate-500">
               <Loader2 class="h-3.5 w-3.5 animate-spin" />
               Buscando recomendaciones...
             </div>
-          {:else if recomendador.recomendados.length > 0}
+          {:else if comprados.lista.length > 0}
             <div
               class="flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-2"
               style="scrollbar-width: none; -webkit-overflow-scrolling: touch;"
             >
-              {#each recomendador.recomendados as producto, i (producto.id)}
-                <CarritoRecomendado {producto} prioritaria={i < 2} />
+              {#each comprados.lista as producto, i (producto.id)}
+                <TarjetaProducto
+                  {producto}
+                  {onagregar}
+                  {onver}
+                  compacta
+                  prioritaria={i < 2}
+                  class="w-[calc(50%-6px)] min-w-[calc(50%-6px)] flex-shrink-0 snap-start"
+                />
               {/each}
               <!-- Spacer para que el último card no quede pegado al borde -->
               <div class="min-w-[1px] flex-shrink-0"></div>

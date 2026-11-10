@@ -1,0 +1,50 @@
+---
+import SiteLayout from "~/layouts/SiteLayout.astro";
+import Tienda from "~/components/tienda/Tienda.svelte";
+import { obtenerOfertasPublicas } from "@/lib/ofertas/ofertas-publicas-server";
+import { obtenerArticuloTiendaPublico } from "@/lib/tienda/catalogo-publico-server";
+import { formatearPrecio } from "@/lib/ofertas/ofertas-publicas";
+
+const { id } = Astro.params;
+const producto = id ? await obtenerArticuloTiendaPublico(id) : null;
+
+if (!producto) {
+  return new Response(null, { status: 404 });
+}
+
+const initialKits = await obtenerOfertasPublicas();
+
+const precioTexto = `$${formatearPrecio(producto.precio)}`;
+const descripcionCorta =
+  producto.descripcion_uso ??
+  `${producto.modelo}${producto.marca_nombre ? ` de ${producto.marca_nombre}` : ""}, disponible en Cuba por ${precioTexto}.`;
+
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: producto.modelo,
+  description: descripcionCorta,
+  image: producto.foto ? [producto.foto] : undefined,
+  brand: producto.marca_nombre ? { "@type": "Brand", name: producto.marca_nombre } : undefined,
+  category: producto.categoria,
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "USD",
+    price: producto.precio,
+    availability: "https://schema.org/InStock",
+    url: new URL(`/productos/${id}`, "https://suncarsrl.com").toString(),
+  },
+};
+---
+
+<SiteLayout
+  title={producto.modelo}
+  description={descripcionCorta}
+  path={`/productos/${id}`}
+  ogImage={producto.foto ?? undefined}
+  structuredData={[productJsonLd]}
+  chat={false}
+>
+  <!-- La ficha completa (la misma que abre la tienda) llega ya abierta y en el HTML -->
+  <Tienda {initialKits} initialProducto={producto} client:load />
+</SiteLayout>

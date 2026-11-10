@@ -5,6 +5,7 @@
   import Zap from "lucide-svelte/icons/zap";
   import { carrito } from "~/lib/cart.svelte";
   import { imagenResponsive } from "~/lib/imagenes";
+  import { urlProducto } from "@/lib/tienda/url-producto";
   import { formatearPrecio } from "@/lib/ofertas/ofertas-publicas";
   import t from "./tienda.module.css";
   import type { ArticuloTienda } from "@/types/tienda";
@@ -35,6 +36,13 @@
     style,
   }: Props = $props();
 
+  // Enlace real (Google lo rastrea; clic derecho / nueva pestaña funcionan); el clic normal abre la ficha aquí.
+  function abrir(e: MouseEvent) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    onver(producto);
+  }
+
   const cantidad = $derived(carrito.cantidadDe(producto.id));
   const foto = $derived(producto.foto ? imagenResponsive(producto.foto, [256, 384, 640]) : null);
   const sizes = $derived(compacta ? "(max-width: 768px) 45vw, 220px" : "(max-width: 768px) 64vw, 200px");
@@ -44,9 +52,9 @@
   {style}
   class={`group flex flex-col overflow-hidden rounded-[22px] bg-white ring-1 ring-[#012928]/[0.06] shadow-[0_10px_30px_-18px_rgba(1,41,40,0.45)] transition-shadow hover:shadow-[0_18px_40px_-18px_rgba(1,41,40,0.5)] ${className}`}
 >
-  <button
-    type="button"
-    onclick={() => onver(producto)}
+  <a
+    href={urlProducto(producto.id)}
+    onclick={abrir}
     class="relative block aspect-square w-full bg-gradient-to-b from-[#F2F2EF] to-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#012928]"
     aria-label={`Ver detalles de ${producto.modelo}`}
   >
@@ -74,7 +82,7 @@
         Dto. volumen
       </span>
     {/if}
-  </button>
+  </a>
 
   <div class={`flex flex-1 flex-col ${compacta ? "p-3" : "p-4"}`}>
     {#if producto.marca_nombre}
