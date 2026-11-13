@@ -44,6 +44,7 @@ const productJsonLd = {
   ogImage={producto.foto ?? undefined}
   structuredData={[productJsonLd]}
   chat={false}
+  marca="ventas"
 >
   <!-- La ficha completa (la misma que abre la tienda) llega ya abierta y en el HTML -->
   <Tienda {initialKits} initialProducto={producto} client:load />

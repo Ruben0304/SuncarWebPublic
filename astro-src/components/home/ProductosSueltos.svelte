@@ -20,9 +20,16 @@
   <div class="container mx-auto px-4 md:px-6 lg:px-8">
     <div class="mb-10 flex flex-col gap-6 lg:mb-14 lg:flex-row lg:items-end lg:justify-between">
       <div class="max-w-2xl space-y-4">
-        <span class="inline-block rounded-full bg-[#012928] px-4 py-1.5 text-sm font-semibold text-white">
-          Tienda online
-        </span>
+        <!-- La tienda es de Suncar Ventas: su logo hace de etiqueta de la sección -->
+        <img
+          src="/images/logo-suncarventas-horizontal.svg"
+          alt="SuncarVentas — Tú energía con nosotros"
+          width="189"
+          height="40"
+          class="h-9 w-auto sm:h-10"
+          loading="lazy"
+          decoding="async"
+        />
         <h2 class="text-3xl font-bold leading-tight text-[#012928] sm:text-4xl lg:text-5xl">Productos en venta</h2>
         <p class="text-base leading-relaxed text-[#012928]/70 lg:text-lg">
           ¿Ya tienes tu sistema o quieres ampliarlo? Compra solo la pieza que te hace falta, con precios por

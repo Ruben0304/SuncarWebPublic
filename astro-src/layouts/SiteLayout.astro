@@ -20,9 +20,11 @@ export interface Props extends BaseProps {
   footer?: boolean;
   /** false donde el WhatsApp corporativo flotante no corresponde. */
   chat?: boolean;
+  /** "ventas" en las páginas de Suncar Ventas: el menú y el pie llevan el logo SuncarVentas. */
+  marca?: "suncar" | "ventas";
 }
 
-const { nav = true, footer = true, chat = true, ...base } = Astro.props;
+const { nav = true, footer = true, chat = true, marca = "suncar", ...base } = Astro.props;
 ---
 
 <BaseLayout {...base}>
@@ -30,8 +32,8 @@ const { nav = true, footer = true, chat = true, ...base } = Astro.props;
   {chat && <ChatWidget client:idle />}
   <Toaster client:idle />
   <div class="min-h-screen bg-[#F2F2EF] overflow-x-hidden">
-    {nav && <Navigation client:load />}
+    {nav && <Navigation {marca} client:load />}
     <slot />
-    {footer && <Footer client:visible />}
+    {footer && <Footer {marca} client:visible />}
   </div>
 </BaseLayout>

@@ -5,6 +5,9 @@
   import { useContacto } from "~/lib/contacto.svelte";
   import { imageSrcset, optimizedImage } from "@/lib/image";
 
+  // "ventas" en las páginas de Suncar Ventas (tienda): mismo pie, su logo.
+  let { marca = "suncar" }: { marca?: "suncar" | "ventas" } = $props();
+
   const datos = useContacto();
   const contacto = $derived(datos.contacto);
   const cargando = $derived(datos.cargando);
@@ -16,17 +19,29 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
       <div class="space-y-3 lg:space-y-4">
         <a href="/" class="inline-block">
-          <img
-            src={optimizedImage("/images/logo-horizontal-white.png", 292)}
-            srcset={imageSrcset("/images/logo-horizontal-white.png", [146, 292])}
-            sizes="146px"
-            alt="Suncar — Energía que transforma"
-            height="40"
-            width="146"
-            class="h-8 lg:h-10 w-auto object-contain"
-            loading="lazy"
-            decoding="async"
-          />
+          {#if marca === "ventas"}
+            <img
+              src="/images/logo-suncarventas-horizontal-white.svg"
+              alt="SuncarVentas — Tú energía con nosotros"
+              height="40"
+              width="189"
+              class="h-8 lg:h-10 w-auto object-contain"
+              loading="lazy"
+              decoding="async"
+            />
+          {:else}
+            <img
+              src={optimizedImage("/images/logo-horizontal-white.png", 292)}
+              srcset={imageSrcset("/images/logo-horizontal-white.png", [146, 292])}
+              sizes="146px"
+              alt="Suncar — Energía que transforma"
+              height="40"
+              width="146"
+              class="h-8 lg:h-10 w-auto object-contain"
+              loading="lazy"
+              decoding="async"
+            />
+          {/if}
         </a>
         <p class="text-blue-100 leading-relaxed text-sm lg:text-base">
           Transformamos hogares, negocios y espacios cubanos con energía solar limpia y renovable. Tu futuro

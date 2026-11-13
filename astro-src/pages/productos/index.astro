@@ -16,6 +16,7 @@ const initialKits = await obtenerOfertasPublicas();
   description="Paneles solares, inversores, baterías y accesorios para tu sistema fotovoltaico. Toca cada parte de la casa para ver los productos disponibles en tu provincia."
   path="/productos"
   chat={false}
+  marca="ventas"
 >
   <Tienda initialKits={initialKits} client:load />
 </SiteLayout>

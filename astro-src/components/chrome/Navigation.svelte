@@ -53,6 +53,9 @@
     },
   ];
 
+  // "ventas" en las páginas de Suncar Ventas (tienda): mismo menú, su logo.
+  let { marca = "suncar" }: { marca?: "suncar" | "ventas" } = $props();
+
   let isOpen = $state(false);
   let scrolled = $state(false);
   let hoveredHref: string | null = $state(null);
@@ -128,18 +131,31 @@
       <div class="w-full px-4 lg:px-6 py-3 lg:py-4">
         <div class="flex items-center justify-between">
           <a href="/" class="flex items-center shrink-0">
-            <img
-              src={optimizedImage("/images/logo-horizontal.png", 292)}
-              srcset={imageSrcset("/images/logo-horizontal.png", [146, 292])}
-              sizes="146px"
-              alt="Suncar — Energía que transforma"
-              height="40"
-              width="146"
-              class="h-7 lg:h-8 w-auto object-contain"
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-            />
+            {#if marca === "ventas"}
+              <img
+                src="/images/logo-suncarventas-horizontal.svg"
+                alt="SuncarVentas — Tú energía con nosotros"
+                height="40"
+                width="189"
+                class="h-7 lg:h-8 w-auto object-contain"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+            {:else}
+              <img
+                src={optimizedImage("/images/logo-horizontal.png", 292)}
+                srcset={imageSrcset("/images/logo-horizontal.png", [146, 292])}
+                sizes="146px"
+                alt="Suncar — Energía que transforma"
+                height="40"
+                width="146"
+                class="h-7 lg:h-8 w-auto object-contain"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+            {/if}
           </a>
 
           <div class="hidden md:flex items-center space-x-3 lg:space-x-4" onmouseleave={scheduleHoverReset}>
